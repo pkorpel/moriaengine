@@ -403,8 +403,8 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			string city = (this.stone == null) ? null : VenueRegistry.CityAt(this.stone); //#1243 - the city must think well of you
-			if ((city != null) && (Reputation.Level(player, city) < ReputationLevel.Vazeny)) {
-				player.RedMessage("Mesto te jeste dost nezna. Obcanem se muze stat jen vazeny clovek.");
+			if ((city != null) && ((int) Reputation.Level(player, city) < ReputationSettings.instance.citizenshipMinLevel)) {
+				player.RedMessage("Mesto te jeste dost nezna. Obcanem se muze stat jen clovek dobre povesti.");
 				return false;
 			}
 			Town current = OfCitizen(player);

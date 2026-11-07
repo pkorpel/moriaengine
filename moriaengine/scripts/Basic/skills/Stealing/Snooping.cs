@@ -90,6 +90,7 @@ namespace SteamEngine.CompiledScripts {
 			Container cnt = (Container) skillSeqArgs.Target1;
 			Character mark = (Character) cnt.TopObj();
 			if (self.Flag_InvisByMagic) {
+				Reputation.OnCrime(self, mark); //#1243
 				Notoriety.FlagCriminal(self);
 			}
 			self.SysMessage(Loc<SnoopingLoc>.Get(self.Language).failed);

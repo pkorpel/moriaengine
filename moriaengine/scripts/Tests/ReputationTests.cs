@@ -19,9 +19,24 @@ namespace SteamEngine.CompiledScripts {
 			return new Point4D(spot[0], spot[1], spot[2], 0);
 		}
 
+		private static readonly TagKey lastCrimeTK = TagKey.Acquire("_rep_lastcrime_");
+		private static readonly TagKey lastHarmTK = TagKey.Acquire("_rep_lastharm_");
+
 		[SteamFunction]
 		public static void TestReputationCore(Character self) {
+			try {
+				Core(self);
+			} finally {
+				Reputation.NowOverride = null; //a static: never leave it set for whatever runs next
+				self.Account.PLevel = 7;
+				Console.WriteLine("REPUTATION_CORE_DONE");
+			}
+		}
+
+		private static void Core(Character self) {
 			Reputation.NowOverride = null;
+			self.RemoveTag(lastCrimeTK);
+			self.RemoveTag(lastHarmTK);
 			self.Account.PLevel = 1; //a player: GMs pay list price and aren't judged
 			self.Realm = Realm.Gondor;
 			self.Go(EdorasSpot());
@@ -45,6 +60,14 @@ namespace SteamEngine.CompiledScripts {
 			Report("backToZeroNotBeyond", Reputation.Of(self, Edoras) == 0);
 			Reputation.NowOverride = null;
 
+			//in the enemy city bad standing comes back to the enemy start, not to 0
+			Reputation.Change(self, "Barad-dur", -150);
+			Reputation.NowOverride = DateTime.UtcNow.AddDays(30);
+			Report("enemyStandingDriftsToTheEnemyStart", Reputation.Of(self, "Barad-dur") == -600);
+			Reputation.NowOverride = DateTime.UtcNow.AddDays(-30);
+			Report("aClockBackDoesntDeepenIt", Reputation.Of(self, "Barad-dur") == -750);
+			Reputation.NowOverride = null;
+
 			Reputation.Change(self, "Hobitin", 100, "ho_farmers");
 			Report("aFactionRises", Reputation.OfFaction(self, "ho_farmers") == 100);
 			Report("itsRivalFallsByHalf", Reputation.OfFaction(self, "ho_innkeepers") == -50);
@@ -58,6 +81,7 @@ namespace SteamEngine.CompiledScripts {
 			Report("aSuspectPaysMore", Reputation.PriceFor(self, 100) == 150);
 			Reputation.Set(self, Edoras, -900);
 			Report("anEnemyIsRefused", Reputation.Refuses(self) && (Reputation.PriceFor(self, 100) == 0));
+			Report("nothingCostsNothing", Reputation.PriceFor(self, 0) == 0);
 			self.Account.PLevel = 7;
 			Report("aGmIsntJudged", !Reputation.Refuses(self) && (Reputation.PriceFor(self, 100) == 100));
 			self.Account.PLevel = 1;
@@ -74,17 +98,33 @@ namespace SteamEngine.CompiledScripts {
 			Report("guardsProtectAKnownCitizen", protectedKnown);
 			Report("butNotTheCitysEnemy", !protectedEnemy);
 
-			//a crime where you stand, counted once a minute
+			//a crime against your own realm where it happened, counted once a minute; against the enemy realm, none
+			NPC innocent = (NPC) ThingDef.GetByDefname("c_resident_man").Create(self.P());
+			innocent.Realm = Realm.Gondor;
 			Reputation.Set(self, Edoras, 0);
-			Notoriety.FlagCriminal(self);
+			Reputation.OnCrime(self, innocent);
 			int afterOne = Reputation.Of(self, Edoras);
-			Notoriety.FlagCriminal(self);
+			Reputation.OnCrime(self, innocent);
 			Report("aCrimeCosts", afterOne == -ReputationSettings.instance.crimeLoss);
 			Report("blowAfterBlowIsOneCrime", Reputation.Of(self, Edoras) == afterOne);
+			self.RemoveTag(lastCrimeTK);
+			innocent.Realm = Realm.Mordor;
+			Reputation.Set(self, Edoras, 0);
+			Reputation.OnCrime(self, innocent);
+			Reputation.OnMurder(innocent, self);
+			Report("fightingTheEnemyRealmIsNoCrime", Reputation.Of(self, Edoras) == 0);
+			innocent.Realm = Realm.Gondor;
+			Reputation.OnMurder(innocent, self);
+			Report("aMurderCosts", Reputation.Of(self, Edoras) == -ReputationSettings.instance.murderLoss);
+			innocent.Delete();
+			self.RemoveTag(lastCrimeTK);
 			Notoriety.ClearCriminal(self);
 			Reputation.Set(self, Edoras, 0);
-			self.Account.PLevel = 7;
-			Console.WriteLine("REPUTATION_CORE_DONE");
+			//an outcast is distrusted everywhere, not an enemy
+			self.Realm = Realm.GondorOutcast;
+			Report("anOutcastIsASuspect", (Reputation.Of(self, "Harad") == ReputationSettings.instance.outcastStart) &&
+				(Reputation.Level(self, "Harad") == ReputationLevel.Podezrely));
+			self.Realm = Realm.Gondor;
 		}
 
 		/// <summary>A plain Gondor player, for .povest from the player allowlist.</summary>
@@ -109,11 +149,12 @@ namespace SteamEngine.CompiledScripts {
 			self.Realm = Realm.Gondor;
 			Reputation.Set(self, Edoras, 0);
 			Notoriety.ClearCriminal(self);
+			self.RemoveTag(lastHarmTK);
 			int before = Reputation.Of(self, Edoras);
 			DamageManager.CauseDamage(self, baker, DamageType.Blunt, 3);
 			int afterHit = Reputation.Of(self, Edoras);
 			DamageManager.CauseDamage(self, baker, DamageType.Blunt, 3);
-			Report("hurtingAResidentCosts", afterHit <= before - ReputationSettings.instance.harmResidentLoss);
+			Report("hurtingAResidentCosts", afterHit == before - ReputationSettings.instance.harmResidentLoss); //hurting an NPC is no crime (Notoriety)
 			Report("butOnceAMinute", Reputation.Of(self, Edoras) == afterHit);
 			int beforeKill = Reputation.Of(self, Edoras);
 			baker.CauseDeath(self);

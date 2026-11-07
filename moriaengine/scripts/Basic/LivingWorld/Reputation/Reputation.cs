@@ -75,6 +75,12 @@ namespace SteamEngine.CompiledScripts {
 		public int suspectFrom = -300, strangerFrom = -100, knownFrom = 0, respectedFrom = 200, honouredFrom = 450, heroFrom = 750;
 		[SaveableData]
 		public int enemyRealmStart = -600;
+		/// <summary>An outcast belongs to no city: distrusted everywhere, but not an enemy.</summary>
+		[SaveableData]
+		public int outcastStart = -200;
+		/// <summary>The level a town stone wants for citizenship (ReputationLevel, 3 = Znamy): raise it once errands give standing.</summary>
+		[SaveableData]
+		public int citizenshipMinLevel = (int) ReputationLevel.Znamy;
 		[SaveableData]
 		public int crimeLoss = 50, murderLoss = 300, harmResidentLoss = 20, killResidentLoss = 150;
 		[SaveableData]
@@ -132,17 +138,34 @@ namespace SteamEngine.CompiledScripts {
 			return TagKey.Acquire("_rep_f_" + Word(faction));
 		}
 
+		//regions are fixed once loaded and a recompile makes fresh statics, so both are kept
+		private static readonly Dictionary<string, Realm> realmByCity = new Dictionary<string, Realm>(StringComparer.OrdinalIgnoreCase);
+		private static readonly Dictionary<Region, string> cityByRegion = new Dictionary<Region, string>();
+
 		/// <summary>The realm of a city: of its areas, the one with a realm.</summary>
 		public static Realm RealmOfCity(string city) {
-			foreach (FlaggedRegion area in VenueRegistry.AreasOf(city)) {
-				if (area.Realm != Realm.None) {
-					return area.Realm;
+			Realm realm;
+			if (!realmByCity.TryGetValue(city, out realm)) {
+				foreach (FlaggedRegion area in VenueRegistry.AreasOf(city)) {
+					if (area.Realm != Realm.None) {
+						realm = area.Realm;
+						break;
+					}
 				}
+				realmByCity[city] = realm;
 			}
-			return Realm.None;
+			return realm;
+		}
+
+		/// <summary>The two realms at war: an act against the other realm is no crime against your own city.</summary>
+		public static bool AreEnemies(Character a, Character b) {
+			return (a != null) && (b != null) && (((a.Realm == Realm.Gondor) && (b.Realm == Realm.Mordor)) || ((a.Realm == Realm.Mordor) && (b.Realm == Realm.Gondor)));
 		}
 
 		private static int Start(Character player, string city) {
+			if ((player.Realm == Realm.GondorOutcast) || (player.Realm == Realm.MordorOutcast)) {
+				return Settings.outcastStart;
+			}
 			Realm cityRealm = RealmOfCity(city);
 			if ((cityRealm != Realm.None) && (player.Realm != Realm.None) && (player.Realm != cityRealm)) {
 				return Settings.enemyRealmStart;
@@ -157,11 +180,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 			object stored = player.GetTag(CityKey(city));
 			int value = (stored == null) ? Start(player, city) : Convert.ToInt32(stored, CultureInfo.InvariantCulture);
-			if (value < 0) {
+			int floor = Math.Min(0, Start(player, city)); //bad standing comes back to where a stranger of your realm starts, no further
+			if (value < floor) {
 				object since = player.GetTag(CityTimeKey(city));
 				if (since != null) {
-					double days = (Now - new DateTime(Convert.ToInt64(since, CultureInfo.InvariantCulture), DateTimeKind.Utc)).TotalSeconds / SecondsPerDay;
-					value = Math.Min(0, value + (int) (days * Settings.driftPerDay));
+					double days = Math.Max(0, (Now - new DateTime(Convert.ToInt64(since, CultureInfo.InvariantCulture), DateTimeKind.Utc)).TotalSeconds / SecondsPerDay);
+					value = Math.Min(floor, value + (int) (days * Settings.driftPerDay));
 				}
 			}
 			return value;
@@ -243,14 +267,27 @@ namespace SteamEngine.CompiledScripts {
 			player.SetTag(FactionKey(faction), Math.Max(Min, Math.Min(Max, value)));
 		}
 
-		/// <summary>The city a point is in, for the effects (VenueRegistry.CityAt, by geometry).</summary>
+		/// <summary>The city a point is in, for the effects (VenueRegistry.CityAt, by geometry), remembered per region: guards ask
+		/// it on every think.</summary>
 		public static string CityAt(IPoint4D point) {
-			return (point == null) ? null : VenueRegistry.CityAt(point);
+			if (point == null) {
+				return null;
+			}
+			Region region = point.GetMap().GetRegionFor(point);
+			string city;
+			if ((region != null) && cityByRegion.TryGetValue(region, out city)) {
+				return city;
+			}
+			city = VenueRegistry.CityAt(point);
+			if (region != null) {
+				cityByRegion[region] = city;
+			}
+			return city;
 		}
 
 		/// <summary>The price a player pays where they stand: by the city's view of them. 0 when nobody there sells to them.</summary>
 		public static long PriceFor(Character player, long price) {
-			if ((player == null) || player.IsGM) {
+			if ((player == null) || player.IsGM || (price <= 0)) {
 				return price;
 			}
 			string city = CityAt(player);
@@ -287,22 +324,30 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>The guards of a player's own realm stop protecting one the city counts as its enemy.</summary>
-		public static bool IsEnemyHere(Character player, IPoint4D where) {
-			string city = CityAt(where);
-			return (city != null) && player.IsPlayer && !player.IsGM && (Level(player, city) == ReputationLevel.Nepritel);
+		/// <summary>A guard of the player's own realm stops protecting one its city counts as an enemy. Cheap checks first: guards
+		/// ask this on every think.</summary>
+		public static bool IsEnemyHere(Character player, NPC guard) {
+			if (!player.IsPlayer || player.IsGM || (guard.Realm == Realm.None) || (guard.Realm != player.Realm)) {
+				return false;
+			}
+			string city = CityAt(guard);
+			return (city != null) && (Level(player, city) == ReputationLevel.Nepritel);
 		}
 
 		private static readonly TagKey lastCrimeTK = TagKey.Acquire("_rep_lastcrime_");
 		private static readonly TagKey warnedTK = TagKey.Acquire("_rep_warned_");
 
-		/// <summary>From Notoriety.FlagCriminal: a crime where it happened. Every blow at an innocent flags again, so it counts
-		/// once a harmResidentEverySeconds, as one crime.</summary>
-		public static void OnCrime(Character criminal) {
-			if ((criminal == null) || !criminal.IsPlayer || criminal.IsGM || !Due(criminal, lastCrimeTK, Settings.harmResidentEverySeconds)) {
+		/// <summary>From the crimes' callers (a hostile act, looting, snooping): a crime against `victim` in the city where it
+		/// happened. One against the enemy realm is war, not a crime against your city. Every blow flags again, so it counts once a
+		/// harmResidentEverySeconds, as one crime.</summary>
+		public static void OnCrime(Character criminal, Character victim) {
+			if ((criminal == null) || !criminal.IsPlayer || criminal.IsGM || AreEnemies(criminal, victim)) {
 				return;
 			}
-			Change(criminal, CityAt(criminal), -Settings.crimeLoss);
+			string city = CityAt(victim ?? criminal);
+			if ((city != null) && Due(criminal, lastCrimeTK, Settings.harmResidentEverySeconds)) {
+				Change(criminal, city, -Settings.crimeLoss);
+			}
 		}
 
 		/// <summary>True, and the time noted, when the last time under `key` is at least `seconds` ago.</summary>
@@ -334,13 +379,24 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>From Notoriety.RegisterMurder: a murder in the city where the victim fell.</summary>
 		public static void OnMurder(Character victim, Character killer) {
-			Change(killer, CityAt(victim), -Settings.murderLoss);
+			if (!AreEnemies(victim, killer)) { //killing the enemy realm's raiders defends the city
+				Change(killer, CityAt(victim), -Settings.murderLoss);
+			}
+		}
+
+		/// <summary>Whoever answers for an act: a player, or the owner of a pet.</summary>
+		private static Character Answerable(Character ch) {
+			if ((ch != null) && !ch.IsPlayer && (ch.ControlMaster != null) && ch.ControlMaster.IsPlayer) {
+				return ch.ControlMaster;
+			}
+			return ch;
 		}
 
 		private static readonly TagKey lastHarmTK = TagKey.Acquire("_rep_lastharm_");
 
 		/// <summary>From DamageManager: a player hurting a resident, at most once a harmResidentEverySeconds.</summary>
 		public static void OnHarm(Character attacker, Character defender) {
+			attacker = Answerable(attacker); //a pet set on a resident is its owner's doing
 			if ((attacker == null) || !attacker.IsPlayer || attacker.IsGM || (Residents.GemOf(defender) == null)) {
 				return;
 			}
@@ -351,6 +407,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>From NPC.On_Death: a player killing a resident.</summary>
 		public static void OnDeath(NPC dead, Character killedBy) {
+			killedBy = Answerable(killedBy);
 			if ((killedBy != null) && killedBy.IsPlayer && !killedBy.IsGM && (Residents.GemOf(dead) != null)) {
 				Change(killedBy, CityAt(dead), -Settings.killResidentLoss);
 			}
@@ -399,16 +456,31 @@ namespace SteamEngine.CompiledScripts {
 	public class D_Reputation : CompiledGumpDef {
 		private const int Width = 460, LabelHue = 955, ValueHue = 52, BadHue = 33, RowHeight = 20;
 
+		private const int CitiesOnPage = 2, PageHeight = 260;
+
+		/// <summary>Two cities a page with their factions: all of them at once would be taller than a 3.0.6m screen.</summary>
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Character player = (Character) sendTo;
 			List<string> cities = Reputation.CitiesOf(player);
-			int rows = cities.Count + Faction.All.Length;
+			int pages = (cities.Count + CitiesOnPage - 1) / CitiesOnPage;
 			this.SetLocation(40, 40);
 			this.AddPage(0);
-			this.AddBackground(0, 0, Width, 60 + (rows * RowHeight), 2620);
+			this.AddBackground(0, 0, Width, PageHeight, 2620);
 			this.AddLabel(14, 12, ValueHue, "Povest ve mestech");
 			int y = 40;
-			foreach (string city in cities) {
+			for (int i = 0; i < cities.Count; i++) {
+				string city = cities[i];
+				if ((i % CitiesOnPage) == 0) {
+					int page = (i / CitiesOnPage) + 1;
+					this.AddPage(page);
+					y = 40;
+					if (page > 1) {
+						this.AddButton(Width - 70, 12, 0x15E3, 0x15E7, 0, GumpButtonType.Page, page - 1);
+					}
+					if (page < pages) {
+						this.AddButton(Width - 40, 12, 0x15E1, 0x15E5, 0, GumpButtonType.Page, page + 1);
+					}
+				}
 				int value = Reputation.Of(player, city);
 				ReputationLevel level = Reputation.Level(player, city);
 				this.AddLabel(14, y, LabelHue, city.Replace('_', ' '));

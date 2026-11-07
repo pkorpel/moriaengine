@@ -16,9 +16,9 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Wanderer")) {
 				this.Run(game, ".TestReputationCore", "REPUTATION_CORE_DONE");
 				this.AssertChecks("standingInEdoras", "ownRealmStartsKnown", "theEnemyRealmStartsAsEnemy", "keysAreWords", "aDeedRaisesIt", "itStopsAtAThousand",
-					"aHeroWithNoRecentDeedShowsHonoured", "badStandingDrifts", "backToZeroNotBeyond", "aFactionRises", "itsRivalFallsByHalf", "knownPaysListPrice",
-					"respectedPaysLess", "aSuspectPaysMore", "anEnemyIsRefused", "aGmIsntJudged", "guardsProtectAKnownCitizen", "butNotTheCitysEnemy", "aCrimeCosts",
-					"blowAfterBlowIsOneCrime");
+					"aHeroWithNoRecentDeedShowsHonoured", "badStandingDrifts", "backToZeroNotBeyond", "enemyStandingDriftsToTheEnemyStart", "aClockBackDoesntDeepenIt", "aFactionRises", "itsRivalFallsByHalf", "knownPaysListPrice",
+					"respectedPaysLess", "aSuspectPaysMore", "anEnemyIsRefused", "nothingCostsNothing", "aGmIsntJudged", "guardsProtectAKnownCitizen", "butNotTheCitysEnemy", "aCrimeCosts",
+					"blowAfterBlowIsOneCrime", "fightingTheEnemyRealmIsNoCrime", "aMurderCosts", "anOutcastIsASuspect");
 				this.Run(game, ".TestReputationResidents", "REPUTATION_RESIDENTS_DONE");
 				this.AssertChecks("hurtingAResidentCosts", "butOnceAMinute", "killingOneCostsMore");
 

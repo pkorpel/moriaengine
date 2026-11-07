@@ -73,7 +73,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static void FlagCriminal(Character self) {
-			Reputation.OnCrime(self); //#1243 - the city where it happened remembers
 			if (!IsMurderer(self)) { //murderers are already the worst notoriety, flagging them criminal too would add nothing
 				self.AddTimer(criminalTimerTK, new CriminalExpiryTimer()).DueInSeconds = CriminalFlagSeconds;
 			}
@@ -101,6 +100,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((victimGuild != null) && (enemyGuild != null) && Guild.AreInWar(victimGuild, enemyGuild)) {
 				return; //declared guild war - legal pvp
 			}
+			Reputation.OnCrime(enemy, victim); //#1243 - the city where it happened remembers, unless the victim was of the enemy realm
 			FlagCriminal(enemy);
 		}
 
@@ -121,6 +121,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Party.AreInOneParty(owner, looter) && Party.CanLootMe(owner)) {
 				return;
 			}
+			Reputation.OnCrime(looter, owner); //#1243
 			FlagCriminal(looter);
 			looter.SysMessage("Okradat mrtveho ze sve rise je zlocin!");
 		}
