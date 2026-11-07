@@ -20,8 +20,10 @@ One file per quest, for an overview. Quest systems that aren't a quest of their 
 | q008 Black Mustang, a magic mount for rangers | [q008.md](q008.md) | #1274 |
 | q31 Kuchar Mrkvicka (the cook), a llama figurine | [q31.md](q31.md) | #1274 |
 | q30 Zmocnenec Gondoru / Mordoru (the realm's envoy), the warrior's cloak | [q30.md](q30.md) | #1276 |
+| q041 Paserak (the smuggler), a change of realm | [q041.md](q041.md) | #1278 |
+| q099 Vyvrhel (the outcast), the realm back | [q099.md](q099.md) | #1278 |
 
-Ported from the numbered quests so far: q006, q007, q008, q009, q017, q018, q026, q30, q31 (#1237's phase 4 ports them one by one). Not ported: the other numbered quests
+Ported from the numbered quests so far: q006, q007, q008, q009, q017, q018, q026, q30, q31, q041, q099 (#1237's phase 4 ports them one by one). Not ported: the other numbered quests
 (q008-q100, gq*, mq*), and the rest listed on #1069. All of Erebor's quests, their rewards and
 what state they were in: [erebor-catalogue.md](erebor-catalogue.md) (#1235).
 

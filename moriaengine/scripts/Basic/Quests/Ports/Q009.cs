@@ -95,7 +95,8 @@ namespace SteamEngine.CompiledScripts {
 			return ((cheque != null) && (cheque.Value == Price)) ? cheque : null;
 		}
 
-		private static CashiersItem FirstCheque(Container container) {
+		/// <summary>The first cashier's cheque, depth first (#1278: q099 asks too).</summary>
+		internal static CashiersItem FirstCheque(Container container) {
 			foreach (AbstractItem item in container) {
 				if ((item is CashiersItem cheque) && (cheque.Def == ThingDef.GetByDefname(CashiersItem.CheckDef))) {
 					return cheque;

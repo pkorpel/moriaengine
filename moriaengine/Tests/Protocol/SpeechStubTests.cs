@@ -23,8 +23,8 @@ namespace SteamEngine.Tests.Protocol {
 					//225 since #1107 (spk_strazcelagru) and #1116 (the arena's spk_crunch_arenaVchod and spk_crunch_strazceAreny, the war lieutenants' spk_namestek_valky_g/_m)
 					//221 since #1264 (q006: spk_q006_eriol, spk_q023_ShamanQworet, spk_q023_CarodejUnas, spk_q007_hospodsky)
 					//215 since #1266 (q007: spk_q007_haradir, _Carodejnice, _kovar, _maginscript, _divous, _rodrigo)
-					//214 since #1268 (spk_q017_sberatel), 210 since #1270 (spk_q009_krejci, spk_q018_rybar/Mirrana/elnassir), 208 since #1272 (spk_q016_Andor, spk_q020_roxana), 206 since #1274 (spk_q008_black_oldman, spk_q31_kuchar)
-					AssertHas(report, "stubs=206 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
+					//214 since #1268 (spk_q017_sberatel), 210 since #1270 (spk_q009_krejci, spk_q018_rybar/Mirrana/elnassir), 208 since #1272 (spk_q016_Andor, spk_q020_roxana), 206 since #1274 (spk_q008_black_oldman, spk_q31_kuchar), 203 since #1278 (spk_q041_paserak, spk_mq002_borek, spk_q099_vyvrhel)
+					AssertHas(report, "stubs=203 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
 
 					Ask(fixture, client, ".TestSpawnSpeechStubListener", "SPEECH_STUB_LISTENER:");
 					client.SendSpeech("hello there");
