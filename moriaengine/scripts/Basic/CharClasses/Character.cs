@@ -2229,6 +2229,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!repeated && (this is Player player) && (i is Item item)) {
 				WeeklyQuests.OnStepOnItem(player, item);
 				Arena.OnStep(player, item); //#1116 - the arena's exit gate
+				Q017.OnStep(player, item); //#1268 - Terlak's entry and exit gates
 			}
 		}
 

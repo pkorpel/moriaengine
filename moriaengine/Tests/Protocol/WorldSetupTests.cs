@@ -15,7 +15,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const int CampGuard = 1; //#1107
 		private const int ArenaPieces = 6; //#1116 - two agents, two guards, two exit gates
 		private const int ConquestPieces = 16; //#1116 - the two war declarators, the two war lieutenants, four palantirs, their cash boxes and captain stones
-		private const int QuestPortPieces = 14; //#1264 - q006's Eriol, Qworet, Unas and the innkeeper; #1266 - q007's six NPCs, the Dryad, the pirates' chest and two pirates
+		private const int QuestPortPieces = 18; //#1264 - q006's Eriol, Qworet, Unas and the innkeeper; #1266 - q007's six NPCs, the Dryad, the pirates' chest and two pirates; #1268 - q017's two gates, Gargamel and the collector
 		private const int AllPieces = ExpertPieces + MasterPieces + GrandmasterPieces + EntrancePieces + TownPieces + HouseSigns + TravelStones + StallAndFieldSigns + CampGuard + ArenaPieces + ConquestPieces + QuestPortPieces;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 		private static bool autoAccountCreationEnabled;
