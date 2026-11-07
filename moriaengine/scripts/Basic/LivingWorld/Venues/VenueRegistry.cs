@@ -12,6 +12,7 @@ namespace SteamEngine.CompiledScripts {
 		private const string IdPrefix = "venue/";
 
 		private static List<CityVenue> all;
+		private static Dictionary<string, CityVenue> byId;
 
 		public static IList<CityVenue> All {
 			get {
@@ -33,11 +34,17 @@ namespace SteamEngine.CompiledScripts {
 			if (all != null) {
 				all.Remove(venue);
 			}
+			byId = null;
+		}
+
+		internal static void ForgetIds() {
+			byId = null;
 		}
 
 		/// <summary>For tests and a world load: the next use reads the world again.</summary>
 		public static void Reset() {
 			all = null;
+			byId = null;
 		}
 
 		/// <summary>The smallest venue holding the point, or null: a bath in a bigger hall wins.</summary>
@@ -61,11 +68,22 @@ namespace SteamEngine.CompiledScripts {
 			return list;
 		}
 
+		/// <summary>By id, through a dictionary: residents' schedules ask this for every resident every round.</summary>
 		public static CityVenue ById(string id) {
-			foreach (CityVenue venue in All) {
-				if (string.Equals(venue.VenueId, id, StringComparison.OrdinalIgnoreCase)) {
-					return venue;
+			if (id == null) {
+				return null;
+			}
+			if (byId == null) {
+				byId = new Dictionary<string, CityVenue>(StringComparer.OrdinalIgnoreCase);
+				foreach (CityVenue venue in All) {
+					if (venue.VenueId != null) {
+						byId[venue.VenueId] = venue;
+					}
 				}
+			}
+			CityVenue found;
+			if (byId.TryGetValue(id, out found) && !found.IsDeleted) {
+				return found;
 			}
 			return null;
 		}
@@ -147,6 +165,7 @@ namespace SteamEngine.CompiledScripts {
 			if (all != null && !all.Contains(venue)) {
 				all.Add(venue);
 			}
+			byId = null;
 		}
 
 		internal static Point4D MarkerSpot(IList<ImmutableRectangle> rects, int zMin, int zMax, byte m) {

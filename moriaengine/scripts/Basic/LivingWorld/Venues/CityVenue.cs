@@ -75,6 +75,7 @@ namespace SteamEngine.CompiledScripts {
 			set {
 				this.SetTag(idTK, value);
 				WorldPieces.MarkAsPiece(this, value);
+				VenueRegistry.ForgetIds();
 			}
 		}
 
@@ -143,6 +144,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_Destroy() {
 			VenueRegistry.Forget(this);
+			if (RunLevelManager.IsRunning && (this.VenueId != null)) { //#1242 - its people go with it, however it went; not as a world is cleared
+				Residents.RemoveOfVenue(this.VenueId);
+			}
 			base.On_Destroy();
 		}
 

@@ -1,7 +1,7 @@
 # Venues
 
 Step 1 of the living world (#1237, #1240; the design is [quests/living-world-design.md](../quests/living-world-design.md)). A venue is a
-building or an open place of a city with a type, a Czech name, opening hours and the roles it wants filled. Residents (step 2) fill
+building or an open place of a city with a type, a Czech name, opening hours and the roles it wants filled. Residents (step 2, [residents.md](residents.md)) fill
 the roles and errands send players to venues. Code: `scripts/Basic/LivingWorld/Venues/`, setup: `scripts/Setup/VenueSetup.cs`.
 
 ## What a venue is

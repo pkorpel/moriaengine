@@ -141,7 +141,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1240 - a venue's settings: type, name, hours, its area (found from the room, or corners by cursor).</summary>
 	public class D_Venue : CompiledGumpDef {
 		private const int Width = 420, LabelHue = 955, ValueHue = 52, ButtonHue = 2301;
-		internal const int Save = 1, Rescan = 2, Corners = 3, AddRect = 4, Outline = 5, Delete = 6, PrevType = 10, NextType = 11;
+		internal const int Save = 1, Rescan = 2, Corners = 3, AddRect = 4, Outline = 5, Delete = 6, FillRoles = 7, PrevType = 10, NextType = 11;
 		internal const int TitleEntry = 20, OpensEntry = 21, ClosesEntry = 22;
 
 		public static void Show(Character gm, VenueDraft draft) {
@@ -152,7 +152,7 @@ namespace SteamEngine.CompiledScripts {
 			VenueDraft draft = (VenueDraft) args[0];
 			this.SetLocation(40, 40);
 			this.AddPage(0);
-			this.AddBackground(0, 0, Width, 330, 2620);
+			this.AddBackground(0, 0, Width, 354, 2620);
 			this.AddLabel(14, 12, ValueHue, (draft.Existing == null) ? "Nove misto ve meste" : "Misto " + (draft.Existing.VenueId ?? ""));
 			this.AddLabel(14, 40, LabelHue, "Mesto:");
 			this.AddLabel(110, 40, ValueHue, draft.City ?? "(mimo mesto)");
@@ -175,12 +175,13 @@ namespace SteamEngine.CompiledScripts {
 			Button(this, y += 24, AddRect, "Pridat dalsi obdelnik");
 			Button(this, y += 24, Outline, "Ukazat obrys");
 			if (draft.Existing != null) {
+				Button(this, y += 24, FillRoles, "Obsadit role (" + Residents.OfVenue(draft.Existing.VenueId).Count + "/" + draft.Type.RoleCount + ")");
 				Button(this, y += 24, Delete, "Smazat misto");
 			}
-			this.AddButton(14, 300, 4023, 4025, Save, GumpButtonType.Reply, 0);
-			this.AddLabel(50, 300, ButtonHue, "Ulozit");
-			this.AddButton(150, 300, 4017, 4019, 0, GumpButtonType.Reply, 0);
-			this.AddLabel(186, 300, ButtonHue, "Zavrit");
+			this.AddButton(14, 324, 4023, 4025, Save, GumpButtonType.Reply, 0);
+			this.AddLabel(50, 324, ButtonHue, "Ulozit");
+			this.AddButton(150, 324, 4017, 4019, 0, GumpButtonType.Reply, 0);
+			this.AddLabel(186, 324, ButtonHue, "Zavrit");
 		}
 
 		private static void Button(D_Venue dialog, int y, int id, string text) {
@@ -238,9 +239,23 @@ namespace SteamEngine.CompiledScripts {
 					draft.ShowOutline(gm);
 					Show(gm, draft);
 					break;
+				case FillRoles:
+					if ((draft.Existing != null) && !draft.Existing.IsDeleted) {
+						string problem2;
+						CityVenue saved = draft.Save(out problem2); //roles follow the type picked now
+						if (saved == null) {
+							gm.RedMessage(problem2);
+						} else {
+							int stray = Residents.RemoveStrayRoles(saved);
+							gm.SysMessage("Novych obyvatel: " + Residents.FillRoles(saved) + "." + ((stray > 0) ? " Odeslo obyvatel jine role: " + stray + "." : ""));
+						}
+						Show(gm, VenueDraft.For(draft.Existing));
+					}
+					break;
 				case Delete:
 					if ((draft.Existing != null) && !draft.Existing.IsDeleted) {
-						gm.SysMessage("Misto " + draft.Existing.Label + " smazano.");
+						int gone = Residents.OfVenue(draft.Existing.VenueId).Count; //#1242 - its residents go with it (CityVenue.On_Destroy)
+						gm.SysMessage("Misto " + draft.Existing.Label + " smazano" + ((gone > 0) ? ", i s " + gone + " obyvateli." : "."));
 						draft.Existing.Delete();
 					}
 					break;
@@ -251,7 +266,8 @@ namespace SteamEngine.CompiledScripts {
 						gm.RedMessage(problem);
 						Show(gm, draft);
 					} else {
-						gm.SysMessage("Ulozeno: " + venue.Label + " (" + venue.VenueId + ").");
+						int stray = Residents.RemoveStrayRoles(venue); //#1242 - a new type drops the old type's people
+						gm.SysMessage("Ulozeno: " + venue.Label + " (" + venue.VenueId + ")." + ((stray > 0) ? " Odeslo obyvatel jine role: " + stray + "." : ""));
 					}
 					break;
 			}
