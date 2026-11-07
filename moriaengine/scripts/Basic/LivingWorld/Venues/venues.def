@@ -1,0 +1,4 @@
+//#1240 - the hidden marker of a venue (CityVenue.cs)
+[CityVenueDef i_venue_marker]
+NAME = "misto"
+model = i_worldgem_bit
