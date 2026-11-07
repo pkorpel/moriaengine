@@ -17,10 +17,10 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestReputationCore", "REPUTATION_CORE_DONE");
 				this.AssertChecks("standingInEdoras", "ownRealmStartsKnown", "theEnemyRealmStartsAsEnemy", "keysAreWords", "aDeedRaisesIt", "itStopsAtAThousand",
 					"aHeroWithNoRecentDeedShowsHonoured", "badStandingDrifts", "backToZeroNotBeyond", "enemyStandingDriftsToTheEnemyStart", "aClockBackDoesntDeepenIt", "aFactionRises", "itsRivalFallsByHalf", "knownPaysListPrice",
-					"respectedPaysLess", "aSuspectPaysMore", "anEnemyIsRefused", "nothingCostsNothing", "aGmIsntJudged", "guardsProtectAKnownCitizen", "butNotTheCitysEnemy", "aCrimeCosts",
-					"blowAfterBlowIsOneCrime", "fightingTheEnemyRealmIsNoCrime", "aMurderCosts", "anOutcastIsASuspect");
+					"respectedPaysLess", "aSuspectPaysMore", "anEnemyIsRefused", "nothingCostsNothing", "aZeroPriceSettingIsNeverFree", "citizenshipFollowsTheSetting", "aGmIsntJudged", "guardsProtectAKnownCitizen", "butNotTheCitysEnemy", "aCrimeCosts",
+					"blowAfterBlowIsOneCrime", "fightingTheEnemyRealmIsNoCrime", "aMurderCosts", "aCrimeCountsWhereItHappened", "anOutcastIsASuspect");
 				this.Run(game, ".TestReputationResidents", "REPUTATION_RESIDENTS_DONE");
-				this.AssertChecks("hurtingAResidentCosts", "butOnceAMinute", "killingOneCostsMore");
+				this.AssertChecks("hurtingAResidentCosts", "butOnceAMinute", "aPetsBlowIsItsOwners", "theEnemyRealmIsntJudged", "killingOneCostsMore");
 
 				//.povest is a player command: open it as one
 				game.SendSpeech(".TestReputationAsPlayer");

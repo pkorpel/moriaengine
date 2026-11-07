@@ -81,6 +81,20 @@ namespace SteamEngine.CompiledScripts {
 			Report("aSuspectPaysMore", Reputation.PriceFor(self, 100) == 150);
 			Reputation.Set(self, Edoras, -900);
 			Report("anEnemyIsRefused", Reputation.Refuses(self) && (Reputation.PriceFor(self, 100) == 0));
+			int suspectPrice = ReputationSettings.instance.priceSuspect;
+			ReputationSettings.instance.priceSuspect = 0;
+			Reputation.Set(self, Edoras, -200);
+			Report("aZeroPriceSettingIsNeverFree", (Reputation.PriceFor(self, 100) == 100) && !Reputation.Refuses(self));
+			ReputationSettings.instance.priceSuspect = suspectPrice;
+			//citizenship: a stranger of the realm qualifies by default; a GM can raise the bar
+			int citizenLevel = ReputationSettings.instance.citizenshipMinLevel;
+			Reputation.Set(self, Edoras, 0);
+			bool knownMay = Reputation.MayBecomeCitizen(self, Edoras);
+			ReputationSettings.instance.citizenshipMinLevel = (int) ReputationLevel.Vazeny;
+			bool knownMayNot = !Reputation.MayBecomeCitizen(self, Edoras);
+			Reputation.Set(self, Edoras, 250);
+			Report("citizenshipFollowsTheSetting", knownMay && knownMayNot && Reputation.MayBecomeCitizen(self, Edoras));
+			ReputationSettings.instance.citizenshipMinLevel = citizenLevel;
 			Report("nothingCostsNothing", Reputation.PriceFor(self, 0) == 0);
 			self.Account.PLevel = 7;
 			Report("aGmIsntJudged", !Reputation.Refuses(self) && (Reputation.PriceFor(self, 100) == 100));
@@ -116,6 +130,12 @@ namespace SteamEngine.CompiledScripts {
 			innocent.Realm = Realm.Gondor;
 			Reputation.OnMurder(innocent, self);
 			Report("aMurderCosts", Reputation.Of(self, Edoras) == -ReputationSettings.instance.murderLoss);
+			//looting: the city where it happens, not where the dead owner's ghost has gone
+			Reputation.Set(self, Edoras, 0);
+			self.RemoveTag(lastCrimeTK);
+			innocent.P(new Point4D(10, 10, 0, 250));
+			Reputation.OnCrime(self, innocent, self);
+			Report("aCrimeCountsWhereItHappened", Reputation.Of(self, Edoras) == -ReputationSettings.instance.crimeLoss);
 			innocent.Delete();
 			self.RemoveTag(lastCrimeTK);
 			Notoriety.ClearCriminal(self);
@@ -136,6 +156,16 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestReputationResidents(Character self) {
+			try {
+				ResidentsCore(self);
+			} finally {
+				self.Realm = Realm.Gondor;
+				self.Account.PLevel = 7;
+				Console.WriteLine("REPUTATION_RESIDENTS_DONE");
+			}
+		}
+
+		private static void ResidentsCore(Character self) {
 			self.Account.PLevel = 7;
 			List<FoundRoom> rooms = RoomScan.Candidates(Edoras, self.MovementSettings);
 			VenueDraft draft = VenueDraft.OfRoom(rooms[0], rooms[0].M, Edoras);
@@ -156,13 +186,28 @@ namespace SteamEngine.CompiledScripts {
 			DamageManager.CauseDamage(self, baker, DamageType.Blunt, 3);
 			Report("hurtingAResidentCosts", afterHit == before - ReputationSettings.instance.harmResidentLoss); //hurting an NPC is no crime (Notoriety)
 			Report("butOnceAMinute", Reputation.Of(self, Edoras) == afterHit);
+			//a pet set on a resident is its owner's doing; a raider of the enemy realm isn't judged by the city
+			self.RemoveTag(lastHarmTK);
+			NPC pet = (NPC) ThingDef.GetByDefname("c_resident_man").Create(self.P());
+			pet.ControlMaster = self;
+			int beforePet = Reputation.Of(self, Edoras);
+			DamageManager.CauseDamage(pet, baker, DamageType.Blunt, 3);
+			Report("aPetsBlowIsItsOwners", Reputation.Of(self, Edoras) == beforePet - ReputationSettings.instance.harmResidentLoss);
+			pet.Delete();
+			self.RemoveTag(lastHarmTK);
+			Realm bakerRealm = baker.Realm;
+			baker.Realm = Realm.Gondor;
+			self.Realm = Realm.Mordor;
+			int beforeRaid = Reputation.Of(self, Edoras);
+			DamageManager.CauseDamage(self, baker, DamageType.Blunt, 3);
+			Report("theEnemyRealmIsntJudged", Reputation.Of(self, Edoras) == beforeRaid);
+			self.Realm = Realm.Gondor;
+			baker.Realm = bakerRealm;
 			int beforeKill = Reputation.Of(self, Edoras);
 			baker.CauseDeath(self);
 			Report("killingOneCostsMore", Reputation.Of(self, Edoras) == beforeKill - ReputationSettings.instance.killResidentLoss);
 			Notoriety.ClearCriminal(self);
 			Reputation.Set(self, Edoras, 0);
-			self.Account.PLevel = 7;
-			Console.WriteLine("REPUTATION_RESIDENTS_DONE");
 		}
 	}
 }

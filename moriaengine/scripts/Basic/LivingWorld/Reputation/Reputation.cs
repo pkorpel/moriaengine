@@ -140,7 +140,9 @@ namespace SteamEngine.CompiledScripts {
 
 		//regions are fixed once loaded and a recompile makes fresh statics, so both are kept
 		private static readonly Dictionary<string, Realm> realmByCity = new Dictionary<string, Realm>(StringComparer.OrdinalIgnoreCase);
-		private static readonly Dictionary<Region, string> cityByRegion = new Dictionary<Region, string>();
+		//per tile, not per region: a region can straddle a city's edge, and ships move theirs. Map regions don't change in play.
+		private static readonly Dictionary<long, string> cityByTile = new Dictionary<long, string>();
+		private const int CityCacheLimit = 65536;
 
 		/// <summary>The realm of a city: of its areas, the one with a realm.</summary>
 		public static Realm RealmOfCity(string city) {
@@ -267,21 +269,22 @@ namespace SteamEngine.CompiledScripts {
 			player.SetTag(FactionKey(faction), Math.Max(Min, Math.Min(Max, value)));
 		}
 
-		/// <summary>The city a point is in, for the effects (VenueRegistry.CityAt, by geometry), remembered per region: guards ask
-		/// it on every think.</summary>
+		/// <summary>The city a point is in, for the effects (VenueRegistry.CityAt, by geometry), remembered per tile: guards ask
+		/// it on every think, from where they stand.</summary>
 		public static string CityAt(IPoint4D point) {
 			if (point == null) {
 				return null;
 			}
-			Region region = point.GetMap().GetRegionFor(point);
+			long key = ((long) point.M << 32) | ((long) (ushort) point.X << 16) | (ushort) point.Y;
 			string city;
-			if ((region != null) && cityByRegion.TryGetValue(region, out city)) {
+			if (cityByTile.TryGetValue(key, out city)) {
 				return city;
 			}
 			city = VenueRegistry.CityAt(point);
-			if (region != null) {
-				cityByRegion[region] = city;
+			if (cityByTile.Count >= CityCacheLimit) {
+				cityByTile.Clear();
 			}
+			cityByTile[key] = city;
 			return city;
 		}
 
@@ -306,7 +309,7 @@ namespace SteamEngine.CompiledScripts {
 				default: percent = s.priceKnown; break;
 			}
 			if (percent <= 0) {
-				return 0;
+				return (Level(player, city) == ReputationLevel.Nepritel) ? 0 : price; //only an enemy is refused (Refuses); 0 elsewhere means list price, never free
 			}
 			return Math.Max(1, (price * percent + 50) / 100);
 		}
@@ -337,14 +340,14 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey lastCrimeTK = TagKey.Acquire("_rep_lastcrime_");
 		private static readonly TagKey warnedTK = TagKey.Acquire("_rep_warned_");
 
-		/// <summary>From the crimes' callers (a hostile act, looting, snooping): a crime against `victim` in the city where it
-		/// happened. One against the enemy realm is war, not a crime against your city. Every blow flags again, so it counts once a
-		/// harmResidentEverySeconds, as one crime.</summary>
-		public static void OnCrime(Character criminal, Character victim) {
+		/// <summary>From the crimes' callers (a hostile act, looting, snooping, an NPC seeing a snoop): a crime against `victim` in
+		/// the city where it happened (`place`, else where the victim stands). One against the enemy realm is war, not a crime against
+		/// your city. Every blow flags again, so it counts once a harmResidentEverySeconds, as one crime.</summary>
+		public static void OnCrime(Character criminal, Character victim, IPoint4D place = null) {
 			if ((criminal == null) || !criminal.IsPlayer || criminal.IsGM || AreEnemies(criminal, victim)) {
 				return;
 			}
-			string city = CityAt(victim ?? criminal);
+			string city = CityAt(place ?? victim ?? criminal);
 			if ((city != null) && Due(criminal, lastCrimeTK, Settings.harmResidentEverySeconds)) {
 				Change(criminal, city, -Settings.crimeLoss);
 			}
@@ -397,7 +400,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>From DamageManager: a player hurting a resident, at most once a harmResidentEverySeconds.</summary>
 		public static void OnHarm(Character attacker, Character defender) {
 			attacker = Answerable(attacker); //a pet set on a resident is its owner's doing
-			if ((attacker == null) || !attacker.IsPlayer || attacker.IsGM || (Residents.GemOf(defender) == null)) {
+			if ((attacker == null) || !attacker.IsPlayer || attacker.IsGM || AreEnemies(attacker, defender) || (Residents.GemOf(defender) == null)) {
 				return;
 			}
 			if (Due(attacker, lastHarmTK, Settings.harmResidentEverySeconds)) {
@@ -405,10 +408,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>True when the city thinks well enough of the player for citizenship (Town.TryJoin).</summary>
+		public static bool MayBecomeCitizen(Character player, string city) {
+			return (city == null) || ((int) Level(player, city) >= Settings.citizenshipMinLevel);
+		}
+
 		/// <summary>From NPC.On_Death: a player killing a resident.</summary>
 		public static void OnDeath(NPC dead, Character killedBy) {
 			killedBy = Answerable(killedBy);
-			if ((killedBy != null) && killedBy.IsPlayer && !killedBy.IsGM && (Residents.GemOf(dead) != null)) {
+			if ((killedBy != null) && killedBy.IsPlayer && !killedBy.IsGM && !AreEnemies(killedBy, dead) && (Residents.GemOf(dead) != null)) {
 				Change(killedBy, CityAt(dead), -Settings.killResidentLoss);
 			}
 		}

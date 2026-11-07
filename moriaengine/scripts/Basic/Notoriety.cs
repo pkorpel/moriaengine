@@ -121,7 +121,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Party.AreInOneParty(owner, looter) && Party.CanLootMe(owner)) {
 				return;
 			}
-			Reputation.OnCrime(looter, owner); //#1243
+			Reputation.OnCrime(looter, owner, looter); //#1243 - where the body lies, not where its ghost went
 			FlagCriminal(looter);
 			looter.SysMessage("Okradat mrtveho ze sve rise je zlocin!");
 		}
