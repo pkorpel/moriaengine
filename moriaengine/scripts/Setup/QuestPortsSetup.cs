@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System.Collections.Generic;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
@@ -69,6 +70,29 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
+			PlaceTerlak(pieces, gm);
+		}
+
+		/// <summary>#1268 - q017: the entry gate at the first of its four dungeon spots (it moves after each entry), the exit gate at the
+		/// far end of Gargamel's dungeon, Gargamel a few steps in, the collector by Minas Tirith's spawn point (Erebor's spots: none).</summary>
+		internal static void PlaceTerlak(WorldPieces pieces, Character gm) {
+			Point4D gateAt = Q017.GateSpots[0];
+			int[] gate = WorldSpots.NearestStandable(Map.GetMap(gateAt.M), gateAt.X, gateAt.Y, 4);
+			if (gate != null) {
+				pieces.Item("quests/q017/entrygate", Q017.EntryGateDef, gate, gateAt.M);
+			}
+			Map dungeon = Map.GetMap(Q017.DungeonStart.M);
+			ImmutableRectangle kobka = new ImmutableRectangle(5695, 101, 5722, 122);
+			List<int[]> far = WorldSpots.WalkableRing(dungeon, Q017.DungeonStart, gm.MovementSettings, int.MaxValue, kobka);
+			List<int[]> inside = WorldSpots.WalkableRing(dungeon, Q017.DungeonStart, gm.MovementSettings, 8, kobka);
+			if ((far.Count > 0) && (inside.Count > 0)) {
+				pieces.Item("quests/q017/exitgate", Q017.ExitGateDef, far[0], Q017.DungeonStart.M);
+				pieces.Npc("quests/q017/gargamel", Q017.GargamelDef, inside[0], Q017.DungeonStart.M, Realm.None, false, WorldPieces.WandersAbout);
+			} else {
+				gm.SysMessage("Gargamel's dungeon can't be walked from its start.");
+			}
+			Point4D tirith = StaticRegion.GetByDefname("a_Minas_Tirith").P;
+			PlaceStill(pieces, gm, "q017/collector", Q017.CollectorNpcDef, WorldSpots.NearestStandable(Map.GetMap(tirith.M), tirith.X - 3, tirith.Y - 8, 6), tirith.M);
 		}
 
 		private static void PlaceNear(WorldPieces pieces, Character gm, string id, string defname, string region, int dx, int dy) {

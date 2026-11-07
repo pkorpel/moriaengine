@@ -622,7 +622,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1017 - an unidentified magic item can't be worn.</summary>
 		public override void On_DenyEquip(DenyEquipArgs args) {
-			if ((args.PuttingChar is Character ch) && (MagicItems.RefusesEquip(this, ch) || AstralMorph.RefusesEquip(this, ch))) { //#1070 - e_morphed
+			if ((args.PuttingChar is Character ch) && (MagicItems.RefusesEquip(this, ch) || AstralMorph.RefusesEquip(this, ch) || Q017.RefusesEquip(this, ch))) { //#1070 - e_morphed, #1268 Terlak's items
 				args.Result = DenyResultMessages.Deny_NoMessage;
 				return;
 			}

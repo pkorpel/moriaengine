@@ -257,6 +257,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return VenueLifeSettings.instance;
 			}
 		}
+
+		[InfoField("Questy")]
+		public QuestPortSettings QuestPortSettings {
+			get {
+				return QuestPortSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {

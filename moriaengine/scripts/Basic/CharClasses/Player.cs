@@ -473,6 +473,7 @@ namespace SteamEngine.CompiledScripts {
 			base.On_Death(killedBy);
 			NazgulRings.OnDeath(this, killedBy, recentlyDead);
 			PvpLeague.OnDeath(this, killedBy, recentlyDead); //#1116
+			Q017.OnDeath(this); //#1268 - a death in Gargamel's dungeon ends the run
 			PortZone.OnDeath(this); //#1116
 			PlayerRecord.Died(this, killedBy); //#1011
 			FightMemory.Forget(this);
