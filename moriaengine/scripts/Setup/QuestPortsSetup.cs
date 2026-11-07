@@ -73,6 +73,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 			PlaceTerlak(pieces, gm);
 			PlaceTailorAndSalmon(pieces, gm);
+			PlaceTombPoison(pieces, gm);
+		}
+
+		/// <summary>#1272 - q026: Andor and Roxana where Erebor's chars files say (3200,2971; 2913,1988), the Temple of Knowledge's
+		/// tapestry at 3941,1503 (the journal's note), its door and book pile beside it, Dol Guldur's tile, secret wall and box in
+		/// the Dol Guldur bonus area at 5396,3384 on plane 10 (the journal's note). Erebor's GMs built the temple and the room; the
+		/// archive keeps neither, so these spots are only near the right places.</summary>
+		internal static void PlaceTombPoison(WorldPieces pieces, Character gm) {
+			Map world = Map.GetMap(0);
+			PlaceStill(pieces, gm, "q026/andor", Q026.AndorDef, WorldSpots.NearestStandable(world, 3200, 2971, 8), 0);
+			PlaceStill(pieces, gm, "q026/roxana", Q026.RoxanaDef, WorldSpots.NearestStandable(world, 2913, 1988, 8), 0);
+			PlaceItem(pieces, gm, "q026/tapestry", Q026.TapestryDef, new Point4D(3941, 1503, 5, 0), false);
+			PlaceItem(pieces, gm, "q026/door", Q026.DoorDef, new Point4D(3944, 1503, 5, 0), false);
+			PlaceItem(pieces, gm, "q026/books", Q026.BookPileDef, new Point4D(3944, 1499, 5, 0), false);
+			PlaceItem(pieces, gm, "q026/alarm", Q026.AlarmDef, new Point4D(5396, 3384, 0, 10), false);
+			PlaceItem(pieces, gm, "q026/wall", Q026.WallDef, new Point4D(5398, 3384, 0, 10), false);
+			PlaceItem(pieces, gm, "q026/box", Q026.BoxDef, new Point4D(5396, 3381, 0, 10), false);
 		}
 
 		/// <summary>#1270 - q009's tailor in Edoras (Erebor's spot: none written down), q018's three NPCs where Erebor's script header

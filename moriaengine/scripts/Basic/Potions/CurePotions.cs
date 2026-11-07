@@ -14,6 +14,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void Drink(Character drinker, Potion potion) {
 			Sparkle(drinker);
 			ScriptHolder.GetFunction("CureEffect").TryRun(drinker, (double) this.strength());
+			Q026.OnCurePotion(drinker); //#1272 - e_q026_hcnCurePoison_check: no cure for the tomb curse
 		}
 	}
 
