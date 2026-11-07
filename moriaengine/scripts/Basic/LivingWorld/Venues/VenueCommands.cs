@@ -64,8 +64,9 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage("Novych obyvatel ve meste " + city + ": " + filled + ".");
 					break;
 				case "export":
-					int written = VenueFile.Export(VenueFile.Path);
-					self.SysMessage("Zapsano " + written + " mist a " + Residents.AllGems.Count + " obyvatel do " + VenueFile.Path + ". .SetupWorld je z nej obnovi.");
+					int residents;
+					int written = VenueFile.Export(VenueFile.Path, out residents);
+					self.SysMessage("Zapsano " + written + " mist a " + residents + " obyvatel do " + VenueFile.Path + ". .SetupWorld je z nej obnovi.");
 					break;
 				default:
 					self.SysMessage(".venues [vse | navrh | obsadit | export]");
@@ -84,6 +85,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static int Export(string path) {
+			int residents;
+			return Export(path, out residents);
+		}
+
+		public static int Export(string path, out int residents) {
 			StringBuilder text = new StringBuilder();
 			text.Append("# #1240 venues, written by .venues export; .SetupWorld places those missing\n");
 			text.Append("# id|city|type|opens|closes|m|zmin|zmax|rects|title\n");
@@ -99,6 +105,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			text.Append("# R|id|venue|role|female|name|home|traits (#1242 residents)\n");
 			List<Item> gems = new List<Item>(Residents.AllGems);
+			residents = gems.Count;
 			gems.Sort((a, b) => string.Compare(Residents.IdOf(a), Residents.IdOf(b), StringComparison.OrdinalIgnoreCase));
 			foreach (Item gem in gems) {
 				text.Append("R|").Append(Residents.IdOf(gem)).Append('|').Append(Residents.VenueIdOf(gem)).Append('|').Append(Residents.RoleKeyOf(gem)).Append('|')

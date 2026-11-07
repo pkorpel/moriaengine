@@ -246,7 +246,8 @@ namespace SteamEngine.CompiledScripts {
 						if (saved == null) {
 							gm.RedMessage(problem2);
 						} else {
-							gm.SysMessage("Novych obyvatel: " + Residents.FillRoles(saved) + ".");
+							int stray = Residents.RemoveStrayRoles(saved);
+							gm.SysMessage("Novych obyvatel: " + Residents.FillRoles(saved) + "." + ((stray > 0) ? " Odeslo obyvatel jine role: " + stray + "." : ""));
 						}
 						Show(gm, VenueDraft.For(draft.Existing));
 					}

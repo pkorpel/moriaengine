@@ -21,14 +21,14 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestResidentFill", "RESIDENT_FILL_DONE");
 				this.AssertChecks("edorasHasTwoRooms", "aTavernGetsItsSevenPeople", "fillingAgainAddsNobody", "everyoneHasAName", "namesDifferInTheCity",
 					"everyoneHasABody", "theBodyCarriesTheNameAndRole", "theCitysHouseIsHome", "idsFollowTheRole", "residentsOfEdorasAreGondors", "humansInEdoras",
-					"theyAreCalm", "atMiddayTheInnkeeperIsAtWork", "andThePatronAtHome", "inTheEveningThePatronHeadsForTheTavern", "andTheCookGoesHome", "aSociableCookGoesToTheTavernInstead",
+					"theyAreCalm", "atMiddayTheInnkeeperIsAtWork", "andThePatronAtHome", "inTheEveningThePatronHeadsForTheTavern", "andTheCookGoesHome", "aSociableCookGoesToTheTavernInstead", "andWalksThereWhileWatched",
 					"atNightTheInnkeeperIsHomeToo", "theLeashIsSmall", "eachHasAFixedSpot", "theySpreadOverTheRoom", "theFriendshipKeyLoadsBack", "aStrangerIsZero", "helpRaisesIt", "itStopsAtTen", "andAtZero",
 					"deadHasNoBody", "theGemBringsTheSamePersonBack", "theSchedulerRuns");
 				this.Run(game, ".TestResidentExport", "RESIDENT_EXPORT_DONE");
 				this.AssertChecks("thereAreResidents", "removingTheVenueRemovesItsPeople", "nobodyLeft", "setupBringsBackTheSamePeople", "withBodiesNamedAtOnce",
 					"aSecondRunAddsNobody");
 				this.Run(game, ".TestResidentRaces", "RESIDENT_RACES_DONE");
-				this.AssertChecks("bothVenuesExist", "baradDursFolkAreOrcs", "ofMordor", "hobitinHasHobbitNames");
+				this.AssertChecks("bothVenuesExist", "baradDursFolkAreOrcs", "ofMordor", "hobitinHasHobbitNames", "aNewTypeSendsTheOldRolesAway");
 
 				//.resident on the innkeeper, renamed through the dialog
 				this.Run(game, ".TestResidentBeside", "RESIDENT_BESIDE");

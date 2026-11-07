@@ -121,10 +121,14 @@ namespace SteamEngine.CompiledScripts {
 			Residents.SetTraits(cook, "morous,lakomy"); //a sociable cook would go to the tavern too: fixed traits, both ways checked
 			ResidentSchedule.ApplyAll();
 			Report("inTheEveningThePatronHeadsForTheTavern", HomePointIn(Residents.BodyOf(patron), tavern));
+			//with a player near, the walk is real: the patron, at home since midday, gets a goal point that keeps it awake and stepping
+			IPoint3D goal = Residents.BodyOf(patron).PetGoalPoint;
+			Report("andWalksThereWhileWatched", !tavern.Contains(Residents.BodyOf(patron)) && (goal != null) && tavern.Contains(goal.X, goal.Y, goal.Z));
 			Report("andTheCookGoesHome", HomePointIn(Residents.BodyOf(cook), house));
 			Residents.SetTraits(cook, "spolecensky,morous");
 			ResidentSchedule.ApplyAll();
 			Report("aSociableCookGoesToTheTavernInstead", HomePointIn(Residents.BodyOf(cook), tavern));
+
 			VenueClock.Override = 2; //night: everyone home but those always at work
 			ResidentSchedule.ApplyAll();
 			Report("atNightTheInnkeeperIsHomeToo", HomePointIn(Residents.BodyOf(innkeeper), house));
@@ -182,8 +186,8 @@ namespace SteamEngine.CompiledScripts {
 			try {
 				VenueFile.Export(path);
 				string tavernId = Residents.VenueIdOf(before[0]);
-				Report("removingTheVenueRemovesItsPeople", Residents.RemoveOfVenue(tavernId) == 7);
-				VenueRegistry.ById(tavernId).Delete();
+				VenueRegistry.ById(tavernId).Delete(); //its people go with it (CityVenue.On_Destroy)
+				Report("removingTheVenueRemovesItsPeople", Residents.OfVenue(tavernId).Count == 0);
 				Report("nobodyLeft", Residents.AllGems.Count == 0);
 				new VenueSetup().Run(self);
 				bool same = Residents.AllGems.Count == 7;
@@ -235,6 +239,13 @@ namespace SteamEngine.CompiledScripts {
 				hobbits &= hobbitNames.Contains(Residents.NameOf(gem));
 			}
 			Report("hobitinHasHobbitNames", hobbits);
+			//a venue whose type changes keeps only the new type's people
+			VenueDraft draft = VenueDraft.For(inn);
+			draft.SetType(VenueType.Get("bakery").IndexOf());
+			string problem;
+			draft.Save(out problem);
+			int stray = Residents.RemoveStrayRoles(inn);
+			Report("aNewTypeSendsTheOldRolesAway", (stray == 7) && (Residents.OfVenue(inn.VenueId).Count == 0) && (Residents.FillRoles(inn) == 1));
 			Console.WriteLine("RESIDENT_RACES_DONE");
 		}
 

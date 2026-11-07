@@ -163,11 +163,16 @@ namespace SteamEngine.CompiledScripts {
 			return gems.Count;
 		}
 
-		/// <summary>After a venue's type changed: residents of roles the new type doesn't have leave. Returns how many.</summary>
+		/// <summary>After a venue's type changed: residents of roles the new type doesn't have, or beyond a role's count, leave.
+		/// Returns how many.</summary>
 		public static int RemoveStrayRoles(CityVenue venue) {
 			int gone = 0;
 			foreach (Item gem in OfVenue(venue.VenueId)) {
-				if (RoleOf(gem) == null) {
+				VenueRole role = RoleOf(gem);
+				string id = IdOf(gem) ?? "";
+				int n;
+				bool beyond = (role != null) && int.TryParse(id.Substring(id.LastIndexOf('/') + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out n) && (n > role.Count);
+				if ((role == null) || beyond) {
 					NPC body = BodyOf(gem);
 					if (body != null) {
 						body.Delete();
@@ -285,6 +290,9 @@ namespace SteamEngine.CompiledScripts {
 		/// the territory around the city, not the city.</summary>
 		private static Realm RealmOf(CityVenue venue) {
 			Realm realm = Realm.None;
+			if (venue.City == null) {
+				return realm; //a venue outside any city has no realm to take
+			}
 			int smallest = int.MaxValue;
 			Point2D p = new Point2D(venue.X, venue.Y);
 			foreach (FlaggedRegion area in VenueRegistry.AreasOf(venue.City)) {
@@ -478,11 +486,43 @@ namespace SteamEngine.CompiledScripts {
 			double now = Globals.TimeInSeconds;
 			bool bodyAsleep = !npc.GetMap().Activity.IsAwake(npc.X, npc.Y, now);
 			bool placeAsleep = !Map.GetMap(venue.M).Activity.IsAwake(spot[0], spot[1], now);
+			Point4D target = new Point4D(spot[0], spot[1], spot[2], venue.M);
 			if (place || (npc.M != venue.M) || (bodyAsleep && placeAsleep)) {
-				npc.Go(new Point4D(spot[0], spot[1], spot[2], venue.M)); //nobody sees it happen
-			} else if (bodyAsleep) {
-				NPCAiTimer.WakeUp(npc); //players wait there: walk in rather than appear out of nowhere
+				npc.Go(target); //nobody sees it happen
+				return;
 			}
+			if (bodyAsleep) { //players wait where it's going: it comes in from out of their sight, on foot
+				Point4D staging = OutOfSight(npc, target);
+				if (staging == null) {
+					npc.Go(target);
+					return;
+				}
+				npc.Go(staging);
+			}
+			npc.PetGoalPoint = target; //walks at the follow pace, and an NPC going somewhere doesn't fall asleep
+			NPCAiTimer.WakeUp(npc);
+		}
+
+		private const int SightRange = 20, StagingDistance = 24;
+
+		/// <summary>A tile about StagingDistance from the target toward where the body is, that no player sees, or null.</summary>
+		private static Point4D OutOfSight(NPC npc, Point4D target) {
+			Map map = target.GetMap();
+			double dx = npc.X - target.X, dy = npc.Y - target.Y, length = Math.Sqrt((dx * dx) + (dy * dy));
+			if (length < 1) {
+				return null;
+			}
+			int sx = target.X + (int) Math.Round(dx * StagingDistance / length), sy = target.Y + (int) Math.Round(dy * StagingDistance / length);
+			int[] spot = WorldSpots.NearestStandable(map, sx, sy, 6);
+			if (spot == null) {
+				return null;
+			}
+			foreach (AbstractCharacter ch in map.GetCharsInRange(spot[0], spot[1], SightRange)) {
+				if (ch.IsPlayer) {
+					return null;
+				}
+			}
+			return new Point4D(spot[0], spot[1], spot[2], target.M);
 		}
 
 		/// <summary>A tile of the venue a character can stand on, the same one for the same resident: residents of one venue spread

@@ -37,6 +37,10 @@ namespace SteamEngine.CompiledScripts {
 			byId = null;
 		}
 
+		internal static void ForgetIds() {
+			byId = null;
+		}
+
 		/// <summary>For tests and a world load: the next use reads the world again.</summary>
 		public static void Reset() {
 			all = null;

@@ -75,6 +75,7 @@ namespace SteamEngine.CompiledScripts {
 			set {
 				this.SetTag(idTK, value);
 				WorldPieces.MarkAsPiece(this, value);
+				VenueRegistry.ForgetIds();
 			}
 		}
 
