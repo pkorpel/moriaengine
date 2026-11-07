@@ -197,10 +197,11 @@ namespace SteamEngine.CompiledScripts {
 
 		//Erebor's f_gq030_refuseQDialog / f_mq030_refuseQDialog
 		private static void TalkToEnvoy(NPC envoy, Player player, bool gondor) {
-			if (player.Realm != (gondor ? Realm.Gondor : Realm.Mordor)) {
-				envoy.Say(gondor ? "Vyhni se memu meci, prisluhovaci Mordoru !" : "Vyhni se memu meci, prisluhovaci Gondoru !");
+			string refusal = Q30.Refusal(player, gondor); //#1276 - also q30's realm changers and thieves
+			if (refusal != null) {
+				envoy.Say(refusal);
 			} else {
-				envoy.Dialog(player, SingletonScript<D_Q000Envoy>.Instance, envoy);
+				envoy.Dialog(player, gondor ? SingletonScript<D_Q000Envoy>.Instance : SingletonScript<D_Q000EnvoyMordor>.Instance, envoy);
 			}
 		}
 
@@ -603,18 +604,38 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TimerKey rinaldTimerTK = TimerKey.Acquire("_q000RinaldTimer_");
 	}
 
-	public partial class D_Q000Envoy {
-		protected override int Face {
-			get {
-				return 0x3002;
-			}
-		}
-
+	/// <summary>#1276 - both envoys' dialog; each realm's own sealed class gives its face. Sealed, not one deriving from the other:
+	/// SingletonScript&lt;T&gt; takes any subclass of T, so Gondor's could come back as Mordor's (#674).</summary>
+	public abstract partial class D_Q000EnvoyBase {
 		protected override void OnButton(string button, Character npc, Player player) {
 			if ((button == "q000_getVM") && GrandmasterQuest.CanBePromoted(player)) {
 				GrandmasterQuest.Advance(player, 13);
 				player.SkillRank = SkillRank.Grandmaster;
 				QuestNpc.CelebrateRank(player);
+			} else {
+				Q30.Button(button, (NPC) npc, player, IsGondor(npc)); //#1276
+			}
+		}
+
+		internal static bool IsGondor(Character npc) {
+			return npc.Def != ThingDef.GetByDefname(GrandmasterQuest.MordorEnvoyDef);
+		}
+	}
+
+	/// <summary>#833 - Gondor's envoy, Erebor's d_gq030_zmocnenec.</summary>
+	public sealed class D_Q000Envoy : D_Q000EnvoyBase {
+		protected override int Face {
+			get {
+				return 0x3002;
+			}
+		}
+	}
+
+	/// <summary>#1276 - Mordor's envoy: Erebor's d_mq030_zmocnenec had its own face.</summary>
+	public sealed class D_Q000EnvoyMordor : D_Q000EnvoyBase {
+		protected override int Face {
+			get {
+				return 0x3111;
 			}
 		}
 	}
