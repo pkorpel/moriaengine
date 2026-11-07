@@ -44,7 +44,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override bool CanStartMaking(ItemDef iDef, Character self) {
-			return base.CanStartMaking(iDef, self) && CanCast(SpellOf(iDef), self);
+			return base.CanStartMaking(iDef, self) && CanCast(SpellOf(iDef), self) && Q007.MayInscribe(SpellOf(iDef), self);
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
@@ -67,10 +67,11 @@ namespace SteamEngine.CompiledScripts {
 			return (scroll == null) ? null : scroll.SpellDef;
 		}
 
-		/// <summary>Erebor's canmakethis for a scroll: can cast it now, and it's on the class's scribe_ list. Any other item passes.</summary>
+		/// <summary>Erebor's canmakethis for a scroll: can cast it now, and it's on the class's scribe_ list. Any other item passes.
+		/// #1266 - the 8th circle also wants q007's Inscription book, as Erebor's menu did.</summary>
 		internal static bool CanScribe(ItemDef iDef, Character chr) {
 			SpellDef spell = SpellOf(iDef);
-			return (!(iDef is SpellScrollDef)) || (CanCast(spell, chr) && ClassScribes(spell, chr));
+			return (!(iDef is SpellScrollDef)) || (CanCast(spell, chr) && ClassScribes(spell, chr) && Q007.MayInscribe(spell, chr));
 		}
 
 		//Sphere's Spell_CanCast from one's own book
