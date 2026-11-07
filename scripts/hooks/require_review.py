@@ -4,8 +4,9 @@
 
 Every code change gets an independent review agent before it merges, and the PR body
 says what the review found under a `## Review` heading (`## Reviews`, any heading
-level, any case) with some text under it: an HTML comment alone, as in the PR
-template, doesn't count. This hook checks that section at the merge:
+level, any case) with some text under it, up to the next heading of the same level
+or higher: an HTML comment alone, as in the PR template, doesn't count, nor does a
+heading inside a comment or a code fence. This hook checks that section at the merge:
 
   - Bash: every `gh pr merge` in the command (split on `;`, `&&`, `||`, `|`, `&`,
     parentheses and newlines), with its PR as given (number, URL or branch; none =
@@ -26,7 +27,9 @@ hiccup never blocks the session. Not detected: merges through `gh api`, `git pus
 main (denied in settings.json anyway), or a `gh pr merge` nested in `bash -c`, `eval`
 or backticks, or behind `sudo`/`env`/`xargs`/`time`/`command`/`nohup`. False
 positives: here-doc lines read as commands, so a body line `gh pr merge 9` is looked
-up as a merge too.
+up as a merge too, and `#` starts no comment (`echo x # && gh pr merge 5` is a merge).
+The `cd` tracking is plain: `cd <dir>` only (no bare `cd`, `cd -`, `pushd` or `$VAR`),
+and a subshell's `cd` isn't undone after it.
 """
 import json
 import os
@@ -43,19 +46,21 @@ REASON = ("PR {pr} changes code but its body has no '## Review' section with tex
 # gh pr merge flags that take a separate value
 VALUE_FLAGS = {"-b", "--body", "-F", "--body-file", "-t", "--subject", "-R", "--repo",
                "--match-head-commit", "-A", "--author-email"}
-HEADING = re.compile(r"^\s{0,3}#{1,6}\s", re.MULTILINE)
-REVIEW_HEADING = re.compile(r"^\s{0,3}#{1,6}\s*reviews?\b.*$", re.IGNORECASE | re.MULTILINE)
+HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]", re.MULTILINE)
+REVIEW_HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]*reviews?\b.*$", re.IGNORECASE | re.MULTILINE)
 COMMENT = re.compile(r"<!--.*?(-->|$)", re.DOTALL)
+FENCE = re.compile(r"^ {0,3}(```|~~~).*?(^ {0,3}\1|\Z)", re.MULTILINE | re.DOTALL)
 FD_BEFORE_REDIRECT = re.compile(r"(?:(?<=\s)|^)\d+(?=[<>])")  # the 2 of 2>&1, not a PR number
 
 
 def has_review(body):
-    """A review heading with text under it, up to the next heading."""
-    body = body or ""
+    """A review heading with text under it, up to the next heading of its level or higher
+    (`### Round 1` inside `## Review` belongs to it). Comments and code fences don't count."""
+    body = FENCE.sub("", COMMENT.sub("", body or ""))
     for heading in REVIEW_HEADING.finditer(body):
-        following = HEADING.search(body, heading.end())
-        section = body[heading.end():following.start() if following else len(body)]
-        if COMMENT.sub("", section).strip():
+        level = len(heading.group(1))
+        end = next((h.start() for h in HEADING.finditer(body, heading.end()) if len(h.group(1)) <= level), len(body))
+        if body[heading.end():end].strip():
             return True
     return False
 

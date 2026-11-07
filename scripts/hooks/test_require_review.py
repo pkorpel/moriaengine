@@ -44,6 +44,13 @@ class Decision(unittest.TestCase):
         for body in (REVIEWED, "### Reviews\n- first round: fixed x", "intro\n## review\nok\n## Other\n", "# REVIEW\nclean"):
             self.assertIsNone(rr.denied(bash("gh pr merge 7 --squash"), prs({"7": pr(CODE, body)})), body)
 
+    def test_subsections_belong_to_the_review(self):
+        for body in ("## Review\n### Round 1\nfound x, fixed\n### Round 2\nclean\n",
+                     "## Review\n### Round 1\nclean\n## Before merge\n- [x] rebased",
+                     "## Review\r\n### Round 1\r\nclean\r\n"):
+            self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, body)})), body)
+        self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, "### Review\n## Other\ntext")})), "7")
+
     def test_review_mentioned_but_not_a_heading_is_denied(self):
         for body in ("Review: none", "## Reviewer notes\nx", "the review found nothing", "    ## Review\nx"):
             self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, body)})), "7", body)
@@ -53,6 +60,8 @@ class Decision(unittest.TestCase):
             template = f.read()
         self.assertIn("## Review", template)
         for body in (template, "## Review\n", "## Review\n\n## Other\ntext", "## Review\n<!-- what it found -->\n  \n"):
+            self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, body)})), "7", body)
+        for body in ("```\n## Review\nfoo\n```\n", "<!--\n## Review\nfoo\n-->", "#\nReviews are welcome\n"):
             self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, body)})), "7", body)
         filled = template.replace("-->\n", "-->\nNo defects; one comment clarified.\n", 1)
         self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, filled)})))
