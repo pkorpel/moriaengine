@@ -72,7 +72,8 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
   `Town.TryJoin`). The default is Znamy, which a stranger of the realm already is, so nobody is locked out before errands can
   raise standing; the design's Vazeny is a GM's setting until then.
 - **`.povest`** (a player command) lists the six pilot cities, any other city where the player has a standing, and their factions,
-  with level and value, two cities a page. The journal's Mesto tab (step 4) will show it too.
+  with level and value, two cities a page. The journal's Mesto tab ([journal.md](../quests/journal.md#zivy-svet-1245)) shows it
+  too, a city a page, with the player's friends there.
 
 ## Tests
 

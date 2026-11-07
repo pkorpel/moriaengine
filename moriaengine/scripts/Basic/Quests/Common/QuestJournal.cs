@@ -93,14 +93,65 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#1245 - the journal's pages that other systems fill: a section's builder draws into the window below the tabs, its
+	/// buttons (from FirstButton up) come back to its own handler. Registered from a class's Bootstrap, so the journal never
+	/// names the systems it shows.</summary>
+	public static class QuestJournalPages {
+		public const int FirstButton = 5000;
+
+		public delegate void Builder(CompiledGumpDef gump, Player player, int width, int height);
+		public delegate void ButtonHandler(Player player, int button);
+
+		private static readonly Dictionary<int, Builder> builders = new Dictionary<int, Builder>();
+		private static readonly Dictionary<int, ButtonHandler> handlers = new Dictionary<int, ButtonHandler>();
+
+		public static void Register(int section, Builder build, ButtonHandler onButton = null) {
+			builders[section] = build;
+			if (onButton != null) {
+				handlers[section] = onButton;
+			} else {
+				handlers.Remove(section);
+			}
+		}
+
+		internal static bool TryAdd(CompiledGumpDef gump, Player player, int section, int width, int height) {
+			Builder build;
+			if (!builders.TryGetValue(section, out build)) {
+				return false;
+			}
+			build(gump, player, width, height);
+			return true;
+		}
+
+		internal static bool TryRespond(Player player, int section, int button) {
+			ButtonHandler handle;
+			if (!handlers.TryGetValue(section, out handle)) {
+				return false;
+			}
+			handle(player, button);
+			return true;
+		}
+	}
+
 	/// <summary>#839 - Erebor's d_questy. Sections: 1-3 the main one's tabs (quests, open dungeons, boosters), 11 weekly quests,
-	/// 21 the PvP league.</summary>
+	/// 21 the PvP league, 31-34 the living world's tabs (#1245: errands, city, events, deeds).</summary>
 	public class D_QuestJournal : CompiledGumpDef {
 		public const int SectionQuests = 1, SectionDungeons = 2, SectionBoosters = 3, SectionWeekly = 11, SectionPvp = 21;
+		public const int SectionErrands = 31, SectionCity = 32, SectionEvents = 33, SectionDeeds = 34;
 		private const int Width = 300, Height = 400, Background = 9270, TitleHue = 95, HintHue = 0x21;
 		private const int QuestsOnPage = 7, FirstQuestButton = 1000, SelectedTabHue = 52;
 		internal const int FirstBoosterButton = 500, BoostersOnPage = 3;
-		private static readonly int[] sectionPics = { 0x2B08, 0x2B03, 0x2B05 };
+		private static readonly int[] sectionPics = { 0x2B08, 0x2B03, 0x2B05, 0x2B04 };
+		//#1245 - the living world's tabs: icons Erebor's priest book draws, so its client has them
+		private static readonly int[] livingTabPics = { 0x3325, 0x3329, 0x333D, 0x3343 };
+		private static readonly int[] livingTabTitleX = { 8, 8, -2, 8 };
+		private static readonly string[] livingTabTitles = { "Ukoly", "Mesto", "Udalosti", "Skutky" };
+		private static readonly string[] livingTabHints = {
+			"Ukoly ti daji lide ve meste. Mluv s nimi.",
+			"",
+			"Ve svete se ted nic zvlastniho nedeje.",
+			"Zatim nemas zadne skutky."
+		};
 		private static readonly int[] tabPics = { 0x3324, 0x3334, 0x332B };
 		private static readonly int[] tabTitleX = { 15, -22, 10 };
 		private static readonly string[] tabTitles = { "Questy", "Otevrene Dungeony", "Boostery" };
@@ -123,10 +174,16 @@ namespace SteamEngine.CompiledScripts {
 			if (section < 10) {
 				this.AddLabel((Width / 2) + tabTitleX[section - 1], 45, TitleHue, tabTitles[section - 1]);
 				for (int tab = 0; tab < tabPics.Length; tab++) {
-					this.AddTab(tab, tab != section - 1);
+					this.AddTab(tab, tabPics.Length, tabPics[tab], tab + 1, tab != section - 1);
 				}
 			} else if (section == SectionWeekly) {
 				this.AddLabel((Width / 2) - 17, 45, TitleHue, "Tydenni Questy");
+			} else if (IsLivingWorld(section)) {
+				int livingTab = section - SectionErrands;
+				this.AddLabel((Width / 2) + livingTabTitleX[livingTab], 45, TitleHue, livingTabTitles[livingTab]);
+				for (int tab = 0; tab < livingTabPics.Length; tab++) {
+					this.AddTab(tab, livingTabPics.Length, livingTabPics[tab], SectionErrands + tab, tab != livingTab);
+				}
 			} else if (section >= SectionPvp) {
 				PvpLeague.CheckExpiration();
 				this.AddLabel((Width / 2) - 12, 45, TitleHue, "PvP Sezona " + PvpLeague.Season); //#1116
@@ -144,6 +201,10 @@ namespace SteamEngine.CompiledScripts {
 				WeeklyPage.Add(this, player, Width);
 			} else if ((section >= SectionPvp) && (section <= SectionPvp + PvpLeaguePage.LastPage)) {
 				PvpLeaguePage.Add(this, player, section, Width, Height); //#1116
+			} else if (QuestJournalPages.TryAdd(this, player, section, Width, Height)) {
+				//#1245 - a page another system registered
+			} else if (IsLivingWorld(section)) {
+				this.AddHtml(80, Height / 2, Width - 80, 40, "<center><basefont color=#00F0FA>" + livingTabHints[section - SectionErrands] + "</basefont></center>", false, false);
 			} else {
 				//not ported yet: dungeon marks - #840
 				this.AddLabel((Width / 2) - 62, Height / 2, HintHue, loc.NotAvailableYet);
@@ -161,15 +222,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private void AddTab(int tab, bool active) {
-			int x = 35 + ((Width - (tabPics.Length * 64)) / 2) + (tab * 64);
+		internal static bool IsLivingWorld(int section) {
+			return (section >= SectionErrands) && (section <= SectionDeeds);
+		}
+
+		//four tabs in a row are 60 apart, three 64, so both rows fit the window
+		private void AddTab(int tab, int count, int pic, int button, bool active) {
+			int step = (count > 3) ? 60 : 64;
+			int x = 35 + ((Width - (count * step)) / 2) + (tab * step);
 			this.AddBackground(x, 73, 58, 56, Background);
 			//Erebor dimmed the other tabs with a checkertrans, but the client makes everything it overlaps see-through, and
 			//that includes the whole window under the tab; so the selected tab is the one that stands out instead
 			if (active) {
-				this.AddButton(x + 13, 85, tabPics[tab], tabPics[tab], tab + 1, GumpButtonType.Reply, 0);
+				this.AddButton(x + 13, 85, pic, pic, button, GumpButtonType.Reply, 0);
 			} else {
-				this.AddImage(x + 13, 85, tabPics[tab], SelectedTabHue);
+				this.AddImage(x + 13, 85, pic, SelectedTabHue);
 			}
 		}
 
@@ -249,7 +316,12 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			bool renewed = WeeklyQuests.Check(player); //#1090 - every button of d_questy
-			if (button >= FirstQuestButton) {
+			int section = Convert.ToInt32(args[0], CultureInfo.InvariantCulture);
+			if (button >= QuestJournalPages.FirstButton) {
+				if (!QuestJournalPages.TryRespond(player, section, button)) {
+					QuestJournal.Open(player, section);
+				}
+			} else if (button >= FirstQuestButton) {
 				QuestJournal.OpenPage(player, button - FirstQuestButton);
 				QuestJournal.Open(player, SectionQuests);
 			} else if ((button >= WeeklyPage.FirstDetailButton) && (button < FirstBoosterButton)) {

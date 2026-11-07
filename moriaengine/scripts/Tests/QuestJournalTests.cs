@@ -39,6 +39,37 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("JOURNAL_ADVANCED: done");
 		}
 
+		/// <summary>#1245 - for the journal's Mesto tab: a brewery in Edoras with its three people, the first of them my friend (7 of 10),
+		/// me standing beside them, and Edoras thinking well of me (Vazeny).</summary>
+		[SteamFunction]
+		public static void TestJournalCity(Character self) {
+			Player player = (Player) self;
+			byte plevel = player.Account.PLevel;
+			player.Account.PLevel = 7;
+			try {
+				List<FoundRoom> rooms = RoomScan.Candidates("Edoras", player.MovementSettings);
+				VenueDraft draft = VenueDraft.OfRoom(rooms[0], rooms[0].M, "Edoras");
+				draft.SetType(VenueType.Get("brewery").IndexOf());
+				string problem;
+				CityVenue brewery = draft.Save(out problem);
+				if (brewery == null) {
+					throw new SEException("the brewery wasn't saved: " + problem);
+				}
+				Residents.FillRoles(brewery);
+				List<Item> people = Residents.OfVenue(brewery.VenueId);
+				Item friend = people[0];
+				string stranger = (people.Count > 1) ? Residents.NameOf(people[1]) : "";
+				Residents.AddFriendship(player, Residents.IdOf(friend), 7);
+				NPC body = Residents.BodyOf(friend);
+				player.Go(new Point4D(body.X, body.Y, body.Z, body.M));
+				Reputation.Set(player, "Edoras", 250);
+				Console.WriteLine("JOURNAL_CITY: friend=" + CityJournalPage.Cut(Residents.NameOf(friend), 12) + " place=" + CityJournalPage.Cut(brewery.Label, 13) +
+					" stranger=" + CityJournalPage.Cut(stranger, 12) + " here=" + Reputation.CityAt(player));
+			} finally {
+				player.Account.PLevel = plevel;
+			}
+		}
+
 		/// <summary>#1090 - two +25%/1h boosters and one +50%/1h, in the order a player would have got them.</summary>
 		[SteamFunction]
 		public static void TestBoostersGive(Character self) {
