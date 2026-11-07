@@ -250,6 +250,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return TavernSettings.instance;
 			}
 		}
+
+		[InfoField("Lazne a divadlo")]
+		public VenueLifeSettings VenueLifeSettings {
+			get {
+				return VenueLifeSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {

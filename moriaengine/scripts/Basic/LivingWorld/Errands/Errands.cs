@@ -417,7 +417,7 @@ namespace SteamEngine.CompiledScripts {
 			if (exp > 0) {
 				LevelingSystem.AddExperience(player, exp);
 			}
-			Residents.AddFriendship(player, errand.giverId, friend);
+			Residents.AddFriendship(player, errand.giverId, friend + Bathhouse.FriendshipBonus(player)); //#1256 - fresh from the bath house
 			Reputation.Change(player, errand.city, rep);
 			if ((errand.Tier == ErrandTier.Medium) && (Globals.dice.Next(100) < s.pouchChance)) {
 				Give(player, "i_mi_pouch");
@@ -526,7 +526,7 @@ namespace SteamEngine.CompiledScripts {
 			return count;
 		}
 
-		private static int Consume(Container container, ItemDef def, int count) {
+		internal static int Consume(Container container, ItemDef def, int count) {
 			List<AbstractItem> items = new List<AbstractItem>();
 			foreach (AbstractItem item in container) {
 				items.Add(item);
