@@ -444,6 +444,7 @@ namespace SteamEngine.CompiledScripts {
 				PowerBadge.PutBackOn(this); //#1037
 				Jail.OnLogin(this); //#1107
 				AfkCheck.OnLogin(this); //#1107 - e_afk_controlled @login
+				WorldEvents.EnsureRunning(); //#1284 - the world events' clock
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
 				Guild.AnnounceConnection(this, true);

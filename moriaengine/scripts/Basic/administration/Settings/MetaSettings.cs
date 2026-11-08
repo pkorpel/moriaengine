@@ -265,6 +265,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Udalosti")]
+		public WorldEventSettings WorldEventSettings {
+			get {
+				return WorldEventSettings.instance;
+			}
+		}
+
 		[InfoField("Questy")]
 		public QuestPortSettings QuestPortSettings {
 			get {
