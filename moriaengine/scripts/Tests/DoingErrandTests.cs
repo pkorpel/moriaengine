@@ -8,6 +8,7 @@ namespace SteamEngine.CompiledScripts {
 	/// played to its end with its choices' effects. Tests/Protocol/DoingErrandTests.cs asks a harbour worker for work first.</summary>
 	public static class DoingErrandTests {
 		private static readonly List<ErrandTemplate> removed = new List<ErrandTemplate>(); //put back when the chain ends
+		private const string MagicFinishedTag = "_magicItem_"; //MagicItems' own key for an identified magic item
 
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("DOINGERRANDS_CHECK: " + name + "=" + ok);
@@ -155,6 +156,7 @@ namespace SteamEngine.CompiledScripts {
 			AbstractAccount account = player.Account;
 			byte plevel = account.PLevel;
 			ushort spiritSpeak = (ushort) player.GetSkill((int) SkillName.SpiritSpeak);
+			Realm realm = player.Realm;
 			try {
 				account.PLevel = 1; //a player pays for a bet; a GM wouldn't
 				player.Realm = Realm.Gondor;
@@ -165,37 +167,70 @@ namespace SteamEngine.CompiledScripts {
 				Item smith = Gem(player, "smithy", "smith"), campCook = Gem(player, "camp", null);
 				List<Errand> built = new List<Errand>();
 
-				//a commission: something made, brought to the giver
+				//a commission: each of the goods, made or bought, brought to the giver
+				bool commissionOk = true;
+				Errand commission = null;
+				string[] goodDefs = { "i_dagger", "i_shirt_plain", "i_bread_loaf" };
+				for (int good = 0; good < goodDefs.Length; good++) {
+					Fresh(player);
+					CommissionErrand.forcedGood = good;
+					commission = Build(player, new CommissionErrand(), smith);
+					commissionOk &= (commission != null) && (commission.steps[0].Kind == ErrandStepKind.Fetch) && (commission.steps[0].itemDef == goodDefs[good])
+						&& Plain(commission) && Play(player, commission, 0);
+				}
+				CommissionErrand.forcedGood = null;
+				//a magic dagger in the pack is never the commission's dagger: a plain one is taken, the magic one stays
 				Fresh(player);
-				Errand commission = Build(player, new CommissionErrand(), smith);
-				Report("commission", (commission != null) && (commission.steps[0].Kind == ErrandStepKind.Fetch) && Play(player, commission, 0));
+				CommissionErrand.forcedGood = 0;
+				commission = Build(player, new CommissionErrand(), smith);
+				CommissionErrand.forcedGood = null;
+				Item magic = (Item) ThingDef.GetByDefname("i_dagger").Create(player.Backpack);
+				magic.SetTag(TagKey.Acquire(MagicFinishedTag), 1);
+				Errands.Accept(player, commission);
+				NPC smithBody = Residents.BodyOf(smith);
+				player.Go(new Point4D(smithBody.X, smithBody.Y, smithBody.Z, smithBody.M));
+				commissionOk &= !Errands.Do(player, commission, smithBody); //only the magic one: not enough
+				ThingDef.GetByDefname("i_dagger").Create(player.Backpack);
+				commissionOk &= Errands.Do(player, commission, smithBody) && !magic.IsDeleted;
+				Report("commission", commissionOk);
 				built.Add(commission);
 
-				//the courier race: to the realm's other city; a short deadline; faster pays more
+				//the courier race: to the realm's other city; a short deadline; delivered fast pays more than late, through the finish
 				Fresh(player);
 				Errand courier = Build(player, new CourierErrand(), innkeeper);
 				bool courierOk = (courier != null) && (Residents.WorkplaceOf(Residents.ById(courier.steps[0].residentId)).City == "Minas_Tirith");
+				long fast = 0, slow = 0;
 				if (courierOk) {
+					long before = GoldUtils.CountGoldOn(player);
 					Errands.Accept(player, courier);
-					CourierErrand template = new CourierErrand();
-					courierOk &= ((courier.Expires - DateTime.UtcNow).TotalMinutes <= 30.5) && (template.PayPercent(courier) == CourierErrand.FastPercent);
-					courier.expiresTicks = DateTime.UtcNow.AddMinutes(5).Ticks;
-					courierOk &= template.PayPercent(courier) == 100; //slow: the usual pay
-					Errands.GiveUp(player, courier);
+					courierOk &= (courier.Expires - DateTime.UtcNow).TotalMinutes <= 30.5;
+					NPC target = Residents.BodyOf(Residents.ById(courier.steps[0].residentId));
+					player.Go(new Point4D(target.X, target.Y, target.Z, target.M));
+					courierOk &= Errands.Do(player, courier, target);
+					fast = GoldUtils.CountGoldOn(player) - before;
 					Fresh(player);
-					courier = Build(player, new CourierErrand(), innkeeper);
-					courierOk &= Play(player, courier, 0);
+					Errand late = Build(player, new CourierErrand(), innkeeper);
+					before = GoldUtils.CountGoldOn(player);
+					Errands.Accept(player, late);
+					Errands.NowOverride = DateTime.UtcNow.AddMinutes(20); //only 10 of the 30 minutes left
+					target = Residents.BodyOf(Residents.ById(late.steps[0].residentId));
+					player.Go(new Point4D(target.X, target.Y, target.Z, target.M));
+					courierOk &= Errands.Do(player, late, target);
+					Errands.NowOverride = null;
+					slow = GoldUtils.CountGoldOn(player) - before;
 				}
-				Report("courier", courierOk);
+				Report("courier", courierOk && (fast > slow) && (slow > 0));
 				built.Add(courier);
 
 				//words for the dead: only for one who hears the dead, and only at night
 				Fresh(player);
-				player.SetRealSkillValue((int) SkillName.SpiritSpeak, 0);
+				player.SetRealSkillValue((int) SkillName.SpiritSpeak, GhostWordsErrand.SpiritSpeakNeeded - 1);
 				bool deaf = Build(player, new GhostWordsErrand(), priest) == null;
-				player.SetRealSkillValue((int) SkillName.SpiritSpeak, 500);
+				player.SetRealSkillValue((int) SkillName.SpiritSpeak, GhostWordsErrand.SpiritSpeakNeeded);
 				Errand ghost = Build(player, new GhostWordsErrand(), priest);
-				bool ghostOk = deaf && (ghost != null) && (ghost.steps[0].Kind == ErrandStepKind.Wait) && (Build(player, new GhostWordsErrand(), innkeeper) == null);
+				Item acolyte = Gem(player, "temple", "acolyte");
+				bool ghostOk = deaf && (ghost != null) && (ghost.steps[0].Kind == ErrandStepKind.Wait) && (Build(player, new GhostWordsErrand(), innkeeper) == null)
+					&& (acolyte != null) && (Build(player, new GhostWordsErrand(), acolyte) == null); //only the priest is in the temple at night
 				if (ghost != null) {
 					VenueClock.Override = 12;
 					Errands.Accept(player, ghost);
@@ -220,10 +255,11 @@ namespace SteamEngine.CompiledScripts {
 				long[] betGain = new long[2];
 				for (int roll = 0; roll < 2; roll++) {
 					Fresh(player);
+					SetFriendship(player, Residents.IdOf(innkeeper), 5);
 					BrawlErrand.forcedRoll = (roll == 0) ? 0 : 99;
 					Errand bet = Build(player, new BrawlErrand(), innkeeper);
 					long before = GoldUtils.CountGoldOn(player);
-					brawlOk &= (bet != null) && Play(player, bet, 1);
+					brawlOk &= (bet != null) && Play(player, bet, 1) && (Residents.Friendship(player, Residents.IdOf(innkeeper)) == 5 + baseSmall - 1);
 					betGain[roll] = GoldUtils.CountGoldOn(player) - before;
 				}
 				BrawlErrand.forcedRoll = null;
@@ -260,7 +296,10 @@ namespace SteamEngine.CompiledScripts {
 				Report("plainCzech", built.TrueForAll(e => (e != null) && Plain(e)));
 			} finally {
 				VenueClock.Override = null;
+				Errands.NowOverride = null;
 				BrawlErrand.forcedRoll = null;
+				CommissionErrand.forcedGood = null;
+				player.Realm = realm;
 				player.SetRealSkillValue((int) SkillName.SpiritSpeak, spiritSpeak);
 				Fresh(player);
 				account.PLevel = plevel;
