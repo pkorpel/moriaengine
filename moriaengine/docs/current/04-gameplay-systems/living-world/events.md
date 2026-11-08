@@ -30,7 +30,11 @@ and the criers' news. A restart goes on where the save left off, and the events'
   `SaveTo`, and reads it back in `LoadFrom`. `WorldEventsStore` saves them with the world (`StaticMemberSaver`: a snapshot at
   each save, the restore once everything is loaded, before the timers start).
 - **Leftovers:** on the scheduler's first tick after a boot, it deletes any NPC that still carries an event's tag (`_wev_`) while
-  no event of that id is running, such as one ended since the last save.
+  no event of that id is running: one whose record couldn't be restored or whose kind is gone. The world and the events come
+  from the same save, so everything else comes back together.
+- **What a restore mends:** a frozen NPC stays frozen (the NPC AI's freeze is saved), an ambush's bandits go for the merchant
+  again, and a thing deleted just before the save counts as a Tick would have counted it: a sick resident lost, a festival's
+  animal replaced, a missing troll or beacon ending the event.
 
 ## The orc raid (`najezd`)
 
