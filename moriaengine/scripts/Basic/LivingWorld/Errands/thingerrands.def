@@ -1,0 +1,71 @@
+//#1293 - the things errands put in the world (ThingErrands.cs): only their errand's player can catch, use or count them, and
+//they go when the errand ends.
+
+[NPCDef c_errand_cat]
+TEVENTS = e_character
+NAME = "Kocka"
+model = 0xc9
+CAN = MT_WALK|MT_RUN
+Str = 20
+Dex = 120
+Int = 10
+MaxHits = 20
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_errand_rat]
+TEVENTS = e_character
+NAME = "Krysa ze sklepa"
+model = 0xee
+CAN = MT_WALK|MT_RUN
+Str = 15
+Dex = 60
+Int = 5
+MaxHits = 12 18
+Wrestling = 200
+Tactics = 200
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_errand_thief]
+TEVENTS = e_character
+NAME = "Kapsar"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 60
+Dex = 130
+Int = 50
+MaxHits = 50 70
+Wrestling = 300
+Tactics = 300
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0455
+Equip = random_pants
+EquipColor = colors_all
+
+[NPCDef c_errand_drunk_orc]
+TEVENTS = e_character
+NAME = "Opily skret"
+model = 0x11
+CAN = MT_WALK
+Str = 120
+Dex = 30
+Int = 20
+MaxHits = 80
+NoAnimate = 1
+AggroMode = Calm
+
+[ItemDef i_errand_lamp]
+NAME = "Lampa"
+TYPE = t_normal
+model = 0x0F64
+
+[ItemDef i_errand_cart]
+NAME = "Prevraceny vuz"
+TYPE = t_normal
+model = 0x0E3D

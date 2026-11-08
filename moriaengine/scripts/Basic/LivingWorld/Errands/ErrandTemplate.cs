@@ -34,6 +34,13 @@ namespace SteamEngine.CompiledScripts {
 			return baseFriend;
 		}
 
+		/// <summary>#1293 - a Things step's thing caught or used by the errand's player: true when it counts (the thing done with:
+		/// by default it goes). A runaway may slip away the first time instead.</summary>
+		public virtual bool OnThing(Player player, Errand errand, Thing thing) {
+			thing.Delete();
+			return true;
+		}
+
 		/// <summary>#1252 - anything the errand does as it's done, before the pay (a debtor's friendship).</summary>
 		public virtual void OnDone(Player player, Errand errand) {
 		}

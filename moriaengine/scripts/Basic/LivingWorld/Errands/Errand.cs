@@ -17,7 +17,30 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Come to a resident between two game hours.</summary>
 		Wait = 4,
 		/// <summary>Answer a resident one of two or three ways; the answer stays on the errand.</summary>
-		Choose = 5
+		Choose = 5,
+		/// <summary>#1293 - things the errand puts in the world as the step begins (a runaway cat, rats in a cellar, lamps to light):
+		/// catch, kill or use N of them. No resident; the things are the errand's player's alone.</summary>
+		Things = 6
+	}
+
+	/// <summary>#1293 - what a Things step wants done with its things.</summary>
+	public enum ErrandThingAction {
+		/// <summary>A double click right beside an NPC.</summary>
+		Catch = 0,
+		/// <summary>The NPC killed by the errand's player (or with them among its fighters).</summary>
+		Kill = 1,
+		/// <summary>A double click within reach of an item.</summary>
+		Use = 2
+	}
+
+	/// <summary>#1293 - where a Things step puts its things.</summary>
+	public enum ErrandThingPlace {
+		/// <summary>In a venue (the step's venueId).</summary>
+		Venue = 0,
+		/// <summary>In the streets a few steps from the city's centre.</summary>
+		Streets = 1,
+		/// <summary>On a road out of the city, a walk away.</summary>
+		Outside = 2
 	}
 
 	public enum ErrandTier {
@@ -82,6 +105,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Choose: which answer the player gave, -1 before.</summary>
 		[SaveableData, CopyableData]
 		public int chosen = -1;
+
+		/// <summary>#1293 - a Things step: what to do with them (ErrandThingAction), where they go (ErrandThingPlace), whether its
+		/// NPCs run from the player, how many are done, and the things made (uids, comma separated: things are found by uid).</summary>
+		[SaveableData, CopyableData]
+		public int thingAction, thingPlace, progress;
+
+		[SaveableData, CopyableData]
+		public bool flees;
+
+		[SaveableData, CopyableData]
+		public string thingUids = "";
 
 		[LoadingInitializer, DeepCopyImplementation]
 		public ErrandStep() {

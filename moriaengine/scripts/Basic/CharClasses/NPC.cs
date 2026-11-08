@@ -2250,6 +2250,7 @@ namespace SteamEngine.CompiledScripts {
 			Q008.OnKillCredit(killedBy as Character, this); //#1274 - Ancam's monsters: Erebor's @Death tag on act, whatever their experience
 			Q041.OnKillCredit(killedBy as Character, this); //#1278 - the smuggler's elf: Erebor's @death on act
 			WorldEvents.OnDeath(this, killedBy); //#1284 - a raider, bandit or merchant of a world event
+			Errands.OnThingDeath(this, killedBy); //#1293 - an errand's rat, thief or other thing
 			LevelingSystem.ShareMonsterExperience(this, killedBy);
 		}
 
