@@ -476,6 +476,7 @@ namespace SteamEngine.CompiledScripts {
 			Q017.OnDeath(this); //#1268 - a death in Gargamel's dungeon ends the run
 			PortZone.OnDeath(this); //#1116
 			PlayerRecord.Died(this, killedBy); //#1011
+			RivalCaptains.OnPlayerDeath(this, killedBy); //#1280 - a captain whose cutthroats killed the hero rises
 			FightMemory.Forget(this);
 		}
 

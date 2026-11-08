@@ -473,6 +473,8 @@ The numbers are proposals and would live in `.settings`.
 
 ## 17. Mordor: the two options
 
+**Built (#1280):** Barad-dur as option B, see [war-camp.md](../living-world/war-camp.md).
+
 The question is whether Mordor's cities run on the same machinery as Gondor's, or on something rougher. One fact first: of the Mordor pilot cities only Barad-dur is an orc stronghold. Harad and Umbar are cities of Men allied with Mordor.
 
 **Option A: the same machinery, grim words.**

@@ -1,0 +1,63 @@
+//#1280 - Barad-dur's war camp (WarCamp.cs, RivalCaptains.cs): the two rival captains and the cutthroats one sends after the
+//other's men. The captains stand still and can't be hurt (placed by .SetupWorld); the cutthroats are calm towards everyone but the hero they were sent after (RivalCaptains.Ambush engages them), and leave.
+
+[NPCDef c_warcamp_gorbag]
+TEVENTS = e_character
+NAME = "Gorbag"
+model = 0x11
+AngerSound = snd_MONSTER_ORC1
+IdleSound = snd_MONSTER_ORC1 + 1
+AttackSound = snd_MONSTER_ORC1 + 2
+HurtSound = snd_MONSTER_ORC1 + 3
+DeathSound = snd_MONSTER_ORC1 + 4
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 400
+Dex = 150
+Int = 100
+MaxHits = 2000
+Swords = 1000
+Wrestling = 1000
+Tactics = 1000
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_warcamp_shagrat]
+TEVENTS = e_character
+NAME = "Shagrat"
+model = 0x11
+Color = 0x0455
+AngerSound = snd_MONSTER_ORC1
+IdleSound = snd_MONSTER_ORC1 + 1
+AttackSound = snd_MONSTER_ORC1 + 2
+HurtSound = snd_MONSTER_ORC1 + 3
+DeathSound = snd_MONSTER_ORC1 + 4
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 400
+Dex = 150
+Int = 100
+MaxHits = 2000
+Swords = 1000
+Wrestling = 1000
+Tactics = 1000
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_warcamp_cutthroat]
+TEVENTS = e_character
+NAME = "Hrdlorez"
+model = 0x11
+Color = 0x0455
+AngerSound = snd_MONSTER_ORC1
+IdleSound = snd_MONSTER_ORC1 + 1
+AttackSound = snd_MONSTER_ORC1 + 2
+HurtSound = snd_MONSTER_ORC1 + 3
+DeathSound = snd_MONSTER_ORC1 + 4
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 200
+Dex = 120
+Int = 50
+MaxHits = 180 220
+Wrestling = 700 800
+Tactics = 700 800
+NoAnimate = 1
+AggroMode = Calm
