@@ -122,6 +122,11 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData, CopyableData]
 		public string thingCity = "";
 
+		/// <summary>#1300 - a Kill step: how many of its NPCs others killed and were replaced; past twice the count, anyone's kill counts
+		/// for the errand's player, so a friend can't farm a road of thieves for the errand's whole time.</summary>
+		[SaveableData, CopyableData]
+		public int replaced;
+
 		[LoadingInitializer, DeepCopyImplementation]
 		public ErrandStep() {
 		}

@@ -232,6 +232,27 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Report("horseThievesFromTheRightPlacesKilledCaughtReported", whoGives && thieves && caught && reported);
 
+			//a Kill step's NPC killed by someone else alone is replaced, but only twice its count; then anyone's kill counts
+			Fresh(player);
+			Errand farmed = Build(player, new HorseThievesErrand(), groom, "Edoras");
+			bool capped = false;
+			if ((farmed != null) && Errands.Accept(player, farmed)) {
+				int replaced = 0;
+				for (int i = 0; i < 2 * HorseThievesErrand.Thieves; i++) {
+					List<Thing> left = Errands.ThingsOf(player, farmed);
+					if (left.Count > 0) {
+						((NPC) left[0]).CauseDeath(null);
+						replaced++;
+					}
+				}
+				capped = (replaced == 2 * HorseThievesErrand.Thieves) && (farmed.index == 0) && (farmed.Current.progress == 0)
+					&& (Errands.ThingsOf(player, farmed).Count == HorseThievesErrand.Thieves);
+				((NPC) Errands.ThingsOf(player, farmed)[0]).CauseDeath(null); //past the cap: counts
+				capped &= (farmed.Current.progress == 1) && (Errands.ThingsOf(player, farmed).Count == HorseThievesErrand.Thieves - 1);
+				Errands.GiveUp(player, farmed);
+			}
+			Report("othersKillsReplacedOnlyTwiceTheCount", capped);
+
 			//the Citadel helm: only from Minas Tirith's guards; in the tavern; 30 minutes
 			Item guard = Gem(player, "barracks", "guard");
 			CityVenue tavern = (CityVenue) player.GetTag(VenueKey("tirithtavern"));

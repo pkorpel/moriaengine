@@ -36,7 +36,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("theLettersSailed");
 
 				this.Run(game, ".TestStoriesChain", "STORIES_CHAIN_DONE");
-				this.AssertChecks("thePostIsThreeLettersTimedInHobitinOnly", "roundsRaiseTheRankAndItsShare", "horseThievesFromTheRightPlacesKilledCaughtReported",
+				this.AssertChecks("thePostIsThreeLettersTimedInHobitinOnly", "roundsRaiseTheRankAndItsShare", "horseThievesFromTheRightPlacesKilledCaughtReported", "othersKillsReplacedOnlyTwiceTheCount",
 					"theHelmIsInTheTavernFoundAndReturned", "theLettersOnlyFromHobitin");
 			}
 		}

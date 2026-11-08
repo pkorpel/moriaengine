@@ -478,6 +478,12 @@ namespace SteamEngine.CompiledScripts {
 			return spots;
 		}
 
+		/// <summary>#1300 - whether a Things step would find a spot for its things (else they'd stand beside the player): a template
+		/// placing them far away checks before it offers the errand.</summary>
+		internal static bool CanPlace(Errand errand, ErrandStep step) {
+			return ThingSpots(errand, step, 1, "errand/check").Count > 0;
+		}
+
 		//a Things step's things into the world, marked as the errand's (beside the player when no spot is found)
 		private static void PlaceThings(Player player, Errand errand, ErrandStep step) {
 			ThingDef def = ThingDef.GetByDefname(step.itemDef);
@@ -607,9 +613,10 @@ namespace SteamEngine.CompiledScripts {
 			if ((ErrandThingAction) step.thingAction != ErrandThingAction.Kill) {
 				return;
 			}
-			if ((killedBy == owner) || LevelingSystem.FindFighters(npc, killedBy, false).Contains(owner)) {
+			if ((killedBy == owner) || LevelingSystem.FindFighters(npc, killedBy, false).Contains(owner) || (step.replaced >= 2 * step.count)) {
 				CountThing(owner, errand);
 			} else if (ThingDef.GetByDefname(step.itemDef) is ThingDef def) {
+				step.replaced++;
 				List<Point4D> spots = ThingSpots(errand, step, 1, "errand/again/" + npc.Uid);
 				Point4D at = (spots.Count > 0) ? spots[0] : new Point4D(npc.X, npc.Y, npc.Z, npc.M);
 				Thing again = PlaceOne(owner, errand, step, def, at);

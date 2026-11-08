@@ -39,13 +39,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>A venue of the city of this type, at random, or null.</summary>
 		internal static CityVenue VenueOfType(string city, string type) {
 			List<CityVenue> venues = VenueRegistry.InCity(city);
-			venues.RemoveAll(v => v.VenueType.Key != type);
+			venues.RemoveAll(v => (v.VenueType == null) || (v.VenueType.Key != type));
 			return (venues.Count == 0) ? null : venues[Globals.dice.Next(venues.Count)];
-		}
-
-		internal static string VenueTypeOf(Item gem) {
-			CityVenue work = Residents.WorkplaceOf(gem);
-			return (work == null) ? null : work.VenueType.Key;
 		}
 	}
 
@@ -115,7 +110,7 @@ namespace SteamEngine.CompiledScripts {
 		public override ErrandTier Tier { get { return ErrandTier.Medium; } }
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
-			string type = RegionalStories.VenueTypeOf(c.GiverGem);
+			string type = BasicErrands.VenueKey(c.GiverGem);
 			if (!CityFlavour.Is(c.City, RegionalStories.Edoras) || !BasicErrands.IsWorker(c.GiverGem)
 					|| ((type != "stable") && (type != "barracks") && (type != "townhall") && (type != "market"))) {
 				return false;
@@ -156,16 +151,16 @@ namespace SteamEngine.CompiledScripts {
 				? "Vcera vecer jsem nekde v ulicich nechal prilbu. Zitra je inspekce! Najdi ji, prosim, at me kapitan nevyhodi."
 				: "Vcera vecer v: " + tavern.Label + " jsem tam nechal prilbu. Zitra je inspekce! Najdi ji, prosim, at me kapitan nevyhodi.";
 			e.thanks = "Moje prilba! Zachranil jsi mi krk.";
-			e.steps.Add(Errands.Things(RegionalStories.HelmDef, 1, ErrandThingAction.Use, (tavern == null) ? ErrandThingPlace.Streets : ErrandThingPlace.Venue, tavern, false,
-				"Najdi prilbu " + c.GiverName + ((tavern == null) ? "" : " (" + tavern.Label + ")"), "Mas ji. Je trochu pomacknuta, ale cela."));
+			ErrandStep find = Errands.Things(RegionalStories.HelmDef, 1, ErrandThingAction.Use, (tavern == null) ? ErrandThingPlace.Streets : ErrandThingPlace.Venue, tavern, false,
+				"Najdi prilbu " + c.GiverName + ((tavern == null) ? "" : " (" + tavern.Label + ")"), "Mas ji. Je trochu pomacknuta, ale cela.");
+			if (!Errands.CanPlace(e, find)) {
+				return false; //nowhere to lie: it would land beside the player
+			}
+			e.steps.Add(find);
 			e.steps.Add(Errands.Talk(c.GiverGem, "Vrat prilbu " + c.GiverName + " pred inspekci", "Tady je tvoje prilba.", "Kapitan nic nepozna. Dekuji!"));
 			return true;
 		}
 
-		public override bool OnThing(Player player, Errand errand, Thing thing) {
-			thing.Delete(); //picked up
-			return true;
-		}
 	}
 
 	/// <summary>The elves' letters (given in Hobitin): carry them to the elves' chest at the Grey Havens before the ship sails.</summary>
@@ -181,14 +176,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 			e.offer = "Elfove, co tudy tahli na zapad, tu nechali dopisy pro sve blizke. Lod v Sedych pristavech brzy odpluje. Doneses je tam vcas?";
 			e.thanks = "Dopisy odplouvaji za more. Elfove na tebe nezapomenou.";
-			e.steps.Add(Errands.Things(RegionalStories.ChestDef, 1, ErrandThingAction.Use, ErrandThingPlace.Streets, null, false,
-				"Vloz dopisy do truhly elfu v Sedych pristavech, nez lod odpluje", "Dopisy jsou v truhle. Lod muze plout.", RegionalStories.Havens));
+			ErrandStep chest = Errands.Things(RegionalStories.ChestDef, 1, ErrandThingAction.Use, ErrandThingPlace.Streets, null, false,
+				"Vloz dopisy do truhly elfu v Sedych pristavech, nez lod odpluje", "Dopisy jsou v truhle. Lod muze plout.", RegionalStories.Havens);
+			if (!Errands.CanPlace(e, chest)) {
+				return false; //no street at the havens to walk: the chest would stand beside the player in Hobitin
+			}
+			e.steps.Add(chest);
 			return true;
 		}
 
-		public override bool OnThing(Player player, Errand errand, Thing thing) {
-			thing.Delete(); //the chest goes aboard
-			return true;
+		/// <summary>The giver is far away in Hobitin: the thanks come as a message.</summary>
+		public override void OnDone(Player player, Errand errand) {
+			player.SysMessage(errand.thanks, ClassAbilities.ClassMessageHue);
 		}
 	}
 }
