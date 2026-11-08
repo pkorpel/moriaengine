@@ -427,7 +427,8 @@ namespace SteamEngine.CompiledScripts {
 				LevelingSystem.AddExperience(player, exp);
 			}
 			Residents.AddFriendship(player, errand.giverId, friend + Bathhouse.FriendshipBonus(player)); //#1256 - fresh from the bath house
-			Reputation.Change(player, errand.city, rep);
+			Item giver = Residents.ById(errand.giverId); //null when the giver is gone since
+			Reputation.Change(player, errand.city, rep, CityFlavour.FactionOf(giver)); //#1282 - and the giver's faction
 			if ((errand.Tier == ErrandTier.Medium) && (Globals.dice.Next(100) < s.pouchChance)) {
 				Give(player, "i_mi_pouch");
 			} else if (errand.Tier == ErrandTier.Large) {
@@ -436,7 +437,6 @@ namespace SteamEngine.CompiledScripts {
 					Boosters.Add(player, 0);
 				}
 			}
-			Item giver = Residents.ById(errand.giverId);
 			NPC giverBody = (giver == null) ? null : Residents.BodyOf(giver);
 			if ((giverBody != null) && !string.IsNullOrEmpty(errand.thanks)) {
 				giverBody.Say(errand.thanks);

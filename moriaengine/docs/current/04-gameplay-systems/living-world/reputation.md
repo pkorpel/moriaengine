@@ -44,6 +44,7 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
 - **`Reputation.Change(player, city, delta, faction)`:** the one way up or down.
   - A faction's change also changes its rival's the other way, by half.
   - Errands, events and story quests (later steps) call it.
+  - `ChangeFaction(player, faction, delta)` changes a faction (and its rival by half) without the city, as the Umbar harbour's own judgement does (#1282).
   - `Set` sets a value outright, for a GM or a test, without counting as a deed.
 - **Crimes:** a hostile act at an innocent (`Notoriety.OnHostileAction`), looting (`OnLooting`) and snooping (seen by a human NPC,
   `CrimeWitness.Notice`, or failed while invisible) cost `crimeLoss` (50) in the city where it happened: for looting where the
@@ -64,6 +65,7 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
 
 ## Effects
 
+- **Harad and Umbar:** an errand there also raises the faction of the giver's workplace ([harad-umbar.md](harad-umbar.md), #1282).
 - **Barad-dur** reads its reputation as a rank in the war camp, and its residents give orders: see [war-camp.md](war-camp.md) (#1280).
 
 - **Shops:** the basic vendor, the alchemists and the Prodejce charge the level's price where the player stands, and refuse an enemy. A GM pays list price. A price setting of 0 refuses only at Nepritel; at any other level it means list price, never free.

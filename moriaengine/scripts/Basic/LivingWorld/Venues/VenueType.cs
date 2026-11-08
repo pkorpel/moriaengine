@@ -76,6 +76,9 @@ namespace SteamEngine.CompiledScripts {
 			new VenueType("kennels", "Psince vargu", 0, 24, true, R("kennelmaster", "Chovatel vargu", 1)),
 			new VenueType("overseer", "Stanoviste dozorce", 0, 24, true, R("overseer", "Dozorce", 1, VenueShift.Always), R("guard", "Strazny", 2, VenueShift.Always)),
 			new VenueType("slavepen", "Otrokarna", 0, 24, true, R("slaver", "Otrokar", 1), R("slave", "Otrok", 4, VenueShift.Always)),
+			//#1282 - Harad's and Umbar's own (the list keeps its order: venues remember their type by key)
+			new VenueType("caravanserai", "Karavanseraj", 0, 24, true, R("caravanmaster", "Vudce karavany", 1), R("drover", "Honak", 2), R("traveller", "Cestovatel", 2, VenueShift.Evening | VenueShift.Night)),
+			new VenueType("corsairden", "Korzarske doupe", 16, 6, true, R("corsaircaptain", "Korzarsky kapitan", 1, VenueShift.Always), R("corsair", "Korzar", 3, VenueShift.Evening | VenueShift.Night)),
 		};
 
 		private static readonly Dictionary<string, VenueType> byKey = new Dictionary<string, VenueType>(StringComparer.OrdinalIgnoreCase);

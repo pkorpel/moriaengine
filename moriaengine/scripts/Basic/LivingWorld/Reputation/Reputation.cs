@@ -272,6 +272,18 @@ namespace SteamEngine.CompiledScripts {
 			return now;
 		}
 
+		/// <summary>#1282 - a faction's view alone, the city's untouched; its rival moves the other way by half, as in Change.</summary>
+		public static void ChangeFaction(Character player, string faction, int delta) {
+			Faction f = Faction.Get(faction);
+			if ((player == null) || !player.IsPlayer || (f == null) || (delta == 0)) {
+				return;
+			}
+			SetFaction(player, f.Key, OfFaction(player, f.Key) + delta);
+			if (f.Rival != null) {
+				SetFaction(player, f.Rival, OfFaction(player, f.Rival) - (delta / 2));
+			}
+		}
+
 		/// <summary>Sets a city's view outright (a GM, a test), without counting it as a deed.</summary>
 		public static void Set(Character player, string city, int value) {
 			player.SetTag(CityKey(city), Math.Max(Min, Math.Min(Max, value)));

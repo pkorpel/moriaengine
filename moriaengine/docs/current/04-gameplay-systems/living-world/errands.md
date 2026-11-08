@@ -85,6 +85,8 @@ Both `.settings` categories, "Ukoly" and #1243's "Povest", are now in the settin
 
 The giver won't offer a second errand while the first is open. Nobody offers errands to the city's enemy (reputation Nepritel): an enemy earns no standing this way, and the shops refuse them too. The repeat penalty counts the same template done in a row and also the same one held now, so holding three at once doesn't avoid it. An errand's time runs from when it's taken. An errand that runs out is dropped, and its item is taken back, the next time the player's errands are read.
 
+Harad and Umbar add two templates of their own (`caravan` and `contraband`), and their errands also serve the faction of the giver's workplace: see [harad-umbar.md](harad-umbar.md) (#1282). In Barad-dur errands are orders: [war-camp.md](war-camp.md).
+
 A fetch never counts an errand's own item, such as a letter to deliver. A collect step takes a bag in the pack that holds enough, not merely the first one found. A deliver step whose item def doesn't exist becomes a message, so it can still be done.
 
 ## Pay
