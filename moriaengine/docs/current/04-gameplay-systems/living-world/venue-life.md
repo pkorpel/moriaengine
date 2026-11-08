@@ -206,6 +206,30 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 
 **Prvni hlidka** (medium errand, the captain): a recruit walks with the player (the errand engine's companion) to one of the city's working people, then back to the captain.
 
+## Games
+
+Step 29 (#1298) adds the games of design 9.7 beyond the dice and the target practice. Code: `Games.cs`; numbers in `.settings` "Hry". A GM plays none of them for money: a GM pays nothing, so a GM's stake would make gold from nothing. Tests put rolls in `Games.RollOverride`.
+
+| Line | Who | What |
+|---|---|---|
+| Dame paku? | patron (tavern), grunt (mess hall) | arm wrestling |
+| Soutez v piti | innkeeper (tavern), cook (mess hall) | a drinking contest |
+| Strelecka soutez | the barracks' captain | an archery contest |
+| Hadanku? | scholar (library), patron (tavern) | a riddle |
+
+**Arm wrestling.** A dialog (`D_ArmWrestle`) offers the dice's three bets, taken from the pack. Each pull, both roll up to their strength: the player's Str against `armRivalStr` (the residents' own Str is one value for all of them, 120, so it says nothing about the person). The higher pull moves the hands a notch, and three notches win double the stake back. After `armRounds` pulls with no winner, the stake comes back. The same resident takes the same player on once in `armMinutes` real minutes, and a player has `armPerHour` bouts a real hour.
+
+**The drinking contest.** It costs `drinkStake`, once in `drinkMinutes` real minutes. The rival is one of the venue's patrons (grunts in the mess hall) standing in it, or a well-known toper by name (Bolger Sudovec, or Stary Gorbuk in Mordor). Each round both drink, and each keeps up on a roll of 0-99 under 100 - round x `drinkRoundPenalty` + (toughness - 50) / 2, kept within 5-95. The player's toughness is (Str + Vit) / 2, any rival's `drinkRivalToughness`. The first to fall loses; falling together is a draw and returns the stake. The winner takes double the stake back. A player who falls ends under the table with no stamina.
+
+**The archery contest.** The entry fee is `archeryFee`, once in `archeryContestMinutes` real minutes, and it needs some Archery. Five shots each: the player hits on a roll of 0-999 under Archery (in tenths), and a guard of the barracks (by name) under `archeryRival`. More hits win `archeryPrize`; a tie returns the fee.
+
+**Riddles.** Twelve old folk riddles (`Games.Riddles`, a riddle and the answers taken as right). The riddle is said overhead and shown in a dialog (`D_Riddle`) with a line for the answer. An answer is compared in lower case, letters only, without diacritics. Asking again before answering gives the same riddle, and only the riddle asked can be answered.
+- A right answer pays `riddleExp` experience. The first right answer to a resident in 24 hours adds 1 to that resident's friendship.
+- A wrong answer is told the right one.
+- Either way the next riddle waits `riddleMinutes` real minutes.
+
+Not built (design 9.7): the horse race, the fishing and cooking contests, hide and seek with the children.
+
 ## Ambient life
 
 `AmbientLife.Tick` runs from the residents' scheduler every 20 s, after the theatres' plays. Each tick first gathers, in one pass, the residents with a player within 12 tiles and the venue each stands in; nobody else does anything. Its timing is kept in memory and starts afresh with each server start. A theatre during a play is hushed: nobody there barks or talks.
@@ -270,6 +294,18 @@ A venue has one conversation at a time, and rests `talkVenueSeconds` after one s
 | rumourSeconds | 60 | a resident's rumours are this far apart |
 | songLineSeconds | 4 | between a song's lines |
 
+## Settings: "Hry"
+
+`GameSettings`:
+
+| Setting | Default | |
+|---|---|---|
+| armMinutes, armPerHour, armRounds | 20, 10, 15 | arm wrestling: the same resident's rest, bouts an hour, pulls before a draw |
+| armRivalStr, drinkRivalToughness | 60, 60 | the residents' strength at arm wrestling and their toughness at drinking |
+| drinkStake, drinkMinutes, drinkRoundPenalty | 30, 60, 10 | the drinking contest |
+| archeryFee, archeryPrize, archeryRival, archeryContestMinutes | 50, 150, 600, 60 | the archery contest (the guard's hit chance in 0-1000) |
+| riddleExp, riddleMinutes | 50, 15 | riddles |
+
 ## Tests
 
 `Tests/Protocol/TavernTests.cs`, with `scripts/Tests/TavernTests.cs` on the server, sets up a tavern in Edoras in the evening and fills its roles. It then checks:
@@ -325,3 +361,13 @@ A venue has one conversation at a time, and rests `talkVenueSeconds` after one s
   - the crier: the GM's news called, every few minutes, quiet away from the market, old news giving way to market cries;
   - a new hero's news, given once, even after a lapsed deed;
 - **on real timers:** the scheduler barks by itself once barks are on.
+
+`Tests/Protocol/GameTests.cs`, with `scripts/Tests/GameTests.cs`, sets up an open-air tavern, library and barracks in Edoras in the evening. It then checks:
+- **through a client:** a patron's dialog offers arm wrestling and riddles; a bout is won through the bets dialog, and a scholar's riddle is answered in the riddle dialog;
+- **on the server:**
+  - who offers what (not the tavern's cook, not a guard);
+  - arm wrestling: the resident's rest, a loss, a draw, and the hourly cap;
+  - the drinking contest: a win, once an hour, a loss under the table, a draw, and a patron as the rival;
+  - the archery contest: no skill no contest, a win, the rest, a loss, a tie;
+  - riddles: the same one until answered, only it answered, a wrong answer told and unpaid, the wait, a right one paid, a friend once in 24 hours, tag names a save keeps, plain ASCII;
+  - no game for money for a GM.
