@@ -24,7 +24,22 @@ Changing a stop means changing `TravelStops.All`: the `st_pos` lines in `travels
 
 ## Settings
 
-`.settings` -> Travel: `priceDivisor`, `escortPrice`, `rideSeconds`, `strayTiles`.
+`.settings` -> Travel: `priceDivisor`, `escortPrice`, `rideSeconds`, `strayTiles`, `ferryPrice`.
+
+## The ferry
+
+#1307, the user's answer to how players reach Ostrov nestalosti, the island of q041's smuggler and q099's Podivin. Code:
+`scripts/Basic/Travel/Ferry.cs`, the ferryman in `ferry.def`.
+
+- **Three ferrymen** (`c_ferryman`, "Prevoznik"), placed by `.SetupQuestPorts`:
+  - beside Dol Amroth's spawn point, for Gondor's side;
+  - beside Umbar's, for Mordor's;
+  - on the island's shore, by the smuggler.
+
+  The spots are unreviewed and a GM can move them; a ferryman serves the stop whose spot is nearest him.
+- **A double click** opens his destinations: from a harbour, the island; from the island, either harbour.
+- **The fare** is `ferryPrice` (500) each way, paid through `GoldUtils.Pay` (a GM pays nothing). The passenger steps ashore beside
+  the other end's ferryman, and what follows them comes along, as on the stones (`TravelRide.Carry`).
 
 ## Left out
 
