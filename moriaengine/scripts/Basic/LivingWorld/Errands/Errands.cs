@@ -679,7 +679,9 @@ namespace SteamEngine.CompiledScripts {
 			Residents.AddFriendship(player, errand.giverId, friend + Bathhouse.FriendshipBonus(player)); //#1256 - fresh from the bath house
 			Item giver = Residents.ById(errand.giverId); //null when the giver is gone since
 			Reputation.Change(player, errand.city, rep, CityFlavour.FactionOf(giver)); //#1282 - and the giver's faction
-			if ((errand.Tier == ErrandTier.Medium) && (Globals.dice.Next(100) < s.pouchChance)) {
+			if (share <= 0) {
+				//#1302 - an errand that earned nothing (a wrong accusation) gives no pouch or bag either
+			} else if ((errand.Tier == ErrandTier.Medium) && (Globals.dice.Next(100) < s.pouchChance)) {
 				Give(player, "i_mi_pouch");
 			} else if (errand.Tier == ErrandTier.Large) {
 				Give(player, "i_mi_bag");

@@ -1,0 +1,26 @@
+//#1302 - the things of Mordor's stories (MordorStories.cs): only their errand's player can catch or use them, and they go when
+//the errand ends.
+
+[NPCDef c_errand_slave]
+TEVENTS = e_character
+NAME = "Uprchly otrok"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 40
+Dex = 90
+Int = 30
+MaxHits = 40
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0453
+Equip = random_pants
+EquipColor = 0x0453
+
+[ItemDef i_errand_dispatch_box]
+NAME = "Schranka veze"
+TYPE = t_normal
+model = 0x0E40
