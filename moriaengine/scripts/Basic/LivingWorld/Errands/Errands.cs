@@ -446,7 +446,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static List<Point4D> ThingSpots(Errand errand, ErrandStep step, int count, string seed) {
 			List<Point4D> spots = new List<Point4D>();
 			CityVenue venue = (step.venueId.Length > 0) ? VenueRegistry.ById(step.venueId) : null;
-			Point4D centre = WorldEvents.CentreOf(errand.city);
+			Point4D centre = WorldEvents.CentreOf(string.IsNullOrEmpty(step.thingCity) ? errand.city : step.thingCity);
 			switch ((ErrandThingPlace) step.thingPlace) {
 				case ErrandThingPlace.Venue:
 					for (int i = 0; (venue != null) && (i < count); i++) {
@@ -476,6 +476,12 @@ namespace SteamEngine.CompiledScripts {
 					break;
 			}
 			return spots;
+		}
+
+		/// <summary>#1300 - whether a Things step would find a spot for its things (else they'd stand beside the player): a template
+		/// placing them far away checks before it offers the errand.</summary>
+		internal static bool CanPlace(Errand errand, ErrandStep step) {
+			return ThingSpots(errand, step, 1, "errand/check").Count > 0;
 		}
 
 		//a Things step's things into the world, marked as the errand's (beside the player when no spot is found)
@@ -607,9 +613,10 @@ namespace SteamEngine.CompiledScripts {
 			if ((ErrandThingAction) step.thingAction != ErrandThingAction.Kill) {
 				return;
 			}
-			if ((killedBy == owner) || LevelingSystem.FindFighters(npc, killedBy, false).Contains(owner)) {
+			if ((killedBy == owner) || LevelingSystem.FindFighters(npc, killedBy, false).Contains(owner) || (step.replaced >= 2 * step.count)) {
 				CountThing(owner, errand);
 			} else if (ThingDef.GetByDefname(step.itemDef) is ThingDef def) {
+				step.replaced++;
 				List<Point4D> spots = ThingSpots(errand, step, 1, "errand/again/" + npc.Uid);
 				Point4D at = (spots.Count > 0) ? spots[0] : new Point4D(npc.X, npc.Y, npc.Z, npc.M);
 				Thing again = PlaceOne(owner, errand, step, def, at);
@@ -642,7 +649,7 @@ namespace SteamEngine.CompiledScripts {
 			ErrandTemplate template = ErrandTemplates.Get(errand.key);
 			int share = errand.payPercent;
 			if (template != null) {
-				share = (share * template.PayPercent(errand)) / 100;
+				share = (share * template.PayPercent(player, errand)) / 100;
 				template.OnDone(player, errand);
 			}
 			share = WarCamp.PayShare(player, errand.city, share); //#1280 - the rank's better share
@@ -813,10 +820,11 @@ namespace SteamEngine.CompiledScripts {
 		public static string Where(ErrandStep step) {
 			if (step.Kind == ErrandStepKind.Things) { //#1293 - no resident: the place of its things
 				CityVenue venue = (step.venueId.Length > 0) ? VenueRegistry.ById(step.venueId) : null;
+				string elsewhere = string.IsNullOrEmpty(step.thingCity) ? "" : step.thingCity.Replace('_', ' ') + ", "; //#1300 - another city's
 				switch ((ErrandThingPlace) step.thingPlace) {
 					case ErrandThingPlace.Venue: return (venue == null) ? "ve meste" : venue.Label;
-					case ErrandThingPlace.Streets: return "v ulicich kolem namesti";
-					default: return "na ceste za mestem";
+					case ErrandThingPlace.Streets: return elsewhere + "v ulicich kolem namesti";
+					default: return elsewhere + "na ceste za mestem";
 				}
 			}
 			Item gem = Residents.ById(step.residentId);
@@ -887,11 +895,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1293 - a step of things in the world: `count` of `def` put at `place` (in `venue` for a venue) as the step begins,
-		/// to catch, kill or use; `flees` makes its NPCs run from the player. `reply` is said (as a message) when the last is done.</summary>
-		public static ErrandStep Things(string def, int count, ErrandThingAction action, ErrandThingPlace place, CityVenue venue, bool flees, string task, string reply) {
+		/// to catch, kill or use; `flees` makes its NPCs run from the player. `reply` is said (as a message) when the last is done.
+		/// `inCity` (#1300) puts streets or road things in another city than the errand's.</summary>
+		public static ErrandStep Things(string def, int count, ErrandThingAction action, ErrandThingPlace place, CityVenue venue, bool flees, string task, string reply,
+				string inCity = null) {
 			return new ErrandStep {
 				kind = (int) ErrandStepKind.Things, itemDef = def, count = count, thingAction = (int) action, thingPlace = (int) place,
-				venueId = (venue == null) ? "" : venue.VenueId, flees = flees, task = task, reply = reply
+				venueId = (venue == null) ? "" : venue.VenueId, flees = flees, task = task, reply = reply, thingCity = inCity ?? ""
 			};
 		}
 	}
