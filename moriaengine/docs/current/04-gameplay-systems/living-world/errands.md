@@ -178,6 +178,29 @@ checks first that a spot exists (`Errands.CanPlace`), or it isn't offered: a thi
 elves' letters are given in Hobitin and their chest stands about 330 tiles west, at Sede_pristavy. The errand ends at the
 chest, so the thanks come as a message.
 
+## Mordor's stories (#1302)
+
+Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
+([war camp](war-camp.md)): rank caps, shorter deadlines, a cost for refusing or failing.
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Jamy Nurnu (the pits of Nurn) | `nurnquota` | an overseer's post in Nurn | catch the 3 runaway slaves in Nurn's streets (they flee and can't be hurt), then hand them all back, or say one ran |
+| Speh v taboru (the Eye's spies) | `eyespy` | an overseer's post in the war camp | ask two witnesses, then name the Gondor spy among three of the camp's residents |
+| Rozkazy Usta (the Mouth's dispatches) | `dispatches` | any worker in the war camp | put the sealed orders into the box at Minas Morgul's tower (60 minutes, halved as an order) |
+
+- **Letting a slave go** pays half. It raises karma by 50 and counts the slave in a player tag.
+  - One time in four the overseer finds out: -30 standing in Nurn.
+  - Every third slave freed leaves a magic pouch in the pack, with a note.
+- **The spy's clues:** the first witness says where the spy works; the second says the first letter of the spy's name. The two
+  decoys never match both clues, so the clues single the spy out.
+  - Naming the right one pays.
+  - A wrong one pays nothing, costs the giver's favour (-1), and costs the camp's standing as a failed order would (`orderFailLoss`).
+- **An errand that earns nothing** (pay share 0) now gives no pouch, bag or booster either (`Errands.Finish`).
+- **The dispatch** uses the other-city things of the regional stories. The errand ends at the box, so the thanks come as a message.
+
+Not built (design 9.4): the warg pup, Black Speech.
+
 Not built (design 9.3): the other stories (the Shire's mushroom thieves and party, Fornost's barrow, Edoras's eored and hall
 song, Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
@@ -260,3 +283,12 @@ Each errand has two buttons: one points the quest arrow (0xBA) at the resident, 
   - the horse thieves: only from the right venues; the thieves can be hurt and are killed, the horses can't be hurt and are caught and go home; the report ends it;
   - the helm: guards only; it lies in the tavern; found, returned, 30 minutes;
   - the letters: Hobitin only.
+
+`Tests/Protocol/MordorStoryTests.cs` (server side `scripts/Tests/MordorStoryTests.cs`, account `mordorstorytests`) sets up overseer posts in Nurn and the camp, a mess hall in each, and a forge in the camp:
+- **through a client:** the dispatch is taken as an order from the camp's overseer ("Rozkaz?"). The box stands at Minas Morgul, the journal names it, a double click on the box finishes the order, and it pays;
+- **on the server:**
+  - the slaves: in Nurn, they flee and can't be hurt; only Nurn's overseers give the errand;
+  - all slaves handed back, or one let go for half the pay and karma; found out when the roll says so; a gift on the third;
+  - the spy: only the camp's overseers give it; over ten builds, the clues fit exactly the right suspect;
+  - the right spy pays, a wrong one pays nothing, costs standing and gives no pouch;
+  - the dispatches come from the camp only.

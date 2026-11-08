@@ -66,7 +66,9 @@ namespace SteamEngine.CompiledScripts {
 			player.Account.PLevel = 7;
 			try {
 				Point4D nurn = WorldEvents.CentreOf("Nurn"), camp = WorldEvents.CentreOf("Barad-dur");
-				player.SetTag(VenueKey("nurn"), OpenAir("Nurn", "overseer", Spots(nurn, 1)[0], nurn.M));
+				List<int[]> n = Spots(nurn, 2);
+				player.SetTag(VenueKey("nurn"), OpenAir("Nurn", "overseer", n[0], nurn.M));
+				player.SetTag(VenueKey("nurnmess"), OpenAir("Nurn", "messhall", n[1], nurn.M)); //a Nurn giver who isn't an overseer
 				List<int[]> c = Spots(camp, 3);
 				player.SetTag(VenueKey("campoverseer"), OpenAir("Barad-dur", "overseer", c[0], camp.M));
 				player.SetTag(VenueKey("messhall"), OpenAir("Barad-dur", "messhall", c[1], camp.M));
@@ -205,7 +207,8 @@ namespace SteamEngine.CompiledScripts {
 					&& (Point2D.GetSimpleDistance(n, nurn) <= Errands.ThingSpread));
 				Errands.GiveUp(player, look);
 			}
-			bool onlyOverseers = (Build(player, new NurnQuotaErrand(), Gem(player, "messhall", "cook"), "Barad-dur") == null);
+			bool onlyOverseers = (Build(player, new NurnQuotaErrand(), Gem(player, "nurnmess", "cook"), "Nurn") == null)
+				&& (Build(player, new NurnQuotaErrand(), Gem(player, "campoverseer", "overseer"), "Barad-dur") == null);
 			Report("nurnSlavesFleeInNurnFromItsOverseersOnly", shape && onlyOverseers);
 
 			player.RemoveTag(MordorStories.FreedTK);
