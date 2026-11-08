@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static bool IsWorker(Item gem) {
 			string role = RoleKey(gem);
-			return (role != "patron") && (role != "spectator") && (role != "bather") && (role != "pilgrim") && (role != "patient") && (role != "prisoner");
+			return (role != "patron") && (role != "spectator") && (role != "bather") && (role != "pilgrim") && (role != "patient") && (role != "prisoner") && (role != "traveller");
 		}
 
 		internal static bool IsElder(Item gem) {

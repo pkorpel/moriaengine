@@ -20,11 +20,11 @@ An open-air venue (set by corners) takes any height.
 
 ## Types
 
-25 types in `VenueType.All`, each with default hours on the game clock and roles:
+27 types in `VenueType.All`, each with default hours on the game clock and roles:
 
 - **Common:** tavern, bath house, theatre, armoury, smithy, temple, Houses of Healing, library, harbour, stable, market, bakery,
   brewery, barracks, prison, bank, town hall, tailor, farm, mine, house (a home, no roles).
-- **Mordor's own:** mess hall, fighting pits, forge, warg kennels, overseer's post, slave pen.
+- **Mordor's own:** mess hall, fighting pits, forge, warg kennels, overseer's post, slave pen, and Harad's caravanserai and Umbar's corsair den (#1282, [harad-umbar.md](harad-umbar.md)).
 
 Roles say how many people and when (`VenueShift`: night, morning, day, evening).
 
