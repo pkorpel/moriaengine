@@ -395,6 +395,27 @@ namespace SteamEngine.CompiledScripts {
 			return route;
 		}
 
+		/// <summary>The tiles a walker reaches from `start` in at most `steps` steps by the real movement rules, start included.</summary>
+		public static List<int[]> Reachable(Map map, int[] start, int steps) {
+			HashSet<long> seen = new HashSet<long> { Key(start) };
+			List<int[]> all = new List<int[]> { start };
+			List<int[]> ring = new List<int[]> { start };
+			for (int step = 0; (step < steps) && (ring.Count > 0); step++) {
+				List<int[]> next = new List<int[]>();
+				foreach (int[] tile in ring) {
+					Point3D probe = new Point3D(tile[0], tile[1], tile[2]);
+					for (int dir = 0; dir < 8; dir++) {
+						if (map.CheckMovement(probe, walker, (Direction) dir, false, out int x, out int y, out int z) && seen.Add(Key(new[] { x, y }))) {
+							next.Add(new[] { x, y, z });
+						}
+					}
+				}
+				all.AddRange(next);
+				ring = next;
+			}
+			return all;
+		}
+
 		private static long Key(int[] tile) {
 			return (((long) tile[0]) << 16) | (uint) tile[1];
 		}
@@ -664,6 +685,11 @@ namespace SteamEngine.CompiledScripts {
 			nextStartAt = 0;
 			nextChanceAt = 0;
 			gapAfterBoot = true;
+		}
+
+		/// <summary>Tests: the landmarks forgotten, as a restart forgets them (the things stay, for ClearLeftovers to find).</summary>
+		public static void ForgetLandmarksForTests() {
+			landmarks.Clear();
 		}
 
 		/// <summary>Tests: as just after a boot (the leftovers not yet cleared, the gap not yet waited).</summary>

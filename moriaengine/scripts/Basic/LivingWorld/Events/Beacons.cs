@@ -56,9 +56,19 @@ namespace SteamEngine.CompiledScripts {
 		internal override bool Begin(int playersNear) {
 			Map map = Map.GetMap(this.Centre.M);
 			this.Direction(out double dx, out double dy);
+			int[] previous = { this.Centre.X, this.Centre.Y, this.Centre.Z };
 			for (int i = 0; i < Settings.beaconCount; i++) {
 				int distance = Settings.beaconSpacing * (i + 1);
-				int[] at = WorldSpots.NearestStandable(map, this.Centre.X + (int) Math.Round(dx * distance), this.Centre.Y + (int) Math.Round(dy * distance), 8);
+				int x = this.Centre.X + (int) Math.Round(dx * distance), y = this.Centre.Y + (int) Math.Round(dy * distance);
+				//the tile nearest its point on the line that a walker gets to from the beacon before (no ledge, island or closed
+				//house), at least half a spacing on: the chain bends round walls and hills but goes on towards Edoras
+				int[] at = null;
+				foreach (int[] tile in WorldEvents.Reachable(map, previous, 2 * Settings.beaconSpacing)) {
+					if ((WorldSpots.Distance(tile, previous[0], previous[1]) >= Settings.beaconSpacing / 2)
+							&& ((at == null) || (WorldSpots.Distance(tile, x, y) < WorldSpots.Distance(at, x, y)))) {
+						at = tile;
+					}
+				}
 				Item beacon = this.Place(BeaconsKind.BeaconDef, at, this.Centre.M);
 				if (beacon == null) {
 					return false; //a beacon with nowhere to stand: no chain
@@ -66,6 +76,7 @@ namespace SteamEngine.CompiledScripts {
 				beacon.Model = UnlitModel;
 				beacon.Name = "Majak " + (i + 1).ToString(CultureInfo.InvariantCulture);
 				beacon.SetTag(IndexTK, i);
+				previous = at;
 			}
 			this.EndsAt = this.StartedAt + (Settings.beaconMinutes * 60.0);
 			ChatSystem.Announce(ChatChannel.Gondor, "Minas Tirith", "Zapalte majaky! Vede od Minas Tirith k Edorasu, " + this.Items.Count
@@ -108,6 +119,10 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Player lighter in this.Lighters) {
 				WorldEvents.Reward(lighter, this.City, Settings.beaconGold, Settings.beaconExp, Settings.beaconFavour);
 			}
+			if (this.Lighters.Count == 0) {
+				WorldEvents.SetOutcome(this.City, 0, 0, "Majaky Gondoru zaplaly, ale nikdo z Gondoru u nich nebyl.");
+				return; //a chain lit by staff alone rouses nobody
+			}
 			WorldEvents.SetExperienceBonus(Realm.Gondor, Settings.beaconBonusPercent, Settings.beaconBonusMinutes);
 			ChatSystem.Announce(ChatChannel.Gondor, "Minas Tirith", "Vsechny majaky hori! Gondor povstava: " + Settings.beaconBonusMinutes
 				+ " minut o " + Settings.beaconBonusPercent + "% vic zkusenosti.");
@@ -129,7 +144,11 @@ namespace SteamEngine.CompiledScripts {
 
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if ((clicker is Player player) && (WorldEvents.EventOf(self) is Beacons beacons) && !beacons.Ended) {
-				if (Point2D.GetSimpleDistance(self, player) > Reach) {
+				if (player.Flag_Dead) {
+					player.SysMessage("Duch majak nezapali.");
+				} else if (!player.IsGM && !WorldEvents.IsOnCitysSide(player, beacons.City)) {
+					player.SysMessage("Majaky Gondoru zapaluje jen Gondor.");
+				} else if (Point2D.GetSimpleDistance(self, player) > Reach) {
 					player.SysMessage("Jsi od majaku moc daleko.");
 				} else {
 					beacons.Light(self, player);

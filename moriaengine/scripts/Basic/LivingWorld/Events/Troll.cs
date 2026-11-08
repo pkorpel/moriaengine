@@ -32,6 +32,7 @@ namespace SteamEngine.CompiledScripts {
 		internal const int Leash = 3, MinDistance = 10;
 		public NPC Beast;
 		private int[] ford;
+		private bool beastDied, sawNight;
 
 		/// <summary>The stone troll it left, if it turned.</summary>
 		public NPC Stone;
@@ -51,6 +52,7 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			Send(this.Beast, this.ford, this.Centre.M, Leash);
+			this.sawNight = !IsDawn(); //started in the morning (a GM's start), it waits for the next one
 			this.EndsAt = this.StartedAt + (Settings.trollMinutes * 60.0);
 			foreach (Player player in WorldEvents.PlayersNear(this.City, this.Kind)) {
 				player.RedMessage("Na ceste za " + this.CityName + " se objevil trol! Zdrz ho do usvitu.");
@@ -64,19 +66,39 @@ namespace SteamEngine.CompiledScripts {
 			return VenueClock.Shift == VenueShift.Morning;
 		}
 
+		internal override void OnDeath(NPC dead, Character killedBy) {
+			if (dead == this.Beast) {
+				this.beastDied = true;
+			}
+		}
+
 		internal override void Tick() {
-			if (this.Beast.IsDeleted || this.Beast.Flag_Dead) {
+			if (this.beastDied) {
 				this.End(true);
 				foreach (Player hero in this.Heroes.Keys) {
 					WorldEvents.Reward(hero, this.City, Settings.trollGold, Settings.trollExp, Settings.trollFavour);
 				}
 				WorldEvents.SetOutcome(this.City, 0, 0, "Trol u brodu za " + this.CityName + " padl. Cesta je volna.");
-			} else if (IsDawn() || (Globals.TimeInSeconds >= this.EndsAt)) {
+			} else if (this.Beast.IsDeleted) {
+				this.End(false); //a GM took it away: no outcome to tell
+			} else if (IsDawn() && this.sawNight) {
 				this.Dawn();
-			} else if ((Point2D.GetSimpleDistance(this.Beast, new Point2D(this.ford[0], this.ford[1])) > 2 * Leash)
-					&& (NPCAiTimer.GetFor(this.Beast)?.Target == null)) {
-				Send(this.Beast, this.ford, this.Centre.M, Leash); //back to its ford when nobody keeps it busy
+			} else if (Globals.TimeInSeconds >= this.EndsAt) {
+				this.Leave(); //no sunrise in time (a long night setting, or a start by day): it goes, nothing turns to stone
+			} else {
+				if (!IsDawn()) {
+					this.sawNight = true;
+				}
+				if ((Point2D.GetSimpleDistance(this.Beast, new Point2D(this.ford[0], this.ford[1])) > 2 * Leash)
+						&& (NPCAiTimer.GetFor(this.Beast)?.Target == null)) {
+					Send(this.Beast, this.ford, this.Centre.M, Leash); //back to its ford when nobody keeps it busy
+				}
 			}
+		}
+
+		private void Leave() {
+			this.End(false);
+			WorldEvents.SetOutcome(this.City, 0, 0, "Trol u brodu za " + this.CityName + " s usvitem odesel do hor.");
 		}
 
 		/// <summary>Those fighting it lately (as experience counts them), of the city's side.</summary>
@@ -93,8 +115,7 @@ namespace SteamEngine.CompiledScripts {
 		private void Dawn() {
 			List<Player> fighters = this.Fighters();
 			if (fighters.Count == 0) {
-				this.End(false);
-				WorldEvents.SetOutcome(this.City, 0, 0, "Trol u brodu za " + this.CityName + " s usvitem odesel do hor.");
+				this.Leave();
 				return;
 			}
 			NPCDef def = ThingDef.GetByDefname(TrollKind.StoneDef) as NPCDef;

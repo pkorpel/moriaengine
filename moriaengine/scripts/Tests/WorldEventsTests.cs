@@ -38,6 +38,10 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestWorldEventsBeacon(Character self, ScriptArgs sa) {
 			int index = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
 			Beacons beacons = (WorldEvents.Running.Count > 0) ? WorldEvents.Running[0] as Beacons : null;
+			if ((beacons == null) || (index >= beacons.Items.Count)) {
+				Console.WriteLine("WORLDEVENTS_BEACON: none uid=0");
+				return;
+			}
 			Item beacon = beacons.Items[index];
 			self.Go(new Point4D(beacon.X + 1, beacon.Y, beacon.Z, beacon.M));
 			Console.WriteLine("WORLDEVENTS_BEACON: uid=" + beacon.Uid);
@@ -74,14 +78,29 @@ namespace SteamEngine.CompiledScripts {
 				bool chain = (beacons != null) && (beacons.Items.Count == s.beaconCount) && (beacons.Lit == 1) && (beacons.Lighters.Count == 0)
 					&& (beacons.Items[0].Model == Beacons.LitModel) && (beacons.Items[1].Model == Beacons.UnlitModel);
 				if (beacons != null) {
+					int[] previous = { beacons.Centre.X, beacons.Centre.Y };
 					for (int i = 0; i < beacons.Items.Count; i++) {
-						double ex = beacons.Items[i].X - beacons.Centre.X, ey = beacons.Items[i].Y - beacons.Centre.Y;
-						chain &= Math.Abs(Math.Sqrt((ex * ex) + (ey * ey)) - (s.beaconSpacing * (i + 1))) <= 12; //a spot found within 8 tiles of the line's
+						int[] here = { beacons.Items[i].X, beacons.Items[i].Y };
+						chain &= WorldSpots.Distance(here, previous[0], previous[1]) >= s.beaconSpacing / 2; //each half a spacing on, at least
+						previous = here;
 					}
+					Item last = beacons.Items[beacons.Items.Count - 1];
+					chain &= WorldSpots.Distance(new[] { last.X, last.Y }, beacons.Centre.X, beacons.Centre.Y) >= s.beaconSpacing; //the chain leads away
 					account.PLevel = 1;
+					//the double click: not from afar, not by Mordor, not by a ghost
+					E_EventBeacon click = SingletonScript<E_EventBeacon>.Instance;
+					Item second = beacons.Items[1];
+					player.Go(new Point4D(second.X + E_EventBeacon.Reach + 2, second.Y, second.Z, second.M));
+					click.On_DClick(second, player);
+					player.Go(new Point4D(second.X + 1, second.Y, second.Z, second.M));
+					player.Realm = Realm.Mordor;
+					click.On_DClick(second, player);
 					player.Realm = Realm.Gondor;
-					chain &= !beacons.Light(beacons.Items[3], player) && (beacons.Lit == 1);
-					for (int i = 1; i < beacons.Items.Count; i++) {
+					chain &= (beacons.Lit == 1);
+					click.On_DClick(second, player);
+					chain &= (beacons.Lit == 2) && beacons.Lighters.Contains(player);
+					chain &= !beacons.Light(beacons.Items[3], player) && (beacons.Lit == 2);
+					for (int i = 2; i < beacons.Items.Count; i++) {
 						beacons.Light(beacons.Items[i], player);
 					}
 				}
@@ -92,6 +111,9 @@ namespace SteamEngine.CompiledScripts {
 				player.Experience = 0;
 				LevelingSystem.AddExperience(player, 100);
 				bool bonusPaid = player.Experience == 100 + (100 * s.beaconBonusPercent / 100);
+				player.Experience = 500;
+				LevelingSystem.AddExperience(player, -100);
+				bonusPaid &= player.Experience == 400; //a loss isn't raised
 				player.Level = levelWas;
 				player.Experience = 0;
 				Report("beaconsLit", chain && beacons.Ended && beacons.Won && (player.Gold - gold == s.beaconGold) && bonusPaid
@@ -141,12 +163,40 @@ namespace SteamEngine.CompiledScripts {
 				WorldEvents.Tick();
 				NPC stone = (troll == null) ? null : troll.Stone;
 				bool turned = stands && troll.Ended && troll.Won && troll.Beast.IsDeleted && (stone != null) && !stone.IsDeleted && stone.Flag_Invulnerable
+					&& NPCAiTimer.IsFrozen(stone) && !troll.Npcs.Contains(stone) && (stone.GetTag(WorldEvent.EventTK) == null)
 					&& (stone.Def == ThingDef.GetByDefname(TrollKind.StoneDef)) && (player.Gold - gold == s.trollGold) && CityNews.Of("Edoras").Exists(t => t.Contains("kamenny"));
-				if (stone != null) {
-					stone.SetTag(WorldEvents.StoneUntilTK, Globals.TimeInSeconds - 1);
+				//its time up, a landmark goes; after a restart (landmarks forgotten), the stone goes with the leftovers
+				NPC marker = (NPC) ((NPCDef) ThingDef.GetByDefname(TrollKind.StoneDef)).Create(edoras.X + 3, edoras.Y, edoras.Z, edoras.M);
+				WorldEvents.AddLandmark(marker, 1);
+				marker.SetTag(WorldEvents.StoneUntilTK, Globals.TimeInSeconds - 1);
+				WorldEvents.Tick();
+				bool expired = marker.IsDeleted && (stone != null) && !stone.IsDeleted;
+				WorldEvents.ForgetLandmarksForTests();
+				WorldEvents.PretendBootForTests();
+				WorldEvents.Tick();
+				Report("trollStone", turned && expired && stone.IsDeleted);
+
+				//a GM's start in the morning waits for the next sunrise; a GM taking the troll away tells nothing
+				WorldEvents.ResetForTests();
+				CityNews.Clear();
+				VenueClock.Override = 7;
+				Troll early = WorldEvents.Start(trollKind, "Edoras") as Troll;
+				WorldEvents.Tick();
+				bool waits = (early != null) && !early.Ended;
+				VenueClock.Override = 23;
+				WorldEvents.Tick();
+				VenueClock.Override = 7;
+				WorldEvents.Tick();
+				waits &= early.Ended && !early.Won;
+				WorldEvents.ResetForTests();
+				CityNews.Clear();
+				VenueClock.Override = 23;
+				Troll taken = WorldEvents.Start(trollKind, "Edoras") as Troll;
+				if (taken != null) {
+					taken.Beast.Delete();
 				}
 				WorldEvents.Tick();
-				Report("trollStone", turned && stone.IsDeleted);
+				Report("trollDawnAndRemoval", waits && (taken != null) && taken.Ended && !taken.Won && (CityNews.Of("Edoras").Count == 1));
 
 				//nobody fought it: it walks off at dawn, no stone, no pay
 				WorldEvents.ResetForTests();

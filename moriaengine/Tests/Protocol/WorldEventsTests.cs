@@ -66,14 +66,18 @@ namespace SteamEngine.Tests.Protocol {
 
 				this.Run(game, ".TestWorldEventsBeacon 1", "WORLDEVENTS_BEACON:");
 				game.SendDoubleClick((uint) Number(this.LastLine("WORLDEVENTS_BEACON:"), "uid"));
-				System.Threading.Thread.Sleep(1000);
+				string refusal = "";
+				for (int i = 0; (i < 30) && !refusal.Contains("Nejdriv musi horet majak cislo 1"); i++) {
+					refusal = game.ReadSystemMessage(Wait); //the click reached the beacon and wasn't its turn
+				}
+				Assert.Contains("Nejdriv musi horet majak cislo 1", refusal);
 				Assert.Contains("lit=0", this.State(game, "lit=0"));
 				this.Run(game, ".TestWorldEventsBeacon 0", "WORLDEVENTS_BEACON:");
 				game.SendDoubleClick((uint) Number(this.LastLine("WORLDEVENTS_BEACON:"), "uid"));
 				Assert.Contains("lit=1", this.State(game, "lit=1"));
 
 				this.Run(game, ".TestWorldEventsOutdoorChain", "WORLDEVENTS_OUTDOOR_DONE");
-				this.AssertChecks("beaconsLit", "beaconsLost", "corsairs", "trollStone", "trollLeft", "trollKilled");
+				this.AssertChecks("beaconsLit", "beaconsLost", "corsairs", "trollStone", "trollDawnAndRemoval", "trollLeft", "trollKilled");
 			}
 		}
 	}
