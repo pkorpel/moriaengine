@@ -88,8 +88,9 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData] public bool isHeld;
 
 		/// <summary>#1022 - Sphere's flag_immobile on a monster (a dragon drawing breath, a stamp): no thinking, so no
-		/// moving or attacking, until this Globals.TimeInSeconds.</summary>
-		internal double frozenUntil;
+		/// moving or attacking, until this Globals.TimeInSeconds. Saved (#1307: server time is saved too), so a festival's host or
+		/// a stone troll kept from a restart stays where it stands.</summary>
+		[SaveableData] public double frozenUntil;
 
 		/// <summary>Holds the monster still for so many seconds (a later, longer freeze wins).</summary>
 		public static void Freeze(NPC self, double seconds) {

@@ -97,8 +97,8 @@ namespace SteamEngine.CompiledScripts {
 					WorldEvents.Reward(hero, this.City, Settings.trollGold, Settings.trollExp, Settings.trollFavour);
 				}
 				WorldEvents.SetOutcome(this.City, 0, 0, "Trol u brodu za " + this.CityName + " padl. Cesta je volna.");
-			} else if (this.Beast.IsDeleted) {
-				this.End(false); //a GM took it away: no outcome to tell
+			} else if ((this.Beast == null) || this.Beast.IsDeleted) {
+				this.End(false); //a GM took it away (before a save too: #1307): no outcome to tell
 			} else if (IsDawn() && this.sawNight) {
 				this.Dawn();
 			} else if (Globals.TimeInSeconds >= this.EndsAt) {

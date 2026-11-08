@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1307 - world events survive a real save and restart (the user's "save everything"): a troll at the ford and a
@@ -59,7 +60,27 @@ namespace SteamEngine.CompiledScripts {
 				if (fire != null) {
 					fire.Helpers[player] = 3;
 				}
-				foreach (WorldEvent e in new WorldEvent[] { caravan, raid, beacons, fire }) {
+				//the fever needs residents: an open-air tavern in Umbar with its people
+				Point4D umbar = WorldEvents.CentreOf("Umbar");
+				int[] spot = WorldEvents.Reachable(Map.GetMap(umbar.M), new[] { umbar.X, umbar.Y, umbar.Z }, 20).Find(t => WorldSpots.Distance(t, umbar.X, umbar.Y) >= 3);
+				byte plevel = player.Account.PLevel;
+				player.Account.PLevel = 7;
+				VenueDraft draft = new VenueDraft();
+				draft.SetType(VenueType.Get("tavern").IndexOf());
+				draft.M = umbar.M;
+				draft.City = "Umbar";
+				draft.Rects.Add(new ImmutableRectangle(spot[0] - 2, spot[1] - 2, spot[0] + 2, spot[1] + 2));
+				CityVenue tavern = draft.Save(out string problem);
+				player.Account.PLevel = plevel;
+				if (tavern != null) {
+					Residents.FillRoles(tavern);
+				}
+				Fever fever = WorldEvents.Start(WorldEvents.KindOf("horecka"), "Umbar") as Fever;
+				if (fever != null) {
+					fever.Curers[player] = 1;
+					fever.Lost = 1;
+				}
+				foreach (WorldEvent e in new WorldEvent[] { caravan, raid, beacons, fire, fever }) {
 					if (e == null) {
 						results.Add("none");
 						continue;
@@ -139,7 +160,9 @@ namespace SteamEngine.CompiledScripts {
 			} catch (Exception) {
 				ticks = false;
 			}
-			Console.WriteLine("WEVR_CHECK: running=" + WorldEvents.Running.Count + " troll=" + ((troll == null) ? "none" : troll.Id)
+			NPCAiTimer hostAi = ((feast != null) && (feast.Host != null)) ? NPCAiTimer.GetFor(feast.Host) : null;
+			bool hostFrozen = (hostAi != null) && (hostAi.frozenUntil > Globals.TimeInSeconds); //the freeze is saved too
+			Console.WriteLine("WEVR_CHECK: hostFrozen=" + hostFrozen + " running=" + WorldEvents.Running.Count + " troll=" + ((troll == null) ? "none" : troll.Id)
 				+ " beast=" + (((troll != null) && (troll.Beast != null) && !troll.Beast.IsDeleted) ? troll.Beast.Uid : 0) + " heroKills=" + heroKills
 				+ " feast=" + ((feast == null) ? "none" : feast.Id) + " host=" + (((feast != null) && (feast.Host != null) && !feast.Host.IsDeleted) ? feast.Host.Uid : 0)
 				+ " animal=" + (((feast?.Animal != null) && !feast.Animal.IsDeleted) ? feast.Animal.Uid : 0) + " guest=" + guest + " catches=" + catches

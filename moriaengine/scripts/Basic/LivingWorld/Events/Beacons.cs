@@ -38,13 +38,18 @@ namespace SteamEngine.CompiledScripts {
 			: base(kind, city) {
 		}
 
+		/// <summary>#1307 - a beacon gone between the last Tick and a save: the chain can't be lit in full any more.</summary>
+		private bool missingBeacon;
+
 		internal override void SaveTo(WorldEventRecord r) {
+			r.SetInt("beacons", this.Items.Count);
 			r.SetInt("lit", this.Lit);
 			r.SetThings("lighters", this.Lighters);
 		}
 
 		internal override void LoadFrom(WorldEventRecord r) {
 			this.Lit = r.GetInt("lit");
+			this.missingBeacon = this.Items.Count < r.GetInt("beacons", this.Items.Count);
 			this.Lighters.UnionWith(r.GetThings<Player>("lighters"));
 		}
 
@@ -116,7 +121,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal override void Tick() {
-			if (this.Lit >= this.Items.Count) {
+			if (this.missingBeacon) {
+				this.End(false); //not a win one beacon short
+			} else if (this.Lit >= this.Items.Count) {
 				this.Win();
 			} else if (Globals.TimeInSeconds >= this.EndsAt) {
 				this.End(false);

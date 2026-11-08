@@ -53,6 +53,7 @@ namespace SteamEngine.CompiledScripts {
 
 		internal override void LoadFrom(WorldEventRecord r) {
 			this.Sick.AddRange(r.GetThings<NPC>("sick"));
+			this.Lost = r.GetInt("lost") + (r.GetThingsRaw("sick").Count - this.Sick.Count); //#1307 - gone just before the save: lost, as a Tick would have counted
 			foreach (KeyValuePair<Player, int> curer in r.GetPlayers("curers")) {
 				this.Curers[curer.Key] = curer.Value;
 			}
@@ -63,7 +64,6 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			this.ticks = r.GetInt("ticks");
-			this.Lost = r.GetInt("lost");
 		}
 
 		internal override bool Begin(int playersNear) {

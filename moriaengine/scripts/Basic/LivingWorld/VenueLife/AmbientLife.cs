@@ -9,7 +9,7 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1262 - a city's news for its criers and its gossip: a new hero, a GM's call (.vyvolat), and later the world events.
-	/// Kept in memory, each item for newsHours; a restart starts the feed afresh.</summary>
+	/// Each item for newsHours; saved with the world events (#1307).</summary>
 	public static class CityNews {
 		private sealed class Item {
 			internal string text;

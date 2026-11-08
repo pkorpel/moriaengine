@@ -131,7 +131,7 @@ namespace SteamEngine.CompiledScripts {
 			IList newList = (IList) Activator.CreateInstance(typeOfList, n);
 
 			for (int i = 0; i < n; i++) {
-				newList.Add(null);
+				newList.Add(elemType.IsValueType ? Activator.CreateInstance(elemType) : null); //#1307 - as LoadSection
 				GenericListLoadHelper alip = new GenericListLoadHelper(newList, i, elemType);
 				DeepCopyFactory.GetCopyDelayed(copyFromList[i], this.DelayedCopy_Index, alip);
 			}

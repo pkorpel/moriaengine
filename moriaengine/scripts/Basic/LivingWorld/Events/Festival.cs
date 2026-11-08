@@ -104,6 +104,9 @@ namespace SteamEngine.CompiledScripts {
 			this.Host = r.GetThing<NPC>("host");
 			this.Animal = r.GetThing<NPC>("animal");
 			this.Rounds = r.GetInt("rounds");
+			if ((this.Animal == null) && (this.Rounds < Settings.festivalRounds)) {
+				this.SpawnAnimal(); //#1307 - taken away just before the save: the next one runs, as a Tick would have had it
+			}
 			this.FleeOrders = r.GetInt("fleeOrders");
 			this.Fed.UnionWith(r.GetThings<Player>("fed"));
 			this.Guests.UnionWith(r.GetThings<Player>("guests"));

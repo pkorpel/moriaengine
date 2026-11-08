@@ -16,19 +16,20 @@ namespace SteamEngine.Tests.Protocol {
 			using (var fixture1 = new GameServerPairFixture()) {
 				using (var client = Connect(fixture1, "Events Saver")) {
 					string round = Ask(fixture1, client, ".TestWorldEventsRecordRoundTrip", "WEVR_ROUNDTRIP:");
-					Assert.Contains("WEVR_ROUNDTRIP: karavana=True najezd=True majaky=True pozar=True end", round);
+					Assert.Contains("WEVR_ROUNDTRIP: karavana=True najezd=True majaky=True pozar=True horecka=True end", round);
 					ready = Ask(fixture1, client, ".TestWorldEventsRestartPrepare", "WEVR_READY:");
 					Assert.DoesNotContain("troll=none", ready);
 					Assert.DoesNotContain("feast=none", ready);
 					Assert.Contains("price=-10 ", ready);
 					Ask(fixture1, client, ".TestTriggerGlobalSave", "TEST_SAVE: done");
-					System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wevr-boot1.txt"), fixture1.GameOutputSnapshot());
 				}
 			}
 			using (var fixture2 = GameServerPairFixture.BootPreservingSaves()) {
 				using (var client = Connect(fixture2, "Events Loader")) {
 					string check = Ask(fixture2, client, ".TestWorldEventsRestartCheck", "WEVR_CHECK:");
-					System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wevr-boot2.txt"), fixture2.GameOutputSnapshot());
+					//restored at boot, before the login, with the clock started then (a login would start it too)
+					Assert.Contains("World events restored: 2 of 2 running, clock=True", fixture2.GameOutputSnapshot());
+					Assert.Contains("hostFrozen=True ", check);
 					Assert.Contains("running=2 ", check);
 					foreach (string key in new[] { "troll=", "beast=", "feast=", "host=", "animal=", "landmark=" }) {
 						Assert.Equal(Field(ready, key), Field(check, key));

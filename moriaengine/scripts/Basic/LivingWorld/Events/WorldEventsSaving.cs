@@ -331,7 +331,6 @@ namespace SteamEngine.CompiledScripts {
 			s.nextCalendarAt = WorldEvents.nextCalendarAt;
 			s.serial = WorldEvents.serial;
 			CityNews.Snapshot(s.newsCities, s.newsTexts, s.newsUntils);
-			Logger.WriteInfo(true, "World events saved: " + s.events.Count + " running, " + s.outcomeCount + " outcomes");
 			return s;
 		}
 
@@ -385,10 +384,11 @@ namespace SteamEngine.CompiledScripts {
 			WorldEvents.nextCalendarAt = s.nextCalendarAt;
 			WorldEvents.serial = Math.Max(WorldEvents.serial, s.serial); //new ids never meet a restored event's
 			CityNews.Restore(s.newsCities, s.newsTexts, s.newsUntils);
-			Logger.WriteInfo(true, "World events restored: " + WorldEvents.running.Count + " of " + s.events.Count + " running, " + WorldEvents.outcomes.Count + " outcomes");
 			if (WorldEvents.running.Count > 0) {
 				WorldEvents.EnsureRunning(); //the restored events tick on without waiting for a login
 			}
+			Logger.WriteInfo(true, "World events restored: " + WorldEvents.running.Count + " of " + s.events.Count + " running, clock="
+				+ Globals.Instance.HasTimer(WorldEvents.TimerKeyForTests)); //once a boot
 		}
 
 		private static string At(List<string> list, int i) {

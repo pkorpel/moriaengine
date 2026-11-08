@@ -53,7 +53,11 @@ namespace SteamEngine.CompiledScripts {
 			r.SetThings("escorts", this.Escorts);
 		}
 
+		/// <summary>#1307 - after a restart, the ambush's bandits go for the merchant again (an AI's target isn't saved).</summary>
+		private bool reengage;
+
 		internal override void LoadFrom(WorldEventRecord r) {
+			this.reengage = r.GetBool("ambushed");
 			this.centre = this.Centre;
 			this.route = r.GetTiles("route");
 			this.next = r.GetInt("next");
@@ -121,6 +125,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (!this.Ambushed && (this.next >= this.ambushAt)) {
 				this.Ambush();
+			}
+			if (this.reengage) {
+				this.reengage = false;
+				foreach (NPC bandit in this.Npcs) {
+					if (!bandit.IsDeleted && !bandit.Flag_Dead && IsBandit(bandit)) {
+						NPCAiTimer.GetFor(bandit)?.EngageTarget(this.Merchant);
+					}
+				}
 			}
 			if (this.Ambushed && (this.Alive(IsBandit) > 0)) {
 				this.NoteEscorts();

@@ -138,7 +138,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1284 - one event under way: in memory only (a restart ends it; WorldEvents clears the NPCs it left). Its NPCs
+	/// <summary>#1284 - one event under way, saved with the world since #1307 (WorldEventsStore). Its NPCs
 	/// carry its id in a tag; those who fought them are its heroes.</summary>
 	public abstract class WorldEvent {
 		internal static readonly TagKey EventTK = TagKey.Acquire("_wev_");
@@ -289,7 +289,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1284 - the world events (design section 6): a scheduler on Globals starts one now and then in a city where
-	/// a player is, events run in memory, and their outcomes change a city's prices for a while (Reputation.PriceFor) and go to
+	/// a player is, events are saved with the world (#1307), and their outcomes change a city's prices for a while (Reputation.PriceFor) and go to
 	/// the criers (CityNews). GM command .udalost.</summary>
 	public static class WorldEvents {
 		public const double TickSeconds = 5;
@@ -648,7 +648,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>The NPCs a past run's events left (a restart forgets the events, not their NPCs).</summary>
+		/// <summary>The NPCs left by events that aren't running (a record that couldn't be restored, a GM's stop mid-save).</summary>
 		internal static int ClearLeftovers() {
 			List<Thing> leftovers = new List<Thing>();
 			foreach (Thing thing in Thing.AllThings) {
@@ -670,7 +670,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey StoneUntilTK = TagKey.Acquire("_wev_landmark_");
 		internal static readonly List<Thing> landmarks = new List<Thing>();
 
-		/// <summary>A thing an event leaves behind for a while (a stone troll): it goes when its time is up, or with a restart.</summary>
+		/// <summary>A thing an event leaves behind for a while (a stone troll): it goes when its time is up (kept over a restart, #1307).</summary>
 		public static void AddLandmark(Thing thing, int minutes) {
 			thing.SetTag(StoneUntilTK, Globals.TimeInSeconds + (minutes * 60.0));
 			landmarks.Add(thing);
