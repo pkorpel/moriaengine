@@ -112,6 +112,8 @@ namespace SteamEngine.CompiledScripts {
 			byte plevel = player.Account.PLevel;
 			player.Account.PLevel = 1; //GMs pay nothing
 			Point4D start = new Point4D(player.X, player.Y, player.Z, player.M);
+			player.RemoveTag(RivalCaptains.OrdersDayTK); //#1307 - the day's count of captain's orders starts afresh for each run
+			player.RemoveTag(RivalCaptains.OrdersCountTK);
 			try {
 				Orders(player);
 				Captains(player);

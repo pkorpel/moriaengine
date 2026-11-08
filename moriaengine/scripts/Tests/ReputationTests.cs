@@ -86,14 +86,15 @@ namespace SteamEngine.CompiledScripts {
 			Reputation.Set(self, Edoras, -200);
 			Report("aZeroPriceSettingIsNeverFree", (Reputation.PriceFor(self, 100) == 100) && !Reputation.Refuses(self));
 			ReputationSettings.instance.priceSuspect = suspectPrice;
-			//citizenship: a stranger of the realm qualifies by default; a GM can raise the bar
+			//citizenship: by default (#1307) a respected name; a GM can lower the bar
 			int citizenLevel = ReputationSettings.instance.citizenshipMinLevel;
 			Reputation.Set(self, Edoras, 0);
-			bool knownMay = Reputation.MayBecomeCitizen(self, Edoras);
-			ReputationSettings.instance.citizenshipMinLevel = (int) ReputationLevel.Vazeny;
 			bool knownMayNot = !Reputation.MayBecomeCitizen(self, Edoras);
+			ReputationSettings.instance.citizenshipMinLevel = (int) ReputationLevel.Znamy;
+			bool knownMay = Reputation.MayBecomeCitizen(self, Edoras);
+			ReputationSettings.instance.citizenshipMinLevel = citizenLevel;
 			Reputation.Set(self, Edoras, 250);
-			Report("citizenshipFollowsTheSetting", knownMay && knownMayNot && Reputation.MayBecomeCitizen(self, Edoras));
+			Report("citizenshipFollowsTheSetting", (citizenLevel == (int) ReputationLevel.Vazeny) && knownMayNot && knownMay && Reputation.MayBecomeCitizen(self, Edoras));
 			ReputationSettings.instance.citizenshipMinLevel = citizenLevel;
 			Report("nothingCostsNothing", Reputation.PriceFor(self, 0) == 0);
 			self.Account.PLevel = 7;

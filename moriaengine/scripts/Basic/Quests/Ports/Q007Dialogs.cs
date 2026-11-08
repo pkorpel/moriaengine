@@ -323,7 +323,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly string[] drinkDefs = { "i_bottle_wine", "i_bottle_liquor", "i_bottle_ale", "i_jug_cider" };
-		private static readonly int[] drinkPrices = { 150, 200, 100, 250 }; //Erebor's cider took 200 but its menu said 250
+		private static readonly int[] drinkPrices = { 150, 200, 100, 200 }; //#1307 - the cider at Erebor's 200 (its menu said 250)
 		private static readonly string[] drinkSays = { "Tady mas sve vino.", "Kopni to tam namorniku!", "Tady mas svoji zrzavou krasku.", "Aaah jedna varka piti pro panicky.." };
 
 		protected override void Build(QuestDialogContent d, Character npc, Player player) {

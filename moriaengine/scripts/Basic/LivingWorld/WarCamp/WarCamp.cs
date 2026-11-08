@@ -65,6 +65,11 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int captainOrderCooldownMinutes = 20;
 
+		/// <summary>#1307 - a hero takes at most this many captain's orders a real (UTC) day, so one busy player can't decide a week's
+		/// rivalry alone; 0 = no cap.</summary>
+		[SaveableData]
+		public int captainOrdersPerDay = 3;
+
 		/// <summary>A captain's order's size: the tribute in gold and the iron ingots, times his power; heads of Gondor's people.</summary>
 		[SaveableData]
 		public int tributePerPower = 1000, ironBase = 20, ironPerPower = 10;
