@@ -80,8 +80,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1278 - q041: the smuggler on Ostrov nestalosti, where his portal throws the refused (1142,3897, Erebor's
 		/// zmodrani.scp), the portal beside him, the realm gate further west on the island (the portal's MOREP lands beside it), the elf a little south
-		/// of Rivendell, farmer Borek on a field west of Nurn. q099: Podivin 8 tiles from the smuggler. Erebor's GMs placed all of them; the
-		/// archive keeps no spot, so all are unreviewed.</summary>
+		/// of Rivendell, farmer Borek on a field west of Nurn. q099: Podivin 8 tiles from the smuggler. #1307: the ferrymen to the island (Ferry). Erebor's GMs placed all
+		/// of them; the archive keeps no spot, so all are unreviewed.</summary>
 		internal static void PlaceSmugglerAndOutcast(WorldPieces pieces, Character gm) {
 			Map world = Map.GetMap(0);
 			int[] paserak = WorldSpots.NearestStandable(world, 1149, 3883, 8);
@@ -111,6 +111,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			PlaceStill(pieces, gm, "q041/borek", Q041.BorekDef, WorldSpots.NearestStandable(world, 3390, 3270, 10), 0);
 			PlaceStill(pieces, gm, "q099/podivin", Q099.PodivinDef, (paserak == null) ? null : WorldSpots.NearestStandable(world, paserak[0] - 8, paserak[1] + 2, 4), 0); //out of the smuggler's talking range: their greetings overlap
+			//#1307 - the ferry to the island: a ferryman in Dol Amroth, one in Umbar, one on the island's shore (unreviewed spots)
+			foreach (FerryStop stop in Ferry.All) {
+				PlaceStill(pieces, gm, "ferry/" + stop.Key, Ferry.FerrymanDef, stop.Spot, stop.M);
+			}
 		}
 
 		/// <summary>#1274 - q008: Ancam by his house (571,3547, Erebor's script header), his corral beside it (Erebor's was GM-built:
