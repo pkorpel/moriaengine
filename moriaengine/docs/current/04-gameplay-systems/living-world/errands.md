@@ -190,13 +190,19 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 | Rozkazy Usta (the Mouth's dispatches) | `dispatches` | any worker in the war camp | put the sealed orders into the box at Minas Morgul's tower (60 minutes, halved as an order) |
 
 - **Letting a slave go** pays half. It raises karma by 50 and counts the slave in a player tag.
-  - One time in four the overseer finds out: -30 standing in Nurn.
-  - Every third slave freed leaves a magic pouch in the pack, with a note.
-- **The spy's clues:** the first witness says where the spy works; the second says the first letter of the spy's name. The two
-  decoys never match both clues, so the clues single the spy out.
+  - One time in four the overseer finds out: -60 standing in Nurn, -50 net with the errand's own +10, so freeing slaves
+    costs standing on average.
+  - Every fifth slave freed leaves a magic pouch in the pack, with a note. The medium errand's own pouch chance still applies.
+  - A GM's choice changes nothing.
+- **The spy's clues:** the first witness says where the spy works; the second says the first letter of the spy's name. Each
+  answer names a suspect with their workplace. The two decoys never match both clues and never share a name with the spy or
+  each other, so the clues single the spy out.
   - Naming the right one pays.
-  - A wrong one pays nothing, costs the giver's favour (-1), and costs the camp's standing as a failed order would (`orderFailLoss`).
-- **An errand that earns nothing** (pay share 0) now gives no pouch, bag or booster either (`Errands.Finish`).
+  - A wrong one pays nothing, costs the giver's favour (-1), and costs the camp's standing as a failed order would
+    (`orderFailLoss`, one change).
+- **An errand that earns nothing** (pay share 0) now gets nothing at all from `Errands.Finish`: no pouch, bag or booster, no
+  standing (and no hero's deed mark), and no courier deed. The message says it ended without a reward. The brawl's bet (share 0)
+  follows the same rule now.
 - **The dispatch** uses the other-city things of the regional stories. The errand ends at the box, so the thanks come as a message.
 
 Not built (design 9.4): the warg pup, Black Speech.
@@ -288,7 +294,7 @@ Each errand has two buttons: one points the quest arrow (0xBA) at the resident, 
 - **through a client:** the dispatch is taken as an order from the camp's overseer ("Rozkaz?"). The box stands at Minas Morgul, the journal names it, a double click on the box finishes the order, and it pays;
 - **on the server:**
   - the slaves: in Nurn, they flee and can't be hurt; only Nurn's overseers give the errand;
-  - all slaves handed back, or one let go for half the pay and karma; found out when the roll says so; a gift on the third;
+  - all slaves handed back, or one let go for half the pay and karma; found out when the roll says so; a gift on the fifth;
   - the spy: only the camp's overseers give it; over ten builds, the clues fit exactly the right suspect;
-  - the right spy pays, a wrong one pays nothing, costs standing and gives no pouch;
+  - the right spy pays; a wrong one pays nothing, costs standing, gives no pouch, counts no deed and doesn't renew the hero's mark;
   - the dispatches come from the camp only.
