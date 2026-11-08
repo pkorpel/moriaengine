@@ -89,8 +89,33 @@ namespace SteamEngine.CompiledScripts {
 			return OtherCityFaction(city, venue); //#1304
 		}
 
-		/// <summary>#1304 - the other cities' factions by workplace, or null.</summary>
+		/// <summary>#1304 - the other cities' factions by workplace, or null; #1307 the pilot cities' too.</summary>
 		private static string OtherCityFaction(string city, string venue) {
+			if (Is(city, "Minas_Tirith")) {
+				switch (venue) {
+					case "barracks": case "armoury": case "prison": return "mt_citadel";
+					case "market": case "bakery": case "tailor": case "bank": case "harbour": case "smithy": return "mt_merchants";
+					case "healing": case "temple": return "mt_healers";
+					case "library": case "townhall": return "mt_archives";
+				}
+				return null;
+			}
+			if (Is(city, "Edoras")) {
+				switch (venue) {
+					case "townhall": case "tavern": case "brewery": return "ed_household";
+					case "barracks": case "armoury": return "ed_riders";
+					case "stable": case "farm": return "ed_breeders";
+				}
+				return null;
+			}
+			if (Is(city, "Hobitin")) {
+				switch (venue) {
+					case "townhall": return "ho_post";
+					case "farm": case "market": case "bakery": return "ho_farmers";
+					case "tavern": case "brewery": return "ho_innkeepers";
+				}
+				return null;
+			}
 			if (Is(city, DolAmroth)) {
 				return ((venue == "barracks") || (venue == "armoury")) ? "da_swans" : (((venue == "harbour") || (venue == "market")) ? "da_harbour" : null);
 			}

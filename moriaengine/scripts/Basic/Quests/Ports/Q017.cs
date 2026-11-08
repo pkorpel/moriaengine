@@ -487,13 +487,21 @@ namespace SteamEngine.CompiledScripts {
 		/// the quest (Erebor had no source for them).</summary>
 		[SaveableData]
 		public int terlakCrystalChance = 3;
+
+		/// <summary>#1307 - the cheque the collector Sberatel gives for one of Terlak's artifacts (Erebor's 50 000).</summary>
+		[SaveableData]
+		public int terlakCollectorPrice = 50000;
 	}
 
-	/// <summary>#1268 - the collector Sberatel (spk_q017_sberatel): Erebor's bought only the OLD versions of Terlak's items, refusing
-	/// one named as the current reward, so with only current ones in the world he never buys.</summary>
+	/// <summary>#1268 - the collector Sberatel (spk_q017_sberatel): Erebor's bought only the OLD versions of Terlak's items. #1307, the
+	/// user's call: he buys the current ones as Erebor did the old: the player's own profession's artifact from the pack for a
+	/// cheque (terlakCollectorPrice), and the next run's entry asks 2 crystals fewer.</summary>
 	public sealed class Q017CollectorSpeech : AbstractSpeech {
 		private static readonly string[] greetings = { "hi", "ahoj", "zdrav", "cau" };
 		private static readonly string[] trade = { "vymen", "vymena", "vymenit", "zamen", "artefakt" };
+		private static readonly string[] agree = { "ano", "prodam", "beru", "plati" };
+		internal static readonly TagKey OfferTK = TagKey.Acquire("_q017CollectorOffer_");
+		internal const double OfferSeconds = 30;
 
 		public new static void Bootstrap() {
 			new Q017CollectorSpeech("spk_q017_sberatel").Register();
@@ -515,24 +523,54 @@ namespace SteamEngine.CompiledScripts {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
 			if (SkillTeacherSpeech.ContainsAny(speech, trade)) {
-				npc.Say(HasOwnReward(player) ? "Tyto novy nesbiram, jenom stary!" : "Nevidim u tebe zadnou vec kterou potrebuji");
+				Offer(npc, player);
+			} else if (SkillTeacherSpeech.ContainsAny(speech, agree) && (player.GetTag(OfferTK) is double at) && (Globals.TimeInSeconds - at < OfferSeconds)) {
+				player.RemoveTag(OfferTK);
+				Buy(npc, player);
 			} else if (SkillTeacherSpeech.ContainsAny(speech, greetings)) {
-				npc.Say("Zdravim, sbiram stare artefakty od alchymisty Terlaka! Nemas nejaky na VYMENu ?");
+				npc.Say("Zdravim, sbiram artefakty od alchymisty Terlaka! Nemas nejaky na VYMENu ?");
 			}
 			return SpeechResult.IgnoredOrActedUpon;
 		}
 
-		private static bool HasOwnReward(Player player) {
+		/// <summary>#1307 - what he'd give for the player's artifact; an "ano" within OfferSeconds sells it.</summary>
+		internal static void Offer(NPC npc, Player player) {
+			if (OwnReward(player) == null) {
+				npc.Say("Nevidim u tebe zadnou vec kterou potrebuji");
+				return;
+			}
+			player.SetTag(OfferTK, Globals.TimeInSeconds);
+			npc.Say("Ano to je ono! Dam ti za to sek na " + Math.Max(1, QuestPortSettings.instance.terlakCollectorPrice) + " zlatych. Prodas? (ANO)");
+		}
+
+		/// <summary>#1307 - the player's own profession's artifact from the pack for a cheque; the next entry asks 2 crystals fewer, but
+		/// never fewer than after a first finished run (2: 0 would be the quest never begun, its free potion and cheap entry again).
+		/// False when there's none to buy.</summary>
+		internal static bool Buy(NPC npc, Player player) {
+			Item artifact = OwnReward(player);
+			if (artifact == null) {
+				npc.Say("Nevidim u tebe zadnou vec kterou potrebuji");
+				return false;
+			}
+			npc.Say("Obchod plati.");
+			artifact.Delete();
+			CashiersItem.CreateCheck(player, Math.Max(1, QuestPortSettings.instance.terlakCollectorPrice));
+			Q017.SetRuns(player, Math.Max(2, Q017.GetRuns(player) - 2));
+			return true;
+		}
+
+		//the player's own profession's artifact in the pack (not worn), as Erebor's findid on the pack
+		internal static Item OwnReward(Player player) {
 			Q017.Reward own = Q017.RewardOf(player.Profession);
 			if ((own == null) || (player.Backpack == null)) {
-				return false;
+				return null;
 			}
 			foreach (AbstractItem item in player.Backpack) {
 				if ((item is Item mine) && (Q017.RewardOf(mine) == own)) {
-					return true;
+					return mine;
 				}
 			}
-			return false;
+			return null;
 		}
 	}
 }

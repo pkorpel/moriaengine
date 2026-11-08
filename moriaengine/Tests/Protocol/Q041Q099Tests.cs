@@ -21,7 +21,7 @@ namespace SteamEngine.Tests.Protocol {
 				Q008Q31Steps.Press(game, gump.GumpUid, "Q041", "q041_bring_money", "stage=1", this.RunFor, this.LastLineFor);
 				this.Run(game, ".TestQ041Chain", "Q041_CHAIN_DONE");
 				this.AssertChecks("theClientPromisedTheMoney", "whoHeTalksTo", "theBribe", "gondorKillsTheElf", "theElfOnlyAtFour", "mordorHelpsBorek", "thePrice",
-					"thePortal", "toGondor", "toMordorAndAgain", "journalTextsArePlain");
+					"thePortal", "toGondor", "toMordorAndAgain", "theOldRealmsPostsStayBehind", "journalTextsArePlain");
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace SteamEngine.Tests.Protocol {
 				Q008Q31Steps.Press(game, gump.GumpUid, "Q099", "q099:1", "stage=2", this.RunFor, this.LastLineFor);
 				this.Run(game, ".TestQ099Chain", "Q099_CHAIN_DONE");
 				this.AssertChecks("theClientTookTheFirstBag", "outcastsOnly", "theFourBags", "miningForty", "redeemedToGondor", "mordorBackAndAgain", "levelFloor",
-					"journalTextsArePlain");
+					"pointsTakenBack", "journalTextsArePlain");
 			}
 		}
 

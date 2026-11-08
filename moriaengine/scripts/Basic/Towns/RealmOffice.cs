@@ -153,6 +153,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if ((this.holder != null) && !this.holder.IsDeleted) {
 				PowerBadge.ClearTitle(this.holder);
+				Uniform.Clear(this.holder); //#1307 - the office's look goes with it (Refresh does nothing once the badge is gone)
 				PowerBadge badge = PowerBadge.Find(this.holder);
 				if (badge != null) {
 					badge.Delete();
@@ -528,6 +529,11 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>What .honor and .fear leave on someone: i_honorcounter, i_fearcounter.</summary>
 	[SaveableClass, DeepCopyableClass]
 	public class RealmStatEffect : BoundTimer {
+		/// <summary>#1307 - whether .honor or .fear is changing the character's stats right now.</summary>
+		internal static bool IsOn(Character ch) {
+			return (ch.GetTimer(RealmAbilities.HonorTK) != null) || (ch.GetTimer(RealmAbilities.FearTK) != null);
+		}
+
 		[SaveableData, CopyableData]
 		public int amount;
 
@@ -556,10 +562,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public static class RealmAbilities {
-		private static readonly TimerKey honorTK = TimerKey.Acquire("_realmHonor_");
+		internal static readonly TimerKey HonorTK = TimerKey.Acquire("_realmHonor_");
 		private static readonly TagKey honorReadyTK = TagKey.Acquire("_honorReadyAt_");
 
-		private static readonly TimerKey fearTK = TimerKey.Acquire("_realmFear_");
+		internal static readonly TimerKey FearTK = TimerKey.Acquire("_realmFear_");
 		private static readonly TagKey fearReadyTK = TagKey.Acquire("_fearReadyAt_");
 		private const int FearSound = 598;
 
@@ -581,9 +587,9 @@ namespace SteamEngine.CompiledScripts {
 			self.SetTag(fearReadyTK, Globals.TimeInSeconds + settings.fearDelaySeconds);
 			foreach (AbstractCharacter around in self.GetMap().GetPlayersInRange(self.X, self.Y, first ? settings.firstFearDistance : settings.fearDistance)) {
 				Character ch = around as Character;
-				if ((ch != null) && ch.IsOnline && (ch.Realm != Realm.Mordor) && (ch.GetTimer(fearTK) == null)) {
+				if ((ch != null) && ch.IsOnline && (ch.Realm != Realm.Mordor) && (ch.GetTimer(FearTK) == null)) {
 					RealmStatEffect.Change(ch, -penalty);
-					ch.AddTimer(fearTK, new RealmStatEffect(-penalty)).DueInSeconds = settings.fearEffectSeconds;
+					ch.AddTimer(FearTK, new RealmStatEffect(-penalty)).DueInSeconds = settings.fearEffectSeconds;
 					ch.SysMessage("Jsi ochromen strachem");
 				}
 			}
@@ -611,9 +617,9 @@ namespace SteamEngine.CompiledScripts {
 			self.SetTag(honorReadyTK, Globals.TimeInSeconds + settings.honorDelaySeconds);
 			foreach (AbstractCharacter around in self.GetMap().GetPlayersInRange(self.X, self.Y, settings.honorDistance)) {
 				Character ch = around as Character;
-				if ((ch != null) && ch.IsOnline && (ch.Realm != Realm.Mordor) && (ch.GetTimer(honorTK) == null)) {
+				if ((ch != null) && ch.IsOnline && (ch.Realm != Realm.Mordor) && (ch.GetTimer(HonorTK) == null)) {
 					RealmStatEffect.Change(ch, settings.honorBonus);
-					ch.AddTimer(honorTK, new RealmStatEffect(settings.honorBonus)).DueInSeconds = settings.honorEffectSeconds;
+					ch.AddTimer(HonorTK, new RealmStatEffect(settings.honorBonus)).DueInSeconds = settings.honorEffectSeconds;
 					ch.SysMessage("Citis se povzbuzen");
 				}
 			}

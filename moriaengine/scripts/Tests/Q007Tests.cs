@@ -123,7 +123,7 @@ namespace SteamEngine.CompiledScripts {
 				bool tooSoon = (CountIn(player, "i_jug_cider") == 0) && (player.Gold == gold - 150);
 				Q007.ForgetDrink(player);
 				dInn.Press("drink:3", innkeeper, player);
-				Report("theInnkeepersDrinks", wine && tooSoon && (CountIn(player, "i_jug_cider") == 1) && (player.Gold == gold - 400));
+				Report("theInnkeepersDrinks", wine && tooSoon && (CountIn(player, "i_jug_cider") == 1) && (player.Gold == gold - 350)); //#1307 - the cider at Erebor's 200
 
 				//the smith and the inscripter want their skills, then the stones
 				bool smithWantsHundred = !Offers(dSmith, smith, player, "kovar3:1");

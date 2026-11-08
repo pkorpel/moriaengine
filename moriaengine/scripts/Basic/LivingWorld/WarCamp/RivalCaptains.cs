@@ -98,6 +98,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey CutthroatTargetTK = TagKey.Acquire("_cutthroatTarget_");
 		internal static readonly TagKey CutthroatUntilTK = TagKey.Acquire("_cutthroatUntil_");
 		internal static readonly TagKey LastOrderEndTK = TagKey.Acquire("_campOrderEnd_");
+		internal static readonly TagKey OrdersDayTK = TagKey.Acquire("_campOrdersDay_"), OrdersCountTK = TagKey.Acquire("_campOrdersCount_");
 		private const int HuntRange = 24;
 
 		/// <summary>For a test: the clock the captains go by.</summary>
@@ -216,8 +217,22 @@ namespace SteamEngine.CompiledScripts {
 			return (left <= 0) ? 0 : (int) Math.Ceiling(left);
 		}
 
+		/// <summary>#1307 - the captain's orders the player has taken this real (UTC) day.</summary>
+		internal static int OrdersToday(Player player) {
+			int today = (int) (Now.Ticks / TimeSpan.TicksPerDay);
+			return ((player.GetTag(OrdersDayTK) is int day) && (day == today) && (player.GetTag(OrdersCountTK) is int count)) ? count : 0;
+		}
+
+		/// <summary>#1307 - whether the day's cap of captain's orders is reached.</summary>
+		internal static bool DayIsFull(Player player) {
+			return (Settings.captainOrdersPerDay > 0) && (OrdersToday(player) >= Settings.captainOrdersPerDay);
+		}
+
 		/// <summary>A new order from the captain, sized by his power; the rival may send cutthroats.</summary>
 		internal static CaptainOrder Give(Player player, Captain captain, int roll) {
+			int taken = OrdersToday(player);
+			player.SetTag(OrdersDayTK, (int) (Now.Ticks / TimeSpan.TicksPerDay));
+			player.SetTag(OrdersCountTK, taken + 1);
 			int power = State(captain).power;
 			CaptainOrder order = new CaptainOrder { CaptainKey = captain.Key, ExpiresTicks = Now.AddMinutes(Settings.captainOrderMinutes).Ticks };
 			if (roll < 20) {
@@ -621,6 +636,9 @@ namespace SteamEngine.CompiledScripts {
 				if (((order == null) || (order.Expires <= RivalCaptains.Now)) && (wait > 0)) {
 					d.SetText("Ted pro tebe nic nemam. Vrat se za " + wait.ToString(CultureInfo.InvariantCulture) + " minut.");
 					d.Html();
+				} else if (((order == null) || (order.Expires <= RivalCaptains.Now)) && RivalCaptains.DayIsFull(player)) {
+					d.SetText("Pro dnesek jsi udelal dost. Prijd zitra."); //#1307 - the day's cap
+					d.Html();
 				} else if ((order == null) || (order.Expires <= RivalCaptains.Now)) {
 					d.SetText("Mam pro tebe rozkaz. Splnis ho vcas, nebo se mi neukazuj.");
 					d.Html();
@@ -657,7 +675,7 @@ namespace SteamEngine.CompiledScripts {
 					}
 					break;
 				case "captain_order":
-					if (his && (RivalCaptains.CurrentOrder(player) == null) && (RivalCaptains.CooldownLeft(player) == 0)) {
+					if (his && (RivalCaptains.CurrentOrder(player) == null) && (RivalCaptains.CooldownLeft(player) == 0) && !RivalCaptains.DayIsFull(player)) {
 						RivalCaptains.Give(player, captain, Globals.dice.Next(100));
 						npc.Say("Hni sebou!");
 					}
