@@ -9,6 +9,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class TalkErrandTests {
 		private static readonly string[] types = { "tavern", "library", "townhall", "barracks", "temple" };
 		private static readonly TagKey femaleTK = TagKey.Acquire("_res_female_"); //Residents' own key
+		private static readonly List<ErrandTemplate> removed = new List<ErrandTemplate>(); //put back when the chain ends
 
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("TALKERRANDS_CHECK: " + name + "=" + ok);
@@ -68,7 +69,20 @@ namespace SteamEngine.CompiledScripts {
 				}
 				Residents.FillRoles(mess);
 				player.SetTag(VenueKey("messhall"), mess);
+				int[] librarySpot = WorldSpots.NearestStandable(Map.GetMap(camp.M), campSpot[0] + 7, campSpot[1], 6); //a library a GM marked in the camp
+				VenueDraft libraryDraft = new VenueDraft();
+				libraryDraft.SetType(VenueType.Get("library").IndexOf());
+				libraryDraft.M = camp.M;
+				libraryDraft.City = "Barad-dur";
+				libraryDraft.Rects.Add(new ImmutableRectangle(librarySpot[0] - 2, librarySpot[1] - 2, librarySpot[0] + 2, librarySpot[1] + 2));
+				CityVenue campLibrary = libraryDraft.Save(out string libraryProblem);
+				if (campLibrary == null) {
+					throw new SEException("The camp's library wasn't saved: " + libraryProblem);
+				}
+				Residents.FillRoles(campLibrary);
+				player.SetTag(VenueKey("camplibrary"), campLibrary);
 				foreach (ErrandTemplate template in new List<ErrandTemplate>(ErrandTemplates.All)) {
+					removed.Add(template);
 					ErrandTemplates.Unregister(template.Key);
 				}
 				ErrandTemplates.Register(new CensusErrand());
@@ -104,6 +118,10 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return null;
+		}
+
+		private static void SetFriendship(Player player, string residentId, int value) {
+			Residents.AddFriendship(player, residentId, value - Residents.Friendship(player, residentId));
 		}
 
 		private static Errand Build(Player player, ErrandTemplate template, Item giver, string city = "Edoras") {
@@ -165,13 +183,24 @@ namespace SteamEngine.CompiledScripts {
 				Item innkeeper = Gem(player, "tavern", "innkeeper"), librarian = Gem(player, "library", "librarian"), clerk = Gem(player, "townhall", "scribe");
 				List<Errand> built = new List<Errand>();
 
-				//the quarrel: the verdict for the other side raises their friendship
-				Fresh(player);
-				Errand quarrel = Build(player, new QuarrelErrand(), innkeeper);
-				string other = (quarrel == null) ? null : quarrel.steps[0].residentId;
-				int otherBefore = (other == null) ? 0 : Residents.Friendship(player, other);
-				Report("quarrel", (quarrel != null) && (quarrel.steps[1].Kind == ErrandStepKind.Choose) && Play(player, quarrel, 1)
-					&& (Residents.Friendship(player, other) == Math.Min(Residents.MaxFriendship, otherBefore + 2)));
+				//the quarrel: each verdict, both sides' friendship (the giver's with the tier's, in one change)
+				int[] giverDelta = { 2, -1, 1 }, otherDelta = { -1, 2, 1 };
+				bool quarrelOk = true;
+				Errand quarrel = null;
+				for (int verdict = 0; verdict < 3; verdict++) {
+					Fresh(player);
+					quarrel = Build(player, new QuarrelErrand(), innkeeper);
+					if (quarrel == null) {
+						quarrelOk = false;
+						break;
+					}
+					string other = quarrel.steps[0].residentId, giverId = Residents.IdOf(innkeeper);
+					SetFriendship(player, giverId, 5);
+					SetFriendship(player, other, 5);
+					quarrelOk &= (quarrel.steps[1].Kind == ErrandStepKind.Choose) && Play(player, quarrel, verdict)
+						&& (Residents.Friendship(player, giverId) == 5 + baseFriend + giverDelta[verdict]) && (Residents.Friendship(player, other) == 5 + otherDelta[verdict]);
+				}
+				Report("quarrel", quarrelOk);
 				built.Add(quarrel);
 
 				//the secret admirer: the wine handed over, the secret kept pleases the giver
@@ -189,19 +218,23 @@ namespace SteamEngine.CompiledScripts {
 					&& Play(player, invitation, 0));
 				built.Add(invitation);
 
-				//the love letter: sold out, the rival's bribe on top of the pay, and the giver's friendship falls
-				Residents.AddFriendship(player, Residents.IdOf(innkeeper), Residents.MaxFriendship);
+				//the love letter, each from no friendship: loyal pleases the giver; sold out pays the rival's bribe on top and costs the
+				//giver (one change with the tier's friendship, so the penalty isn't lost at 0)
 				long[] gained = new long[2];
+				int[] friendAfter = new int[2];
+				bool lettersPlayed = true;
 				Errand letter = null;
 				for (int answer = 0; answer < 2; answer++) {
 					Fresh(player);
+					SetFriendship(player, Residents.IdOf(innkeeper), 0);
 					letter = Build(player, new LoveLetterErrand(), innkeeper);
 					long before = GoldUtils.CountGoldOn(player);
-					Play(player, letter, answer);
+					lettersPlayed &= (letter != null) && Play(player, letter, answer);
 					gained[answer] = GoldUtils.CountGoldOn(player) - before;
+					friendAfter[answer] = Residents.Friendship(player, Residents.IdOf(innkeeper));
 				}
-				Report("loveletter", (letter != null) && letter.IsDone && (gained[1] >= gained[0] + LoveLetterErrand.RivalBribe)
-					&& (Residents.Friendship(player, Residents.IdOf(innkeeper)) == Math.Min(Residents.MaxFriendship, Residents.MaxFriendship - 3 + baseFriend))); //at the cap after answer 0, then sold out
+				Report("loveletter", lettersPlayed && (gained[1] == gained[0] + LoveLetterErrand.RivalBribe)
+					&& (friendAfter[0] == baseFriend + 1) && (friendAfter[1] == Math.Max(0, baseFriend - 3)) && (friendAfter[1] < friendAfter[0]));
 				built.Add(letter);
 
 				//return the books: only the library gives it; two borrowers, then the pile back
@@ -216,7 +249,10 @@ namespace SteamEngine.CompiledScripts {
 				crone.SetTag(femaleTK, true);
 				Fresh(player);
 				Errand omen = Build(player, new OmenErrand(), crone);
-				Report("omen", (Build(player, new OmenErrand(), clerk) == null) && (omen != null) && (omen.steps.Count == 3)
+				crone.RemoveTag(femaleTK);
+				bool notForAMan = Build(player, new OmenErrand(), crone) == null;
+				crone.SetTag(femaleTK, true);
+				Report("omen", notForAMan && (Build(player, new OmenErrand(), clerk) == null) && (omen != null) && (omen.steps.Count == 3)
 					&& omen.steps.TrueForAll(st => (st.Kind == ErrandStepKind.Fetch) && Array.IndexOf(TalkErrands.OmenDefs, st.itemDef) >= 0) && Play(player, omen, 0));
 				built.Add(omen);
 
@@ -256,12 +292,24 @@ namespace SteamEngine.CompiledScripts {
 				foreach (Item gem in Residents.OfVenue(((CityVenue) player.GetTag(VenueKey("messhall"))).VenueId)) {
 					campCook = campCook ?? gem;
 				}
-				Report("notInTheCamp", (campCook != null) && (Build(player, new LetterErrand(), campCook, "Barad-dur") != null) //people there to pick from
-					&& (Build(player, new QuarrelErrand(), campCook, "Barad-dur") == null) && (Build(player, new LoveLetterErrand(), campCook, "Barad-dur") == null));
+				ErrandTemplate[] talking = { new QuarrelErrand(), new AdmirerErrand(), new InvitationErrand(), new LoveLetterErrand(), new BooksErrand(), new OmenErrand(), new CensusErrand() };
+				Item campLibrarian = null;
+				foreach (Item gem in Residents.OfVenue(((CityVenue) player.GetTag(VenueKey("camplibrary"))).VenueId)) {
+					if (Residents.RoleKeyOf(gem) == "librarian") {
+						campLibrarian = gem;
+					}
+				}
+				Report("notInTheCamp", (campCook != null) && (campLibrarian != null) && (Build(player, new LetterErrand(), campCook, "Barad-dur") != null) //people there to pick from
+					&& Array.TrueForAll(talking, t => (Build(player, t, campCook, "Barad-dur") == null) && (Build(player, t, campLibrarian, "Barad-dur") == null)));
 				Report("plainCzech", built.TrueForAll(e => (e != null) && Plain(e)));
 			} finally {
 				Fresh(player);
 				account.PLevel = plevel;
+				foreach (ErrandTemplate template in removed) {
+					if (ErrandTemplates.Get(template.Key) == null) {
+						ErrandTemplates.Register(template); //the server's own templates back for whatever runs next
+					}
+				}
 				Console.WriteLine("TALKERRANDS_CHAIN_DONE");
 			}
 		}

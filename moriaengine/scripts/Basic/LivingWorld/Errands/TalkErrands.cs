@@ -48,41 +48,41 @@ namespace SteamEngine.CompiledScripts {
 		public override string Name { get { return "Hadka"; } }
 		public override ErrandTier Tier { get { return ErrandTier.Small; } }
 
-		private static readonly string[] subjects = { "o plot mezi nasimi zahradami", "o kozu, ktera mi spasla zeli", "o to, kdo ma ucet za pivo", "o vodu ze spolecne studny" };
+		//the giver's words, and the player's to the other neighbour
+		private static readonly string[][] subjects = {
+			new[] { "o plot mezi nasimi zahradami", "o plot mezi vasimi zahradami" },
+			new[] { "o kozu, ktera mi spasla zeli", "o kozu a spasene zeli" },
+			new[] { "o to, kdo ma ucet za pivo", "o to, kdo ma ucet za pivo" },
+			new[] { "o vodu ze spolecne studny", "o vodu ze spolecne studny" }
+		};
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
 			Item other = TalkErrands.IsCamp(c) ? null : c.PickOther();
 			if (other == null) {
 				return false;
 			}
-			string subject = ErrandContext.Pick(subjects);
-			e.offer = "Hadam se s " + ErrandContext.Who(other) + " " + subject + ". Vyslechni i druhou stranu a rozsud nas. At je klid.";
+			string[] subject = subjects[Globals.dice.Next(subjects.Length)];
+			e.offer = "Hadam se s " + ErrandContext.Who(other) + " " + subject[0] + ". Vyslechni i druhou stranu a rozsud nas. At je klid.";
 			e.thanks = "Slovo je slovo. Ted uz je to vyrizene.";
-			e.steps.Add(Errands.Talk(other, "Vyslechni " + ErrandContext.Who(other), "Co rikas na tu hadku " + subject + "?",
+			e.steps.Add(Errands.Talk(other, "Vyslechni " + ErrandContext.Who(other), "Co rikas na tu hadku " + subject[1] + "?",
 				ErrandContext.Pick("Je to cele jinak, nez rika! Ja jsem v pravu.", "At si nevymysli. Vsichni vi, jak to bylo.", "Ja jen chci, co je moje.")));
 			e.steps.Add(Errands.Choose(c.GiverGem, "Rozsud spor u " + c.GiverName,
 				new[] { "Pravdu mas ty.", "Pravdu ma " + BasicErrands.Name(other) + ".", "Oba mate kus pravdy. Podelte se." },
-				new[] { "Vedel jsem to!", "Hm... Tak dobre. Kdyz to rikas ty.", "Asi mas pravdu. Nema cenu se dal prit." }));
+				new[] { BasicErrands.Sex(c.GiverGem, "Vedel", "Vedela") + " jsem to!", "Hm... Tak dobre. Kdyz to rikas ty.", "Asi mas pravdu. Nema cenu se dal prit." }));
 			return true;
 		}
 
-		public override void OnDone(Player player, Errand e) {
-			string otherId = e.steps[0].residentId;
-			string giverId = e.giverId;
+		public override int GiverFriendship(Errand e, int baseFriend) {
 			switch (e.ChoiceAt(1)) {
-				case 0:
-					Residents.AddFriendship(player, giverId, 2);
-					Residents.AddFriendship(player, otherId, -1);
-					break;
-				case 1:
-					Residents.AddFriendship(player, giverId, -1);
-					Residents.AddFriendship(player, otherId, 2);
-					break;
-				default:
-					Residents.AddFriendship(player, giverId, 1);
-					Residents.AddFriendship(player, otherId, 1);
-					break;
+				case 0: return baseFriend + 2;
+				case 1: return baseFriend - 1;
+				default: return baseFriend + 1;
 			}
+		}
+
+		public override void OnDone(Player player, Errand e) {
+			int other = (e.ChoiceAt(1) == 0) ? -1 : ((e.ChoiceAt(1) == 1) ? 2 : 1);
+			Residents.AddFriendship(player, e.steps[0].residentId, other);
 		}
 	}
 
@@ -107,8 +107,8 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		public override void OnDone(Player player, Errand e) {
-			Residents.AddFriendship(player, e.giverId, (e.ChoiceAt(1) == 0) ? 1 : -2); //a secret kept, or given away
+		public override int GiverFriendship(Errand e, int baseFriend) {
+			return baseFriend + ((e.ChoiceAt(1) == 0) ? 1 : -2); //a secret kept, or given away
 		}
 	}
 
@@ -124,7 +124,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			List<Item> guests = new List<Item>();
 			for (int i = 0; i < 3; i++) {
-				Item next = c.PickOther(gem => !guests.Contains(gem));
+				Item next = c.PickOther(gem => !guests.Contains(gem) && BasicErrands.IsWorker(gem)); //the city's own people, not a prisoner or a passing guest
 				if (next == null) {
 					return false;
 				}
@@ -137,7 +137,7 @@ namespace SteamEngine.CompiledScripts {
 			for (int i = 0; i < guests.Count; i++) {
 				if (i == choosy) {
 					e.steps.Add(Errands.Fetch(guests[i], wish, 1, "Pozvi " + ErrandContext.Who(guests[i]) + " (chce " + TalkErrands.Thing(wish) + ")",
-						"Zves te " + c.GiverName + " na hostinu. Tady je " + TalkErrands.Thing(wish) + ", jak sis prial" + BasicErrands.Sex(guests[i], "", "a") + ".",
+						"Zves te " + c.GiverName + " na hostinu. Nesu ti " + TalkErrands.Thing(wish) + ", jak sis prial" + BasicErrands.Sex(guests[i], "", "a") + ".",
 						"Tak to prijdu rad" + BasicErrands.Sex(guests[i], "", "a") + "!"));
 				} else {
 					e.steps.Add(Errands.Talk(guests[i], "Pozvi " + ErrandContext.Who(guests[i]), "Zves te " + c.GiverName + " na hostinu.",
@@ -176,13 +176,17 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		public override int GiverFriendship(Errand e, int baseFriend) {
+			return baseFriend + ((e.ChoiceAt(0) == 1) ? -3 : 1);
+		}
+
 		public override void OnDone(Player player, Errand e) {
 			if (e.ChoiceAt(0) == 1) {
-				GoldUtils.Grant(player, RivalBribe);
-				Residents.AddFriendship(player, e.giverId, -3);
+				int bribe = (RivalBribe * e.payPercent) / 100; //the repeat penalty's share, as the pay
+				if (bribe > 0) {
+					GoldUtils.Grant(player, (uint) bribe);
+				}
 				Residents.AddFriendship(player, e.steps[1].residentId, -1);
-			} else {
-				Residents.AddFriendship(player, e.giverId, 1);
 			}
 		}
 	}
@@ -193,13 +197,17 @@ namespace SteamEngine.CompiledScripts {
 		public override string Name { get { return "Vypujcene knihy"; } }
 		public override ErrandTier Tier { get { return ErrandTier.Medium; } }
 
-		private static readonly string[] excuses = {
-			"Jeste jsem ji nedocetl, ale dobre, vem si ji.", "Pes mi ji trochu okousal. Rekni, ze to tak uz bylo.",
-			"Myslel jsem, ze jsem ji uz vratil. Tady je.", "Je to nejlepsi kniha, co jsem kdy cetl. Skoda ji vracet."
-		};
+		private static string Excuse(Item borrower) {
+			switch (Globals.dice.Next(4)) {
+				case 0: return "Jeste jsem ji " + BasicErrands.Sex(borrower, "nedocetl", "nedocetla") + ", ale dobre, vem si ji.";
+				case 1: return "Pes mi ji trochu okousal. Rekni, ze to tak uz bylo.";
+				case 2: return BasicErrands.Sex(borrower, "Myslel", "Myslela") + " jsem, ze jsem ji uz " + BasicErrands.Sex(borrower, "vratil", "vratila") + ". Tady je.";
+				default: return "Je to nejlepsi kniha, co jsem kdy " + BasicErrands.Sex(borrower, "cetl", "cetla") + ". Skoda ji vracet.";
+			}
+		}
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
-			if (BasicErrands.VenueKey(c.GiverGem) != "library") {
+			if (TalkErrands.IsCamp(c) || (BasicErrands.VenueKey(c.GiverGem) != "library")) {
 				return false;
 			}
 			List<Item> borrowers = new List<Item>();
@@ -213,7 +221,7 @@ namespace SteamEngine.CompiledScripts {
 			e.offer = "Knihy jsou po terminu. Maji je " + ErrandContext.Who(borrowers[0]) + " a " + ErrandContext.Who(borrowers[1]) + ". Vyzvedni je, prosim.";
 			e.thanks = "Konecne zase na svem miste. Dekuji.";
 			foreach (Item borrower in borrowers) {
-				e.steps.Add(Errands.Talk(borrower, "Vyzvedni knihu u " + ErrandContext.Who(borrower), "Knihovna chce knihu zpatky.", ErrandContext.Pick(excuses)));
+				e.steps.Add(Errands.Talk(borrower, "Vyzvedni knihu u " + ErrandContext.Who(borrower), "Knihovna chce knihu zpatky.", Excuse(borrower)));
 			}
 			e.steps.Add(Errands.Deliver(c.GiverGem, TalkErrands.BookDef, "Vrat knihy " + c.GiverName, "Tady jsou knihy.", "Vsechny! Ty jsi poklad."));
 			return true;
@@ -238,7 +246,7 @@ namespace SteamEngine.CompiledScripts {
 				+ TalkErrands.Thing(things[2]) + ". Neptej se proc.";
 			e.thanks = "Amulet je hotovy. At te chrani na tvych cestach.";
 			foreach (string thing in things) {
-				e.steps.Add(Errands.Fetch(c.GiverGem, thing, 1, "Prines " + c.GiverName + " " + TalkErrands.Thing(thing), "Tady je " + TalkErrands.Thing(thing) + ".", "Dobre... Dobre."));
+				e.steps.Add(Errands.Fetch(c.GiverGem, thing, 1, "Prines " + c.GiverName + " " + TalkErrands.Thing(thing), "Nesu ti " + TalkErrands.Thing(thing) + ".", "Dobre... Dobre."));
 			}
 			return true;
 		}
@@ -253,7 +261,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
 			string venue = BasicErrands.VenueKey(c.GiverGem);
-			if ((venue != "tavern") && (venue != "brewery") && (venue != "messhall")) {
+			if (((venue != "tavern") && (venue != "brewery") && (venue != "messhall")) || !BasicErrands.IsWorker(c.GiverGem)) {
 				return false;
 			}
 			Item guard = c.PickOther(gem => (BasicErrands.RoleKey(gem) == "guard") || (BasicErrands.VenueKey(gem) == "barracks"));
@@ -285,7 +293,7 @@ namespace SteamEngine.CompiledScripts {
 			List<Item> households = new List<Item>();
 			List<CityVenue> seen = new List<CityVenue> { Residents.WorkplaceOf(c.GiverGem) };
 			for (int i = 0; i < 4; i++) {
-				Item next = c.PickOther(gem => !seen.Contains(Residents.WorkplaceOf(gem)));
+				Item next = c.PickOther(gem => !seen.Contains(Residents.WorkplaceOf(gem)) && BasicErrands.IsWorker(gem)); //households of the city's own people
 				if (next == null) {
 					break;
 				}
@@ -295,7 +303,7 @@ namespace SteamEngine.CompiledScripts {
 			if (households.Count < 3) {
 				return false;
 			}
-			e.offer = "Mesto pocita domacnosti. Zeptej se " + households.Count + " lidi, kolik jich doma bydli.";
+			e.offer = "Mesto pocita domacnosti. Zeptej se " + ((households.Count == 3) ? "tri" : "ctyr") + " lidi, kolik jich doma bydli.";
 			e.thanks = "Cisla sedi. Mesto ti dekuje.";
 			foreach (Item household in households) {
 				e.steps.Add(Errands.Talk(household, "Secti domacnost: " + ErrandContext.Who(household), "Kolik vas doma bydli? Je to pro scitani.", ErrandContext.Pick(answers)));
