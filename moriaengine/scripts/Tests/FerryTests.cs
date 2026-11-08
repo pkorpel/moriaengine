@@ -39,7 +39,9 @@ namespace SteamEngine.CompiledScripts {
 				player.SetTag(KeyOf(stop), ferryman);
 			}
 			player.Account.PLevel = 1; //GMs pay nothing
+			player.Realm = Realm.Gondor;
 			GoldUtils.Grant(player, 5000);
+			TravelSettings.instance.rideSeconds = 1; //the boat's count, short for the client (put back by the chain)
 			NPC from = Ferryman(player, "dol_amroth");
 			Beside(player, from);
 			Console.WriteLine("FERRY_SETUP: ferryman=" + from.Uid + " gold=" + player.Gold);
@@ -61,6 +63,9 @@ namespace SteamEngine.CompiledScripts {
 			try {
 				Chain(player);
 			} finally {
+				TravelSettings.instance.rideSeconds = 15;
+				player.Realm = Realm.Gondor;
+				player.DeleteTimer(FerryRide.Key);
 				foreach (FerryStop stop in Ferry.All) {
 					(player.GetTag(KeyOf(stop)) as NPC)?.Delete();
 					player.RemoveTag(KeyOf(stop));
@@ -71,33 +76,64 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void Chain(Player player) {
 			NPC island = Ferryman(player, Ferry.Island), dolAmroth = Ferryman(player, "dol_amroth"), umbar = Ferryman(player, "umbar");
+			FerryStop islandStop = Ferry.Get(Ferry.Island), dolAmrothStop = Ferry.Get("dol_amroth"), umbarStop = Ferry.Get("umbar");
 
-			//who goes where: the island to either harbour, a harbour to the island only
-			List<FerryStop> fromIsland = Ferry.DestinationsFrom(Ferry.StopOf(island)), fromHarbour = Ferry.DestinationsFrom(Ferry.StopOf(umbar));
-			Report("theRoutes", (Ferry.StopOf(island).Key == Ferry.Island) && (Ferry.StopOf(dolAmroth).Key == "dol_amroth")
-				&& (fromIsland.Count == 2) && fromIsland.Contains(Ferry.Get("umbar")) && fromIsland.Contains(Ferry.Get("dol_amroth"))
-				&& (fromHarbour.Count == 1) && (fromHarbour[0].Key == Ferry.Island));
+			//who goes where: a harbour to the island, whoever asks; the island to one's own side's harbour only (an outcast's: the side
+			//they came from); a stray ferryman far from any stop is no ferry
+			player.Realm = Realm.Gondor;
+			List<FerryStop> gondorFromIsland = Ferry.DestinationsFrom(Ferry.StopOf(island), player), gondorFromUmbar = Ferry.DestinationsFrom(Ferry.StopOf(umbar), player);
+			player.Realm = Realm.Mordor;
+			List<FerryStop> mordorFromIsland = Ferry.DestinationsFrom(Ferry.StopOf(island), player);
+			player.Realm = Realm.MordorOutcast;
+			List<FerryStop> outcastFromIsland = Ferry.DestinationsFrom(Ferry.StopOf(island), player);
+			player.Realm = Realm.GondorOutcast;
+			bool gondorOutcast = Ferry.DestinationsFrom(Ferry.StopOf(island), player).Contains(dolAmrothStop);
+			player.Realm = Realm.Gondor;
+			NPC stray = (NPC) ((NPCDef) ThingDef.GetByDefname(Ferry.FerrymanDef)).Create(player.X, player.Y + 200, player.Z, player.M);
+			bool strayIsNone = Ferry.StopOf(stray) == null;
+			stray.Delete();
+			Report("theRoutes", (Ferry.StopOf(island) == islandStop) && (Ferry.StopOf(dolAmroth) == dolAmrothStop)
+				&& (gondorFromIsland.Count == 1) && (gondorFromIsland[0] == dolAmrothStop) && (gondorFromUmbar.Count == 1) && (gondorFromUmbar[0] == islandStop)
+				&& (mordorFromIsland.Count == 1) && (mordorFromIsland[0] == umbarStop) && (outcastFromIsland.Count == 1) && (outcastFromIsland[0] == umbarStop)
+				&& gondorOutcast && strayIsNone);
 
-			//to Umbar with a pet that follows; not to the other harbour from a harbour
+			//a Gondor hero on the island isn't taken to Umbar; to Dol Amroth with a pet that follows, after the count
 			Beside(player, island);
+			long gold = player.Gold;
+			bool notToTheEnemy = !Ferry.Take(player, island, umbarStop) && (player.Gold == gold);
 			NPC pet = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(player.X + 1, player.Y, player.Z, player.M);
 			pet.ControlMaster = player;
-			long gold = player.Gold;
-			bool rode = Ferry.Take(player, island, Ferry.Get("umbar"));
-			Point4D umbarLanding = Ferry.Get("umbar").Landing;
-			bool there = (Point2D.GetSimpleDistance(player, umbarLanding) <= 1) && (player.Gold == gold - TravelSettings.instance.ferryPrice)
-				&& (Point2D.GetSimpleDistance(pet, umbarLanding) <= 1);
-			Beside(player, umbar);
-			gold = player.Gold;
-			bool notToTheOtherHarbour = !Ferry.Take(player, umbar, Ferry.Get("dol_amroth")) && (player.Gold == gold);
+			bool booked = Ferry.Take(player, island, dolAmrothStop) && (player.Gold == gold - TravelSettings.instance.ferryPrice);
+			FerryRide ride = player.GetTimer(FerryRide.Key) as FerryRide;
+			bool waits = (ride != null) && (Point2D.GetSimpleDistance(player, island) <= 1); //not yet: the count first
+			ride?.Complete(player);
+			Point4D dolLanding = dolAmrothStop.Landing;
+			bool there = (Point2D.GetSimpleDistance(player, dolLanding) <= 1) && (Point2D.GetSimpleDistance(pet, dolLanding) <= 1)
+				&& ((player.X != dolAmroth.X) || (player.Y != dolAmroth.Y)); //beside the ferryman, not on his tile
 			pet.Delete();
-			Report("aRideWithItsFollowers", rode && there && notToTheOtherHarbour);
+			Report("aRideWithItsFollowersAfterTheCount", notToTheEnemy && booked && waits && there);
 
-			//no fare, no ride
+			//strayed by the count's end: the boat sails without you, the fare stays paid
+			Beside(player, dolAmroth);
+			gold = player.Gold;
+			Ferry.Take(player, dolAmroth, islandStop);
+			ride = player.GetTimer(FerryRide.Key) as FerryRide;
+			player.Go(new Point4D(dolAmroth.X + TravelSettings.instance.strayTiles + 3, dolAmroth.Y, dolAmroth.Z, dolAmroth.M));
+			ride?.Complete(player);
+			Report("strayAndTheBoatLeaves", (ride != null) && (player.Gold == gold - TravelSettings.instance.ferryPrice) && (Point2D.GetSimpleDistance(player, dolAmroth) > 1)
+				&& !((FlaggedRegion) StaticRegion.GetByDefname("a_Ostrov_nestalosti")).ContainsPoint(new Point2D(player.X, player.Y)));
+
+			//no ghosts; no fare, no ride
+			Beside(player, dolAmroth);
+			player.CauseDeath(null);
+			Beside(player, dolAmroth);
+			gold = player.Gold;
+			bool noGhosts = player.Flag_Dead && !Ferry.Take(player, dolAmroth, islandStop) && (player.Gold == gold);
+			player.Resurrect();
 			GoldUtils.Pay(player, (int) player.Gold, PaySource.Usual, "");
 			bool broke = player.Gold == 0;
-			bool stays = !Ferry.Take(player, umbar, Ferry.Get(Ferry.Island)) && (Point2D.GetSimpleDistance(player, umbar) <= 1);
-			Report("noFareNoRide", broke && stays);
+			bool stays = !Ferry.Take(player, dolAmroth, islandStop) && (player.GetTimer(FerryRide.Key) == null);
+			Report("noGhostsNoFareNoRide", noGhosts && broke && stays);
 		}
 	}
 }

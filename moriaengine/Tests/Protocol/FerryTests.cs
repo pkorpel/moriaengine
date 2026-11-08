@@ -21,12 +21,12 @@ namespace SteamEngine.Tests.Protocol {
 				var dialog = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains(dialog.Strings, s => s.StartsWith("Ostrov nestalosti (", System.StringComparison.Ordinal));
 				game.SendGumpResponse(dialog.GumpUid, IslandButton);
-				System.Threading.Thread.Sleep(500);
+				System.Threading.Thread.Sleep(3500); //the boat's count (1 s in the test) and its tick
 				this.Run(game, ".TestFerryAfterClient \"" + Number(setup, "gold") + "\"", "FERRY_CLIENT_DONE");
 				this.AssertChecks("theClientSailedToTheIsland");
 
 				this.Run(game, ".TestFerryChain", "FERRY_CHAIN_DONE");
-				this.AssertChecks("theRoutes", "aRideWithItsFollowers", "noFareNoRide");
+				this.AssertChecks("theRoutes", "aRideWithItsFollowersAfterTheCount", "strayAndTheBoatLeaves", "noGhostsNoFareNoRide");
 			}
 		}
 	}

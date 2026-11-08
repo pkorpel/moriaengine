@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -36,15 +38,47 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Where a passenger steps ashore: beside the ferryman, not on his tile.</summary>
-		public Point4D Landing {
+		/// <summary>This stop's ferryman, if one stands within Ferry.StopRange of its spot (a GM may have moved him), or null.</summary>
+		public NPC Ferryman {
 			get {
 				int[] spot = this.Spot;
 				if (spot == null) {
 					return null;
 				}
-				int[] at = WorldSpots.NearestStandable(Map.GetMap(this.M), spot[0] + 1, spot[1] + 1, 3);
-				return (at == null) ? null : new Point4D(at[0], at[1], at[2], this.M);
+				foreach (AbstractCharacter ch in Map.GetMap(this.M).GetCharsInRange(spot[0], spot[1], Ferry.StopRange)) {
+					if ((ch is NPC npc) && !npc.IsDeleted && (npc.Def == ThingDef.GetByDefname(Ferry.FerrymanDef))) {
+						return npc;
+					}
+				}
+				return null;
+			}
+		}
+
+		/// <summary>Where a passenger steps ashore: beside the stop's ferryman where he stands (else beside his spot), never on
+		/// his tile.</summary>
+		public Point4D Landing {
+			get {
+				NPC ferryman = this.Ferryman;
+				int[] spot = (ferryman != null) ? new[] { (int) ferryman.X, (int) ferryman.Y, (int) ferryman.Z } : this.Spot;
+				if (spot == null) {
+					return null;
+				}
+				Map map = Map.GetMap(this.M);
+				foreach (int[] offset in new[] { new[] { 1, 1 }, new[] { -1, 1 }, new[] { 1, -1 }, new[] { -1, -1 }, new[] { 2, 0 }, new[] { 0, 2 } }) {
+					int[] at = WorldSpots.NearestStandable(map, spot[0] + offset[0], spot[1] + offset[1], 2);
+					if ((at != null) && ((at[0] != spot[0]) || (at[1] != spot[1]))) {
+						return new Point4D(at[0], at[1], at[2], this.M);
+					}
+				}
+				return null;
+			}
+		}
+
+		/// <summary>The realm tag where the stop lands (Dol Amroth 1, Umbar 2, the island 2).</summary>
+		public int RealmTag {
+			get {
+				Point4D landing = this.Landing;
+				return (landing == null) ? 0 : TravelStops.RealmTagAt(landing);
 			}
 		}
 
@@ -58,6 +92,7 @@ namespace SteamEngine.CompiledScripts {
 	/// (TravelSettings.ferryPrice) through GoldUtils.Pay, what follows the passenger comes along, as on the travel stones (TravelRide.Carry).</summary>
 	public static class Ferry {
 		public const string Island = "ostrov", FerrymanDef = "c_ferryman";
+		public const int StopRange = 20;
 
 		public static readonly FerryStop[] All = {
 			new FerryStop(Island, "Ostrov nestalosti", "a_Ostrov_nestalosti", -5, 12),
@@ -69,10 +104,11 @@ namespace SteamEngine.CompiledScripts {
 			return Array.Find(All, s => s.Key == key);
 		}
 
-		/// <summary>The stop a ferryman serves: the one whose tile is nearest him.</summary>
+		/// <summary>The stop a ferryman serves: the one whose tile is nearest him, within StopRange; else none (a stray ferryman a
+		/// GM made elsewhere is no ferry).</summary>
 		public static FerryStop StopOf(NPC ferryman) {
 			FerryStop best = null;
-			int bestDistance = int.MaxValue;
+			int bestDistance = StopRange + 1;
 			foreach (FerryStop stop in All) {
 				int[] spot = stop.Spot;
 				if ((spot != null) && (stop.M == ferryman.M)) {
@@ -86,34 +122,137 @@ namespace SteamEngine.CompiledScripts {
 			return best;
 		}
 
-		/// <summary>Where a ferryman goes: from the island to either harbour, from a harbour to the island.</summary>
-		public static List<FerryStop> DestinationsFrom(FerryStop here) {
+		/// <summary>Where a ferryman takes this passenger: from a harbour, the island (Gondor's heroes too: q041's smuggler is there);
+		/// from the island, the harbours not on the enemy's land, as the travel stones' rule. An outcast belongs to the side they came
+		/// from (q099's way back is on the island): a Mordor outcast to Umbar, everyone else not of Mordor to Dol Amroth.</summary>
+		public static List<FerryStop> DestinationsFrom(FerryStop here, Character passenger) {
 			List<FerryStop> list = new List<FerryStop>();
 			foreach (FerryStop stop in All) {
-				if ((here != null) && (stop != here) && (stop.IsIsland != here.IsIsland)) {
+				if ((here != null) && (stop != here) && (stop.IsIsland != here.IsIsland) && (stop.IsIsland || !IsEnemyHarbour(passenger, stop))) {
 					list.Add(stop);
 				}
 			}
 			return list;
 		}
 
-		/// <summary>The ride: the fare paid, the passenger and what follows them ashore at `to`. False when they didn't go.</summary>
+		private static bool IsEnemyHarbour(Character passenger, FerryStop harbour) {
+			if ((passenger == null) || passenger.IsGM) {
+				return false;
+			}
+			bool mordorSide = (passenger.Realm == Realm.Mordor) || (passenger.Realm == Realm.MordorOutcast);
+			return mordorSide ? (harbour.RealmTag == 1) : (harbour.RealmTag == 2);
+		}
+
+		/// <summary>Why the passenger can't take the boat now, told to them, or null: a ghost, the jailed or a camp's convict, a
+		/// possessing mystic, the voodoo's no-port mark.</summary>
+		internal static string Refusal(Player player) {
+			if (player.Flag_Dead) {
+				return "Duchy neprevazim.";
+			}
+			if (Jail.IsJailed(player) || Camp.IsInCamp(player)) {
+				return "Tebe nikam nevezu.";
+			}
+			return null;
+		}
+
+		/// <summary>The boat booked: the fare paid, then (a GM at once) a count of rideSeconds by the ferryman, as the travel stones'
+		/// coach; whoever strays more than strayTiles from him by then is left behind, the fare with the ferryman. False when nothing
+		/// was booked.</summary>
 		public static bool Take(Player player, NPC ferryman, FerryStop to) {
+			string refusal = Refusal(player);
+			if (refusal != null) {
+				ferryman.Say(refusal);
+				return false;
+			}
+			if (MysticHypnosis.RefusesMenu(player) || ShamanVoodoo.RefusesRide(player)) {
+				return false;
+			}
 			FerryStop here = StopOf(ferryman);
-			Point4D landing = (to == null) ? null : to.Landing;
-			if ((here == null) || !DestinationsFrom(here).Contains(to) || (landing == null)) {
+			if ((here == null) || !DestinationsFrom(here, player).Contains(to) || (to.Landing == null)) {
 				ferryman.Say("Tam neplujeme.");
 				return false;
 			}
 			int fare = Math.Max(0, TravelSettings.instance.ferryPrice);
+			player.DeleteTimer(FerryRide.Key);
 			if (!GoldUtils.Pay(player, fare, PaySource.Usual, "")) {
 				ferryman.Say("Plavba stoji " + fare + " zlatych.");
 				return false;
 			}
 			ferryman.Say("Nalodit! Plujeme do: " + to.Name + ".");
-			TravelRide.Carry(player, landing);
-			player.SysMessage("Po dlouhe plavbe vystupujes na breh: " + to.Name + ".");
+			if (player.IsGM) {
+				Sail(player, to);
+			} else {
+				player.AddTimer(FerryRide.Key, new FerryRide(ferryman, to));
+			}
 			return true;
+		}
+
+		/// <summary>The crossing: ashore at `to` with what follows.</summary>
+		internal static void Sail(Character passenger, FerryStop to) {
+			Point4D landing = to.Landing;
+			if (landing == null) {
+				passenger.RedMessage("Lod dnes nepluje, kontaktuj GM.");
+				return;
+			}
+			TravelRide.Carry(passenger, landing);
+			passenger.SysMessage("Po dlouhe plavbe vystupujes na breh: " + to.Name + ".");
+		}
+	}
+
+	/// <summary>#1307 - the boat's count by the ferryman, as the travel stones' TravelRide: stray too far by its end and the boat sails
+	/// without you, the fare stays with the ferryman.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class FerryRide : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_ferryRide_");
+
+		[SaveableData, CopyableData]
+		public int fromX, fromY, countLeft;
+
+		[SaveableData, CopyableData]
+		public byte fromM;
+
+		[SaveableData, CopyableData]
+		public string toKey = "";
+
+		[DeepCopyImplementation, LoadingInitializer]
+		public FerryRide() {
+		}
+
+		internal FerryRide(NPC ferryman, FerryStop to) {
+			this.fromX = ferryman.X;
+			this.fromY = ferryman.Y;
+			this.fromM = ferryman.M;
+			this.toKey = to.Key;
+			this.countLeft = TravelSettings.instance.rideSeconds;
+			this.DueInSeconds = 1;
+			this.PeriodInSeconds = 1;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			Character self = cont as Character;
+			if (self == null) {
+				return;
+			}
+			if (this.countLeft > 0) {
+				self.Message(TravelStops.Count(this.countLeft));
+				this.countLeft--;
+				return;
+			}
+			this.Complete(self);
+		}
+
+		/// <summary>The count's end (a test's shortcut too): aboard if near enough, alive and free, else left behind.</summary>
+		internal void Complete(Character self) {
+			this.Delete();
+			FerryStop to = Ferry.Get(this.toKey);
+			if ((to == null) || self.Flag_Dead || ((self is Player player) && (Ferry.Refusal(player) != null))) {
+				return;
+			}
+			if ((self.M != this.fromM) || (Point2D.GetSimpleDistance(self, new Point2D(this.fromX, this.fromY)) > TravelSettings.instance.strayTiles)) {
+				self.RedMessage("Lod odplula bez tebe!");
+				return;
+			}
+			Ferry.Sail(self, to);
 		}
 	}
 
@@ -128,7 +267,12 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1307 - the ferryman's double click: his destinations and the fare.</summary>
 	public class E_Ferryman : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
-			if ((clicker is Player player) && QuestNpc.IsCloseEnough(self, player)) {
+			if ((clicker is Player player) && QuestNpc.IsCloseEnough(self, player) && !MysticHypnosis.RefusesMenu(player)) {
+				string refusal = Ferry.Refusal(player);
+				if (refusal != null) {
+					self.Say(refusal);
+					return TriggerResult.Cancel;
+				}
 				D_Ferry dialog = SingletonScript<D_Ferry>.Instance;
 				player.DialogClose(dialog, 0);
 				player.Dialog(player, dialog, new DialogArgs(self));
@@ -143,7 +287,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			NPC ferryman = (NPC) args[0];
-			List<FerryStop> to = Ferry.DestinationsFrom(Ferry.StopOf(ferryman));
+			List<FerryStop> to = Ferry.DestinationsFrom(Ferry.StopOf(ferryman), sendTo as Character);
 			this.SetLocation(60, 60);
 			this.AddPage(0);
 			this.AddBackground(0, 0, 320, 90 + (to.Count * 24), 2620);
