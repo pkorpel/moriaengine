@@ -45,10 +45,7 @@ namespace SteamEngine.CompiledScripts {
 
 		internal override bool Begin(int playersNear) {
 			this.playersAtStart = playersNear;
-			this.centre = WorldEvents.CentreOf(this.City);
-			if (this.centre == null) {
-				return false;
-			}
+			this.centre = this.Centre;
 			this.route = WorldEvents.RouteIn(this.centre, Settings.caravanSteps);
 			if ((this.route == null) || (this.route.Count < MinRoute) || (WorldSpots.Distance(this.route[0], this.centre.X, this.centre.Y) <= ArrivedWithin + 6)) {
 				return false; //a road that starts in the square is no road
@@ -70,7 +67,7 @@ namespace SteamEngine.CompiledScripts {
 			this.next = 0;
 			this.Advance();
 			this.EndsAt = this.StartedAt + (Settings.caravanMinutes * 60.0);
-			foreach (Player player in WorldEvents.PlayersNear(this.City)) {
+			foreach (Player player in WorldEvents.PlayersNear(this.City, this.Kind)) {
 				player.SysMessage("Do " + this.CityName + " miri karavana. Cesta neni bezpecna, kupec by uvital doprovod.");
 			}
 			CityNews.Add(this.City, "Na ceste do " + this.CityName + " je karavana. Kupci hledaji doprovod.");
@@ -138,7 +135,7 @@ namespace SteamEngine.CompiledScripts {
 		internal void Ambush() {
 			this.Ambushed = true;
 			Map map = this.Merchant.GetMap();
-			int count = BanditsFor(Math.Max(this.playersAtStart, WorldEvents.PlayersNear(this.City).Count));
+			int count = BanditsFor(Math.Max(this.playersAtStart, WorldEvents.PlayersNear(this.City, this.Kind).Count));
 			for (int i = 0; i < count; i++) {
 				int side = (i % 2 == 0) ? 4 : -4;
 				int[] at = WorldSpots.NearestStandable(map, this.Merchant.X + side, this.Merchant.Y + (i / 2) - 1, 3);
@@ -168,7 +165,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Lose(string why) {
 			this.End(false);
-			foreach (Player player in WorldEvents.PlayersNear(this.City)) {
+			foreach (Player player in WorldEvents.PlayersNear(this.City, this.Kind)) {
 				player.RedMessage(why + " Karavana do " + this.CityName + " je ztracena.");
 			}
 			WorldEvents.SetOutcome(this.City, 0, 0, "Karavana do " + this.CityName + " se ztratila na ceste. Zbozi nedorazilo.");

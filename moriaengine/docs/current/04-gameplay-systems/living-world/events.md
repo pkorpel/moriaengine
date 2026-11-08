@@ -2,8 +2,8 @@
 
 Step 23 of the living world (#1237, #1284) builds the design's section 6: the world itself starts things. Code is in
 `scripts/Basic/LivingWorld/Events/`: `WorldEvents.cs` (the framework), `OrcRaid.cs`, `Caravan.cs` and `events.def`. The
-numbers are in `.settings` "Udalosti". Steps 24 and 25 add more kinds (beacons, fire, fever, the troll at the ford,
-corsairs, festivals) on the same framework.
+numbers are in `.settings` "Udalosti". Step 24 adds more kinds on the same framework: the corsairs, the beacons and the troll (#1286), with fire and fever to
+follow. Step 25 adds the festivals.
 
 ## How an event starts
 
@@ -72,6 +72,65 @@ merchant:
 
 **Lost** (the merchant dies, or time runs out): the caravan is gone, with no price change.
 
+## Corsairs at the harbour (`korzari`, #1286)
+
+**Where and when:** Umbar's ships land raiders at Pelargir, Dol Amroth's harbour (city `Dol_Amroth`, area `a_Pelargir`), at
+any hour.
+
+**The fight:** it runs as the orc raid does, on the same `Warband` code with its own numbers (`corsair*`):
+- a captain (`c_event_corsair_captain`) and corsairs (`c_event_corsair`);
+- size: `corsairBase` (4), plus `corsairPerPlayer` (2) for each player near, at most `corsairMax` (14);
+- they come from `corsairSteps` (20) walking steps out, and there are `corsairMinutes` (15) to beat them.
+
+**Beaten:** the defenders are paid as in the raid (300, plus 50 a kill, 500 experience, 20 standing), and the harbour stays
+open: prices -5% for 60 minutes.
+
+**Not beaten:** the harbour closes, and prices rise `corsairLostPercent` (+20%) for `corsairLostMinutes` (6 hours).
+
+Both outcomes count for all of Dol Amroth's city (Pelargir is one of its areas): prices are kept per city.
+
+## The beacons of Gondor (`majaky`, #1286)
+
+**Where and when:** Minas Tirith, at any hour.
+
+**The chain:** `beaconCount` (5) beacons (`i_event_beacon`, kindling) follow a line from the city's centre towards Edoras's,
+one point every `beaconSpacing` (30) tiles. If both cities aren't on one map, the line runs west. Gondor's chat calls for them to be lit.
+
+**Lighting:** a double click within 2 tiles lights a beacon, but only the next one in the chain: the others answer which
+must burn first. A lit beacon turns into a campfire, and Gondor's chat counts them. A ghost can't light one. Neither can
+anyone of the enemy realm, though a GM can.
+
+**Spots:** a beacon stands on the tile nearest its point on the line that a walker reaches from the beacon before it (from
+the centre, for the first) within twice the spacing, and at least half a spacing on. That keeps beacons off ledges, islands
+and closed houses, and the chain bends round walls and hills while still heading towards Edoras.
+
+**All lit in time** (`beaconMinutes`, 20):
+- every lighter of the city's side gets `beaconGold` (200), `beaconExp` (300) and `beaconFavour` (15);
+- every Gondor player gets `beaconBonusPercent` (10%) more of each experience gain for `beaconBonusMinutes` (60). It's
+  added in `LevelingSystem.AddExperience` beside boosters and RP rank, as a percentage of the base gain, and only to gains.
+  The bonus is kept in memory: a restart ends it early;
+- a GM can light beacons, but isn't paid. A chain lit by GMs alone gives no bonus.
+
+**Not lit in time:** the beacons go, and the criers say Rohan never heard.
+
+## The troll at the ford (`trol`, #1286)
+
+**Where and when:** Gondor's pilot cities, at night (game hours `trollNightFrom` to `trollNightTo`, 22 to 4).
+
+**The troll:** a strong hostile troll (`c_event_troll`, ~2000 hits) stands on a road `trollSteps` (30) walking steps out of the
+city, at least 10 tiles from the centre. When nobody keeps it busy, it walks back to its spot.
+
+**At sunrise:** the first morning after a night, on the game clock. A GM's start in the morning waits for the next sunrise.
+- **Still fought:** if players of the city's side fought it lately (as experience counts fighters), it turns into a stone
+  troll (`c_event_stone_troll`: invulnerable, frozen, grey). The stone stays as a landmark for `trollStoneMinutes` (4
+  hours), or until a restart. The fighters get `trollGold` (400), `trollExp` (800) and `trollFavour` (25).
+- **Nobody fought it:** it walks off into the hills, and nobody is paid.
+
+**Killed before dawn:** those who fought it are paid the same, and no stone is left.
+
+**No sunrise in time:** after `trollMinutes` (30) without one (for example, with a long night setting), the troll leaves as if
+nobody had fought it. A troll a GM removes ends the event with nothing told.
+
 ## Outcomes
 
 **Prices:** an outcome changes the city's prices by a percentage for a while. `Reputation.PriceFor` applies it after the
@@ -85,9 +144,10 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 ## GM command
 
 - `.udalost` lists the running events with their minutes left.
-- `.udalost "start <najezd|karavana> [City]"` starts one now, whatever the hour. Without a city, it starts in the city
+- `.udalost "start <najezd|karavana|korzari|majaky|trol> [City]"` starts one now, whatever the hour. Without a city, it starts in the city
   the GM stands in. As with other GM commands, the words go in quotes.
-- `.udalost stop` ends the events in the GM's city (all events outside a city), with no outcome.
+- `.udalost stop` ends the events in the GM's city (all of them outside a city, or with `"stop vse"`), with no
+  outcome.
 
 ## Not done here
 
@@ -97,6 +157,24 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 - Nothing has been tried in a real client yet.
 
 ## Test
+
+`Tests/Protocol/WorldEventsTests.cs` has two facts, on one server.
+
+**OutdoorEventsTests** (#1286):
+- **In the client:** a GM starts the beacons. A double click on the second beacon is refused (not its turn), and one on the
+  first lights it.
+- **On the server:**
+  - the chain's spots;
+  - out of order refused;
+  - the rest lit by a player, who's paid; a GM isn't;
+  - the realm's bonus through `AddExperience` (Gondor only);
+  - the beacons not lit in time;
+  - the corsairs at Pelargir (a captain first, the harbour's centre, the harbour closing);
+  - the troll fought until dawn: the stone, the pay, the landmark expiring;
+  - the troll left alone;
+  - the troll killed.
+
+**RaidsAndCaravansComeAndGo** (#1284) is below.
 
 `Tests/Protocol/WorldEventsTests.cs` (server side: `scripts/Tests/WorldEventsTests.cs`, account `worldeventtests`).
 

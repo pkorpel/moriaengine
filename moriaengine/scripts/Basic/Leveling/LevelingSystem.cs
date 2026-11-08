@@ -76,6 +76,7 @@ namespace SteamEngine.CompiledScripts {
 			int baseAmount = amount;
 			amount += Boosters.Bonus(player, baseAmount); //#1090 - Erebor's addexp: a running booster's percent of a gain
 			amount += RpRanks.Bonus(player, baseAmount); //#1116 - and the RP rank's, both of the base, added
+			amount += WorldEvents.ExperienceBonus(player, baseAmount); //#1286 - the beacons of Gondor lit: the realm's bonus
 			player.Experience += amount;
 			if (amount > 0) {
 				player.SysMessage("You have gained " + amount + " experience.");
