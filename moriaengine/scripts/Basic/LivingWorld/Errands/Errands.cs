@@ -530,13 +530,18 @@ namespace SteamEngine.CompiledScripts {
 				return 0;
 			}
 			foreach (AbstractItem item in container) {
-				if ((item.Def == def) && !IsErrandItem(item)) {
+				if ((item.Def == def) && !IsErrandItem(item) && !IsMagic(item)) {
 					count += item.Amount;
 				} else if (item is Container inside) {
 					count += CountIn(inside, def);
 				}
 			}
 			return count;
+		}
+
+		/// <summary>#1293 - a magic item is never an errand's goods: a commission for a dagger mustn't take the player's magic one.</summary>
+		private static bool IsMagic(AbstractItem item) {
+			return (item is Item it) && MagicItems.IsMagic(it);
 		}
 
 		internal static int Consume(Container container, ItemDef def, int count) {
@@ -548,7 +553,7 @@ namespace SteamEngine.CompiledScripts {
 				if (count <= 0) {
 					break;
 				}
-				if ((item.Def == def) && !IsErrandItem(item)) {
+				if ((item.Def == def) && !IsErrandItem(item) && !IsMagic(item)) {
 					int amount = item.Amount;
 					if (amount <= count) {
 						count -= amount;

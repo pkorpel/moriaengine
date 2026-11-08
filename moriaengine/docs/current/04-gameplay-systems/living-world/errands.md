@@ -97,6 +97,30 @@ Code: `scripts/Basic/LivingWorld/Errands/TalkErrands.cs`. These are design 9.1's
 
 The war camp's residents give orders, not these, except the ale ([war-camp.md](war-camp.md)).
 
+## The doing templates (#1293)
+
+Code: `scripts/Basic/LivingWorld/Errands/DoingErrands.cs`, design 9.1's numbers 7, 10, 23, 24 and 27, on the engine's own
+steps. The ones with things in the world (the runaway, the lamplighter, the cellar, stop thief, the missing shipment, press
+gang) follow in step 27b.
+
+| Template | Key | Who gives it | Steps |
+|---|---|---|---|
+| Zakazka (a commission) | `commission` | any worker | bring a dagger, a shirt or a loaf, made or bought |
+| Kuryr (the courier race) | `courier` | any worker (less often than the rest) | a sealed package to a worker in another city of the giver's realm; medium, 30 minutes |
+| Slova mrtvych (words for the dead) | `ghostwords` | the temple's priest (the one there at night), to a player with Spirit Speak 30.0 or more | at night (22-4) the priest feels a spirit; carry its message to a living relative |
+| Rvacka (the brawl) | `brawl` | a tavern worker | split two brawlers, or bet 50 gold on one; report back |
+| Cerny pasazer (the stowaway) | `stowaway` | a harbour worker | find the stowaway; hand them over or let them go; report back |
+
+- **The courier:** arriving with half the time or more left pays 130%. It's medium, not large: a travel stone makes it quick, and
+  a large errand's magic bag isn't scaled by the pay.
+- **The brawl:** splitting the brawlers gives +1 with the innkeeper. A bet is paid at the end through `GoldUtils.Pay`, comes
+  back double half the time, and the innkeeper pays nothing for it (-1 with them). Without the money, nobody takes the bet. A
+  GM can't bet: a GM pays nothing, so it would be free gold.
+- **The stowaway:** handing them over gives +1 with the giver. Letting them go gives -1 with the giver, +2 with the stowaway,
+  and half the pay.
+
+The war camp gives orders, not these.
+
 ## Limits (`.settings` "Ukoly")
 
 Both `.settings` categories, "Ukoly" and #1243's "Povest", are now in the settings dialog.
@@ -111,7 +135,8 @@ The giver won't offer a second errand while the first is open. Nobody offers err
 
 Harad and Umbar add two templates of their own (`caravan` and `contraband`), and their errands also serve the faction of the giver's workplace: see [harad-umbar.md](harad-umbar.md) (#1282). In Barad-dur errands are orders: [war-camp.md](war-camp.md).
 
-A fetch never counts an errand's own item, such as a letter to deliver. A collect step takes a bag in the pack that holds enough, not merely the first one found. A deliver step whose item def doesn't exist becomes a message, so it can still be done.
+A fetch never counts an errand's own item, such as a letter to deliver, nor a magic item (#1293: a commission for a dagger
+mustn't take the player's magic one). A collect step takes a bag in the pack that holds enough, not merely the first one found. A deliver step whose item def doesn't exist becomes a message, so it can still be done.
 
 ## Pay
 
