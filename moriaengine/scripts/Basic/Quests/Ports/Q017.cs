@@ -499,6 +499,9 @@ namespace SteamEngine.CompiledScripts {
 	public sealed class Q017CollectorSpeech : AbstractSpeech {
 		private static readonly string[] greetings = { "hi", "ahoj", "zdrav", "cau" };
 		private static readonly string[] trade = { "vymen", "vymena", "vymenit", "zamen", "artefakt" };
+		private static readonly string[] agree = { "ano", "prodam", "beru", "plati" };
+		internal static readonly TagKey OfferTK = TagKey.Acquire("_q017CollectorOffer_");
+		internal const double OfferSeconds = 30;
 
 		public new static void Bootstrap() {
 			new Q017CollectorSpeech("spk_q017_sberatel").Register();
@@ -520,6 +523,9 @@ namespace SteamEngine.CompiledScripts {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
 			if (SkillTeacherSpeech.ContainsAny(speech, trade)) {
+				Offer(npc, player);
+			} else if (SkillTeacherSpeech.ContainsAny(speech, agree) && (player.GetTag(OfferTK) is double at) && (Globals.TimeInSeconds - at < OfferSeconds)) {
+				player.RemoveTag(OfferTK);
 				Buy(npc, player);
 			} else if (SkillTeacherSpeech.ContainsAny(speech, greetings)) {
 				npc.Say("Zdravim, sbiram artefakty od alchymisty Terlaka! Nemas nejaky na VYMENu ?");
@@ -527,7 +533,18 @@ namespace SteamEngine.CompiledScripts {
 			return SpeechResult.IgnoredOrActedUpon;
 		}
 
-		/// <summary>#1307 - the player's own profession's artifact from the pack for a cheque; the next entry asks 2 crystals fewer.
+		/// <summary>#1307 - what he'd give for the player's artifact; an "ano" within OfferSeconds sells it.</summary>
+		internal static void Offer(NPC npc, Player player) {
+			if (OwnReward(player) == null) {
+				npc.Say("Nevidim u tebe zadnou vec kterou potrebuji");
+				return;
+			}
+			player.SetTag(OfferTK, Globals.TimeInSeconds);
+			npc.Say("Ano to je ono! Dam ti za to sek na " + Math.Max(1, QuestPortSettings.instance.terlakCollectorPrice) + " zlatych. Prodas? (ANO)");
+		}
+
+		/// <summary>#1307 - the player's own profession's artifact from the pack for a cheque; the next entry asks 2 crystals fewer, but
+		/// never fewer than after a first finished run (2: 0 would be the quest never begun, its free potion and cheap entry again).
 		/// False when there's none to buy.</summary>
 		internal static bool Buy(NPC npc, Player player) {
 			Item artifact = OwnReward(player);
@@ -535,10 +552,10 @@ namespace SteamEngine.CompiledScripts {
 				npc.Say("Nevidim u tebe zadnou vec kterou potrebuji");
 				return false;
 			}
-			npc.Say("Ano to je ono!");
+			npc.Say("Obchod plati.");
 			artifact.Delete();
 			CashiersItem.CreateCheck(player, Math.Max(1, QuestPortSettings.instance.terlakCollectorPrice));
-			Q017.SetRuns(player, Q017.GetRuns(player) - 2);
+			Q017.SetRuns(player, Math.Max(2, Q017.GetRuns(player) - 2));
 			return true;
 		}
 

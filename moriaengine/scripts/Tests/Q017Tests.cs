@@ -190,10 +190,15 @@ namespace SteamEngine.CompiledScripts {
 				Item own = Q017.GiveReward(player);
 				Q017.SetRuns(player, 4);
 				int cheques = Cheques(player);
-				bool bought = Q017CollectorSpeech.Buy(collector, player) && own.IsDeleted && (Cheques(player) == cheques + 1) && (Q017.GetRuns(player) == 2)
+				Q017CollectorSpeech.Offer(collector, player); //he names his price and waits for an "ano"
+				bool offered = !own.IsDeleted && (player.GetTag(Q017CollectorSpeech.OfferTK) != null);
+				bool bought = offered && Q017CollectorSpeech.Buy(collector, player) && own.IsDeleted && (Cheques(player) == cheques + 1) && (Q017.GetRuns(player) == 2)
 					&& HasCheque(player, QuestPortSettings.instance.terlakCollectorPrice);
+				Q017.GiveReward(player);
+				bought &= Q017CollectorSpeech.Buy(collector, player) && (Q017.GetRuns(player) == 2); //never back to 0, the quest never begun
 				Q017.SetRuns(player, runs);
 				collector.Delete();
+				player.RemoveTag(Q017CollectorSpeech.OfferTK);
 				Report("theCollectorBuysTheCurrentArtifacts", notOthers && bought);
 				Report("journalTextsArePlain", Plain());
 			} finally {

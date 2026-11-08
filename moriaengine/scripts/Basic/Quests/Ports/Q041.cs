@@ -244,24 +244,40 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#1307 - everything the player held in the realm they leave: its office (the General, the first Nazgul), a Nazgul's
 		/// ring, a mayoralty, citizenship and candidacy, the realm uniform, a keep's captaincy.</summary>
 		internal static void LeaveRealmPosts(Player player, Realm old) {
+			bool held = false;
 			RealmOffice office = RealmOffice.For(old);
 			if ((office != null) && (office.holder == player)) {
 				office.Dismiss();
+				held = true;
 			}
 			PowerBadge ring = NazgulRings.RingOf(player);
 			if (ring != null) {
 				NazgulRings.TakeAway(ring, player);
+				held = true;
 			}
 			foreach (Town town in new List<Town>(Town.All)) {
 				if (town.mayor == player) {
 					town.ClearMayor();
+					held = true;
 				}
-				town.RemoveCitizen(player);
-				town.WithdrawCandidate(player);
+				if ((town.FindCitizen(player) != null) || (town.FindCandidate(player) != null)) {
+					town.RemoveCitizen(player);
+					town.WithdrawCandidate(player);
+					held = true;
+				}
+				town.voters.Remove(player); //a vote cast in the old realm's election goes too
 			}
-			RealmUniform.Remove(player);
-			KeepCaptains.DismissFrom(player);
-			player.SysMessage("Vse, co jsi drzel ve sve stare risi - urad, prsten, obcanstvi, uniforma i velitelstvi - zustava za tebou.");
+			if (RealmUniform.EntryOf(player) != null) {
+				RealmUniform.Remove(player);
+				held = true;
+			}
+			if (KeepCaptains.KeepOfCaptain(player) != null) {
+				KeepCaptains.DismissFrom(player);
+				held = true;
+			}
+			if (held) {
+				player.SysMessage("Vse, co jsi drzel ve sve stare risi - urad, prsten, obcanstvi, uniforma i velitelstvi - zustava za tebou.");
+			}
 		}
 
 		/// <summary>The gate's change: Mordor to Gondor clears the murders and karma, Gondor to Mordor takes Erebor's -3000 karma

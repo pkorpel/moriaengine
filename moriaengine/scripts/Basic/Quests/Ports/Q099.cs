@@ -127,7 +127,9 @@ namespace SteamEngine.CompiledScripts {
 
 		internal const int LevelingSkillPointsPerLevel = 5; //LevelingSystem.AddExperience's grant
 
-		//the skill points owed: unspent first, then 5.0 steps of the point-bought skills, the highest first
+		//the skill points owed: unspent first, then 5.0 steps bought with points, the highest first. A step bought with points is one a
+		//whole 5.0 above a value RaiseSkill takes points from: never from a master's gate (250, 500, 750: those steps are taught for
+		//gold), nor a value that isn't a whole 5.0 (what use taught)
 		private static void TakeSkillPoints(Player player, int owed) {
 			int fromUnspent = Math.Min(owed, Math.Max(0, player.UnspentSkillPoints));
 			player.UnspentSkillPoints -= fromUnspent;
@@ -138,8 +140,9 @@ namespace SteamEngine.CompiledScripts {
 				int highestValue = -1;
 				foreach (SkillDef skill in SkillDef.AllSkillDefs) {
 					int value = player.GetRealSkillValue(skill);
-					if (LevelingSystem.IsSkillPointSpendable((SkillName) skill.Id) && (value - LevelingSystem.SkillPointGain >= profession.GetSkillMinimum(skill))
-							&& (value > highestValue)) {
+					int below = value - LevelingSystem.SkillPointGain;
+					if (LevelingSystem.IsSkillPointSpendable((SkillName) skill.Id) && (below >= profession.GetSkillMinimum(skill))
+							&& ((value % LevelingSystem.SkillPointGain) == 0) && !IsMasterGate(below) && (value > highestValue)) {
 						highest = skill;
 						highestValue = value;
 					}
@@ -156,7 +159,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//the attribute budget over: a point at a time from the highest stat above the profession's start
+		private static bool IsMasterGate(int value) {
+			return (value == 250) || (value == 500) || (value == 750); //RaiseSkill's "Na dalsi uroven ... te musi vyucit mistr"
+		}
+
+		//the attribute budget over: a point at a time from the highest stat above the profession's minimum
 		private static void TakeAttributePoints(Player player) {
 			ProfessionDef profession = player.Profession;
 			while ((player.AttributePointBudget < 0) && (profession != null)) {
@@ -204,6 +211,8 @@ namespace SteamEngine.CompiledScripts {
 				default:
 					player.Vit -= 1;
 					player.VitPointsAllocated -= 1;
+					player.Hits = (short) Math.Min(player.Hits, player.MaxHits); //a lower Vit lowers the maximums
+					player.Stam = (short) Math.Min(player.Stam, player.MaxStam);
 					break;
 			}
 		}
@@ -235,6 +244,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (cheque.Value != Price) {
 				npc.Say("To je malo!");
+				return;
+			}
+			if (LevelingSystem.IsUnderStatMagic(player) || RealmStatEffect.IsOn(player)) {
+				npc.Say("Nejdriv ze sebe smyj ta kouzla. Chci te videt takoveho, jaky jsi."); //#1307 - the stats taken back are the real ones
 				return;
 			}
 			cheque.Delete();

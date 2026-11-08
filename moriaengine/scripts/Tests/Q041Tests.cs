@@ -188,6 +188,7 @@ namespace SteamEngine.CompiledScripts {
 				&& (Q041.Changes(player) == 1) && Q041.Journal.IsDone(player));
 
 			//#1307 - Gondor's posts: an office, a city's mayoralty and citizenship, the realm uniform; all stay behind at the switch
+			bool newOffice = RealmOffice.For(Realm.Gondor) == null;
 			RealmOffice office = RealmOffice.For(Realm.Gondor) ?? new RealmOffice { realm = Realm.Gondor };
 			Character holderBefore = office.holder;
 			office.holder = player;
@@ -214,6 +215,9 @@ namespace SteamEngine.CompiledScripts {
 			Report("theOldRealmsPostsStayBehind", heldThem && (office.holder == null) && (town.FindCitizen(player) == null) && (town.mayor != player)
 				&& (RealmUniform.EntryOf(player) == null));
 			office.holder = holderBefore;
+			if (newOffice) {
+				office.Remove();
+			}
 			if (tempStone != null) {
 				tempStone.Delete();
 			}
