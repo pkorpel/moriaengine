@@ -324,6 +324,11 @@ namespace SteamEngine.CompiledScripts {
 			if (string.Equals(city, CityFlavour.Umbar, StringComparison.OrdinalIgnoreCase)) {
 				return female ? "NAMES_UMBAR_FEMALE" : "NAMES_UMBAR_MALE";
 			}
+			switch (CityFlavour.FolkOf(city)) { //#1304 - the other cities' folk
+				case CityFolk.Elves: return female ? "NAMES_ELF_FEMALE" : "NAMES_ELF_MALE";
+				case CityFolk.Dwarves: return female ? "NAMES_DWARF_FEMALE" : "NAMES_DWARF_MALE";
+				case CityFolk.Easterlings: return female ? "NAMES_EASTERLING_FEMALE" : "NAMES_EASTERLING_MALE";
+			}
 			return female ? "NAMES_HUMANFEMALE" : "NAMES_HUMANMALE";
 		}
 

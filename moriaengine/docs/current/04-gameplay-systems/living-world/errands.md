@@ -191,7 +191,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 - **Letting a slave go** pays half. It raises karma by 50 and counts the slave in a player tag.
   - One time in four the overseer finds out: -60 standing in Nurn, -50 net with the errand's own +10, so freeing slaves
-    costs standing on average.
+    costs standing on average. Since #1304 the overseers' faction (`nu_overseers`, which these errands serve) loses as much.
   - Every fifth slave freed leaves a magic pouch in the pack, with a note. The medium errand's own pouch chance still applies.
   - A GM's choice changes nothing.
 - **The spy's clues:** the first witness says where the spy works; the second says the first letter of the spy's name. Each

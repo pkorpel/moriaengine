@@ -10,6 +10,20 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	public static class CityFlavour {
 		public const string Harad = "Harad", Umbar = "Umbar";
+		public const string DolAmroth = "Dol_Amroth", Erebor = "Erebor", Dain = "Dainovo_kralovstvi", Dale = "Dol", Fornost = "Fornost",
+			Woodland = "Kralovstvi_lesnich_elfu", Havens = "Sede_pristavy", Nurn = "Nurn", Rhun = "Rhun";
+
+		/// <summary>#1304 - who lives in a city, for their names: elves in the woodland realm and the Havens, dwarves under the
+		/// mountains, Easterlings in Rhun; Men (or the pilots' own lists) elsewhere.</summary>
+		public static CityFolk FolkOf(string city) {
+			if (Is(city, Woodland) || Is(city, Havens)) {
+				return CityFolk.Elves;
+			}
+			if (Is(city, Erebor) || Is(city, Dain)) {
+				return CityFolk.Dwarves;
+			}
+			return Is(city, Rhun) ? CityFolk.Easterlings : CityFolk.Men;
+		}
 		public const string CargoDef = "i_cloth"; //a bolt of cloth: not a container, so nothing of the player's goes with it when the errand takes it back
 
 		/// <summary>The darker of the client's skin hues (1050-1058), for Harad's people.</summary>
@@ -72,6 +86,35 @@ namespace SteamEngine.CompiledScripts {
 						return "um_fences";
 				}
 			}
+			return OtherCityFaction(city, venue); //#1304
+		}
+
+		/// <summary>#1304 - the other cities' factions by workplace, or null.</summary>
+		private static string OtherCityFaction(string city, string venue) {
+			if (Is(city, DolAmroth)) {
+				return ((venue == "barracks") || (venue == "armoury")) ? "da_swans" : (((venue == "harbour") || (venue == "market")) ? "da_harbour" : null);
+			}
+			if (Is(city, Erebor)) {
+				return ((venue == "smithy") || (venue == "forge")) ? "er_smiths" : ((venue == "market") ? "er_merchants" : null);
+			}
+			if (Is(city, Dale)) {
+				return (venue == "harbour") ? "dl_bargemen" : ((venue == "market") ? "dl_market" : null);
+			}
+			if (Is(city, Fornost)) {
+				return ((venue == "barracks") || (venue == "stable")) ? "fo_rangers" : null;
+			}
+			if (Is(city, Woodland)) {
+				return ((venue == "tavern") || (venue == "library")) ? "el_court" : null;
+			}
+			if (Is(city, Havens)) {
+				return (venue == "harbour") ? "sp_shipwrights" : null;
+			}
+			if (Is(city, Rhun)) {
+				return ((venue == "stable") || (venue == "kennels")) ? "rh_horselords" : null;
+			}
+			if (Is(city, Nurn)) {
+				return (venue == "overseer") ? "nu_overseers" : null;
+			}
 			return null;
 		}
 
@@ -83,8 +126,37 @@ namespace SteamEngine.CompiledScripts {
 			if (Is(city, Umbar)) {
 				return ErrandContext.Pick("Co chces, suchozemce? Mluv rychle.", "Dalsi nova tvar v pristavu. Co tu pohledavas?", "Mas zlato, nebo jen otazky?");
 			}
+			if (Is(city, DolAmroth)) {
+				return ErrandContext.Pick("Vitej v Dol Amrothu, pod labutim praporem.", "More je dnes klidne. Co te k nam privadi?", "Knize ma rad hosty, kteri vedi, jak se chovat.");
+			}
+			if (Is(city, Erebor) || Is(city, Dain)) {
+				return ErrandContext.Pick("Co tu chces, vysoky? Mluv, mame praci.", "Pod horou se nemluvi zbytecne. Ven s tim.", "Vitej v sinich trpasliku. Neosahavej nic.");
+			}
+			if (Is(city, Dale)) {
+				return ErrandContext.Pick("Vitej v Dolu. Zvony na vezich zvoni pro vsechny.", "Z jezera nebo z hor? Kazdy tu neco prodava.", "Pokoj ti. Hledas obchod, nebo noclech?");
+			}
+			if (Is(city, Fornost)) {
+				return ErrandContext.Pick("V ruinach kralu je malo hostu. Co hledas?", "Hranicari hlidaji cesty. Ty ses jim prosmykl?", "Fornost byval velky. Ted je tu ticho.");
+			}
+			if (Is(city, Woodland)) {
+				return ErrandContext.Pick("Les te pustil dal. To se nestava kazdemu.", "Mluv tise, stromy posloucha.", "Clovek v kralovstvi lesa? Mas stesti, ze jsi nezabloudil.");
+			}
+			if (Is(city, Havens)) {
+				return ErrandContext.Pick("Lode odplouvaji na zapad. Ty jeste nemusis.", "Vitej v Sedych pristavech. Slysis to more?", "Mnozi sem prichazeji se rozloucit.");
+			}
+			if (Is(city, Rhun)) {
+				return ErrandContext.Pick("Cizinec ze zapadu? Mluv, nez zavolam strazce.", "Kone z Rhunu jsou nejlepsi. Prisel jsi koupit?", "Na vychode se neptame dvakrat.");
+			}
+			if (Is(city, Nurn)) {
+				return ErrandContext.Pick("Mluv potichu, dozorci slysi vsechno.", "Co chces? Pole cekaji a bic nepocka.", "Neni tu nic k videni. Jen prace.");
+			}
 			return null;
 		}
+	}
+
+	/// <summary>#1304 - who a city's people are, for their names.</summary>
+	public enum CityFolk {
+		Men, Elves, Dwarves, Easterlings
 	}
 
 	/// <summary>#1282 - Karavana (Harad): a caravan's cargo carried to someone of another trade, then word back.</summary>
