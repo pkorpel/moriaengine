@@ -143,10 +143,11 @@ namespace SteamEngine.CompiledScripts {
 			Report("rumoursArePlainAscii", plain);
 			bool ownNews = true;
 			for (int i = 0; i < 30; i++) {
-				ownNews &= (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Barad-dur")) < 0) && (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Nurn")) < 0);
+				ownNews &= (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Barad-dur")) < 0) && (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Nurn")) < 0)
+					&& (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Rhun")) < 0);
 			}
 			Report("eachCityHasItsNewsAndMordorOnlyItsOwn", (Tavern.LocalLore("Minas_Tirith") != null) && (Tavern.LocalLore("Edoras") != null) &&
-				(Tavern.LocalLore("Rhun") == Tavern.LocalLore("Barad-dur")) && ownNews);
+				(Tavern.LocalLore("Rhun") != null) && ownNews); //#1304 - Rhun has its own news now, still on Mordor's side
 			Tavern.ForgetRumours();
 			DateTime start = DateTime.UtcNow;
 			Errands.NowOverride = start;
