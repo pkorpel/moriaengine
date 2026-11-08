@@ -279,7 +279,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1284 - the world events (design section 6): a scheduler on Globals starts one now and then in a pilot city where
+	/// <summary>#1284 - the world events (design section 6): a scheduler on Globals starts one now and then in a city where
 	/// a player is, events run in memory, and their outcomes change a city's prices for a while (Reputation.PriceFor) and go to
 	/// the criers (CityNews). GM command .udalost.</summary>
 	public static class WorldEvents {
@@ -303,7 +303,7 @@ namespace SteamEngine.CompiledScripts {
 			get { return Environment.GetEnvironmentVariable(TestHarness.CommandsVariable) == "1"; }
 		}
 
-		/// <summary>The pilot cities (design section 4), as FlaggedRegion.City names them.</summary>
+		/// <summary>The cities the scheduler looks at: the pilots and (#1304) the map's other cities.</summary>
 		public static readonly string[] Cities = { "Minas_Tirith", "Edoras", "Hobitin", "Barad-dur", "Harad", "Umbar",
 			"Dol_Amroth", "Erebor", "Dol", "Fornost", "Kralovstvi_lesnich_elfu", "Sede_pristavy", "Nurn", "Rhun" }; //#1304 - the other cities too (not the abandoned Dainovo_kralovstvi, nor the test London)
 
@@ -354,8 +354,23 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		#region the city
-		/// <summary>A city's centre: a standable spot at its main area's spawn point (a_City), or null.</summary>
+		private static readonly Dictionary<string, Point4D> centres = new Dictionary<string, Point4D>(StringComparer.OrdinalIgnoreCase);
+
+		/// <summary>A city's centre: a standable spot at its main area's spawn point (a_City), or null. Remembered per area (#1304:
+		/// the scheduler asks it for every city and kind each try; a recompile starts afresh).</summary>
 		public static Point4D CentreOf(string city, WorldEventKind kind = null) {
+			string key = city + "|" + ((kind == null) ? "" : kind.AreaFor(city));
+			if (centres.TryGetValue(key, out Point4D known)) {
+				return known;
+			}
+			Point4D found = FindCentre(city, kind);
+			if (found != null) {
+				centres[key] = found;
+			}
+			return found;
+		}
+
+		private static Point4D FindCentre(string city, WorldEventKind kind) {
 			StaticRegion area = StaticRegion.GetByDefname((kind == null) ? ("a_" + city.Replace('-', '_')) : kind.AreaFor(city));
 			if (area == null) {
 				List<FlaggedRegion> areas = VenueRegistry.AreasOf(city);

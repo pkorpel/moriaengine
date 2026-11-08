@@ -5,7 +5,7 @@ using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1304 - the living world in the other cities, on the server: names by folk, greetings, news, factions, events and
-	/// festivals. Tests/Protocol/OtherCitiesTests.cs reads an Erebor resident's greeting through a client first.</summary>
+	/// festivals. Tests/Protocol/OtherCitiesTests.cs reads a Dol Amroth merchant's greeting through a client first.</summary>
 	public static class OtherCitiesTests {
 		internal static readonly string[] NewCities = { "Dol_Amroth", "Erebor", "Dol", "Fornost", "Kralovstvi_lesnich_elfu", "Sede_pristavy", "Nurn", "Rhun" };
 		private static readonly TagKey venueTK = TagKey.Acquire("_othercitiestest_venue_");
@@ -97,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 				lists &= Plain(NameList.Random(list));
 			}
 			CityVenue smithy = (CityVenue) player.GetTag(venueTK);
-			bool dwarves = true;
+			bool dwarves = Residents.OfVenue(smithy.VenueId).Count > 0;
 			foreach (Item gem in Residents.OfVenue(smithy.VenueId)) {
 				dwarves &= NameList.Contains(Residents.NameList("Erebor", Residents.IsFemale(gem)), Residents.NameOf(gem));
 			}
@@ -148,9 +148,16 @@ namespace SteamEngine.CompiledScripts {
 				&& WorldEvents.KindOf("dozinky").IsFor("Dol") && WorldEvents.KindOf("den_oka").IsFor("Nurn") && WorldEvents.KindOf("den_oka").IsFor("Rhun")
 				&& !WorldEvents.KindOf("yule").IsFor("Rhun") && !WorldEvents.KindOf("den_oka").IsFor("Erebor"));
 
-			//standing anywhere shows in .povest's list
-			Reputation.Change(player, "Fornost", 5);
-			Report("standingShowsInTheList", Reputation.CitiesOf(player).Contains("Fornost"));
+			//a festival under the mountain: its host stands where the square's guests can walk to
+			WorldEvents.ResetForTests();
+			Festival yule = WorldEvents.Start(WorldEvents.KindOf("yule"), "Erebor") as Festival;
+			bool hostReachable = false;
+			if (yule != null) {
+				Point4D c = yule.Centre;
+				hostReachable = WorldEvents.Reachable(Map.GetMap(c.M), new[] { c.X, c.Y, c.Z }, 3).Exists(t => (t[0] == yule.Host.X) && (t[1] == yule.Host.Y) && (t[2] == yule.Host.Z));
+				WorldEvents.Stop(yule);
+			}
+			Report("aFestivalHostCanBeReached", hostReachable);
 		}
 	}
 }

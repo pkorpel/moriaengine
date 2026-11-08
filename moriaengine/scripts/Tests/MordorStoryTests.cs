@@ -223,8 +223,10 @@ namespace SteamEngine.CompiledScripts {
 			Report("handedBackOrOneFreedForHalfAndKarma", handedBack && freed);
 			MordorStories.RollOverride.Enqueue(0); //found out
 			rep = Reputation.Of(player, "Nurn");
+			int overseers = Reputation.OfFaction(player, "nu_overseers");
 			Quota(player, overseer, NurnQuotaErrand.FreeChoice);
-			bool foundOut = Reputation.Of(player, "Nurn") == rep + es.repMedium - NurnQuotaErrand.FoundOutLoss;
+			bool foundOut = (Reputation.Of(player, "Nurn") == rep + es.repMedium - NurnQuotaErrand.FoundOutLoss)
+				&& (Reputation.OfFaction(player, "nu_overseers") == overseers + es.repMedium - NurnQuotaErrand.FoundOutLoss); //#1304 - the overseers' faction too
 			int pouches = Pouches(player);
 			for (int i = MordorStories.Freed(player); i < NurnQuotaErrand.GiftEvery - 1; i++) {
 				MordorStories.RollOverride.Enqueue(99);

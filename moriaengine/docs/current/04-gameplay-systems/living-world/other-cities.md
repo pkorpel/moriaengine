@@ -12,7 +12,7 @@ cities (`City =` in map.def):
 | `Fornost` | Fornost | Gondor | Men |
 | `Kralovstvi_lesnich_elfu` | the woodland realm | Gondor | elves |
 | `Sede_pristavy` | the Grey Havens | Gondor | elves |
-| `Nurn` | Nurn | Mordor | Men (the slaves), orcs in its posts |
+| `Nurn` | Nurn | Mordor | Men (human names and bodies) |
 | `Rhun` | Rhun | Mordor | Easterlings |
 
 Dain's kingdom (`Dainovo_kralovstvi`, the abandoned dwarf city under the mountain, realm 3) gets only the dwarves' names and
@@ -51,7 +51,11 @@ greeting, for venues a GM might mark there. London is a test city on map plane 1
   - midsummer adds Dol Amroth, Fornost and Dale;
   - the harvest adds Dale and Fornost;
   - Yule adds Dol Amroth, Erebor, Dale and Fornost;
-  - the day of the Eye adds Nurn and Rhun.
+  - the day of the Eye adds Nurn and Rhun. Its host is the orc host of Mordor's cities, in Rhun too.
+  - A festival's host stands on a tile walked to from the centre, so a city under a mountain doesn't put them on a floor
+    above the square.
+- **City centres** (`WorldEvents.CentreOf`) are remembered per area once found. The scheduler asks for every city and kind on
+  each try, and a recompile starts afresh.
 - **`.povest` and the journal:** a city shows once the player has any standing there, as before.
 
 ## Still for a GM
@@ -71,4 +75,4 @@ and the test keeps its dwarves only for their names.
   - the events' city list (not London, not Dain's kingdom); the raid on Gondor's side only; a caravan starting from each new
     city;
   - the festivals' places;
-  - standing in Fornost showing in `.povest`'s list.
+  - a Yule in Erebor, whose host stands on a tile walked to from the centre.

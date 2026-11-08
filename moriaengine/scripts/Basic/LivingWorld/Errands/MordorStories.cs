@@ -87,7 +87,7 @@ namespace SteamEngine.CompiledScripts {
 			player.SetTag(MordorStories.FreedTK, freed);
 			player.SysMessage("Otrok zmizel ve tme. Nikdo se nedozvi, ze jsi ho pustil.");
 			if (MordorStories.Roll(100) < FoundOutChance) {
-				Reputation.Change(player, MordorStories.Nurn, -FoundOutLoss);
+				Reputation.Change(player, MordorStories.Nurn, -FoundOutLoss, "nu_overseers"); //#1304 - the overseers' faction too
 				player.SysMessage("Dozorce ti neveri. Nekdo te videl, jak otroka pustis.", 0x21);
 			}
 			if ((freed % GiftEvery) == 0) {

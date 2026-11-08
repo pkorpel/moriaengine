@@ -26,7 +26,7 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendGumpResponse(talk.GumpUid, 0);
 
 				this.Run(game, ".TestOtherCitiesChain", "OTHERCITIES_CHAIN_DONE");
-				this.AssertChecks("namesByFolk", "greetingsAndNewsOfTheirOwn", "factionsPerCity", "eventsInTheOtherCities", "festivalsWhereTheyFit", "standingShowsInTheList");
+				this.AssertChecks("namesByFolk", "greetingsAndNewsOfTheirOwn", "factionsPerCity", "eventsInTheOtherCities", "festivalsWhereTheyFit", "aFestivalHostCanBeReached");
 			}
 		}
 	}

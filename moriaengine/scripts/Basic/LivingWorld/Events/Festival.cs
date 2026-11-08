@@ -96,7 +96,15 @@ namespace SteamEngine.CompiledScripts {
 
 		internal override bool Begin(int playersNear) {
 			Map map = Map.GetMap(this.Centre.M);
-			int[] at = WorldSpots.NearestStandable(map, this.Centre.X + 2, this.Centre.Y, 3);
+			//#1304 - beside the centre on a tile walked to from it: a city under a mountain (Erebor) has floors above the square
+			int[] at = null;
+			foreach (int[] tile in WorldEvents.Reachable(map, new[] { this.Centre.X, this.Centre.Y, this.Centre.Z }, 3)) {
+				if (((tile[0] != this.Centre.X) || (tile[1] != this.Centre.Y))
+						&& ((at == null) || (WorldSpots.Distance(tile, this.Centre.X + 2, this.Centre.Y) < WorldSpots.Distance(at, this.Centre.X + 2, this.Centre.Y)))) {
+					at = tile;
+				}
+			}
+			at = at ?? WorldSpots.NearestStandable(map, this.Centre.X + 2, this.Centre.Y, 3);
 			this.Host = this.Spawn((Reputation.RealmOfCity(this.City) == Realm.Mordor) ? FestivalKind.OrcHostDef : FestivalKind.HostDef, at, this.Centre.M, null);
 			if (this.Host == null) {
 				return false;
