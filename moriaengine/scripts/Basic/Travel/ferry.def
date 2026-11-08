@@ -1,0 +1,22 @@
+//#1307 - the ferryman to Ostrov nestalosti (Ferry.cs): Dol Amroth, Umbar and the island's shore, placed by .SetupQuestPorts
+
+[NPCDef c_ferryman]
+TEVENTS = e_character
+NAME = "Prevoznik"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 80
+Dex = 60
+Int = 40
+MaxHits = 200
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0599
+Equip = i_pants_short
+EquipColor = 0x0455
+Equip = i_bandana
+EquipColor = 0x0599

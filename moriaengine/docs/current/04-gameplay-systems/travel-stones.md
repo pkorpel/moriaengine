@@ -24,7 +24,32 @@ Changing a stop means changing `TravelStops.All`: the `st_pos` lines in `travels
 
 ## Settings
 
-`.settings` -> Travel: `priceDivisor`, `escortPrice`, `rideSeconds`, `strayTiles`.
+`.settings` -> Travel: `priceDivisor`, `escortPrice`, `rideSeconds`, `strayTiles`, `ferryPrice`.
+
+## The ferry
+
+#1307, the user's answer to how players reach Ostrov nestalosti, the island of q041's smuggler and q099's Podivin. Code:
+`scripts/Basic/Travel/Ferry.cs`, the ferryman in `ferry.def`.
+
+- **Three ferrymen** (`c_ferryman`, "Prevoznik"), placed by `.SetupQuestPorts`:
+  - beside Dol Amroth's spawn point, for Gondor's side;
+  - beside Umbar's, for Mordor's;
+  - on the island's shore, by the smuggler.
+
+  The spots are unreviewed and a GM can move them. A ferryman serves the stop whose spot is nearest him, within 20 tiles; one made
+  further away is no ferry.
+- **A double click** opens his destinations.
+  - **From a harbour:** the island, for anyone (q041's smuggler serves Gondor's heroes too).
+  - **From the island:** only the harbour that isn't on the passenger's enemy's land, as the stones' rule. An outcast belongs to
+    the side they came from (q099's way back is on the island): a Mordor outcast sails to Umbar, everyone else not of Mordor to
+    Dol Amroth.
+- **Refused:** ghosts, the jailed and the labour camp's convicts, a possessing mystic, and the voodoo's no-port mark. Unlike the
+  stones, outcasts are served.
+- **The fare** is `ferryPrice` (500) each way, paid through `GoldUtils.Pay` (a GM pays nothing) when the boat is booked.
+- **The crossing:** like the stones' coach, the boat counts `rideSeconds` by the ferryman (a GM goes at once). Whoever strays more
+  than `strayTiles` by then is left behind, and the fare stays paid, so the ferry is no escape from a fight.
+- **Ashore:** beside the other end's ferryman where he stands (beside his spot if he's gone), never on his tile. What follows the
+  passenger comes along, as on the stones (`TravelRide.Carry`).
 
 ## Left out
 
