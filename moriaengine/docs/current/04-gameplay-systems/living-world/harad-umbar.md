@@ -40,7 +40,8 @@ as with any faction, [reputation.md](reputation.md)):
 | Umbar | corsair den, tavern | Korzarsti kapitani (`um_corsairs`) |
 | Umbar | market, slave pen | Otrokari a paseraci (`um_fences`) |
 
-Other workplaces, and the other cities, serve no faction this way yet.
+Other workplaces serve no faction this way. Since #1304 and #1307 the other cities' factions are served by workplace too (see
+[other cities](other-cities.md) and, for Minas Tirith, Edoras and Hobitin, [reputation](reputation.md)).
 
 ## Two errands of their own
 

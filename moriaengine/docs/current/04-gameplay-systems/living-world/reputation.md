@@ -66,6 +66,13 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
 ## Effects
 
 - **Harad and Umbar:** an errand there also raises the faction of the giver's workplace ([harad-umbar.md](harad-umbar.md), #1282).
+  The other cities do too (#1304, [other-cities.md](other-cities.md)), and since #1307 the pilot cities of Gondor:
+  - **Minas Tirith:** barracks, armoury and prison serve Straz Citadely; market, bakery, tailor, bank, harbour and smithy the
+    Kupci dolnich kruhu; Houses of Healing and temple the Domy uzdraveni; library and town hall the Archivari.
+  - **Edoras:** town hall, tavern and brewery serve Kraluv dvur; barracks and armoury the Jezdci; stable and farm the Chovatele
+    koni.
+  - **Hobitin:** the town hall serves Hobitinska posta; farm, market and bakery the Sedlaci; tavern and brewery the Hostinsti
+    (the two rivals).
 - **Barad-dur** reads its reputation as a rank in the war camp, and its residents give orders: see [war-camp.md](war-camp.md) (#1280).
 
 - **Shops:** the basic vendor, the alchemists and the Prodejce charge the level's price where the player stands, and refuse an enemy. A GM pays list price. A price setting of 0 refuses only at Nepritel; at any other level it means list price, never free.
@@ -73,8 +80,8 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
 - **Guards:** your own realm's guards stop protecting a player the city counts as Nepritel (`GuardSpeech.IsProtectedBy`). Since guards attack on sight whoever they don't protect, such a player is attacked. The enemy realm's guards attack them anyway.
 - **A suspect entering a city** hears a guard nearby say "Mam te na ocich, <name>." (or gets a red line if no guard is near). Once in five minutes, as a city is many areas.
 - **Citizenship** at a town stone wants `citizenshipMinLevel` or better in that city (`Reputation.MayBecomeCitizen`, from
-  `Town.TryJoin`). The default is Znamy, which a stranger of the realm already is, so nobody is locked out before errands can
-  raise standing; the design's Vazeny is a GM's setting until then.
+  `Town.TryJoin`). The default is the design's Vazeny (#1307, the user's call): citizenship is a goal earned through errands and
+  deeds. A world whose settings were saved before keeps its old value until a GM changes it in `.settings`.
 - **`.povest`** (a player command) lists the six pilot cities, any other city where the player has a standing, and their factions,
   with level and value, two cities a page. The journal's Mesto tab ([journal.md](../quests/journal.md#zivy-svet-1245)) shows it
   too, a city a page, with the player's friends there.

@@ -56,7 +56,8 @@ invulnerable and stand still; a GM can move them. A double click opens a captain
   - Switching sides costs instead: the old band and the camp lose 40 (the new band gains half), an order from the old captain fails,
     and he remembers: his greeting becomes "Zradce!". Going back and forth only ever loses standing.
 - **His orders** ("Rozkaz" / "Rozumim."): one at a time, `captainOrderMinutes` (60) to do it, sized by the captain's power (1-5).
-  After each order done or failed he gives the hero nothing for `captainOrderCooldownMinutes` (20):
+  After each order done or failed he gives the hero nothing for `captainOrderCooldownMinutes` (20), and a hero takes at most
+  `captainOrdersPerDay` (3) a real day (#1307), so one busy player can't decide a week's rivalry alone:
 
   | Order | Chance | What he wants |
   |---|---|---|
