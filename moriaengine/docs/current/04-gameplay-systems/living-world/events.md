@@ -23,8 +23,14 @@ its centre. The centre is the spawn point of the city's main area, `a_<City>`. I
 
 The players near the centre at the start decide the event's size.
 
-**In memory:** events aren't saved. A restart ends them. On the scheduler's first tick after a boot, it deletes any NPC
-that still carries an event's tag (`_wev_`) while no event of that id is running.
+**Saved with the world** (#1307, the user's "save everything"): the running events with their NPCs, items, heroes and their
+kinds' own state; the cities' outcomes and their history; the realms' experience bonus; the landmarks; the scheduler's clock;
+and the criers' news. A restart goes on where the save left off, and the events' clock starts at once when an event is running.
+- **How:** each event writes its own state into a `WorldEventRecord` (named ints, doubles, strings, things and numbers) in its
+  `SaveTo`, and reads it back in `LoadFrom`. `WorldEventsStore` saves them with the world (`StaticMemberSaver`: a snapshot at
+  each save, the restore once everything is loaded, before the timers start).
+- **Leftovers:** on the scheduler's first tick after a boot, it deletes any NPC that still carries an event's tag (`_wev_`) while
+  no event of that id is running, such as one ended since the last save.
 
 ## The orc raid (`najezd`)
 
@@ -108,7 +114,7 @@ and closed houses, and the chain bends round walls and hills while still heading
 - every lighter of the city's side gets `beaconGold` (200), `beaconExp` (300) and `beaconFavour` (15);
 - every Gondor player gets `beaconBonusPercent` (10%) more of each experience gain for `beaconBonusMinutes` (60). It's
   added in `LevelingSystem.AddExperience` beside boosters and RP rank, as a percentage of the base gain, and only to gains.
-  The bonus is kept in memory: a restart ends it early;
+  The bonus is saved with the world (#1307);
 - a GM can light beacons, but isn't paid. A chain lit by GMs alone gives no bonus.
 
 **Not lit in time:** the beacons go, and the criers say Rohan never heard.
@@ -230,7 +236,7 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 
 - The NPCs' looks and strength are mine. The archive's own bandits (`c_zm_bandita`, ~2000 hits) are a dungeon's.
 - The route is a breadth-first walk from the centre, so it can come from any direction, roads or not.
-- Outcomes and events are in memory, like `CityNews`.
+- Outcomes, events and `CityNews` are saved with the world since #1307.
 - Nothing has been tried in a real client yet.
 
 ## Test
