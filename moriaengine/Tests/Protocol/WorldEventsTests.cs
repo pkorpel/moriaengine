@@ -157,6 +157,13 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendDoubleClick((uint) Number(this.LastLine("WORLDEVENTS_ANIMAL:"), "uid"));
 				Assert.Contains("rounds=1", this.State(game, "rounds=1"));
 
+				this.Run(game, ".TestWorldEventsFleeProbe", "WORLDEVENTS_FLEE:");
+				int near = Number(this.LastLine("WORLDEVENTS_FLEE:"), "dist");
+				System.Threading.Thread.Sleep(3000); //the animal's own clock runs it off
+				this.Run(game, ".TestWorldEventsFleeCheck", "WORLDEVENTS_FLED:");
+				string fled = this.LastLine("WORLDEVENTS_FLED:");
+				Assert.True((Number(fled, "orders") >= 1) && (Number(fled, "dist") > near), "The runaway animal didn't run: " + fled); //sent running by its own clock, and away
+
 				this.Run(game, ".TestWorldEventsFestivalChain", "WORLDEVENTS_FESTIVAL_DONE");
 				this.AssertChecks("festivalFood", "festivalGame", "festivalEnds", "festivalCalendar", "festivalMordor");
 			}

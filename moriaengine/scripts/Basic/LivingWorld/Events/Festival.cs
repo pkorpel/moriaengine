@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
+using SteamEngine.Persistence;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -74,9 +76,12 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public sealed class Festival : WorldEvent {
-		internal const int AnimalSteps = 10, AnimalMinFromCentre = 4, FleeWithin = 3, FleeSteps = 4, CatchReach = 1;
+		internal const int AnimalSteps = 10, AnimalMinFromCentre = 4, FleeWithin = 3, FleeSteps = 4, CatchReach = 1, MaxHeight = 15;
 		public NPC Host, Animal;
 		public int Rounds;
+
+		/// <summary>How many times the animal was sent running (tests).</summary>
+		public int FleeOrders;
 		public readonly HashSet<Player> Fed = new HashSet<Player>();
 		public readonly HashSet<Player> Guests = new HashSet<Player>();
 		public readonly Dictionary<Player, int> Catches = new Dictionary<Player, int>();
@@ -103,9 +108,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			this.EndsAt = this.StartedAt + (Settings.festivalMinutes * 60.0);
 			foreach (Player player in WorldEvents.PlayersNear(this.City, this.Kind)) {
-				player.SysMessage(this.Kind.Name + " v " + this.CityName + " zacina! Poradatel na namesti rozdava jidlo a kdo chyti " + this.Feast.AnimalName + ", vyhraje.");
+				player.SysMessage("V " + this.CityName + " zacina slavnost: " + this.Kind.Name + "! Poradatel na namesti rozdava jidlo a kdo chyti " + this.Feast.AnimalName + ", vyhraje.");
 			}
-			WorldEvents.SetOutcome(this.City, -Settings.festivalDiscount, Settings.festivalMinutes, this.Kind.Name + " v " + this.CityName + ": jidlo pro vsechny, hry na namesti a trh levnejsi.");
+			WorldEvents.SetOutcome(this.City, -Settings.festivalDiscount, Settings.festivalMinutes, "Slavnost v " + this.CityName + " (" + this.Kind.Name + "): jidlo pro vsechny, hry na namesti a trh levnejsi.", this.Id);
 			return true;
 		}
 
@@ -118,21 +123,30 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			int[] at = tiles[Globals.dice.Next(tiles.Count)];
-			this.Animal = this.Spawn(this.Feast.AnimalDef, at, this.Centre.M, this.Feast.AnimalName);
+			this.Animal = this.Spawn(this.Feast.AnimalDef, at, this.Centre.M, null);
+			if (this.Animal == null) {
+				return false;
+			}
+			this.Animal.Flag_Invulnerable = true; //caught, not killed: no archer ends the game for everyone
 			Send(this.Animal, at, this.Centre.M, AnimalSteps);
-			return this.Animal != null;
+			FestivalAnimalTimer timer = new FestivalAnimalTimer();
+			this.Animal.AddTimer(FestivalAnimalTimer.Key, timer);
+			timer.DueInSeconds = FestivalAnimalTimer.Seconds;
+			timer.PeriodInSeconds = FestivalAnimalTimer.Seconds;
+			return true;
 		}
 
 		/// <summary>The host's gift: one festival food for each guest.</summary>
 		internal bool Feed(Player player) {
+			ThingDef food = ThingDef.GetByDefname(this.Feast.FoodDef);
+			if (food == null) {
+				return false;
+			}
 			if (!this.Fed.Add(player)) {
 				this.Host.Say("Uz jsi svuj podil dostal. Nech neco i ostatnim.");
 				return false;
 			}
-			ThingDef food = ThingDef.GetByDefname(this.Feast.FoodDef);
-			if (food != null) {
-				food.Create(player.Backpack);
-			}
+			food.Create(player.Backpack);
 			this.Guests.Add(player);
 			this.Host.Say("Vitej na slavnosti! Tohle je pro tebe.");
 			return true;
@@ -160,13 +174,17 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if ((this.Animal != null) && (this.Animal.IsDeleted || this.Animal.Flag_Dead)) {
-				this.Animal = null; //killed, not caught: no prize, the next one runs
+				this.Animal = null; //taken away by a GM: no prize, the next one runs
 				this.Rounds++;
 				if (this.Rounds < Settings.festivalRounds) {
 					this.SpawnAnimal();
 				}
 			}
-			if (this.Animal != null) {
+		}
+
+		/// <summary>Every second (FestivalAnimalTimer): the animal runs from the nearest player close to it.</summary>
+		internal void Flee() {
+			if ((this.Animal != null) && !this.Animal.IsDeleted) {
 				Player nearest = null;
 				foreach (AbstractCharacter ch in this.Animal.GetMap().GetPlayersInRange(this.Animal.X, this.Animal.Y, FleeWithin)) {
 					if ((ch is Player player) && !player.Flag_Dead && ((nearest == null) || (Point2D.GetSimpleDistance(player, this.Animal) < Point2D.GetSimpleDistance(nearest, this.Animal)))) {
@@ -174,6 +192,7 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 				if (nearest != null) {
+					this.FleeOrders++;
 					NPCAiTimer.GetFor(this.Animal)?.FleeFrom(nearest, FleeSteps);
 				}
 			}
@@ -184,7 +203,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Player guest in this.Guests) {
 				WorldEvents.Reward(guest, this.City, 0, Settings.festivalExp, Settings.festivalFavour);
 			}
-			WorldEvents.SetOutcome(this.City, 0, 0, this.Kind.Name + " v " + this.CityName + " skoncila. Hoste se rozchazeji.");
+			WorldEvents.SetOutcome(this.City, 0, 0, "Slavnost v " + this.CityName + " (" + this.Kind.Name + ") je u konce. Hoste se rozchazeji.");
 		}
 
 		protected override bool IsFoe(NPC npc) {
@@ -211,13 +230,33 @@ namespace SteamEngine.CompiledScripts {
 	public class E_FestivalAnimal : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if ((clicker is Player player) && !player.Flag_Dead && (WorldEvents.EventOf(self) is Festival festival) && !festival.Ended && (festival.Animal == self)) {
-				if ((player.M != self.M) || (Point2D.GetSimpleDistance(self, player) > Festival.CatchReach)) {
-					player.SysMessage(festival.Feast.AnimalName + " ti uteklo. Musis byt hned u nej.");
+				if (!player.IsGM && !WorldEvents.IsOnCitysSide(player, festival.City)) {
+					player.SysMessage("Na teto slavnosti nejsi vitan.");
+				} else if ((player.M != self.M) || (Point2D.GetSimpleDistance(self, player) > Festival.CatchReach) || (Math.Abs(player.Z - self.Z) > Festival.MaxHeight)
+						|| !player.CanSeeLOS(self).Allow) {
+					player.SysMessage("Nechytil jsi to. Musis byt hned u nej.");
 				} else {
 					festival.Catch(player);
 				}
 			}
 			return TriggerResult.Cancel;
+		}
+	}
+
+	/// <summary>#1289 - the runaway animal's own clock: each second it runs from a player close to it.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class FestivalAnimalTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_festivalAnimal_");
+		internal const double Seconds = 1;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public FestivalAnimalTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			if ((cont is NPC animal) && (WorldEvents.EventOf(animal) is Festival festival) && !festival.Ended && (festival.Animal == animal)) {
+				festival.Flee();
+			}
 		}
 	}
 }

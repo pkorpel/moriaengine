@@ -102,7 +102,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Fire fire = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
 			Item first = fire.Burning[0];
-			player.Go(new Point4D(first.X + 1, first.Y, first.Z, first.M));
+			player.Go(new Point4D(first.X, first.Y, first.Z, first.M)); //on its own tile: in reach and sight whatever stands beside it
 			player.Stam = 100;
 			Console.WriteLine("WORLDEVENTS_CITY: fire=" + first.Uid + " burning=" + fire.Burning.Count + " house=" + ((fire.House == house) ? 1 : 0));
 		}
@@ -205,7 +205,7 @@ namespace SteamEngine.CompiledScripts {
 					player.Stam = 100;
 					click.On_DClick(one, player);
 					bool farRefused = player.Stam == 100;
-					player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+					player.Go(new Point4D(one.X, one.Y, one.Z, one.M));
 					player.Stam = (short) (s.fireBeatStamina - 1);
 					click.On_DClick(one, player);
 					bool tiredRefused = !fire.Helpers.ContainsKey(player);
@@ -233,7 +233,7 @@ namespace SteamEngine.CompiledScripts {
 				gold = player.Gold;
 				if (fire != null) {
 					foreach (Item one in fire.Burning) {
-						player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+						player.Go(new Point4D(one.X, one.Y, one.Z, one.M));
 						for (int i = 0; i < s.fireBeats; i++) {
 							player.Stam = 100;
 							fire.Beat(one, player);
@@ -250,7 +250,7 @@ namespace SteamEngine.CompiledScripts {
 				gold = player.Gold;
 				if (brief != null) {
 					Item one = brief.Burning[0];
-					player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+					player.Go(new Point4D(one.X, one.Y, one.Z, one.M));
 					player.Stam = 100;
 					brief.Beat(one, player);
 					foreach (Item other in brief.Burning) {
@@ -325,6 +325,26 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("WORLDEVENTS_ANIMAL: uid=" + animal.Uid);
 		}
 
+		/// <summary>#1289 - the hero two tiles from the (unfrozen) runaway animal; the distance printed, now and on the check.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsFleeProbe(Character self) {
+			Festival feast = (WorldEvents.Running.Count == 1) ? WorldEvents.Running[0] as Festival : null;
+			NPC animal = (feast == null) ? null : feast.Animal;
+			if (animal == null) {
+				Console.WriteLine("WORLDEVENTS_FLEE: dist=0");
+				return;
+			}
+			self.Go(new Point4D(animal.X + 2, animal.Y, animal.Z, animal.M));
+			Console.WriteLine("WORLDEVENTS_FLEE: dist=" + Point2D.GetSimpleDistance(self, animal));
+		}
+
+		[SteamFunction]
+		public static void TestWorldEventsFleeCheck(Character self) {
+			Festival feast = (WorldEvents.Running.Count == 1) ? WorldEvents.Running[0] as Festival : null;
+			NPC animal = (feast == null) ? null : feast.Animal;
+			Console.WriteLine("WORLDEVENTS_FLED: dist=" + ((animal == null) ? 0 : Point2D.GetSimpleDistance(self, animal)) + " orders=" + ((feast == null) ? 0 : feast.FleeOrders));
+		}
+
 		/// <summary>#1289 - festivals on the server, after the client's food and catch.</summary>
 		[SteamFunction]
 		public static void TestWorldEventsFestivalChain(Character self) {
@@ -362,7 +382,8 @@ namespace SteamEngine.CompiledScripts {
 					click.On_DClick(animal, player);
 					game &= (feast.Rounds == 2) && animal.IsDeleted && (feast.Catches[player] == 1) && (player.Gold - gold == s.festivalPrizeGold)
 						&& (feast.Animal != null) && (feast.Animal != animal);
-					feast.Animal.CauseDeath(null);
+					game &= feast.Animal.Flag_Invulnerable;
+					feast.Animal.Delete(); //a GM takes it away: a round with no prize
 					WorldEvents.Tick();
 					game &= (feast.Rounds == 3) && (feast.Animal != null) && (feast.Catches[player] == 1);
 					feast.Rounds = s.festivalRounds - 1;
@@ -375,6 +396,7 @@ namespace SteamEngine.CompiledScripts {
 
 				//cheaper while it lasts; at the end, the guests get a little experience
 				bool cheaper = WorldEvents.PricePercent("Minas_Tirith") == -s.festivalDiscount;
+				int standing = Reputation.Of(player, "Minas_Tirith");
 				int levelWas = player.Level;
 				player.Level = 100;
 				player.Experience = 0;
@@ -382,11 +404,18 @@ namespace SteamEngine.CompiledScripts {
 					feast.EndsAt = Globals.TimeInSeconds;
 				}
 				WorldEvents.Tick();
-				bool guestPaid = player.Experience == s.festivalExp;
+				bool guestPaid = (player.Experience == s.festivalExp) && (Reputation.Of(player, "Minas_Tirith") > standing);
 				player.Level = levelWas;
 				player.Experience = 0;
+				//a GM's stop takes its lower prices with it, so starting again can't stack them
+				WorldEvents.ResetForTests();
+				WorldEvent stopped = WorldEvents.Start(midsummer, "Minas_Tirith");
+				bool stopCheaper = WorldEvents.PricePercent("Minas_Tirith") == -s.festivalDiscount;
+				if (stopped != null) {
+					WorldEvents.Stop(stopped);
+				}
 				Report("festivalEnds", cheaper && guestPaid && (feast != null) && feast.Ended && feast.Won && feast.Host.IsDeleted
-					&& CityNews.Of("Minas_Tirith").Exists(t => t.Contains("skoncila")));
+					&& CityNews.Of("Minas_Tirith").Exists(t => t.Contains("u konce")) && stopCheaper && (WorldEvents.PricePercent("Minas_Tirith") == 0));
 
 				//the calendar: the days (Yule over the new year), once a day per place, and festivals don't hold up other events
 				bool calendar = midsummer.InWindow(new DateTime(2026, 6, 20)) && midsummer.InWindow(new DateTime(2026, 6, 26)) && !midsummer.InWindow(new DateTime(2026, 6, 27))
@@ -394,13 +423,27 @@ namespace SteamEngine.CompiledScripts {
 					&& eye.IsFor("Barad-dur") && !eye.IsFor("Edoras") && midsummer.StartsByCalendar && !midsummer.CountsTowardLimit;
 				WorldEvents.ResetForTests();
 				GoTo(player, tirith);
-				calendar &= (WorldEvents.TryStartByCalendar() == 1) && WorldEvents.HeldToday(midsummer, "Minas_Tirith");
+				calendar &= (WorldEvents.TryStartByCalendar() == 1) && WorldEvents.HeldRecently("Minas_Tirith");
 				foreach (WorldEvent e in new List<WorldEvent>(WorldEvents.Running)) {
 					WorldEvents.Stop(e);
 				}
 				calendar &= WorldEvents.TryStartByCalendar() == 0; //held today
+				Errands.NowOverride = Midsummer.AddHours(10);
+				calendar &= WorldEvents.TryStartByCalendar() == 0; //past midnight is no new day for it
 				Errands.NowOverride = Midsummer.AddDays(1);
 				calendar &= WorldEvents.TryStartByCalendar() == 1; //the next day
+				foreach (WorldEvent e in new List<WorldEvent>(WorldEvents.Running)) {
+					WorldEvents.Stop(e);
+				}
+				//Hobitin's harvest and party share days: one festival a day there, whichever
+				Errands.NowOverride = new DateTime(2026, 9, 22, 12, 0, 0, DateTimeKind.Utc);
+				GoTo(player, WorldEvents.CentreOf("Hobitin"));
+				calendar &= WorldEvents.TryStartByCalendar() == 1;
+				foreach (WorldEvent e in new List<WorldEvent>(WorldEvents.Running)) {
+					WorldEvents.Stop(e);
+				}
+				calendar &= WorldEvents.TryStartByCalendar() == 0;
+				GoTo(player, tirith);
 				Errands.NowOverride = new DateTime(2026, 7, 15, 12, 0, 0, DateTimeKind.Utc);
 				WorldEvents.ResetForTests();
 				calendar &= WorldEvents.TryStartByCalendar() == 0; //no festival's day
@@ -423,10 +466,12 @@ namespace SteamEngine.CompiledScripts {
 				gold = player.Gold;
 				if ((eyeDay != null) && (eyeDay.Animal != null)) {
 					NPC rat = eyeDay.Animal;
+					NPCAiTimer.Freeze(rat, 60);
 					player.Go(new Point4D(rat.X + 1, rat.Y, rat.Z, rat.M));
-					eyeDay.Catch(player);
+					SingletonScript<E_FestivalAnimal>.Instance.On_DClick(rat, player); //Gondor at Mordor's feast: refused
 				}
-				Report("festivalMordor", (eyeDay != null) && (eyeDay.Host.Def == ThingDef.GetByDefname(FestivalKind.OrcHostDef)) && (eyeDay.Rounds == 1)
+				Report("festivalMordor", (eyeDay != null) && (eyeDay.Host.Def == ThingDef.GetByDefname(FestivalKind.OrcHostDef)) && (eyeDay.Rounds == 0)
+					&& (eyeDay.Animal.Def == ThingDef.GetByDefname(FestivalKind.RatDef))
 					&& (eyeDay.Catches.Count == 0) && (player.Gold == gold) && eye.IsTime());
 			} finally {
 				Errands.NowOverride = null;
@@ -612,6 +657,7 @@ namespace SteamEngine.CompiledScripts {
 			byte plevel = account.PLevel;
 			bool enabled = s.enabled;
 			int chance = s.startChance;
+			Errands.NowOverride = new DateTime(2026, 7, 15, 12, 0, 0, DateTimeKind.Utc); //no festival's day: the calendar mustn't start one in Edoras
 			try {
 				WorldEventKind raidKind = WorldEvents.KindOf("najezd"), caravanKind = WorldEvents.KindOf("karavana");
 				Func<int, int> raidSize = ((WarbandKind) raidKind).SizeFor;
@@ -790,6 +836,7 @@ namespace SteamEngine.CompiledScripts {
 				Report("scheduler", testServerQuiet && offQuiet && onStarts && oneAtATime);
 				WorldEvents.ResetForTests();
 			} finally {
+				Errands.NowOverride = null;
 				WorldEvents.autoStartOnTestServer = false;
 				VenueClock.Override = null;
 				s.enabled = enabled;
