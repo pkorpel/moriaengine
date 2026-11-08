@@ -28,6 +28,12 @@ namespace SteamEngine.CompiledScripts {
 			return 100;
 		}
 
+		/// <summary>#1291 - the giver's friendship change as the errand is done: the tier's `baseFriend` and anything the errand's
+		/// outcome adds or takes, made as one change (friendship floors at 0, so a penalty after a gain would be lost).</summary>
+		public virtual int GiverFriendship(Errand errand, int baseFriend) {
+			return baseFriend;
+		}
+
 		/// <summary>#1252 - anything the errand does as it's done, before the pay (a debtor's friendship).</summary>
 		public virtual void OnDone(Player player, Errand errand) {
 		}

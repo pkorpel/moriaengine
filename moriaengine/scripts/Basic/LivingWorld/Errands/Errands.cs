@@ -426,6 +426,9 @@ namespace SteamEngine.CompiledScripts {
 			if (exp > 0) {
 				LevelingSystem.AddExperience(player, exp);
 			}
+			if (template != null) {
+				friend = template.GiverFriendship(errand, friend); //#1291 - the outcome's change with the tier's, in one
+			}
 			Residents.AddFriendship(player, errand.giverId, friend + Bathhouse.FriendshipBonus(player)); //#1256 - fresh from the bath house
 			Item giver = Residents.ById(errand.giverId); //null when the giver is gone since
 			Reputation.Change(player, errand.city, rep, CityFlavour.FactionOf(giver)); //#1282 - and the giver's faction

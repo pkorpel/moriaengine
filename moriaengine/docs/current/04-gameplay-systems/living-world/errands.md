@@ -73,6 +73,30 @@ Templates can scale their pay (`PayPercent`) and act at the end (`OnDone`), as t
 - Only working people give ingredients; guests have no trade.
 - A shift goes to the venue's working people, in a random order.
 
+## The talking templates (#1291)
+
+Code: `scripts/Basic/LivingWorld/Errands/TalkErrands.cs`. These are design 9.1's numbers 11, 12, 17, 20, 21, 22, 25 and 26.
+
+| Template | Key | Who gives it | Steps |
+|---|---|---|---|
+| Hadka (the quarrel) | `quarrel` | anyone | hear the other neighbour, then decide back at the giver |
+| Tajny ctitel (the secret admirer) | `admirer` | anyone | deliver a bottle of wine; the receiver asks who sent it; report back |
+| Pozvanka (the invitation) | `invitation` | anyone | invite three residents; one comes only if you bring wine, bread or cheese; report back |
+| Milostny dopis (the love letter) | `loveletter` | anyone | a jealous rival stops you first; deliver the letter; report back |
+| Vypujcene knihy (return the books) | `books` | the library | two borrowers, each with an excuse; the pile (a book) back to the giver |
+| Znameni (the omen) | `omen` | an elderly woman | bring three odd things: garlic, spider silk, black pearl, mandrake root or a feather |
+| Pivo pro strazne (ale for the guards) | `ale` | a tavern, brewery or mess hall | a mug of ale to a guard, within 15 minutes |
+| Scitani (census) | `census` | the town hall | ask households of three or four other workplaces, then bring the count back |
+
+**What the choices do**, on top of the giver's usual friendship for a finished errand:
+- **The quarrel:** deciding for the giver: +2 giver, -1 the other. For the other: -1 giver, +2 the other. Both a bit right: +1
+  each.
+- **The admirer:** keeping the secret +1 with the giver; naming the giver -2.
+- **The love letter:** refusing the rival +1 with the giver. Selling the letter out pays the rival's 50 gold on top, and costs 3
+  with the giver and 1 with the receiver.
+
+The war camp's residents give orders, not these, except the ale ([war-camp.md](war-camp.md)).
+
 ## Limits (`.settings` "Ukoly")
 
 Both `.settings` categories, "Ukoly" and #1243's "Povest", are now in the settings dialog.
