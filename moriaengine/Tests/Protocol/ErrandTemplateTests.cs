@@ -8,7 +8,9 @@ namespace SteamEngine.Tests.Protocol {
 	/// Server side: scripts/Tests/ErrandTemplateTests.cs.</summary>
 	[Collection(ErrandTemplateCollection.Name)]
 	public class ErrandTemplateTests : LivingWorldTestBase {
-		private static readonly string[] names = { "Dopis", "Vyptavani", "Nakup", "Suroviny", "Ztracena vec", "Dluh", "Doprovod", "Smena" };
+		private static readonly string[] names = { "Dopis", "Vyptavani", "Nakup", "Suroviny", "Ztracena vec", "Dluh", "Doprovod", "Smena",
+			//#1291/#1293 - the templates added since that a tavern's innkeeper can also offer
+			"Hadka", "Tajny ctitel", "Pozvanka", "Milostny dopis", "Pivo pro strazne", "Zakazka", "Kuryr", "Rvacka" };
 
 		public ErrandTemplateTests(GameServerPairFixture servers)
 			: base(servers, "errandtpltests", "ERRANDTPL") {
