@@ -189,3 +189,58 @@ model = 0x0DE1
 NAME = "Ohen"
 TYPE = t_normal
 model = 0x398C
+
+//#1289 - festivals: the host who gives out the food (an orc in Mordor's cities) and the runaway animals of the game.
+[NPCDef c_event_festival_host]
+TEVENTS = e_character
+NAME = "Poradatel slavnosti"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 100
+Dex = 80
+Int = 80
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0035
+Equip = random_pants
+EquipColor = colors_all
+
+[NPCDef c_event_festival_host_orc]
+TEVENTS = e_character
+NAME = "Poradatel slavnosti"
+model = 0x11
+Color = 0x0455
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 150
+Dex = 80
+Int = 50
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_event_festival_pig]
+TEVENTS = e_character
+NAME = "Selatko"
+model = c_pig
+CAN = MT_WALK|MT_RUN
+Str = 30
+Dex = 120
+Int = 5
+MaxHits = 30
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_event_festival_rat]
+TEVENTS = e_character
+NAME = "Uprchly krysak"
+model = c_rat
+CAN = MT_WALK|MT_RUN
+Str = 20
+Dex = 130
+Int = 5
+MaxHits = 20
+NoAnimate = 1
+AggroMode = Calm

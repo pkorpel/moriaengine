@@ -3,7 +3,7 @@
 Step 23 of the living world (#1237, #1284) builds the design's section 6: the world itself starts things. Code is in
 `scripts/Basic/LivingWorld/Events/`: `WorldEvents.cs` (the framework), `OrcRaid.cs`, `Caravan.cs` and `events.def`. The
 numbers are in `.settings` "Udalosti". Step 24 adds more kinds on the same framework (#1286): the corsairs, the beacons, the troll, fire and fever. Step 25 adds
-the festivals.
+the festivals by season (#1289).
 
 ## How an event starts
 
@@ -172,6 +172,41 @@ them, the player is told what's needed and the resident's usual talk opens, so e
 - a sick resident who dies or is taken away before being cured: the fever isn't beaten, whatever the other cures, and
   nobody is paid.
 
+## Festivals by season (#1289)
+
+Festivals follow the real calendar (UTC dates). The scheduler checks it once a minute: a festival starts in a place of its own
+on one of its days, when a player of the city's side stands near the centre and no other event is running there.  A place holds
+at most one festival every `festivalGapHours` (20) real hours, whichever festival: Hobitin's harvest and party share days,
+but don't both run on one. The time is kept on Globals, so a restart doesn't hold the day's festival again, and a festival
+over midnight isn't held twice. If one can't start in a place (no room), the place isn't tried again until then, and the
+log says so. No chance roll and no gap
+apply, and festivals don't count toward `maxRunning`: a feast doesn't hold up a raid elsewhere. A GM's `.udalost` starts
+any festival on any day, and that counts as the day's.
+
+| Festival | Key | Places | Days | Food |
+|---|---|---|---|---|
+| Slavnost slunovratu (Midsummer) | `slunovrat` | Minas Tirith, Edoras | 20-26 June | cake |
+| Dozinky (harvest) | `dozinky` | Edoras, Hobitin | 15-30 September | bread |
+| Hobiti oslava (the hobbit party) | `oslava` | Hobitin | 20-24 September | cake |
+| Svatek Yule | `yule` | Minas Tirith, Edoras, Hobitin | 20 December - 2 January | ale |
+| Den Oka (the day of the Eye) | `den_oka` | Barad-dur, Harad, Umbar | 20-26 March (my pick) | ham |
+
+**A festival in a city** (`festivalMinutes`, 60):
+- **The host:** a host stands by the centre (`c_event_festival_host`, an orc in Mordor's cities), frozen and invulnerable.
+  A double click at talk distance gives each player one of the festival's food, once.
+- **The game:** catch the runaway animal, a piglet (`c_event_festival_pig`), or in Mordor a rat (`c_event_festival_rat`). It
+  starts a few steps from the centre, can't be hurt, and every second its own clock sends it running from the nearest player
+  within 3 tiles. A double click right beside it (same floor, in sight) catches it. Only the city's side may catch, though GMs
+  can:
+  - the catcher of the city's side wins `festivalPrizeGold` (150) and `festivalPrizeExp` (200);
+  - another one runs, up to `festivalRounds` (5) in all;
+  - an animal a GM takes away is a round with no prize.
+- **Prices:** the city's prices are `festivalDiscount` (5%) lower for the festival's minutes. A GM's stop takes the discount
+  away with it, so stopping and starting again can't stack it.
+- **The end:** every guest (fed, or a catcher) of the city's side gets `festivalExp` (100) and `festivalFavour` (5).
+
+No cosmetics, by the rewards rule.
+
 ## Outcomes
 
 **Prices:** an outcome changes the city's prices by a percentage for a while. `Reputation.PriceFor` applies it after the
@@ -185,7 +220,8 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 ## GM command
 
 - `.udalost` lists the running events with their minutes left.
-- `.udalost "start <najezd|karavana|korzari|majaky|trol|pozar|horecka> [City]"` starts one now, whatever the hour. Without a city, it starts in the city
+- `.udalost "start <kind> [City]"` (kinds: `najezd`, `karavana`, `korzari`, `majaky`, `trol`, `pozar`, `horecka`, and the
+  festivals' keys) starts one now, whatever the hour. Without a city, it starts in the city
   the GM stands in. As with other GM commands, the words go in quotes.
 - `.udalost stop` ends the events in the GM's city (all of them outside a city, or with `"stop vse"`), with no
   outcome.
@@ -199,7 +235,20 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 
 ## Test
 
-`Tests/Protocol/WorldEventsTests.cs` has three facts, on one server.
+`Tests/Protocol/WorldEventsTests.cs` has four facts, on one server.
+
+**FestivalTests** (#1289):
+- **In the client:**
+  - on midsummer's day the calendar starts Minas Tirith's festival for the player there;
+  - a double click on the host gives the food;
+  - a double click beside the piglet catches it.
+- **On the server:**
+  - food once;
+  - the game: a catch from afar refused, a player's prize, a killed animal, the last round;
+  - cheaper while it lasts, and the guests' experience at the end;
+  - the calendar: its days, Yule over the new year, once a day per place, the next day again, no festival on other days,
+    and not holding up the random events;
+  - Mordor's day of the Eye: an orc host and a rat, and a Gondor catcher wins nothing.
 
 **CityEventsTests** (#1286):
 - **In the client:**
