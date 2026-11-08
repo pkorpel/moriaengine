@@ -2,8 +2,8 @@
 
 Step 23 of the living world (#1237, #1284) builds the design's section 6: the world itself starts things. Code is in
 `scripts/Basic/LivingWorld/Events/`: `WorldEvents.cs` (the framework), `OrcRaid.cs`, `Caravan.cs` and `events.def`. The
-numbers are in `.settings` "Udalosti". Step 24 adds more kinds on the same framework: the corsairs, the beacons and the troll (#1286), with fire and fever to
-follow. Step 25 adds the festivals.
+numbers are in `.settings` "Udalosti". Step 24 adds more kinds on the same framework (#1286): the corsairs, the beacons, the troll, fire and fever. Step 25 adds
+the festivals.
 
 ## How an event starts
 
@@ -131,6 +131,47 @@ city, at least 10 tiles from the centre. When nobody keeps it busy, it walks bac
 **No sunrise in time:** after `trollMinutes` (30) without one (for example, with a long night setting), the troll leaves as if
 nobody had fought it. A troll a GM removes ends the event with nothing told.
 
+## Fire in the city (`pozar`, #1286)
+
+**Where and when:** any pilot city, at any hour.
+
+**The fire:** it starts in a house, a marked venue of the city picked at random (on a spot inside it). With no venues marked,
+it starts on a spot a few steps from the centre. `fireStart` (3) fires (`i_event_fire`) burn there. Every `fireSpreadSeconds`
+(30), one more starts beside a burning one, on a free tile.
+
+**Beating it out:** a double click within 2 tiles, alive, on the same floor (within 15 of height) and in sight, is a blow.
+New fires spread from a burning one's own tile, so indoors they stay on its floor. It costs `fireBeatStamina` (5) stamina, and a tired
+player can't strike. `fireBeats` (3) blows put a fire out.
+
+**All out in time** (`fireMinutes`, 10):
+- every player of the city's side who struck at least `fireBeats` blows (one fire's worth) gets `fireGold` (200), `fireExp`
+  (300) and `fireFavour` (15) once, however many more blows;
+- each also gains `fireFriendship` (2, on the residents' 0-10 scale) with every resident of the house.
+
+**Lost** (`fireMax`, 12, fires burning at once, at least one more than the start; or time up): the house burns down, and the criers tell of the ruins.
+
+## Fever (`horecka`, #1286)
+
+**Where and when:** any pilot city, at any hour.
+
+**The sick:** `feverCount` (4) of the city's residents fall ill, picked from those with a living body. The criers and the
+journal name them, and they cough now and then. They stay the city's residents, not the event's NPCs, so nothing of theirs goes when it ends.
+
+**Curing:** a double click on a sick resident, near enough and in sight, tries to cure them instead of opening their usual
+talk. A cure takes one clean bandage (`i_bandage`) and one ginseng root (`i_reag_ginseng`, kingsfoil's stand-in). Without
+them, the player is told what's needed and the resident's usual talk opens, so errands with them go on.
+
+**All cured in time** (`feverMinutes`, 30):
+- each curer of the city's side gets `feverGold` (100) and `feverExp` (150) per cure, and `feverFavour` (15) standing. In
+  Minas Tirith, the Houses of Healing (`mt_healers`) rise as much;
+- each cure also gives `feverFriendship` (2) with the one cured, once the fever is beaten;
+- a GM can cure, but isn't paid.
+
+**Lost:**
+- time up: nobody dies; the criers say the sick get better only slowly;
+- a sick resident who dies or is taken away before being cured: the fever isn't beaten, whatever the other cures, and
+  nobody is paid.
+
 ## Outcomes
 
 **Prices:** an outcome changes the city's prices by a percentage for a while. `Reputation.PriceFor` applies it after the
@@ -144,7 +185,7 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 ## GM command
 
 - `.udalost` lists the running events with their minutes left.
-- `.udalost "start <najezd|karavana|korzari|majaky|trol> [City]"` starts one now, whatever the hour. Without a city, it starts in the city
+- `.udalost "start <najezd|karavana|korzari|majaky|trol|pozar|horecka> [City]"` starts one now, whatever the hour. Without a city, it starts in the city
   the GM stands in. As with other GM commands, the words go in quotes.
 - `.udalost stop` ends the events in the GM's city (all of them outside a city, or with `"stop vse"`), with no
   outcome.
@@ -158,7 +199,19 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 
 ## Test
 
-`Tests/Protocol/WorldEventsTests.cs` has two facts, on one server.
+`Tests/Protocol/WorldEventsTests.cs` has three facts, on one server.
+
+**CityEventsTests** (#1286):
+- **In the client:**
+  - three double clicks beat the first fire out;
+  - a double click on a sick resident cures them, carrying a bandage and a ginseng.
+- **On the server:**
+  - the fever: the cure takes both things, an empty pack is refused, every cure is paid, and friendship with the cured
+    goes up;
+  - the fever not cured in time: the sick stay;
+  - the fire at the test tavern: blows from afar and tired blows refused, stamina spent, the fire spreading;
+  - the fire put out: paid once, friendship with the house;
+  - too many fires.
 
 **OutdoorEventsTests** (#1286):
 - **In the client:** a GM starts the beacons. A double click on the second beacon is refused (not its turn), and one on the

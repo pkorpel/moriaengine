@@ -15,6 +15,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || (gem == null) || npc.Flag_Dead || player.Flag_Dead) {
 				return false;
 			}
+			if (Fever.TryCure(npc, player)) {
+				return true; //#1286 - a sick resident: the cure, not the talk
+			}
 			if (Errands.CanTalk(player, npc)) {
 				Open(player, npc);
 			}

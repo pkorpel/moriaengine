@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1284 - the world events on the server: the orc raid and the caravan, won and lost, their outcomes on prices and
@@ -30,7 +31,9 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestWorldEventsState(Character self) {
 			IList<WorldEvent> running = WorldEvents.Running;
 			Console.WriteLine("WORLDEVENTS_STATE: running=" + running.Count + ((running.Count > 0) ? " kind=" + running[0].Kind.Key + " city=" + running[0].City : "")
-				+ (((running.Count > 0) && (running[0] is Beacons beacons)) ? " lit=" + beacons.Lit : ""));
+				+ (((running.Count > 0) && (running[0] is Beacons beacons)) ? " lit=" + beacons.Lit : "")
+				+ (((running.Count > 0) && (running[0] is Fire fire)) ? " burning=" + fire.Burning.Count : "")
+				+ (((running.Count > 0) && (running[0] is Fever fever)) ? " sick=" + fever.Sick.Count : ""));
 		}
 
 		/// <summary>.TestWorldEventsBeacon n: the hero stands beside the running chain's beacon n (from 0), and its uid is printed.</summary>
@@ -60,6 +63,226 @@ namespace SteamEngine.CompiledScripts {
 					npc.CauseDeath(player);
 				}
 			}
+		}
+
+		private static readonly TagKey houseTK = TagKey.Acquire("_worldeventtest_house_");
+
+		/// <summary>#1286 - a tavern in Edoras with its people (frozen), then a fire there; the hero beside its first fire.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsCitySetup(Character self) {
+			Player player = (Player) self;
+			WorldEvents.ResetForTests();
+			CityNews.Clear();
+			player.Realm = Realm.Gondor;
+			CityVenue house = player.GetTag(houseTK) as CityVenue;
+			if ((house == null) || house.IsDeleted) {
+				byte plevel = player.Account.PLevel;
+				player.Account.PLevel = 7;
+				try {
+					Point4D p = WorldEvents.CentreOf("Edoras");
+					int[] spot = WorldSpots.NearestStandable(Map.GetMap(p.M), p.X + 8, p.Y, 8);
+					VenueDraft draft = new VenueDraft();
+					draft.SetType(VenueType.Get("tavern").IndexOf());
+					draft.M = p.M;
+					draft.City = "Edoras";
+					draft.Rects.Add(new ImmutableRectangle(spot[0] - 2, spot[1] - 2, spot[0] + 2, spot[1] + 2));
+					house = draft.Save(out string problem);
+					if (house == null) {
+						throw new SEException("The test tavern wasn't saved: " + problem);
+					}
+					Residents.FillRoles(house);
+				} finally {
+					player.Account.PLevel = plevel;
+				}
+				player.SetTag(houseTK, house);
+			}
+			foreach (Item gem in Residents.OfVenue(house.VenueId)) {
+				NPCAiTimer.Freeze(Residents.BodyOf(gem), 900);
+			}
+			Fire fire = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+			Item first = fire.Burning[0];
+			player.Go(new Point4D(first.X + 1, first.Y, first.Z, first.M));
+			player.Stam = 100;
+			Console.WriteLine("WORLDEVENTS_CITY: fire=" + first.Uid + " burning=" + fire.Burning.Count + " house=" + ((fire.House == house) ? 1 : 0));
+		}
+
+		/// <summary>#1286 - the fire put away, a fever in Edoras; the hero with a bandage and a ginseng beside the first sick one.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsFeverStart(Character self) {
+			Player player = (Player) self;
+			WorldEvents.ResetForTests();
+			Fever fever = WorldEvents.Start(WorldEvents.KindOf("horecka"), "Edoras") as Fever;
+			ItemDef bandage = (ItemDef) ThingDef.GetByDefname(FeverKind.BandageDef), herb = (ItemDef) ThingDef.GetByDefname(FeverKind.HerbDef);
+			Errands.Consume(player.Backpack, bandage, Errands.CountIn(player.Backpack, bandage)); //a new character's kit may hold some
+			Errands.Consume(player.Backpack, herb, Errands.CountIn(player.Backpack, herb));
+			ThingDef.GetByDefname(FeverKind.BandageDef).Create(player.Backpack);
+			ThingDef.GetByDefname(FeverKind.HerbDef).Create(player.Backpack);
+			NPC sick = fever.Sick[0];
+			player.Go(new Point4D(sick.X + 1, sick.Y, sick.Z, sick.M));
+			Console.WriteLine("WORLDEVENTS_FEVER: sick=" + fever.Sick.Count + " uid=" + sick.Uid);
+		}
+
+		/// <summary>#1286 - fire and fever on the server, after the client's blows and cure.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsCityChain(Character self) {
+			Player player = (Player) self;
+			WorldEventSettings s = WorldEventSettings.instance;
+			AbstractAccount account = player.Account;
+			byte plevel = account.PLevel;
+			int fireMax = s.fireMax;
+			CityVenue house = player.GetTag(houseTK) as CityVenue;
+			try {
+				account.PLevel = 1;
+				ItemDef bandage = (ItemDef) ThingDef.GetByDefname(FeverKind.BandageDef), herb = (ItemDef) ThingDef.GetByDefname(FeverKind.HerbDef);
+
+				//the fever the client began curing: one cure took both things; the others cured here, the curer paid and remembered
+				Fever fever = (WorldEvents.Running.Count == 1) ? WorldEvents.Running[0] as Fever : null;
+				bool clientCured = (fever != null) && (fever.Curers.Count == 0) && (Errands.CountIn(player.Backpack, bandage) == 0)
+					&& (Errands.CountIn(player.Backpack, herb) == 0); //the GM's cure counts for the sick, not the pay
+				bool refusedEmpty = false, curedHere = false;
+				long gold = player.Gold;
+				int cures = 0;
+				if (fever != null) {
+					NPC next = fever.Sick[0];
+					player.Go(new Point4D(next.X + 1, next.Y, next.Z, next.M));
+					int before = fever.Sick.Count;
+					refusedEmpty = !Fever.TryCure(next, player) && (fever.Sick.Count == before) && Errands.CanTalk(player, next); //near, but nothing to cure with: the usual talk
+					string id = Residents.IdOf(Residents.GemOf(next));
+					int friendship = Residents.Friendship(player, id);
+					foreach (NPC one in fever.Sick.ToArray()) {
+						bandage.Create(player.Backpack);
+						herb.Create(player.Backpack);
+						player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+						if (Fever.TryCure(one, player) && !fever.Sick.Contains(one)) {
+							cures++;
+						}
+					}
+					curedHere = (cures == before) && (Residents.Friendship(player, id) == friendship); //friendship only when it's beaten
+					WorldEvents.Tick();
+					curedHere &= Residents.Friendship(player, id) == Math.Min(Residents.MaxFriendship, friendship + s.feverFriendship);
+				}
+				Report("feverCured", clientCured && refusedEmpty && curedHere && fever.Ended && fever.Won
+					&& (player.Gold - gold == s.feverGold * cures) && CityNews.Of("Edoras").Exists(t => t.Contains("ustoupila")));
+
+				WorldEvents.ResetForTests();
+				Fever untreated = WorldEvents.Start(WorldEvents.KindOf("horecka"), "Edoras") as Fever;
+				List<NPC> sick = (untreated == null) ? new List<NPC>() : new List<NPC>(untreated.Sick);
+				if (untreated != null) {
+					untreated.EndsAt = Globals.TimeInSeconds;
+				}
+				WorldEvents.Tick();
+				Report("feverLost", (untreated != null) && untreated.Ended && !untreated.Won && (sick.Count > 0) && sick.TrueForAll(n => !n.IsDeleted)
+					&& !Fever.TryCure(sick[0], player) && CityNews.Of("Edoras").Exists(t => t.Contains("svou dan")));
+
+				//a sick one killed before the cure: the fever isn't beaten, whatever the others' cures
+				WorldEvents.ResetForTests();
+				Fever deadly = WorldEvents.Start(WorldEvents.KindOf("horecka"), "Edoras") as Fever;
+				gold = player.Gold;
+				if ((deadly != null) && (deadly.Sick.Count >= 2)) {
+					deadly.Sick[0].CauseDeath(null);
+					WorldEvents.Tick();
+					foreach (NPC one in deadly.Sick.ToArray()) {
+						bandage.Create(player.Backpack);
+						herb.Create(player.Backpack);
+						player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+						Fever.TryCure(one, player);
+					}
+				}
+				WorldEvents.Tick();
+				Report("feverDeaths", (deadly != null) && deadly.Ended && !deadly.Won && (deadly.Lost == 1) && (player.Gold == gold)
+					&& CityNews.Of("Edoras").Exists(t => t.Contains("ne vsichni")));
+
+				//the fire: the house's, blows cost stamina, a tired hero can't, from afar nobody can; it spreads; all out pays and is remembered
+				WorldEvents.ResetForTests();
+				Fire fire = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+				bool atHouse = (fire != null) && (fire.House == house) && (fire.Burning.Count == s.fireStart) && fire.Describe().Contains(house.Title);
+				E_EventFire click = SingletonScript<E_EventFire>.Instance;
+				bool blows = false;
+				if (fire != null) {
+					Item one = fire.Burning[0];
+					player.Go(new Point4D(one.X + E_EventFire.Reach + 2, one.Y, one.Z, one.M));
+					player.Stam = 100;
+					click.On_DClick(one, player);
+					bool farRefused = player.Stam == 100;
+					player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+					player.Stam = (short) (s.fireBeatStamina - 1);
+					click.On_DClick(one, player);
+					bool tiredRefused = !fire.Helpers.ContainsKey(player);
+					player.Stam = 100;
+					for (int i = 0; i < s.fireBeats; i++) {
+						click.On_DClick(one, player);
+					}
+					blows = farRefused && tiredRefused && one.IsDeleted && (fire.Helpers[player] == s.fireBeats) && (player.Stam == 100 - (s.fireBeats * s.fireBeatStamina));
+				}
+				int burning = (fire == null) ? 0 : fire.Burning.Count;
+				if (fire != null) {
+					fire.nextSpread = Globals.TimeInSeconds;
+				}
+				WorldEvents.Tick();
+				bool spread = (fire != null) && (fire.Burning.Count == burning + 1);
+				Report("fireBlows", atHouse && blows && spread);
+
+				Item member = null;
+				if (house != null) {
+					foreach (Item gem in Residents.OfVenue(house.VenueId)) {
+						member = member ?? gem;
+					}
+				}
+				int houseFriend = (member == null) ? 0 : Residents.Friendship(player, Residents.IdOf(member));
+				gold = player.Gold;
+				if (fire != null) {
+					foreach (Item one in fire.Burning) {
+						player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+						for (int i = 0; i < s.fireBeats; i++) {
+							player.Stam = 100;
+							fire.Beat(one, player);
+						}
+					}
+				}
+				WorldEvents.Tick();
+				Report("fireOut", (fire != null) && fire.Ended && fire.Won && (player.Gold - gold == s.fireGold) && (member != null)
+					&& (Residents.Friendship(player, Residents.IdOf(member)) == Math.Min(Residents.MaxFriendship, houseFriend + s.fireFriendship)) && CityNews.Of("Edoras").Exists(t => t.Contains("uhasit")));
+
+				//a blow or two isn't enough to be paid
+				WorldEvents.ResetForTests();
+				Fire brief = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+				gold = player.Gold;
+				if (brief != null) {
+					Item one = brief.Burning[0];
+					player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+					player.Stam = 100;
+					brief.Beat(one, player);
+					foreach (Item other in brief.Burning) {
+						other.Delete();
+					}
+				}
+				WorldEvents.Tick();
+				Report("fireOneBlowUnpaid", (brief != null) && brief.Won && (brief.Helpers[player] == 1) && (player.Gold == gold));
+
+				//time up: the house burns down
+				WorldEvents.ResetForTests();
+				Fire slow = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+				if (slow != null) {
+					slow.EndsAt = Globals.TimeInSeconds;
+				}
+				WorldEvents.Tick();
+				bool timedOut = (slow != null) && slow.Ended && !slow.Won;
+
+				//too many fires: the house burns down
+				WorldEvents.ResetForTests();
+				Fire lost = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+				if (lost != null) {
+					s.fireMax = s.fireStart + 1; //the least it can be: one spread over the start
+					lost.Spread();
+				}
+				WorldEvents.Tick();
+				Report("fireLost", timedOut && (lost != null) && lost.Ended && !lost.Won && lost.Items.TrueForAll(f => f.IsDeleted) && CityNews.Of("Edoras").Exists(t => t.Contains("spaleniste")));
+			} finally {
+				s.fireMax = fireMax;
+				account.PLevel = plevel;
+				WorldEvents.ResetForTests();
+			}
+			Console.WriteLine("WORLDEVENTS_CITY_DONE");
 		}
 
 		/// <summary>#1286 - the corsairs, the beacons (the client lit the first) and the troll.</summary>

@@ -163,6 +163,7 @@ namespace SteamEngine.CompiledScripts {
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
 			QuestNpc.Attach(BeaconsKind.BeaconDef, SingletonScript<E_EventBeacon>.Instance);
+			QuestNpc.Attach(FireKind.FireDef, SingletonScript<E_EventFire>.Instance);
 		}
 	}
 }

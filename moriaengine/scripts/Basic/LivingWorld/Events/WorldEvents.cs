@@ -71,6 +71,20 @@ namespace SteamEngine.CompiledScripts {
 		/// each fighter's gold, experience, standing; minutes the stone troll stays; the night hours it comes in.</summary>
 		[SaveableData]
 		public int trollSteps = 30, trollMinutes = 30, trollGold = 400, trollExp = 800, trollFavour = 25, trollStoneMinutes = 240, trollNightFrom = 22, trollNightTo = 4;
+
+		/// <summary>#1286 - fire in the city: fires at the start, at most (then the house is lost), seconds between spreads, real
+		/// minutes to put them out; blows a fire takes and the stamina of each; each helper's gold, experience, standing, and
+		/// friendship with each of the house's people (on the residents' 0-10 scale).</summary>
+		[SaveableData]
+		public int fireStart = 3, fireMax = 12, fireSpreadSeconds = 30, fireMinutes = 10, fireBeats = 3, fireBeatStamina = 5;
+
+		[SaveableData]
+		public int fireGold = 200, fireExp = 300, fireFavour = 15, fireFriendship = 2;
+
+		/// <summary>#1286 - fever: how many residents fall ill, real minutes to cure them all; each cure's gold and experience;
+		/// the curer's standing (and the healers' faction in Minas Tirith); friendship with each one cured (0-10 scale).</summary>
+		[SaveableData]
+		public int feverCount = 4, feverMinutes = 30, feverGold = 100, feverExp = 150, feverFavour = 15, feverFriendship = 2;
 	}
 
 	/// <summary>#1284 - a kind of world event: where and when it can start, and a fresh one.</summary>
@@ -288,6 +302,8 @@ namespace SteamEngine.CompiledScripts {
 			Register(new CorsairKind());
 			Register(new BeaconsKind());
 			Register(new TrollKind());
+			Register(new FireKind());
+			Register(new FeverKind());
 			QuestJournalPages.Register(D_QuestJournal.SectionEvents, WorldEventsPage.Add);
 		}
 
