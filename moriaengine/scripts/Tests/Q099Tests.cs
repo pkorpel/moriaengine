@@ -142,11 +142,12 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = Professions.Warrior;
 			player.Level = 30;
 			player.UnspentSkillPoints = 10;
-			//five skills at 75.0, a master's gate: the steps down to 55.0 were bought with points (4 x 2 each), the step from 50.0 was taught
+			//four skills at 75.0, a master's gate: the steps down to 55.0 were bought with points (4 x 2 each), the step from 50.0 was taught;
+			//10 unspent + 32 is less than the 50 owed, so the take-back must stop at the gates and forgive the rest
 			List<SkillName> bought = new List<SkillName>();
 			foreach (SkillDef def in SkillDef.AllSkillDefs) {
 				SkillName name = (SkillName) def.Id;
-				if ((bought.Count < 5) && LevelingSystem.IsSkillPointSpendable(name) && (Professions.Warrior.GetSkillMinimum(def) <= 550) && (Professions.Warrior.GetSkillCap(def) >= 750)) {
+				if ((bought.Count < 4) && LevelingSystem.IsSkillPointSpendable(name) && (Professions.Warrior.GetSkillMinimum(def) <= 550) && (Professions.Warrior.GetSkillCap(def) >= 750)) {
 					bought.Add(name);
 					player.SetRealSkillValue((int) name, 750);
 				}
@@ -159,7 +160,7 @@ namespace SteamEngine.CompiledScripts {
 			int strBefore = player.Str;
 			Q099.TakeLevels(player, Q099.LevelsTaken);
 			int taken = 10; //the unspent first
-			bool gatesKept = bought.Count == 5;
+			bool gatesKept = bought.Count == 4;
 			foreach (SkillName name in bought) {
 				int now = player.GetRealSkillValue(name);
 				gatesKept &= now >= 550; //never the taught step from 50.0
@@ -169,8 +170,7 @@ namespace SteamEngine.CompiledScripts {
 				player.SetRealSkillValue((int) name, Professions.Warrior.GetSkillMinimum(name));
 			}
 			Report("pointsTakenBack", (Q099.LevelsTaken == 10) && (player.Level == 30 - Q099.LevelsTaken) && //#1307 - the user's 10 levels
-				 (taken - player.UnspentSkillPoints == Q099.LevelingSkillPointsPerLevel * Q099.LevelsTaken)
-				&& (player.UnspentSkillPoints < 3) && gatesKept && (player.AttributePointBudget == 0) && (player.Str < strBefore)
+				 (taken == 10 + (8 * 4)) && (player.UnspentSkillPoints == 0) && gatesKept && (player.AttributePointBudget == 0) && (player.Str < strBefore)
 				&& (ClassAbilities.Points(player, ability) == 0) && (ClassAbilities.Spare(player) == player.Level * 2));
 			player.Profession = profession;
 
