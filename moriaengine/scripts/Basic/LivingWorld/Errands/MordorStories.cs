@@ -49,10 +49,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>The pits of Nurn (an overseer in Nurn): catch the three slaves who ran, then hand them all back or quietly let one
-	/// go. Letting one go pays half and raises karma; one time in four the overseer finds out (standing in Nurn); every third slave
-	/// freed leaves a secret gift.</summary>
+	/// go. Letting one go pays half and raises karma; one time in four the overseer finds out (standing in Nurn, more than the
+	/// errand gives); every fifth slave freed leaves a secret gift (the medium errand's own pouch chance stays).</summary>
 	internal sealed class NurnQuotaErrand : ErrandTemplate {
-		internal const int Slaves = 3, FreeChoice = 1, FoundOutChance = 25, FoundOutLoss = 30, KarmaGain = 50, GiftEvery = 3;
+		internal const int Slaves = 3, FreeChoice = 1, FoundOutChance = 25, FoundOutLoss = 60, KarmaGain = 50, GiftEvery = 5;
 
 		public override string Key { get { return "nurnquota"; } }
 		public override string Name { get { return "Jamy Nurnu"; } }
@@ -79,7 +79,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>One let go: karma; maybe found out; every third freed, the freed slaves' gift.</summary>
 		public override void OnDone(Player player, Errand e) {
-			if (e.ChoiceAt(1) != FreeChoice) {
+			if ((e.ChoiceAt(1) != FreeChoice) || player.IsGM) {
 				return;
 			}
 			player.Karma = (short) Math.Min(short.MaxValue, player.Karma + KarmaGain);
@@ -125,7 +125,8 @@ namespace SteamEngine.CompiledScripts {
 			List<Item> decoys = new List<Item>();
 			for (int i = 1; i < Suspects; i++) {
 				Item decoy = c.PickOther(gem => (gem != spy) && (gem != first) && (gem != second) && !decoys.Contains(gem)
-					&& !((MordorStories.WorkLabel(gem) == place) && (MordorStories.FirstLetter(gem) == letter)));
+					&& !((MordorStories.WorkLabel(gem) == place) && (MordorStories.FirstLetter(gem) == letter))
+					&& (Residents.NameOf(gem) != Residents.NameOf(spy)) && !decoys.Exists(d => Residents.NameOf(d) == Residents.NameOf(gem)));
 				if (decoy == null) {
 					return false;
 				}
@@ -136,7 +137,7 @@ namespace SteamEngine.CompiledScripts {
 			suspects.Insert(right, spy);
 			string[] names = new string[Suspects], replies = new string[Suspects];
 			for (int i = 0; i < Suspects; i++) {
-				names[i] = "Je to " + BasicErrands.Name(suspects[i]) + ".";
+				names[i] = "Je to " + ErrandContext.Who(suspects[i]) + "."; //with the workplace: the clues decide it in the dialog
 				replies[i] = (i == right) ? "Ano! Odvedte ho do vezeni. Oko vidi vse." : "Ten? Hm. Uvidime, co rekne pod bicem...";
 			}
 			e.offer = "V taboru je speh Gondoru. Vyptej se " + ErrandContext.Who(first) + " a " + ErrandContext.Who(second) + ", pak mi rekni, kdo to je.";
@@ -160,11 +161,11 @@ namespace SteamEngine.CompiledScripts {
 			return Right(e) ? 100 : 0;
 		}
 
-		/// <summary>A wrong accusation: no pay (PayPercent), and the standing the order would have paid taken back with the price of a
-		/// failed order on top.</summary>
+		/// <summary>A wrong accusation: no pay, no standing (Finish gives none for a share of 0) and the price of a failed order, in
+		/// one change.</summary>
 		public override void OnDone(Player player, Errand e) {
 			if (!Right(e)) {
-				Reputation.Change(player, e.city, -(Errands.Settings.repMedium + WarCampSettings.instance.orderFailLoss));
+				Reputation.Change(player, e.city, -WarCampSettings.instance.orderFailLoss);
 				player.SysMessage("Obvinil jsi nevinneho. Skutecny speh je dal na svobode.", 0x21);
 			}
 		}

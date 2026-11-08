@@ -226,9 +226,14 @@ namespace SteamEngine.CompiledScripts {
 			Quota(player, overseer, NurnQuotaErrand.FreeChoice);
 			bool foundOut = Reputation.Of(player, "Nurn") == rep + es.repMedium - NurnQuotaErrand.FoundOutLoss;
 			int pouches = Pouches(player);
+			for (int i = MordorStories.Freed(player); i < NurnQuotaErrand.GiftEvery - 1; i++) {
+				MordorStories.RollOverride.Enqueue(99);
+				Quota(player, overseer, NurnQuotaErrand.FreeChoice);
+			}
+			bool noGiftYet = Pouches(player) == pouches;
 			MordorStories.RollOverride.Enqueue(99);
-			Quota(player, overseer, NurnQuotaErrand.FreeChoice); //the third freed
-			Report("foundOutSometimesAndAGiftEveryThird", foundOut && (MordorStories.Freed(player) == 3) && (Pouches(player) == pouches + 1));
+			Quota(player, overseer, NurnQuotaErrand.FreeChoice); //the gift's freed slave
+			Report("foundOutSometimesAndAGiftEveryFifth", foundOut && noGiftYet && (MordorStories.Freed(player) == NurnQuotaErrand.GiftEvery) && (Pouches(player) == pouches + 1));
 
 			//the Eye's spies: from the camp's overseers; two clues single out the spy among three suspects
 			Item campOverseer = Gem(player, "campoverseer", "overseer");
@@ -265,8 +270,11 @@ namespace SteamEngine.CompiledScripts {
 			gold = player.Gold;
 			rep = Reputation.Of(player, "Barad-dur");
 			int pouchesBefore = Pouches(player);
+			int courier = Deeds.Count(player, Deeds.Get(Deeds.Courier));
+			object deedMark = player.GetTag(Reputation.CityDeedKey("Barad-dur")); //the right accusation's: a wrong one mustn't renew it
 			bool unpaid = (wrong != null) && Errands.Accept(player, wrong) && Do(player, wrong) && Do(player, wrong) && Do(player, wrong, (wrong.steps[2].count + 1) % EyeSpyErrand.Suspects)
-				&& (player.Gold == gold) && (Reputation.Of(player, "Barad-dur") == rep - WarCampSettings.instance.orderFailLoss) && (Pouches(player) == pouchesBefore);
+				&& (player.Gold == gold) && (Reputation.Of(player, "Barad-dur") == rep - WarCampSettings.instance.orderFailLoss) && (Pouches(player) == pouchesBefore)
+				&& (Deeds.Count(player, Deeds.Get(Deeds.Courier)) == courier) && (deedMark != null) && deedMark.Equals(player.GetTag(Reputation.CityDeedKey("Barad-dur")));
 			es.pouchChance = 0;
 			Report("theRightSpyPaysAWrongOneCosts", paid && unpaid);
 
@@ -278,7 +286,7 @@ namespace SteamEngine.CompiledScripts {
 		private static Item SuspectOf(string choice, string city) {
 			foreach (Item gem in Residents.AllGems) {
 				CityVenue work = Residents.WorkplaceOf(gem);
-				if ((work != null) && string.Equals(work.City, city, StringComparison.OrdinalIgnoreCase) && (choice == "Je to " + BasicErrands.Name(gem) + ".")) {
+				if ((work != null) && string.Equals(work.City, city, StringComparison.OrdinalIgnoreCase) && (choice == "Je to " + ErrandContext.Who(gem) + ".")) {
 					return gem;
 				}
 			}

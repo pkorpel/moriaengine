@@ -656,7 +656,9 @@ namespace SteamEngine.CompiledScripts {
 			log.streak = (log.lastKey == errand.key) ? log.streak + 1 : 1;
 			log.lastKey = errand.key;
 			log.done++;
-			Deeds.Add(player, Deeds.Courier); //#1296
+			if (share > 0) {
+				Deeds.Add(player, Deeds.Courier); //#1296 - (#1302) an errand that earned nothing, as a wrong accusation, is no deed
+			}
 			ErrandSettings s = Settings;
 			int gold, exp, friend, rep;
 			switch (errand.Tier) {
@@ -678,7 +680,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Residents.AddFriendship(player, errand.giverId, friend + Bathhouse.FriendshipBonus(player)); //#1256 - fresh from the bath house
 			Item giver = Residents.ById(errand.giverId); //null when the giver is gone since
-			Reputation.Change(player, errand.city, rep, CityFlavour.FactionOf(giver)); //#1282 - and the giver's faction
+			if (share > 0) { //#1302 - an errand that earned nothing raises no standing (nor marks a hero's deed)
+				Reputation.Change(player, errand.city, rep, CityFlavour.FactionOf(giver)); //#1282 - and the giver's faction
+			}
 			if (share <= 0) {
 				//#1302 - an errand that earned nothing (a wrong accusation) gives no pouch or bag either
 			} else if ((errand.Tier == ErrandTier.Medium) && (Globals.dice.Next(100) < s.pouchChance)) {
@@ -692,6 +696,10 @@ namespace SteamEngine.CompiledScripts {
 			NPC giverBody = (giver == null) ? null : Residents.BodyOf(giver);
 			if ((giverBody != null) && !string.IsNullOrEmpty(errand.thanks)) {
 				giverBody.Say(errand.thanks);
+			}
+			if (share <= 0) {
+				player.SysMessage("Ukol skoncil: " + errand.name + ". Bez odmeny.", ClassAbilities.ClassMessageHue);
+				return;
 			}
 			player.SysMessage("Ukol splnen: " + errand.name + ". Odmena " + gold.ToString(CultureInfo.InvariantCulture) + " zlatych a " +
 				exp.ToString(CultureInfo.InvariantCulture) + " zkusenosti.", ClassAbilities.ClassMessageHue);

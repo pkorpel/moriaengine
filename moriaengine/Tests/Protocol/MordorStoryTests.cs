@@ -36,7 +36,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("theDispatchArrived");
 
 				this.Run(game, ".TestMordorStoriesChain", "MORDORSTORIES_CHAIN_DONE");
-				this.AssertChecks("nurnSlavesFleeInNurnFromItsOverseersOnly", "handedBackOrOneFreedForHalfAndKarma", "foundOutSometimesAndAGiftEveryThird",
+				this.AssertChecks("nurnSlavesFleeInNurnFromItsOverseersOnly", "handedBackOrOneFreedForHalfAndKarma", "foundOutSometimesAndAGiftEveryFifth",
 					"theCluesSingleOutTheSpyFromTheCampsOverseers", "theRightSpyPaysAWrongOneCosts", "dispatchesOnlyFromTheCamp");
 			}
 		}
