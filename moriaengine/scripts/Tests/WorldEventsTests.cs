@@ -57,6 +57,21 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("WORLDEVENTS_JOURNAL_DONE");
 		}
 
+		/// <summary>#1296 - the deeds' pay off for a chain: an event's first win would add the defender's first tier to the exact
+		/// pay these checks read. Returns what to put back.</summary>
+		private static int[] PauseDeedPay() {
+			DeedSettings deeds = DeedSettings.instance;
+			int[] was = { deeds.gold, deeds.exp };
+			deeds.gold = 0;
+			deeds.exp = 0;
+			return was;
+		}
+
+		private static void ResumeDeedPay(int[] was) {
+			DeedSettings.instance.gold = was[0];
+			DeedSettings.instance.exp = was[1];
+		}
+
 		private static void KillAll(WorldEvent e, Player player, Predicate<NPC> which) {
 			foreach (NPC npc in e.Npcs.ToArray()) {
 				if (!npc.IsDeleted && !npc.Flag_Dead && ((which == null) || which(npc))) {
@@ -130,6 +145,7 @@ namespace SteamEngine.CompiledScripts {
 			WorldEventSettings s = WorldEventSettings.instance;
 			AbstractAccount account = player.Account;
 			byte plevel = account.PLevel;
+			int[] deedPay = PauseDeedPay();
 			int fireMax = s.fireMax;
 			CityVenue house = player.GetTag(houseTK) as CityVenue;
 			try {
@@ -281,6 +297,7 @@ namespace SteamEngine.CompiledScripts {
 			} finally {
 				s.fireMax = fireMax;
 				account.PLevel = plevel;
+				ResumeDeedPay(deedPay);
 				WorldEvents.ResetForTests();
 			}
 			Console.WriteLine("WORLDEVENTS_CITY_DONE");
@@ -352,6 +369,7 @@ namespace SteamEngine.CompiledScripts {
 			WorldEventSettings s = WorldEventSettings.instance;
 			AbstractAccount account = player.Account;
 			byte plevel = account.PLevel;
+			int[] deedPay = PauseDeedPay();
 			int chance = s.startChance;
 			try {
 				Point4D tirith = WorldEvents.CentreOf("Minas_Tirith");
@@ -479,6 +497,7 @@ namespace SteamEngine.CompiledScripts {
 				WorldEvents.autoStartOnTestServer = false;
 				s.startChance = chance;
 				account.PLevel = plevel;
+				ResumeDeedPay(deedPay);
 				WorldEvents.ResetForTests();
 			}
 			Console.WriteLine("WORLDEVENTS_FESTIVAL_DONE");
@@ -491,6 +510,7 @@ namespace SteamEngine.CompiledScripts {
 			WorldEventSettings s = WorldEventSettings.instance;
 			AbstractAccount account = player.Account;
 			byte plevel = account.PLevel;
+			int[] deedPay = PauseDeedPay();
 			try {
 				Point4D edoras = WorldEvents.CentreOf("Edoras");
 				WorldEventKind corsairKind = WorldEvents.KindOf("korzari"), beaconsKind = WorldEvents.KindOf("majaky"), trollKind = WorldEvents.KindOf("trol");
@@ -644,6 +664,7 @@ namespace SteamEngine.CompiledScripts {
 			} finally {
 				VenueClock.Override = null;
 				account.PLevel = plevel;
+				ResumeDeedPay(deedPay);
 				WorldEvents.ResetForTests();
 			}
 			Console.WriteLine("WORLDEVENTS_OUTDOOR_DONE");
@@ -655,6 +676,7 @@ namespace SteamEngine.CompiledScripts {
 			WorldEventSettings s = WorldEventSettings.instance;
 			AbstractAccount account = player.Account;
 			byte plevel = account.PLevel;
+			int[] deedPay = PauseDeedPay();
 			bool enabled = s.enabled;
 			int chance = s.startChance;
 			Errands.NowOverride = new DateTime(2026, 7, 15, 12, 0, 0, DateTimeKind.Utc); //no festival's day: the calendar mustn't start one in Edoras
@@ -842,6 +864,7 @@ namespace SteamEngine.CompiledScripts {
 				s.enabled = enabled;
 				s.startChance = chance;
 				account.PLevel = plevel;
+				ResumeDeedPay(deedPay);
 				WorldEvents.ResetForTests();
 			}
 			Console.WriteLine("WORLDEVENTS_CHAIN_DONE");

@@ -272,6 +272,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Skutky")]
+		public DeedSettings DeedSettings {
+			get {
+				return DeedSettings.instance;
+			}
+		}
+
 		[InfoField("Questy")]
 		public QuestPortSettings QuestPortSettings {
 			get {

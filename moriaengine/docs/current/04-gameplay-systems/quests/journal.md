@@ -23,7 +23,7 @@ The fourth side panel (sections 31-34) shows the living world ([living-world-des
 | Ukoly | 31 | Errands, filled by the errand engine (#1237 step 6). Until then a line saying people in the city give them. |
 | Mesto | 32 | A page per city, the one the player stands in first. It shows the city's level and value, its factions ([reputation.md](../living-world/reputation.md)), and up to three residents who are friends (name, where they work, friendship out of 10). A button opens `.povest`. Barad-dur's page shows the war camp's rank and the captain served, and "Prizen" for its friends ([war-camp.md](../living-world/war-camp.md)). |
 | Udalosti | 33 | World events (phase 6). For now, a line saying nothing is happening. |
-| Skutky | 34 | Deeds and titles (phase 7). For now, a line saying there are none yet. |
+| Skutky | 34 | Deeds and titles: each deed's count toward its next tier and the title reached ([deeds](../living-world/deeds.md)). |
 
 The icons are ones Erebor's client has: side 0x2B04, tabs from the priest book 0x3325/0x3329/0x333D/0x3343. They haven't been
 seen on a 3.0.6m client yet. Four tabs sit 60 apart instead of 64, so the row fits the window.

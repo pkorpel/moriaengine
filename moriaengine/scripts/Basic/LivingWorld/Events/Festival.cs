@@ -159,7 +159,7 @@ namespace SteamEngine.CompiledScripts {
 			if (WorldEvents.IsOnCitysSide(player, this.City)) {
 				this.Catches.TryGetValue(player, out int caught);
 				this.Catches[player] = caught + 1;
-				WorldEvents.Reward(player, this.City, Settings.festivalPrizeGold, Settings.festivalPrizeExp, 0);
+				WorldEvents.Reward(player, this.City, Settings.festivalPrizeGold, Settings.festivalPrizeExp, 0, null); //a guest's deed counts once, at the end
 			}
 			this.Animal.Delete();
 			this.Animal = null;
@@ -201,7 +201,7 @@ namespace SteamEngine.CompiledScripts {
 		private void Finish() {
 			this.End(true);
 			foreach (Player guest in this.Guests) {
-				WorldEvents.Reward(guest, this.City, 0, Settings.festivalExp, Settings.festivalFavour);
+				WorldEvents.Reward(guest, this.City, 0, Settings.festivalExp, Settings.festivalFavour, Deeds.Festival);
 			}
 			WorldEvents.SetOutcome(this.City, 0, 0, "Slavnost v " + this.CityName + " (" + this.Kind.Name + ") je u konce. Hoste se rozchazeji.");
 		}

@@ -138,7 +138,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Report("ranks", read && (Reputation.CityLevelName(player, WarCamp.City) == "Setnik") && (Reputation.CityLevelName(player, "Edoras") == Reputation.LevelName(Reputation.Level(player, "Edoras"))));
 
-			//a promotion pays once per rank
+			//a promotion pays once per rank (#1296: the friend deed's pay off, Desatnik is respect enough for its first tier)
+			int deedGold = DeedSettings.instance.gold;
+			DeedSettings.instance.gold = 0;
 			player.RemoveTag(WarCamp.TopRankTK);
 			Reputation.Set(player, WarCamp.City, 0);
 			Reputation.Change(player, WarCamp.City, 1); //the first change remembers Vojak as the best so far
@@ -148,6 +150,7 @@ namespace SteamEngine.CompiledScripts {
 			Reputation.Change(player, WarCamp.City, -150);
 			before = GoldUtils.CountGoldOn(player);
 			Reputation.Change(player, WarCamp.City, 150); //Desatnik again: no second pay
+			DeedSettings.instance.gold = deedGold;
 			Report("promotionPaysOnce", (paid == 4 * WarCampSettings.instance.promotionGold) && (GoldUtils.CountGoldOn(player) == before));
 
 			//the rank caps the order's tier

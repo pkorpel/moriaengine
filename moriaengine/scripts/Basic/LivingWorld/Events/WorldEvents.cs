@@ -742,8 +742,9 @@ namespace SteamEngine.CompiledScripts {
 			return texts;
 		}
 
-		/// <summary>Pays a hero: gold, experience, standing in the city.</summary>
-		internal static void Reward(Player player, string city, int gold, int exp, int favour) {
+		/// <summary>Pays a hero: gold, experience, standing in the city; and counts the event toward a deed (#1296: the defender's
+		/// by default, null none).</summary>
+		internal static void Reward(Player player, string city, int gold, int exp, int favour, string deed = Deeds.Defender) {
 			if (!IsOnCitysSide(player, city)) {
 				return; //no GM, no enemy of the city
 			}
@@ -757,6 +758,9 @@ namespace SteamEngine.CompiledScripts {
 				Reputation.Change(player, city, favour);
 			}
 			player.SysMessage("Odmena: " + gold + " zlatych, " + exp + " zkusenosti.");
+			if (deed != null) {
+				Deeds.Add(player, deed);
+			}
 		}
 
 		/// <summary>Tests: no events, no outcomes, the scheduler ready to start one at once.</summary>
