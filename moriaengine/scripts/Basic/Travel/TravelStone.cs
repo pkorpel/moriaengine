@@ -131,7 +131,11 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Tato trasa nyni nejede, kontaktuj GM.");
 				return;
 			}
-			Point4D point = new Point4D(spot[0], spot[1], spot[2], stop.Destination.M);
+			Carry(self, new Point4D(spot[0], spot[1], spot[2], stop.Destination.M));
+		}
+
+		/// <summary>#1307 - self to `point` with what follows them (the ferry's ride too).</summary>
+		internal static void Carry(Character self, Point4D point) {
 			HidingSkillDef.UnHide(self);
 			List<NPC> followers = new List<NPC>();
 			foreach (AbstractCharacter near in self.GetMap().GetCharsInRange(self.X, self.Y, Globals.MaxUpdateRange)) {

@@ -32,5 +32,9 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>How far from the stone a passenger may be when it does.</summary>
 		[SaveableData]
 		public int strayTiles = 6;
+
+		/// <summary>#1307 - the ferry to Ostrov nestalosti and back: the fare each way.</summary>
+		[SaveableData]
+		public int ferryPrice = 500;
 	}
 }
