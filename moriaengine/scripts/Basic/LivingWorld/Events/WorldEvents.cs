@@ -54,6 +54,23 @@ namespace SteamEngine.CompiledScripts {
 		/// in the fight to count as an escort; the goods cheaper (percent) for so many real minutes.</summary>
 		[SaveableData]
 		public int caravanGold = 250, caravanExp = 400, caravanFavour = 15, escortRange = 15, caravanPercent = -10, caravanOutcomeMinutes = 120;
+
+		/// <summary>#1286 - corsairs at Pelargir: as the raid's numbers (time, size, steps out, pay, the outcome either way).</summary>
+		[SaveableData]
+		public int corsairMinutes = 15, corsairBase = 4, corsairPerPlayer = 2, corsairMax = 14, corsairSteps = 20;
+
+		[SaveableData]
+		public int corsairGold = 300, corsairKillGold = 50, corsairExp = 500, corsairFavour = 20, corsairWonPercent = -5, corsairWonMinutes = 60, corsairLostPercent = 20, corsairLostMinutes = 360;
+
+		/// <summary>#1286 - the beacons of Gondor: how many, tiles between them (out from Minas Tirith towards Edoras), real minutes
+		/// to light them all; each lighter's gold, experience, standing; the realm's experience bonus (percent) and its minutes.</summary>
+		[SaveableData]
+		public int beaconCount = 5, beaconSpacing = 30, beaconMinutes = 20, beaconGold = 200, beaconExp = 300, beaconFavour = 15, beaconBonusPercent = 10, beaconBonusMinutes = 60;
+
+		/// <summary>#1286 - the troll at the ford: walking steps out of the city it stands; real minutes at most (it ends at dawn);
+		/// each fighter's gold, experience, standing; minutes the stone troll stays; the night hours it comes in.</summary>
+		[SaveableData]
+		public int trollSteps = 30, trollMinutes = 30, trollGold = 400, trollExp = 800, trollFavour = 25, trollStoneMinutes = 240, trollNightFrom = 22, trollNightTo = 4;
 	}
 
 	/// <summary>#1284 - a kind of world event: where and when it can start, and a fresh one.</summary>
@@ -70,6 +87,21 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public abstract WorldEvent Make(string city);
+
+		/// <summary>The places it can happen in, as FlaggedRegion.City names them: the pilot cities unless it says otherwise.</summary>
+		public virtual IList<string> Places {
+			get { return WorldEvents.Cities; }
+		}
+
+		/// <summary>The area whose spawn point is the event's centre in `city`.</summary>
+		public virtual string AreaFor(string city) {
+			return "a_" + city.Replace('-', '_');
+		}
+
+		/// <summary>The place's name in what the event says.</summary>
+		public virtual string PlaceName(string city) {
+			return city.Replace('_', ' ');
+		}
 	}
 
 	/// <summary>#1284 - one event under way: in memory only (a restart ends it; WorldEvents clears the NPCs it left). Its NPCs
@@ -79,6 +111,8 @@ namespace SteamEngine.CompiledScripts {
 
 		public readonly WorldEventKind Kind;
 		public readonly string City, Id;
+		public readonly Point4D Centre;
+		public readonly List<Item> Items = new List<Item>();
 		public double StartedAt, EndsAt;
 		public readonly List<NPC> Npcs = new List<NPC>();
 		public readonly Dictionary<Player, int> Heroes = new Dictionary<Player, int>();
@@ -88,6 +122,7 @@ namespace SteamEngine.CompiledScripts {
 			this.Kind = kind;
 			this.City = city;
 			this.Id = kind.Key + "/" + city + "/" + (++WorldEvents.serial).ToString(CultureInfo.InvariantCulture);
+			this.Centre = WorldEvents.CentreOf(city, kind);
 		}
 
 		protected static WorldEventSettings Settings {
@@ -95,7 +130,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public string CityName {
-			get { return this.City.Replace('_', ' '); }
+			get { return this.Kind.PlaceName(this.City); }
 		}
 
 		/// <summary>Puts the event in the world: its NPCs, its start message. False when there's no room for it here.</summary>
@@ -109,6 +144,33 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>An NPC of this event died.</summary>
 		internal virtual void OnDeath(NPC dead, Character killedBy) {
+		}
+
+		/// <summary>An item of the event, fixed where it's put; it goes with the event.</summary>
+		protected Item Place(string defname, int[] at, byte m) {
+			ItemDef def = ThingDef.GetByDefname(defname) as ItemDef;
+			if ((def == null) || (at == null)) {
+				return null;
+			}
+			Item item = (Item) def.Create(at[0], at[1], at[2], m);
+			item.SetAttribute(ItemAttributes.attr_move_never, true);
+			item.SetTag(EventTK, this.Id);
+			this.Items.Add(item);
+			return item;
+		}
+
+		/// <summary>Everything the event put in the world goes.</summary>
+		internal void DeleteAll() {
+			foreach (NPC npc in this.Npcs) {
+				if (!npc.IsDeleted) {
+					npc.Delete();
+				}
+			}
+			foreach (Item item in this.Items) {
+				if (!item.IsDeleted) {
+					item.Delete();
+				}
+			}
 		}
 
 		protected NPC Spawn(string defname, int[] at, byte m, string name) {
@@ -179,11 +241,7 @@ namespace SteamEngine.CompiledScripts {
 		protected void End(bool won) {
 			this.Ended = true;
 			this.Won = won;
-			foreach (NPC npc in this.Npcs) {
-				if (!npc.IsDeleted) {
-					npc.Delete();
-				}
-			}
+			this.DeleteAll();
 		}
 	}
 
@@ -227,6 +285,9 @@ namespace SteamEngine.CompiledScripts {
 		public static void Bootstrap() {
 			Register(new OrcRaidKind());
 			Register(new CaravanKind());
+			Register(new CorsairKind());
+			Register(new BeaconsKind());
+			Register(new TrollKind());
 			QuestJournalPages.Register(D_QuestJournal.SectionEvents, WorldEventsPage.Add);
 		}
 
@@ -254,8 +315,8 @@ namespace SteamEngine.CompiledScripts {
 
 		#region the city
 		/// <summary>A city's centre: a standable spot at its main area's spawn point (a_City), or null.</summary>
-		public static Point4D CentreOf(string city) {
-			StaticRegion area = StaticRegion.GetByDefname("a_" + city.Replace('-', '_'));
+		public static Point4D CentreOf(string city, WorldEventKind kind = null) {
+			StaticRegion area = StaticRegion.GetByDefname((kind == null) ? ("a_" + city.Replace('-', '_')) : kind.AreaFor(city));
 			if (area == null) {
 				List<FlaggedRegion> areas = VenueRegistry.AreasOf(city);
 				area = (areas.Count > 0) ? areas[0] : null;
@@ -274,9 +335,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>The players who count as in the city now: online, alive, on its side (IsOnCitysSide), near its centre.</summary>
-		public static List<Player> PlayersNear(string city) {
+		public static List<Player> PlayersNear(string city, WorldEventKind kind = null) {
 			List<Player> players = new List<Player>();
-			Point4D centre = CentreOf(city);
+			Point4D centre = CentreOf(city, kind);
 			if (centre == null) {
 				return players;
 			}
@@ -343,6 +404,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Every TickSeconds: leftovers of a past run go, the events move on, and now and then a new one starts.</summary>
 		internal static void Tick() {
 			EnsureLeftoversCleared();
+			TickLandmarks();
 			if (!gapAfterBoot) {
 				gapAfterBoot = true; //nothing starts by itself in the first minutes after a boot
 				nextStartAt = Math.Max(nextStartAt, Globals.TimeInSeconds + (Settings.gapMinutes * 60.0));
@@ -378,8 +440,8 @@ namespace SteamEngine.CompiledScripts {
 				if (!kind.IsTime()) {
 					continue;
 				}
-				foreach (string city in Cities) {
-					if (kind.IsFor(city) && !IsBusy(city) && (PlayersNear(city).Count > 0)) {
+				foreach (string city in kind.Places) {
+					if (kind.IsFor(city) && !IsBusy(city) && (PlayersNear(city, kind).Count > 0)) {
 						choices.Add(new KeyValuePair<WorldEventKind, string>(kind, city));
 					}
 				}
@@ -408,18 +470,14 @@ namespace SteamEngine.CompiledScripts {
 			e.StartedAt = Globals.TimeInSeconds;
 			bool begun = false;
 			try {
-				begun = e.Begin(PlayersNear(city).Count);
+				begun = (e.Centre != null) && e.Begin(PlayersNear(city, kind).Count);
 			} catch (FatalException) {
 				throw;
 			} catch (Exception ex) {
 				Logger.WriteError(ex);
 			}
 			if (!begun) {
-				foreach (NPC npc in e.Npcs) {
-					if (!npc.IsDeleted) {
-						npc.Delete();
-					}
-				}
+				e.DeleteAll();
 				return null;
 			}
 			running.Add(e);
@@ -431,11 +489,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>A GM's stop: the event ends with no outcome.</summary>
 		public static void Stop(WorldEvent e) {
-			foreach (NPC npc in e.Npcs) {
-				if (!npc.IsDeleted) {
-					npc.Delete();
-				}
-			}
+			e.DeleteAll();
 			e.Ended = true;
 			Finish(e);
 		}
@@ -454,16 +508,68 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The NPCs a past run's events left (a restart forgets the events, not their NPCs).</summary>
 		internal static int ClearLeftovers() {
-			List<NPC> leftovers = new List<NPC>();
+			List<Thing> leftovers = new List<Thing>();
 			foreach (Thing thing in Thing.AllThings) {
-				if ((thing is NPC npc) && !npc.IsDeleted && (npc.GetTag(WorldEvent.EventTK) is string id) && !byId.ContainsKey(id)) {
-					leftovers.Add(npc);
+				if (thing.IsDeleted) {
+					continue;
+				}
+				if (((thing.GetTag(WorldEvent.EventTK) is string id) && !byId.ContainsKey(id))
+						|| ((thing.GetTag(StoneUntilTK) != null) && !landmarks.Contains(thing))) {
+					leftovers.Add(thing);
 				}
 			}
-			foreach (NPC npc in leftovers) {
-				npc.Delete();
+			foreach (Thing thing in leftovers) {
+				thing.Delete();
 			}
 			return leftovers.Count;
+		}
+
+		#region landmarks and bonuses
+		internal static readonly TagKey StoneUntilTK = TagKey.Acquire("_wev_landmark_");
+		private static readonly List<Thing> landmarks = new List<Thing>();
+
+		/// <summary>A thing an event leaves behind for a while (a stone troll): it goes when its time is up, or with a restart.</summary>
+		public static void AddLandmark(Thing thing, int minutes) {
+			thing.SetTag(StoneUntilTK, Globals.TimeInSeconds + (minutes * 60.0));
+			landmarks.Add(thing);
+		}
+
+		private static void TickLandmarks() {
+			double now = Globals.TimeInSeconds;
+			foreach (Thing thing in landmarks.ToArray()) {
+				if (thing.IsDeleted || (Convert.ToDouble(thing.GetTag(StoneUntilTK), CultureInfo.InvariantCulture) <= now)) {
+					if (!thing.IsDeleted) {
+						thing.Delete();
+					}
+					landmarks.Remove(thing);
+				}
+			}
+		}
+
+		private static readonly Dictionary<Realm, KeyValuePair<int, double>> experienceBonus = new Dictionary<Realm, KeyValuePair<int, double>>();
+
+		/// <summary>A realm's experience bonus: every player of it gets `percent` more of each gain for `minutes`.</summary>
+		public static void SetExperienceBonus(Realm realm, int percent, int minutes) {
+			experienceBonus[realm] = new KeyValuePair<int, double>(percent, Globals.TimeInSeconds + (minutes * 60.0));
+		}
+
+		/// <summary>From LevelingSystem.AddExperience: the extra a gain earns from the player's realm's bonus.</summary>
+		public static int ExperienceBonus(Player player, int amount) {
+			if ((player == null) || (amount <= 0) || !experienceBonus.TryGetValue(player.Realm, out KeyValuePair<int, double> bonus)
+					|| (bonus.Value <= Globals.TimeInSeconds)) {
+				return 0;
+			}
+			return (int) ((long) amount * bonus.Key / 100);
+		}
+
+		public static int ExperienceBonusPercent(Realm realm) {
+			return (experienceBonus.TryGetValue(realm, out KeyValuePair<int, double> bonus) && (bonus.Value > Globals.TimeInSeconds)) ? bonus.Key : 0;
+		}
+		#endregion landmarks and bonuses
+
+		/// <summary>The running event a thing belongs to, or null.</summary>
+		public static WorldEvent EventOf(Thing thing) {
+			return ((thing != null) && (thing.GetTag(WorldEvent.EventTK) is string id) && byId.TryGetValue(id, out WorldEvent e)) ? e : null;
 		}
 
 		/// <summary>From NPC.On_Death: an event's NPC died.</summary>
@@ -548,6 +654,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 			outcomes.Clear();
 			history.Clear();
+			experienceBonus.Clear();
+			foreach (Thing thing in landmarks) {
+				if (!thing.IsDeleted) {
+					thing.Delete();
+				}
+			}
+			landmarks.Clear();
 			nextStartAt = 0;
 			nextChanceAt = 0;
 			gapAfterBoot = true;
@@ -580,7 +693,7 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage("Pouziti: .udalost start <" + string.Join("|", kinds.ConvertAll(k => k.Key)) + "> [mesto]");
 					return;
 				}
-				string known = Array.Find(Cities, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
+				string known = (city == null) ? null : System.Linq.Enumerable.FirstOrDefault(kind.Places, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
 				if ((known == null) || !kind.IsFor(known)) {
 					self.SysMessage(kind.Name + " nemuze byt v " + (city ?? "(zadne mesto)") + ".");
 					return;

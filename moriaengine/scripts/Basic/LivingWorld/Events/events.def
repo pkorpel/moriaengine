@@ -98,3 +98,88 @@ Wrestling = 100
 Tactics = 100
 NoAnimate = 1
 AggroMode = Calm
+
+//#1286 - the troll at the ford, the stone it turns into at sunrise, the corsairs at Pelargir and the beacons of Gondor.
+
+[NPCDef c_event_troll]
+TEVENTS = e_character
+NAME = "Trol od brodu"
+model = 0x36
+AngerSound = snd_MONSTER_TROLL1
+IdleSound = snd_MONSTER_TROLL1 + 1
+AttackSound = snd_MONSTER_TROLL1 + 2
+HurtSound = snd_MONSTER_TROLL1 + 3
+DeathSound = snd_MONSTER_TROLL1 + 4
+CAN = MT_WALK|MT_USEHANDS|MT_RUN
+Str = 400
+Dex = 60
+Int = 10
+MaxHits = 1800 2200
+Wrestling = 900 1000
+Tactics = 900 1000
+NoAnimate = 1
+AggroMode = Hostile
+
+[NPCDef c_event_stone_troll]
+TEVENTS = e_character
+NAME = "Kamenny trol"
+model = 0x36
+Color = 0x03B2
+CAN = MT_WALK
+Str = 400
+Dex = 1
+Int = 1
+MaxHits = 2000
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_event_corsair]
+TEVENTS = e_character
+NAME = "Korzar z Umbaru"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 130
+Dex = 110
+Int = 50
+MaxHits = 120 160
+Wrestling = 550 700
+Tactics = 550 700
+Fencing = 550 700
+NoAnimate = 1
+AggroMode = Hostile
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0455
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_dagger
+
+[NPCDef c_event_corsair_captain]
+TEVENTS = e_character
+NAME = "Korzarsky kapitan"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 200
+Dex = 120
+Int = 70
+MaxHits = 380 450
+Wrestling = 750 850
+Tactics = 750 850
+Fencing = 750 850
+NoAnimate = 1
+AggroMode = Hostile
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0021
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_dagger
+
+[ItemDef i_event_beacon]
+NAME = "Majak"
+TYPE = t_normal
+model = 0x0DE1

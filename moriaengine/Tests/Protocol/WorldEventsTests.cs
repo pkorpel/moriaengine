@@ -39,6 +39,45 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1286 - a GM starts the beacons of Gondor; the client double clicks the second beacon (refused: not its turn) and
+	/// then the first (lit); the server lights the rest, lands corsairs at Pelargir and keeps a troll busy until sunrise.</summary>
+	[Collection(WorldEventsCollection.Name)]
+	public class OutdoorEventsTests : LivingWorldTestBase {
+		public OutdoorEventsTests(GameServerPairFixture servers)
+			: base(servers, "worldeventtests", "WORLDEVENTS") {
+		}
+
+		private string State(TestGameClient game, string want) {
+			string state = "";
+			for (int i = 0; (i < 40) && !state.Contains(want); i++) {
+				System.Threading.Thread.Sleep(250);
+				this.Run(game, ".TestWorldEventsState", "WORLDEVENTS_STATE:");
+				state = this.LastLine("WORLDEVENTS_STATE:");
+			}
+			return state;
+		}
+
+		[Fact]
+		public void BeaconsTrollsAndCorsairs() {
+			using (TestGameClient game = this.Login("Strazce majaku")) {
+				this.Run(game, ".TestWorldEventsSetup", "WORLDEVENTS_SETUP_DONE");
+				game.SendSpeech(".udalost \"start majaky Minas_Tirith\"");
+				Assert.Contains("kind=majaky city=Minas_Tirith lit=0", this.State(game, "kind=majaky"));
+
+				this.Run(game, ".TestWorldEventsBeacon 1", "WORLDEVENTS_BEACON:");
+				game.SendDoubleClick((uint) Number(this.LastLine("WORLDEVENTS_BEACON:"), "uid"));
+				System.Threading.Thread.Sleep(1000);
+				Assert.Contains("lit=0", this.State(game, "lit=0"));
+				this.Run(game, ".TestWorldEventsBeacon 0", "WORLDEVENTS_BEACON:");
+				game.SendDoubleClick((uint) Number(this.LastLine("WORLDEVENTS_BEACON:"), "uid"));
+				Assert.Contains("lit=1", this.State(game, "lit=1"));
+
+				this.Run(game, ".TestWorldEventsOutdoorChain", "WORLDEVENTS_OUTDOOR_DONE");
+				this.AssertChecks("beaconsLit", "beaconsLost", "corsairs", "trollStone", "trollLeft", "trollKilled");
+			}
+		}
+	}
+
 	[CollectionDefinition(Name)]
 	public class WorldEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "WorldEvents";

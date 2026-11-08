@@ -29,7 +29,18 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestWorldEventsState(Character self) {
 			IList<WorldEvent> running = WorldEvents.Running;
-			Console.WriteLine("WORLDEVENTS_STATE: running=" + running.Count + ((running.Count > 0) ? " kind=" + running[0].Kind.Key + " city=" + running[0].City : ""));
+			Console.WriteLine("WORLDEVENTS_STATE: running=" + running.Count + ((running.Count > 0) ? " kind=" + running[0].Kind.Key + " city=" + running[0].City : "")
+				+ (((running.Count > 0) && (running[0] is Beacons beacons)) ? " lit=" + beacons.Lit : ""));
+		}
+
+		/// <summary>.TestWorldEventsBeacon n: the hero stands beside the running chain's beacon n (from 0), and its uid is printed.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsBeacon(Character self, ScriptArgs sa) {
+			int index = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
+			Beacons beacons = (WorldEvents.Running.Count > 0) ? WorldEvents.Running[0] as Beacons : null;
+			Item beacon = beacons.Items[index];
+			self.Go(new Point4D(beacon.X + 1, beacon.Y, beacon.Z, beacon.M));
+			Console.WriteLine("WORLDEVENTS_BEACON: uid=" + beacon.Uid);
 		}
 
 		[SteamFunction]
@@ -47,6 +58,125 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1286 - the corsairs, the beacons (the client lit the first) and the troll.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsOutdoorChain(Character self) {
+			Player player = (Player) self;
+			WorldEventSettings s = WorldEventSettings.instance;
+			AbstractAccount account = player.Account;
+			byte plevel = account.PLevel;
+			try {
+				Point4D edoras = WorldEvents.CentreOf("Edoras");
+				WorldEventKind corsairKind = WorldEvents.KindOf("korzari"), beaconsKind = WorldEvents.KindOf("majaky"), trollKind = WorldEvents.KindOf("trol");
+
+				//the beacons the client lit: one by the GM (no lighter), the rest in order by a player; out of order refused; the realm's bonus
+				Beacons beacons = (WorldEvents.Running.Count == 1) ? WorldEvents.Running[0] as Beacons : null;
+				bool chain = (beacons != null) && (beacons.Items.Count == s.beaconCount) && (beacons.Lit == 1) && (beacons.Lighters.Count == 0)
+					&& (beacons.Items[0].Model == Beacons.LitModel) && (beacons.Items[1].Model == Beacons.UnlitModel);
+				if (beacons != null) {
+					for (int i = 0; i < beacons.Items.Count; i++) {
+						double ex = beacons.Items[i].X - beacons.Centre.X, ey = beacons.Items[i].Y - beacons.Centre.Y;
+						chain &= Math.Abs(Math.Sqrt((ex * ex) + (ey * ey)) - (s.beaconSpacing * (i + 1))) <= 12; //a spot found within 8 tiles of the line's
+					}
+					account.PLevel = 1;
+					player.Realm = Realm.Gondor;
+					chain &= !beacons.Light(beacons.Items[3], player) && (beacons.Lit == 1);
+					for (int i = 1; i < beacons.Items.Count; i++) {
+						beacons.Light(beacons.Items[i], player);
+					}
+				}
+				long gold = player.Gold;
+				WorldEvents.Tick();
+				int levelWas = player.Level;
+				player.Level = 100; //a gain of 110 can't level up here
+				player.Experience = 0;
+				LevelingSystem.AddExperience(player, 100);
+				bool bonusPaid = player.Experience == 100 + (100 * s.beaconBonusPercent / 100);
+				player.Level = levelWas;
+				player.Experience = 0;
+				Report("beaconsLit", chain && beacons.Ended && beacons.Won && (player.Gold - gold == s.beaconGold) && bonusPaid
+					&& (WorldEvents.ExperienceBonusPercent(Realm.Gondor) == s.beaconBonusPercent) && (WorldEvents.ExperienceBonusPercent(Realm.Mordor) == 0)
+					&& beacons.Items.TrueForAll(b => b.IsDeleted) && CityNews.Of("Minas_Tirith").Exists(t => t.Contains("zaplaly az")));
+
+				WorldEvents.ResetForTests();
+				WorldEvent late = WorldEvents.Start(beaconsKind, "Minas_Tirith");
+				if (late != null) {
+					late.EndsAt = Globals.TimeInSeconds;
+				}
+				WorldEvents.Tick();
+				Report("beaconsLost", (late != null) && late.Ended && !late.Won && late.Items.TrueForAll(b => b.IsDeleted)
+					&& (WorldEvents.ExperienceBonusPercent(Realm.Gondor) == 0) && CityNews.Of("Minas_Tirith").Exists(t => t.Contains("nezaplaly")));
+
+				//corsairs land at Pelargir (Dol Amroth's), a captain first; not beaten, the harbour closes
+				WorldEvents.ResetForTests();
+				GoTo(player, edoras);
+				Point4D pelargir = SteamEngine.Regions.StaticRegion.GetByDefname("a_Pelargir").P; //Pelargir's own spawn point, not the kind's say
+				Warband corsairs = WorldEvents.Start(corsairKind, CorsairKind.City) as Warband;
+				bool landed = (corsairs != null) && (corsairs.Npcs.Count == ((WarbandKind) corsairKind).SizeFor(0)) && (Point2D.GetSimpleDistance(corsairs.Centre, pelargir) <= 4)
+					&& (corsairs.Npcs[0].Def == ThingDef.GetByDefname(CorsairKind.CaptainDef)) && corsairs.Describe().Contains("Pelargir")
+					&& corsairKind.IsFor("Dol_Amroth") && !corsairKind.IsFor("Umbar") && (corsairKind.Places.Count == 1)
+					&& (NPCAiTimer.GetFor(corsairs.Npcs[1]).homeX == corsairs.Centre.X);
+				if (corsairs != null) {
+					corsairs.EndsAt = Globals.TimeInSeconds;
+				}
+				WorldEvents.Tick();
+				Report("corsairs", landed && corsairs.Ended && !corsairs.Won && (WorldEvents.PricePercent(CorsairKind.City) == s.corsairLostPercent)
+					&& CityNews.Of(CorsairKind.City).Exists(t => t.Contains("zavreny")));
+
+				//the troll: at night, on Gondor's roads; still fought at sunrise it turns to stone, which stays a while
+				WorldEvents.ResetForTests();
+				VenueClock.Override = 23;
+				bool night = trollKind.IsTime();
+				VenueClock.Override = 12;
+				bool noon = trollKind.IsTime();
+				Troll troll = WorldEvents.Start(trollKind, "Edoras") as Troll;
+				bool stands = night && !noon && trollKind.IsFor("Hobitin") && !trollKind.IsFor("Harad") && (troll != null) && (troll.Beast != null)
+					&& (Point2D.GetSimpleDistance(troll.Beast, edoras) >= Troll.MinDistance);
+				gold = player.Gold;
+				if (troll != null) {
+					GoTo(player, new Point4D(troll.Beast.X + 1, troll.Beast.Y, troll.Beast.Z, troll.Beast.M));
+					FightMemory.Record(troll.Beast, player);
+				}
+				VenueClock.Override = 7;
+				WorldEvents.Tick();
+				NPC stone = (troll == null) ? null : troll.Stone;
+				bool turned = stands && troll.Ended && troll.Won && troll.Beast.IsDeleted && (stone != null) && !stone.IsDeleted && stone.Flag_Invulnerable
+					&& (stone.Def == ThingDef.GetByDefname(TrollKind.StoneDef)) && (player.Gold - gold == s.trollGold) && CityNews.Of("Edoras").Exists(t => t.Contains("kamenny"));
+				if (stone != null) {
+					stone.SetTag(WorldEvents.StoneUntilTK, Globals.TimeInSeconds - 1);
+				}
+				WorldEvents.Tick();
+				Report("trollStone", turned && stone.IsDeleted);
+
+				//nobody fought it: it walks off at dawn, no stone, no pay
+				WorldEvents.ResetForTests();
+				GoTo(player, edoras);
+				VenueClock.Override = 23;
+				Troll alone = WorldEvents.Start(trollKind, "Hobitin") as Troll;
+				gold = player.Gold;
+				VenueClock.Override = 7;
+				WorldEvents.Tick();
+				Report("trollLeft", (alone != null) && alone.Ended && !alone.Won && (alone.Stone == null) && (player.Gold == gold)
+					&& CityNews.Of("Hobitin").Exists(t => t.Contains("odesel")));
+
+				//killed before dawn: its killer is paid
+				WorldEvents.ResetForTests();
+				VenueClock.Override = 23;
+				Troll slain = WorldEvents.Start(trollKind, "Edoras") as Troll;
+				gold = player.Gold;
+				if (slain != null) {
+					KillAll(slain, player, null);
+				}
+				WorldEvents.Tick();
+				Report("trollKilled", (slain != null) && slain.Ended && slain.Won && slain.Heroes.ContainsKey(player) && (player.Gold - gold == s.trollGold));
+			} finally {
+				VenueClock.Override = null;
+				account.PLevel = plevel;
+				WorldEvents.ResetForTests();
+			}
+			Console.WriteLine("WORLDEVENTS_OUTDOOR_DONE");
+		}
+
 		[SteamFunction]
 		public static void TestWorldEventsChain(Character self) {
 			Player player = (Player) self;
@@ -57,6 +187,7 @@ namespace SteamEngine.CompiledScripts {
 			int chance = s.startChance;
 			try {
 				WorldEventKind raidKind = WorldEvents.KindOf("najezd"), caravanKind = WorldEvents.KindOf("karavana");
+				Func<int, int> raidSize = ((WarbandKind) raidKind).SizeFor;
 
 				//the rules: a raid only on Gondor's cities and at dusk, its size by the players there
 				VenueClock.Override = 18;
@@ -65,14 +196,14 @@ namespace SteamEngine.CompiledScripts {
 				bool noon = raidKind.IsTime();
 				VenueClock.Override = null;
 				Report("raidRules", raidKind.IsFor("Edoras") && raidKind.IsFor("Hobitin") && !raidKind.IsFor("Barad-dur") && !raidKind.IsFor("Harad")
-					&& dusk && !noon && (OrcRaid.SizeFor(0) == s.raidBase) && (OrcRaid.SizeFor(2) == s.raidBase + (2 * s.raidPerPlayer))
-					&& (OrcRaid.SizeFor(100) == s.raidMax) && caravanKind.IsFor("Umbar") && caravanKind.IsFor("Barad-dur")
+					&& dusk && !noon && (raidSize(0) == s.raidBase) && (raidSize(2) == s.raidBase + (2 * s.raidPerPlayer))
+					&& (raidSize(100) == s.raidMax) && caravanKind.IsFor("Umbar") && caravanKind.IsFor("Barad-dur")
 					&& (Caravan.BanditsFor(1) == s.banditBase + s.banditPerPlayer));
 
 				//the raid the client's .udalost started: a GM isn't counted, so the smallest warband, a chief first, making for the centre
 				Point4D edoras = WorldEvents.CentreOf("Edoras");
-				OrcRaid raid = (WorldEvents.Running.Count == 1) ? WorldEvents.Running[0] as OrcRaid : null;
-				bool started = (raid != null) && (raid.City == "Edoras") && (raid.Npcs.Count == OrcRaid.SizeFor(0))
+				Warband raid = (WorldEvents.Running.Count == 1) ? WorldEvents.Running[0] as Warband : null;
+				bool started = (raid != null) && (raid.City == "Edoras") && (raid.Npcs.Count == raidSize(0))
 					&& (raid.Npcs[0].Def == ThingDef.GetByDefname(OrcRaidKind.ChiefDef));
 				if (raid != null) {
 					foreach (NPC raider in raid.Npcs) {
@@ -91,8 +222,8 @@ namespace SteamEngine.CompiledScripts {
 				}
 				WorldEvents.Tick();
 				bool won = (raid != null) && raid.Ended && raid.Won && (WorldEvents.Running.Count == 0) && raid.Heroes.ContainsKey(player)
-					&& (raid.Heroes[player] == OrcRaid.SizeFor(0));
-				Report("raidWon", won && (player.Gold - gold == s.raidGold + (s.raidKillGold * OrcRaid.SizeFor(0)))
+					&& (raid.Heroes[player] == raidSize(0));
+				Report("raidWon", won && (player.Gold - gold == s.raidGold + (s.raidKillGold * raidSize(0)))
 					&& (Reputation.Of(player, "Edoras") > standing) && (WorldEvents.PricePercent("Edoras") == s.raidWonPercent)
 					&& CityNews.Of("Edoras").Exists(t => t.Contains("odrazili")) && WorldEvents.RecentOutcomes().Exists(t => t.Contains("odrazili")));
 
@@ -101,7 +232,7 @@ namespace SteamEngine.CompiledScripts {
 				GoTo(player, WorldEvents.CentreOf("Minas_Tirith"));
 				long before = Reputation.PriceFor(player, 1000);
 				WorldEvent lost = WorldEvents.Start(raidKind, "Minas_Tirith");
-				bool lostStarted = (lost != null) && (lost.Npcs.Count == OrcRaid.SizeFor(1));
+				bool lostStarted = (lost != null) && (lost.Npcs.Count == raidSize(1));
 				//nobody of the enemy realm, and no GM, counts as the city's or is credited for a raider
 				bool noStrangers = lost != null;
 				if (lost != null) {
