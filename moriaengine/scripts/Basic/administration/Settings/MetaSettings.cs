@@ -251,6 +251,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Hry")]
+		public GameSettings GameSettings {
+			get {
+				return GameSettings.instance;
+			}
+		}
+
 		[InfoField("Podniky")]
 		public VenueLifeSettings VenueLifeSettings {
 			get {
