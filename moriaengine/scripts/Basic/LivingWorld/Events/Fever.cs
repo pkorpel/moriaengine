@@ -38,6 +38,34 @@ namespace SteamEngine.CompiledScripts {
 			: base(kind, city) {
 		}
 
+		internal override void SaveTo(WorldEventRecord r) {
+			r.SetThings("sick", this.Sick);
+			r.SetPlayers("curers", this.Curers);
+			foreach (KeyValuePair<Player, Item> one in this.cured) {
+				if (!one.Key.IsDeleted && !one.Value.IsDeleted) { //a pair side by side: the player, then the resident
+					r.SetThing("cured", one.Key);
+					r.SetThing("cured", one.Value);
+				}
+			}
+			r.SetInt("ticks", this.ticks);
+			r.SetInt("lost", this.Lost);
+		}
+
+		internal override void LoadFrom(WorldEventRecord r) {
+			this.Sick.AddRange(r.GetThings<NPC>("sick"));
+			foreach (KeyValuePair<Player, int> curer in r.GetPlayers("curers")) {
+				this.Curers[curer.Key] = curer.Value;
+			}
+			List<Thing> cured = r.GetThingsRaw("cured");
+			for (int i = 0; i + 1 < cured.Count; i += 2) {
+				if ((cured[i] is Player player) && !player.IsDeleted && (cured[i + 1] is Item gem) && !gem.IsDeleted) {
+					this.cured.Add(new KeyValuePair<Player, Item>(player, gem));
+				}
+			}
+			this.ticks = r.GetInt("ticks");
+			this.Lost = r.GetInt("lost");
+		}
+
 		internal override bool Begin(int playersNear) {
 			List<NPC> residents = new List<NPC>();
 			foreach (Item gem in Residents.AllGems) {

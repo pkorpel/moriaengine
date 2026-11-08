@@ -38,6 +38,16 @@ namespace SteamEngine.CompiledScripts {
 			: base(kind, city) {
 		}
 
+		internal override void SaveTo(WorldEventRecord r) {
+			r.SetInt("lit", this.Lit);
+			r.SetThings("lighters", this.Lighters);
+		}
+
+		internal override void LoadFrom(WorldEventRecord r) {
+			this.Lit = r.GetInt("lit");
+			this.Lighters.UnionWith(r.GetThings<Player>("lighters"));
+		}
+
 		/// <summary>The way the chain runs: towards Edoras where both are on one map, else west.</summary>
 		private void Direction(out double dx, out double dy) {
 			dx = -1;

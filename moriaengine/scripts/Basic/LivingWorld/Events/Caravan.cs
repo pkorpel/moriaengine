@@ -43,6 +43,27 @@ namespace SteamEngine.CompiledScripts {
 
 		private int playersAtStart;
 
+		internal override void SaveTo(WorldEventRecord r) {
+			r.SetTiles("route", this.route);
+			r.SetInt("next", this.next);
+			r.SetInt("ambushAt", this.ambushAt);
+			r.SetThing("merchant", this.Merchant);
+			r.SetBool("ambushed", this.Ambushed);
+			r.SetInt("players", this.playersAtStart);
+			r.SetThings("escorts", this.Escorts);
+		}
+
+		internal override void LoadFrom(WorldEventRecord r) {
+			this.centre = this.Centre;
+			this.route = r.GetTiles("route");
+			this.next = r.GetInt("next");
+			this.ambushAt = r.GetInt("ambushAt");
+			this.Merchant = r.GetThing<NPC>("merchant");
+			this.Ambushed = r.GetBool("ambushed");
+			this.playersAtStart = r.GetInt("players");
+			this.Escorts.UnionWith(r.GetThings<Player>("escorts"));
+		}
+
 		internal override bool Begin(int playersNear) {
 			this.playersAtStart = playersNear;
 			this.centre = this.Centre;

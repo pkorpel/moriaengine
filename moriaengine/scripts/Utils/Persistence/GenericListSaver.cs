@@ -63,8 +63,9 @@ namespace SteamEngine.CompiledScripts {
 				Type typeOfList = typeof(List<>).MakeGenericType(elemType);
 				IList list = (IList) Activator.CreateInstance(typeOfList, count);
 
+				object placeholder = elemType.IsValueType ? Activator.CreateInstance(elemType) : null; //#1307 - a List<int> takes no null
 				for (int i = 0; i < count; i++) {
-					list.Add(null);
+					list.Add(placeholder);
 					PropsLine valueLine = input.PopPropsLine(i.ToString());
 					currentLineNumber = valueLine.Line;
 					GenericListLoadHelper alip = new GenericListLoadHelper(list, i, elemType);

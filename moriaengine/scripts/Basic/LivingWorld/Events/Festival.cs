@@ -90,6 +90,28 @@ namespace SteamEngine.CompiledScripts {
 			: base(kind, city) {
 		}
 
+		internal override void SaveTo(WorldEventRecord r) {
+			r.SetThing("host", this.Host);
+			r.SetThing("animal", this.Animal);
+			r.SetInt("rounds", this.Rounds);
+			r.SetInt("fleeOrders", this.FleeOrders);
+			r.SetThings("fed", this.Fed);
+			r.SetThings("guests", this.Guests);
+			r.SetPlayers("catches", this.Catches);
+		}
+
+		internal override void LoadFrom(WorldEventRecord r) {
+			this.Host = r.GetThing<NPC>("host");
+			this.Animal = r.GetThing<NPC>("animal");
+			this.Rounds = r.GetInt("rounds");
+			this.FleeOrders = r.GetInt("fleeOrders");
+			this.Fed.UnionWith(r.GetThings<Player>("fed"));
+			this.Guests.UnionWith(r.GetThings<Player>("guests"));
+			foreach (KeyValuePair<Player, int> catcher in r.GetPlayers("catches")) {
+				this.Catches[catcher.Key] = catcher.Value;
+			}
+		}
+
 		internal FestivalKind Feast {
 			get { return (FestivalKind) this.Kind; }
 		}

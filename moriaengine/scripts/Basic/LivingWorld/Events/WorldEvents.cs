@@ -144,8 +144,9 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey EventTK = TagKey.Acquire("_wev_");
 
 		public readonly WorldEventKind Kind;
-		public readonly string City, Id;
-		public readonly Point4D Centre;
+		public readonly string City;
+		public string Id { get; internal set; } //#1307 - a restored event keeps its id (its NPCs carry it)
+		public Point4D Centre { get; internal set; }
 		public readonly List<Item> Items = new List<Item>();
 		public double StartedAt, EndsAt;
 		public readonly List<NPC> Npcs = new List<NPC>();
@@ -178,6 +179,14 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>An NPC of this event died.</summary>
 		internal virtual void OnDeath(NPC dead, Character killedBy) {
+		}
+
+		/// <summary>#1307 - the kind's own state into a record before a save (the base fields are saved by WorldEventRecord.Of).</summary>
+		internal virtual void SaveTo(WorldEventRecord record) {
+		}
+
+		/// <summary>#1307 - the kind's own state back from a record after a restart.</summary>
+		internal virtual void LoadFrom(WorldEventRecord record) {
 		}
 
 		/// <summary>An item of the event, fixed where it's put; it goes with the event.</summary>
@@ -287,12 +296,17 @@ namespace SteamEngine.CompiledScripts {
 		private const int OutcomesShown = 5;
 		private static readonly TimerKey timerTK = TimerKey.Acquire("_world_events_");
 
+		/// <summary>Tests: the events' clock on Globals.</summary>
+		internal static TimerKey TimerKeyForTests {
+			get { return timerTK; }
+		}
+
 		internal static int serial;
 		private static readonly List<WorldEventKind> kinds = new List<WorldEventKind>();
-		private static readonly List<WorldEvent> running = new List<WorldEvent>();
-		private static readonly Dictionary<string, WorldEvent> byId = new Dictionary<string, WorldEvent>(StringComparer.Ordinal);
-		private static readonly List<CityOutcome> outcomes = new List<CityOutcome>();
-		private static double nextStartAt, nextChanceAt, nextCalendarAt;
+		internal static readonly List<WorldEvent> running = new List<WorldEvent>();
+		internal static readonly Dictionary<string, WorldEvent> byId = new Dictionary<string, WorldEvent>(StringComparer.Ordinal);
+		internal static readonly List<CityOutcome> outcomes = new List<CityOutcome>();
+		internal static double nextStartAt, nextChanceAt, nextCalendarAt;
 		private static bool leftoversCleared, gapAfterBoot;
 
 		/// <summary>Test servers (the harness's environment variable) start no event by themselves unless a test allows it:
@@ -307,7 +321,7 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly string[] Cities = { "Minas_Tirith", "Edoras", "Hobitin", "Barad-dur", "Harad", "Umbar",
 			"Dol_Amroth", "Erebor", "Dol", "Fornost", "Kralovstvi_lesnich_elfu", "Sede_pristavy", "Nurn", "Rhun" }; //#1304 - the other cities too (not the abandoned Dainovo_kralovstvi, nor the test London)
 
-		private sealed class CityOutcome {
+		internal sealed class CityOutcome {
 			internal string city, text, eventId;
 			internal int percent;
 			internal double until;
@@ -654,7 +668,7 @@ namespace SteamEngine.CompiledScripts {
 
 		#region landmarks and bonuses
 		internal static readonly TagKey StoneUntilTK = TagKey.Acquire("_wev_landmark_");
-		private static readonly List<Thing> landmarks = new List<Thing>();
+		internal static readonly List<Thing> landmarks = new List<Thing>();
 
 		/// <summary>A thing an event leaves behind for a while (a stone troll): it goes when its time is up, or with a restart.</summary>
 		public static void AddLandmark(Thing thing, int minutes) {
@@ -674,7 +688,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static readonly Dictionary<Realm, KeyValuePair<int, double>> experienceBonus = new Dictionary<Realm, KeyValuePair<int, double>>();
+		internal static readonly Dictionary<Realm, KeyValuePair<int, double>> experienceBonus = new Dictionary<Realm, KeyValuePair<int, double>>();
 
 		/// <summary>A realm's experience bonus: every player of it gets `percent` more of each gain for `minutes`.</summary>
 		public static void SetExperienceBonus(Realm realm, int percent, int minutes) {
@@ -722,7 +736,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static readonly List<CityOutcome> history = new List<CityOutcome>();
+		internal static readonly List<CityOutcome> history = new List<CityOutcome>();
 
 		/// <summary>In percent: how the city's prices stand now after its events (from -50 up to +100).</summary>
 		public static int PricePercent(string city) {
