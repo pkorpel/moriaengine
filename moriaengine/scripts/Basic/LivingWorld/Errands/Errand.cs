@@ -117,6 +117,16 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData, CopyableData]
 		public string thingUids = "";
 
+		/// <summary>#1300 - a Things step: the city whose streets or road its things go to when it isn't the errand's own (the elves'
+		/// letters, given in Hobitin, go to the Grey Havens); "" = the errand's city.</summary>
+		[SaveableData, CopyableData]
+		public string thingCity = "";
+
+		/// <summary>#1300 - a Kill step: how many of its NPCs others killed and were replaced; past twice the count, anyone's kill counts
+		/// for the errand's player, so a friend can't farm a road of thieves for the errand's whole time.</summary>
+		[SaveableData, CopyableData]
+		public int replaced;
+
 		[LoadingInitializer, DeepCopyImplementation]
 		public ErrandStep() {
 		}

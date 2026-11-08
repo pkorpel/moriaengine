@@ -129,7 +129,8 @@ or on a road out of the city, beside the player if no spot is found. The player 
   step undoable.
 - **Use** an item with a double click within 2 tiles, on the same floor and in sight.
 - **Kill** an NPC, by the player or with the player among its fighters. A kill by anyone else alone doesn't count, and
-  another takes its place.
+  another takes its place, but only twice the step's count over (#1300); after that, anyone's kill counts for the player, so
+  a friend can't farm a road of thieves for the errand's whole time.
 
 They're the errand's player's alone: anyone else's double click is told it's none of their business. A thing that flees runs
 from the player each second when they come within 3 tiles, three times; then it tires and can be caught. When the last one is
@@ -155,6 +156,30 @@ Templates (`ThingErrands.cs`, design 9.1's numbers 4, 13, 14, 16, 28 and 29):
 | Verbovani (press gang) | `pressgang` | the war camp's mess hall or barracks only | drag 3 drunk orcs out of the mess hall |
 
 The war camp gives orders, not these, except press gang, which is its own.
+
+## Regional stories (#1300)
+
+Design 9.3's story quests, as templates only their city's people give (`RegionalStories.cs`, things in `regionalstories.def`):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Hobiti posta (the hobbit post) | `hobbitpost` | any worker in Hobitin | three letters to three other residents within 20 minutes; each round raises the post rank |
+| Zlodeji koni (horse thieves) | `horsethieves` | a stable, barracks, town hall or market worker in Edoras | kill the 2 thieves on the road out of the city, catch the 2 horses they left there, then report |
+| Ztracena prilba (the Citadel helm) | `citadelhelm` | a guard or recruit in Minas Tirith | find the helm he left in one of the city's taverns (the streets if it has none), then bring it back, within 30 minutes |
+| Dopisy elfu (the elves' letters) | `greyhavens` | any worker in Hobitin | put the letters into the elves' chest at the Grey Havens within 60 minutes (a large errand) |
+
+**The post's ranks:** the completed rounds are counted in a player tag. The ranks are Postak (from 0 rounds), Starsi postak
+(5), Postmistr (15) and Mistr posty (40). A promotion is told to the player. Each rank adds 15% to the round's pay share, by
+the rank held as the round is done (`ErrandTemplate.PayPercent(player, errand)`).
+
+**Things in another city:** a Things step can name a city other than the errand's (`ErrandStep.thingCity`, the builder's
+`inCity`). Its streets or road things go there, and the journal names that city. A template placing things far away
+checks first that a spot exists (`Errands.CanPlace`), or it isn't offered: a thing with no spot would stand beside the player. The Grey Havens have no residents, so the
+elves' letters are given in Hobitin and their chest stands about 330 tiles west, at Sede_pristavy. The errand ends at the
+chest, so the thanks come as a message.
+
+Not built (design 9.3): the other stories (the Shire's mushroom thieves and party, Fornost's barrow, Edoras's eored and hall
+song, Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
 
@@ -227,3 +252,11 @@ Each errand has two buttons: one points the quest arrow (0xBA) at the resident, 
 - the debt's three answers (pay, friendship, karma);
 - the walk: the follower, no ending without them, back to their day, and let go by the schedule once no errand holds them;
 - a guest has no trade to supply.
+
+`Tests/Protocol/RegionalStoryTests.cs` (server side `scripts/Tests/RegionalStoryTests.cs`, account `storytests`) sets up open-air venues in Hobitin, Edoras and Minas Tirith:
+- **through a client:** the elves' letters are taken from a Hobitin innkeeper. The chest stands at the Grey Havens, the journal names them, a double click on the chest finishes the errand, and it pays;
+- **on the server:**
+  - the post: three letters to three others, 20 minutes, Hobitin only; a round counted, the rank reached with its share, and a ranked round paying more (at the same level);
+  - the horse thieves: only from the right venues; the thieves can be hurt and are killed, the horses can't be hurt and are caught and go home; the report ends it;
+  - the helm: guards only; it lies in the tavern; found, returned, 30 minutes;
+  - the letters: Hobitin only.

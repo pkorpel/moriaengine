@@ -1,0 +1,45 @@
+//#1300 - the things of the regional stories (RegionalStories.cs): only their errand's player can catch, use or count them, and
+//they go when the errand ends.
+
+[NPCDef c_errand_horsethief]
+TEVENTS = e_character
+NAME = "Zlodej koni"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 70
+Dex = 70
+Int = 30
+MaxHits = 60 80
+Wrestling = 400
+Tactics = 400
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0711
+Equip = random_pants
+EquipColor = colors_all
+
+[NPCDef c_errand_stolen_horse]
+TEVENTS = e_character
+NAME = "Ukradeny kun"
+model = 0xc8
+CAN = MT_WALK|MT_RUN
+Str = 100
+Dex = 80
+Int = 10
+MaxHits = 80
+NoAnimate = 1
+AggroMode = Calm
+
+[ItemDef i_errand_helm]
+NAME = "Prilba strazce Citadely"
+TYPE = t_normal
+model = 0x1412
+
+[ItemDef i_errand_elf_chest]
+NAME = "Truhla elfu"
+TYPE = t_normal
+model = 0x0E42
