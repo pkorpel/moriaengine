@@ -90,7 +90,7 @@ namespace SteamEngine.CompiledScripts {
 			int[] from = this.spot;
 			if (burning.Count > 0) {
 				Item some = burning[Globals.dice.Next(burning.Count)];
-				from = WorldSpots.NearestStandable(map, some.X, some.Y, 1) ?? this.spot;
+				from = new[] { some.X, some.Y, (int) some.Z }; //its own tile: indoors the nearest standable is the roof
 			}
 			List<int[]> around = WorldEvents.Reachable(map, from, 2);
 			around.RemoveAll(t => burning.Exists(f => (f.X == t[0]) && (f.Y == t[1])));
@@ -131,7 +131,7 @@ namespace SteamEngine.CompiledScripts {
 			int burning = this.Burning.Count;
 			if (burning == 0) {
 				this.Win();
-			} else if ((burning >= Settings.fireMax) || (Globals.TimeInSeconds >= this.EndsAt)) {
+			} else if ((burning >= Math.Max(Settings.fireMax, Settings.fireStart + 1)) || (Globals.TimeInSeconds >= this.EndsAt)) {
 				this.Lose();
 			} else if (Globals.TimeInSeconds >= this.nextSpread) {
 				this.nextSpread = Globals.TimeInSeconds + Settings.fireSpreadSeconds;
@@ -141,7 +141,11 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Win() {
 			this.End(true);
-			foreach (Player helper in this.Helpers.Keys) {
+			foreach (KeyValuePair<Player, int> help in this.Helpers) {
+				if (help.Value < Settings.fireBeats) {
+					continue; //a blow or two in passing isn't putting out a fire
+				}
+				Player helper = help.Key;
 				WorldEvents.Reward(helper, this.City, Settings.fireGold, Settings.fireExp, Settings.fireFavour);
 				if ((this.House != null) && !helper.IsDeleted) {
 					foreach (Item gem in Residents.OfVenue(this.House.VenueId)) {
@@ -171,14 +175,15 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1286 - a fire's double click: a blow at it.</summary>
 	public class E_EventFire : CompiledTriggerGroup {
-		internal const int Reach = 2;
+		internal const int Reach = 2, MaxHeight = 15;
 
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if ((clicker is Player player) && (WorldEvents.EventOf(self) is Fire fire) && !fire.Ended) {
 				if (player.Flag_Dead) {
 					player.SysMessage("Duch ohen neuhasi.");
-				} else if (Point2D.GetSimpleDistance(self, player) > Reach) {
-					player.SysMessage("Jsi od ohne moc daleko.");
+				} else if ((player.M != self.M) || (Point2D.GetSimpleDistance(self, player) > Reach) || (Math.Abs(player.Z - self.Z) > MaxHeight)
+						|| !player.CanSeeLOS(self).Allow) {
+					player.SysMessage("K ohni nedosahnes.");
 				} else {
 					fire.Beat(self, player);
 				}

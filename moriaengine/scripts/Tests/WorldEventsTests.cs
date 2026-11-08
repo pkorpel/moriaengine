@@ -146,7 +146,7 @@ namespace SteamEngine.CompiledScripts {
 					NPC next = fever.Sick[0];
 					player.Go(new Point4D(next.X + 1, next.Y, next.Z, next.M));
 					int before = fever.Sick.Count;
-					refusedEmpty = Fever.TryCure(next, player) && (fever.Sick.Count == before); //nothing to cure with
+					refusedEmpty = !Fever.TryCure(next, player) && (fever.Sick.Count == before) && Errands.CanTalk(player, next); //near, but nothing to cure with: the usual talk
 					string id = Residents.IdOf(Residents.GemOf(next));
 					int friendship = Residents.Friendship(player, id);
 					foreach (NPC one in fever.Sick.ToArray()) {
@@ -157,9 +157,10 @@ namespace SteamEngine.CompiledScripts {
 							cures++;
 						}
 					}
-					curedHere = (cures == before) && (Residents.Friendship(player, id) == Math.Min(Residents.MaxFriendship, friendship + s.feverFriendship));
+					curedHere = (cures == before) && (Residents.Friendship(player, id) == friendship); //friendship only when it's beaten
+					WorldEvents.Tick();
+					curedHere &= Residents.Friendship(player, id) == Math.Min(Residents.MaxFriendship, friendship + s.feverFriendship);
 				}
-				WorldEvents.Tick();
 				Report("feverCured", clientCured && refusedEmpty && curedHere && fever.Ended && fever.Won
 					&& (player.Gold - gold == s.feverGold * cures) && CityNews.Of("Edoras").Exists(t => t.Contains("ustoupila")));
 
@@ -171,7 +172,25 @@ namespace SteamEngine.CompiledScripts {
 				}
 				WorldEvents.Tick();
 				Report("feverLost", (untreated != null) && untreated.Ended && !untreated.Won && (sick.Count > 0) && sick.TrueForAll(n => !n.IsDeleted)
-					&& CityNews.Of("Edoras").Exists(t => t.Contains("svou dan")));
+					&& !Fever.TryCure(sick[0], player) && CityNews.Of("Edoras").Exists(t => t.Contains("svou dan")));
+
+				//a sick one killed before the cure: the fever isn't beaten, whatever the others' cures
+				WorldEvents.ResetForTests();
+				Fever deadly = WorldEvents.Start(WorldEvents.KindOf("horecka"), "Edoras") as Fever;
+				gold = player.Gold;
+				if ((deadly != null) && (deadly.Sick.Count >= 2)) {
+					deadly.Sick[0].CauseDeath(null);
+					WorldEvents.Tick();
+					foreach (NPC one in deadly.Sick.ToArray()) {
+						bandage.Create(player.Backpack);
+						herb.Create(player.Backpack);
+						player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+						Fever.TryCure(one, player);
+					}
+				}
+				WorldEvents.Tick();
+				Report("feverDeaths", (deadly != null) && deadly.Ended && !deadly.Won && (deadly.Lost == 1) && (player.Gold == gold)
+					&& CityNews.Of("Edoras").Exists(t => t.Contains("ne vsichni")));
 
 				//the fire: the house's, blows cost stamina, a tired hero can't, from afar nobody can; it spreads; all out pays and is remembered
 				WorldEvents.ResetForTests();
@@ -203,7 +222,12 @@ namespace SteamEngine.CompiledScripts {
 				bool spread = (fire != null) && (fire.Burning.Count == burning + 1);
 				Report("fireBlows", atHouse && blows && spread);
 
-				Item member = (house == null) ? null : Residents.OfVenue(house.VenueId)[0];
+				Item member = null;
+				if (house != null) {
+					foreach (Item gem in Residents.OfVenue(house.VenueId)) {
+						member = member ?? gem;
+					}
+				}
 				int houseFriend = (member == null) ? 0 : Residents.Friendship(player, Residents.IdOf(member));
 				gold = player.Gold;
 				if (fire != null) {
@@ -219,14 +243,40 @@ namespace SteamEngine.CompiledScripts {
 				Report("fireOut", (fire != null) && fire.Ended && fire.Won && (player.Gold - gold == s.fireGold) && (member != null)
 					&& (Residents.Friendship(player, Residents.IdOf(member)) == Math.Min(Residents.MaxFriendship, houseFriend + s.fireFriendship)) && CityNews.Of("Edoras").Exists(t => t.Contains("uhasit")));
 
+				//a blow or two isn't enough to be paid
+				WorldEvents.ResetForTests();
+				Fire brief = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+				gold = player.Gold;
+				if (brief != null) {
+					Item one = brief.Burning[0];
+					player.Go(new Point4D(one.X + 1, one.Y, one.Z, one.M));
+					player.Stam = 100;
+					brief.Beat(one, player);
+					foreach (Item other in brief.Burning) {
+						other.Delete();
+					}
+				}
+				WorldEvents.Tick();
+				Report("fireOneBlowUnpaid", (brief != null) && brief.Won && (brief.Helpers[player] == 1) && (player.Gold == gold));
+
+				//time up: the house burns down
+				WorldEvents.ResetForTests();
+				Fire slow = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
+				if (slow != null) {
+					slow.EndsAt = Globals.TimeInSeconds;
+				}
+				WorldEvents.Tick();
+				bool timedOut = (slow != null) && slow.Ended && !slow.Won;
+
 				//too many fires: the house burns down
 				WorldEvents.ResetForTests();
 				Fire lost = WorldEvents.Start(WorldEvents.KindOf("pozar"), "Edoras") as Fire;
 				if (lost != null) {
-					s.fireMax = lost.Burning.Count;
+					s.fireMax = s.fireStart + 1; //the least it can be: one spread over the start
+					lost.Spread();
 				}
 				WorldEvents.Tick();
-				Report("fireLost", (lost != null) && lost.Ended && !lost.Won && lost.Items.TrueForAll(f => f.IsDeleted) && CityNews.Of("Edoras").Exists(t => t.Contains("spaleniste")));
+				Report("fireLost", timedOut && (lost != null) && lost.Ended && !lost.Won && lost.Items.TrueForAll(f => f.IsDeleted) && CityNews.Of("Edoras").Exists(t => t.Contains("spaleniste")));
 			} finally {
 				s.fireMax = fireMax;
 				account.PLevel = plevel;

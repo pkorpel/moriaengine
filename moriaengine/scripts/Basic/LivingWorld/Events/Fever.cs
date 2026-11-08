@@ -28,8 +28,11 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The sick: the city's own residents, not the event's NPCs (nothing of theirs goes when it ends).</summary>
 		public readonly List<NPC> Sick = new List<NPC>();
 		public readonly Dictionary<Player, int> Curers = new Dictionary<Player, int>();
-		private readonly List<Item> cured = new List<Item>();
+		private readonly List<KeyValuePair<Player, Item>> cured = new List<KeyValuePair<Player, Item>>();
 		private int ticks;
+
+		/// <summary>The sick who died or were taken away before they were cured: then the fever isn't beaten.</summary>
+		public int Lost;
 
 		internal Fever(WorldEventKind kind, string city)
 			: base(kind, city) {
@@ -56,7 +59,8 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Player player in WorldEvents.PlayersNear(this.City, this.Kind)) {
 				player.RedMessage("V " + this.CityName + " se siri horecka! Nemocni potrebuji obvaz a lecive koreni.");
 			}
-			CityNews.Add(this.City, "V " + this.CityName + " se siri horecka. Kdo umi obvazovat, at prinese obvazy a zensen.");
+			CityNews.Add(this.City, "V " + this.CityName + " se siri horecka. Kdo umi obvazovat, at prinese obvazy a zensen. Nemocni: "
+				+ string.Join(", ", this.Sick.ConvertAll(n => n.Name)) + ".");
 			return true;
 		}
 
@@ -74,6 +78,10 @@ namespace SteamEngine.CompiledScripts {
 		public static bool TryCure(NPC npc, Player player) {
 			foreach (WorldEvent e in WorldEvents.Running) {
 				if ((e is Fever fever) && !fever.Ended && fever.Sick.Contains(npc)) {
+					if (!HasCure(player)) {
+						player.SysMessage(npc.Name + " ma horecku. Vylecis ho cistym obvazem a korenem zensenu.");
+						return false; //the usual talk, errands and all
+					}
 					if (Errands.CanTalk(player, npc)) { //near enough, in sight
 						fever.Cure(npc, player);
 					}
@@ -83,25 +91,27 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		internal bool Cure(NPC npc, Player player) {
+		internal static bool HasCure(Player player) {
 			ItemDef bandage = ThingDef.GetByDefname(FeverKind.BandageDef) as ItemDef;
 			ItemDef herb = ThingDef.GetByDefname(FeverKind.HerbDef) as ItemDef;
-			if ((bandage == null) || (herb == null) || (Errands.CountIn(player.Backpack, bandage) < 1) || (Errands.CountIn(player.Backpack, herb) < 1)) {
+			return (bandage != null) && (herb != null) && (Errands.CountIn(player.Backpack, bandage) >= 1) && (Errands.CountIn(player.Backpack, herb) >= 1);
+		}
+
+		internal bool Cure(NPC npc, Player player) {
+			if (!HasCure(player)) {
 				npc.Say("*kasle* Potrebuju obvaz... a lecive koreni...");
-				player.SysMessage("K vyleceni potrebujes cisty obvaz a koren zensenu.");
 				return false;
 			}
+			ItemDef bandage = (ItemDef) ThingDef.GetByDefname(FeverKind.BandageDef);
+			ItemDef herb = (ItemDef) ThingDef.GetByDefname(FeverKind.HerbDef);
 			Errands.Consume(player.Backpack, bandage, 1);
 			Errands.Consume(player.Backpack, herb, 1);
 			this.Sick.Remove(npc);
 			Item gem = Residents.GemOf(npc);
-			if (gem != null) {
-				this.cured.Add(gem);
-				if (WorldEvents.IsOnCitysSide(player, this.City)) {
-					Residents.AddFriendship(player, Residents.IdOf(gem), Settings.feverFriendship);
-				}
-			}
 			if (WorldEvents.IsOnCitysSide(player, this.City)) {
+				if (gem != null) {
+					this.cured.Add(new KeyValuePair<Player, Item>(player, gem)); //remembered when the fever's beaten
+				}
 				this.Curers.TryGetValue(player, out int done);
 				this.Curers[player] = done + 1;
 			}
@@ -110,9 +120,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal override void Tick() {
-			this.Sick.RemoveAll(n => n.IsDeleted || n.Flag_Dead); //a resident gone for good isn't sick any more
-			if (this.Sick.Count == 0) {
+			this.Lost += this.Sick.RemoveAll(n => n.IsDeleted || n.Flag_Dead); //dead or gone before they were cured
+			if ((this.Sick.Count == 0) && (this.Lost == 0)) {
 				this.Win();
+			} else if (this.Sick.Count == 0) {
+				this.End(false);
+				WorldEvents.SetOutcome(this.City, 0, 0, "Horecka v " + this.CityName + " skoncila, ale ne vsichni nemocni se uzdravili.");
 			} else if (Globals.TimeInSeconds >= this.EndsAt) {
 				this.End(false);
 				WorldEvents.SetOutcome(this.City, 0, 0, "Horecka v " + this.CityName + " si vyzadala svou dan. Nemocni se lizou z nemoci jen pomalu.");
@@ -129,6 +142,11 @@ namespace SteamEngine.CompiledScripts {
 					Reputation.ChangeFaction(curer.Key, FeverKind.HealersFaction, Settings.feverFavour); //the Houses of Healing remember
 				}
 			}
+			foreach (KeyValuePair<Player, Item> one in this.cured) {
+				if (!one.Key.IsDeleted && !one.Value.IsDeleted) {
+					Residents.AddFriendship(one.Key, Residents.IdOf(one.Value), Settings.feverFriendship);
+				}
+			}
 			WorldEvents.SetOutcome(this.City, 0, 0, "Horecka v " + this.CityName + " ustoupila. Nemocni jsou na nohou.");
 		}
 
@@ -137,7 +155,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override string Describe() {
-			return "Horecka v " + this.CityName + ": nemocnych " + this.Sick.Count + ".";
+			List<string> names = this.Sick.ConvertAll(n => n.Name);
+			return "Horecka v " + this.CityName + ": nemocni " + string.Join(", ", names) + ".";
 		}
 	}
 }

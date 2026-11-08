@@ -121,7 +121,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("sick=" + (sick - 1), this.State(game, "sick=" + (sick - 1)));
 
 				this.Run(game, ".TestWorldEventsCityChain", "WORLDEVENTS_CITY_DONE");
-				this.AssertChecks("feverCured", "feverLost", "fireBlows", "fireOut", "fireLost");
+				this.AssertChecks("feverCured", "feverLost", "feverDeaths", "fireBlows", "fireOut", "fireOneBlowUnpaid", "fireLost");
 			}
 		}
 	}
