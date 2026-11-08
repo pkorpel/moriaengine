@@ -90,8 +90,8 @@ invulnerable and stand still; a GM can move them. A double click opens a captain
 
 - Barad-dur's venues and residents still need marking in game (`.venues navrh`, then `.venue`); without them nobody gives orders
   there, but the captains stand anyway.
-- The design's other Mordor ideas (the pits of Nurn, the Eye's spies, the warg pup, Black Speech, the Mouth's dispatches) are for
-  phase 7.
+- The pits of Nurn, the Eye's spies and the Mouth's dispatches came in step 31 (#1302, see [errands](errands.md), "Mordor's
+  stories"). The warg pup and Black Speech aren't built.
 - The captains' spots are mine (Erebor had no such captains), unreviewed.
 
 ## Test
