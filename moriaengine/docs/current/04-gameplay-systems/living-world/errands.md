@@ -129,7 +129,8 @@ or on a road out of the city, beside the player if no spot is found. The player 
   step undoable.
 - **Use** an item with a double click within 2 tiles, on the same floor and in sight.
 - **Kill** an NPC, by the player or with the player among its fighters. A kill by anyone else alone doesn't count, and
-  another takes its place.
+  another takes its place, but only twice the step's count over (#1300); after that, anyone's kill counts for the player, so
+  a friend can't farm a road of thieves for the errand's whole time.
 
 They're the errand's player's alone: anyone else's double click is told it's none of their business. A thing that flees runs
 from the player each second when they come within 3 tiles, three times; then it tires and can be caught. When the last one is
@@ -172,8 +173,10 @@ Design 9.3's story quests, as templates only their city's people give (`Regional
 the rank held as the round is done (`ErrandTemplate.PayPercent(player, errand)`).
 
 **Things in another city:** a Things step can name a city other than the errand's (`ErrandStep.thingCity`, the builder's
-`inCity`). Its streets or road things go there, and the journal names that city. The Grey Havens have no residents, so the
-elves' letters are given in Hobitin and their chest stands about 330 tiles west, at Sede_pristavy.
+`inCity`). Its streets or road things go there, and the journal names that city. A template placing things far away
+checks first that a spot exists (`Errands.CanPlace`), or it isn't offered: a thing with no spot would stand beside the player. The Grey Havens have no residents, so the
+elves' letters are given in Hobitin and their chest stands about 330 tiles west, at Sede_pristavy. The errand ends at the
+chest, so the thanks come as a message.
 
 Not built (design 9.3): the other stories (the Shire's mushroom thieves and party, Fornost's barrow, Edoras's eored and hall
 song, Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
