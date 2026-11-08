@@ -4,6 +4,8 @@ using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
+using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -233,6 +235,9 @@ namespace SteamEngine.CompiledScripts {
 					step.placed = item; //#1258 - Release clears it wherever it went: worn, dropped, in a chest (a sword to carry was a free sword)
 				}
 			}
+			if (step.Kind == ErrandStepKind.Things) {
+				PlaceThings(player, errand, step);
+			}
 			NPC companion = Body(step.companionId);
 			if (companion != null) { //#1252 - walks with the player; the schedule leaves a follower alone while the errand holds
 				companion.PetGoalPoint = null;
@@ -263,6 +268,9 @@ namespace SteamEngine.CompiledScripts {
 				}
 				if ((step.placed != null) && !step.placed.IsDeleted) {
 					step.placed.Delete();
+				}
+				foreach (Thing thing in ThingsOf(step)) {
+					thing.Delete(); //#1293 - the step's things go with the errand, done, given up or run out
 				}
 			}
 		}
@@ -384,6 +392,12 @@ namespace SteamEngine.CompiledScripts {
 			if (!string.IsNullOrEmpty(reply)) {
 				resident.Say(reply);
 			}
+			Advance(player, errand);
+			return true;
+		}
+
+		//the step done: the next begins, or the errand is finished
+		private static void Advance(Player player, Errand errand) {
 			errand.index++;
 			if (errand.IsDone) {
 				Finish(player, errand);
@@ -391,8 +405,173 @@ namespace SteamEngine.CompiledScripts {
 				StartStep(player, errand);
 				player.SysMessage(errand.name + ": " + errand.Current.task);
 			}
+		}
+
+		#region things (#1293)
+		/// <summary>On a thing a Things step made: its errand's mark (the player, the giver, the errand's end).</summary>
+		internal static readonly TagKey ThingTK = TagKey.Acquire("_errand_thing_");
+		internal const int ThingSpread = 15, ThingMinFromCentre = 4, OutsideSteps = 30;
+
+		/// <summary>A Things step's things still in the world.</summary>
+		internal static List<Thing> ThingsOf(ErrandStep step) {
+			List<Thing> things = new List<Thing>();
+			foreach (string part in (step.thingUids ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+				if (int.TryParse(part, NumberStyles.Integer, CultureInfo.InvariantCulture, out int uid) && (Thing.UidGetThing(uid) is Thing thing) && !thing.IsDeleted) {
+					things.Add(thing);
+				}
+			}
+			return things;
+		}
+
+		/// <summary>Spots for a step's things: in its venue, in the streets near the centre, or on a road out of the city.</summary>
+		internal static List<Point4D> ThingSpots(Errand errand, ErrandStep step, int count, string seed) {
+			List<Point4D> spots = new List<Point4D>();
+			CityVenue venue = (step.venueId.Length > 0) ? VenueRegistry.ById(step.venueId) : null;
+			Point4D centre = WorldEvents.CentreOf(errand.city);
+			switch ((ErrandThingPlace) step.thingPlace) {
+				case ErrandThingPlace.Venue:
+					for (int i = 0; (venue != null) && (i < count); i++) {
+						int[] spot = ResidentSchedule.SpotIn(venue, seed + "/" + i);
+						if (spot != null) {
+							spots.Add(new Point4D((ushort) spot[0], (ushort) spot[1], (sbyte) spot[2], venue.M));
+						}
+					}
+					break;
+				case ErrandThingPlace.Streets:
+					if (centre != null) {
+						List<int[]> tiles = WorldEvents.Reachable(Map.GetMap(centre.M), new[] { centre.X, centre.Y, centre.Z }, ThingSpread);
+						tiles.RemoveAll(t => WorldSpots.Distance(t, centre.X, centre.Y) < ThingMinFromCentre);
+						for (int i = 0; (i < count) && (tiles.Count > 0); i++) {
+							int pick = Globals.dice.Next(tiles.Count);
+							spots.Add(new Point4D((ushort) tiles[pick][0], (ushort) tiles[pick][1], (sbyte) tiles[pick][2], centre.M));
+							tiles.RemoveAt(pick);
+						}
+					}
+					break;
+				default:
+					List<int[]> road = (centre == null) ? null : WorldEvents.RouteIn(centre, OutsideSteps);
+					for (int i = 0; (road != null) && (i < count); i++) {
+						spots.Add(new Point4D((ushort) road[0][0], (ushort) road[0][1], (sbyte) road[0][2], centre.M));
+					}
+					break;
+			}
+			return spots;
+		}
+
+		//a Things step's things into the world, marked as the errand's; with nowhere to put them, the step counts as done
+		private static void PlaceThings(Player player, Errand errand, ErrandStep step) {
+			ThingDef def = ThingDef.GetByDefname(step.itemDef);
+			List<Point4D> spots = (def == null) ? new List<Point4D>() : ThingSpots(errand, step, step.count, "errand/" + ItemMark(player, errand));
+			for (int i = spots.Count; (def != null) && (i < step.count); i++) { //nowhere found (a venue with no spots): beside the player, or the step could never be done
+				int[] near = WorldSpots.NearestStandable(player.GetMap(), player.X + 2 + i, player.Y, 3);
+				spots.Add((near == null) ? new Point4D(player.X, player.Y, player.Z, player.M) : new Point4D((ushort) near[0], (ushort) near[1], (sbyte) near[2], player.M));
+			}
+			List<string> uids = new List<string>();
+			foreach (Point4D at in spots) {
+				Thing thing = def.Create(at);
+				thing.SetTag(ThingTK, ItemMark(player, errand));
+				if (thing is Item item) {
+					item.SetAttribute(ItemAttributes.attr_move_never, true);
+					ItemDecaySystem.Cancel(item);
+				} else if (thing is NPC npc) {
+					NPCAiTimer ai = NPCAiTimer.GetFor(npc);
+					if (ai != null) {
+						ai.NeverSleeps = true;
+					}
+					if (step.flees) {
+						ErrandThingFleeTimer timer = new ErrandThingFleeTimer();
+						npc.AddTimer(ErrandThingFleeTimer.Key, timer);
+						timer.DueInSeconds = ErrandThingFleeTimer.Seconds;
+						timer.PeriodInSeconds = ErrandThingFleeTimer.Seconds;
+					}
+				}
+				uids.Add(thing.Uid.ToString(CultureInfo.InvariantCulture));
+			}
+			step.thingUids = string.Join(",", uids);
+			step.count = uids.Count;
+			step.progress = 0;
+		}
+
+		/// <summary>The errand (and its player) a thing belongs to, its step the current one, or null.</summary>
+		internal static Errand ErrandOfThing(Thing thing, out Player player) {
+			player = null;
+			string mark = thing.GetTag(ThingTK) as string;
+			int slash = (mark == null) ? -1 : mark.IndexOf('/');
+			if ((slash <= 0) || !int.TryParse(mark.Substring(0, slash), NumberStyles.Integer, CultureInfo.InvariantCulture, out int uid)) {
+				return null;
+			}
+			player = Thing.UidGetThing(uid) as Player;
+			if ((player == null) || player.IsDeleted) {
+				return null;
+			}
+			string uidText = thing.Uid.ToString(CultureInfo.InvariantCulture);
+			foreach (Errand errand in Active(player)) {
+				ErrandStep step = errand.Current;
+				if ((step != null) && (step.Kind == ErrandStepKind.Things) && (ItemMark(player, errand) == mark)
+						&& Array.IndexOf((step.thingUids ?? "").Split(','), uidText) >= 0) {
+					return errand;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>From a thing's double click: the errand's player catches or uses it, if near enough and in sight.</summary>
+		public static bool UseThing(Thing thing, Character clicker) {
+			Errand errand = ErrandOfThing(thing, out Player owner);
+			if ((errand == null) || (clicker != owner)) {
+				if (clicker is Player other) {
+					other.SysMessage("To neni tvoje starost.");
+				}
+				return false;
+			}
+			ErrandStep step = errand.Current;
+			ErrandThingAction action = (ErrandThingAction) step.thingAction;
+			int reach = (action == ErrandThingAction.Catch) ? 1 : 2;
+			if ((action == ErrandThingAction.Kill) || owner.Flag_Dead) {
+				return false;
+			}
+			if ((owner.M != thing.M) || (Point2D.GetSimpleDistance(owner, thing) > reach) || (Math.Abs(owner.Z - thing.Z) > 15) || !owner.CanSeeLOS(thing).Allow) {
+				owner.SysMessage((action == ErrandThingAction.Catch) ? "Musis byt hned u nej." : "Na to nedosahnes.");
+				return false;
+			}
+			ErrandTemplate template = ErrandTemplates.Get(errand.key);
+			if ((template == null) || template.OnThing(owner, errand, thing)) {
+				CountThing(owner, errand);
+			}
 			return true;
 		}
+
+		/// <summary>From NPC.On_Death: a Things step's NPC killed by its player (or with them among its fighters) counts (a thief
+		/// struck down counts as caught); a GM's or a stranger's kill alone doesn't.</summary>
+		public static void OnThingDeath(NPC npc, Character killedBy) {
+			Errand errand = ErrandOfThing(npc, out Player owner);
+			if ((errand == null) || ((ErrandThingAction) errand.Current.thingAction == ErrandThingAction.Use)) {
+				return;
+			}
+			if ((killedBy == owner) || LevelingSystem.FindFighters(npc, killedBy, false).Contains(owner)) {
+				CountThing(owner, errand);
+			}
+		}
+
+		private static void CountThing(Player player, Errand errand) {
+			ErrandStep step = errand.Current;
+			step.progress++;
+			if (step.progress >= step.count) {
+				if (!string.IsNullOrEmpty(step.reply)) {
+					player.SysMessage(step.reply);
+				}
+				Advance(player, errand);
+			} else {
+				player.SysMessage(errand.name + ": " + step.progress + " z " + step.count + ".");
+			}
+		}
+
+		/// <summary>Tests: a thing's step, in the world (to move or check it).</summary>
+		internal static ErrandStep StepOfThing(Thing thing) {
+			Errand errand = ErrandOfThing(thing, out Player owner);
+			return (errand == null) ? null : errand.Current;
+		}
+		#endregion things
 
 		/// <summary>The pay of a done errand (design 5.6): gold and experience by tier, level and length, the giver's friendship,
 		/// the city's reputation; a medium one may add a magic pouch, a large one a magic bag and maybe a booster.</summary>
@@ -622,6 +801,56 @@ namespace SteamEngine.CompiledScripts {
 			step.choices.AddRange(choices);
 			step.choiceReplies.AddRange(replies);
 			return step;
+		}
+
+		/// <summary>#1293 - a step of things in the world: `count` of `def` put at `place` (in `venue` for a venue) as the step begins,
+		/// to catch, kill or use; `flees` makes its NPCs run from the player. `reply` is said (as a message) when the last is done.</summary>
+		public static ErrandStep Things(string def, int count, ErrandThingAction action, ErrandThingPlace place, CityVenue venue, bool flees, string task, string reply) {
+			return new ErrandStep {
+				kind = (int) ErrandStepKind.Things, itemDef = def, count = count, thingAction = (int) action, thingPlace = (int) place,
+				venueId = (venue == null) ? "" : venue.VenueId, flees = flees, task = task, reply = reply
+			};
+		}
+	}
+
+	/// <summary>#1293 - a fleeing errand thing's clock: each second it runs from its player when they come close.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class ErrandThingFleeTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_errandThingFlees_");
+		internal const double Seconds = 1;
+		internal const int Within = 3, Steps = 4;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public ErrandThingFleeTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			if ((cont is NPC npc) && !npc.IsDeleted && !npc.Flag_Dead && (Errands.ErrandOfThing(npc, out Player owner) != null) && !owner.Flag_Dead
+					&& (owner.M == npc.M) && (Point2D.GetSimpleDistance(owner, npc) <= Within)) {
+				NPCAiTimer.GetFor(npc)?.FleeFrom(owner, Steps);
+			}
+		}
+	}
+
+	/// <summary>#1293 - an errand item's double click (a lamp to light, a cart to search).</summary>
+	public class E_ErrandThingItem : CompiledTriggerGroup {
+		public TriggerResult On_DClick(Item self, Character clicker) {
+			if (self.GetTag(Errands.ThingTK) != null) {
+				Errands.UseThing(self, clicker);
+				return TriggerResult.Cancel;
+			}
+			return TriggerResult.Continue;
+		}
+	}
+
+	/// <summary>#1293 - an errand NPC's double click (a runaway cat, a thief, a drunk orc to catch).</summary>
+	public class E_ErrandThingNpc : CompiledTriggerGroup {
+		public TriggerResult On_DClick(NPC self, Character clicker) {
+			if (self.GetTag(Errands.ThingTK) != null) {
+				Errands.UseThing(self, clicker);
+				return TriggerResult.Cancel;
+			}
+			return TriggerResult.Continue;
 		}
 	}
 }
