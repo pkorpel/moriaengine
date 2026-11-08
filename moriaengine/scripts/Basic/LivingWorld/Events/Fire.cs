@@ -39,6 +39,26 @@ namespace SteamEngine.CompiledScripts {
 			: base(kind, city) {
 		}
 
+		internal override void SaveTo(WorldEventRecord r) {
+			r.SetString("house", (this.House == null) ? "" : this.House.VenueId);
+			r.SetTiles("spot", (this.spot == null) ? null : new[] { this.spot });
+			r.SetInt("plane", this.plane);
+			r.SetDouble("nextSpread", this.nextSpread);
+			r.SetPlayers("helpers", this.Helpers);
+		}
+
+		internal override void LoadFrom(WorldEventRecord r) {
+			string house = r.GetString("house");
+			this.House = string.IsNullOrEmpty(house) ? null : VenueRegistry.ById(house);
+			List<int[]> spot = r.GetTiles("spot");
+			this.spot = (spot.Count > 0) ? spot[0] : null;
+			this.plane = (byte) r.GetInt("plane");
+			this.nextSpread = r.GetDouble("nextSpread");
+			foreach (KeyValuePair<Player, int> helper in r.GetPlayers("helpers")) {
+				this.Helpers[helper.Key] = helper.Value;
+			}
+		}
+
 		public string Where {
 			get { return (this.House == null) ? this.CityName : (this.House.Title + " v " + this.CityName); }
 		}
