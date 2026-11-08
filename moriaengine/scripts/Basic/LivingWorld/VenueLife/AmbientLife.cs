@@ -9,7 +9,7 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1262 - a city's news for its criers and its gossip: a new hero, a GM's call (.vyvolat), and later the world events.
-	/// Kept in memory, each item for newsHours; a restart starts the feed afresh.</summary>
+	/// Each item for newsHours; saved with the world events (#1307).</summary>
 	public static class CityNews {
 		private sealed class Item {
 			internal string text;
@@ -57,6 +57,32 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Tests: no news anywhere.</summary>
 		public static void Clear() {
 			news.Clear();
+		}
+
+		/// <summary>#1307 - the news still fresh, for the world events' save: three parallel lists.</summary>
+		internal static void Snapshot(List<string> cities, List<string> texts, List<long> untils) {
+			long now = Errands.Now.Ticks;
+			foreach (KeyValuePair<string, List<Item>> pair in news) {
+				foreach (Item i in pair.Value) {
+					if (i.until > now) {
+						cities.Add(pair.Key);
+						texts.Add(i.text);
+						untils.Add(i.until);
+					}
+				}
+			}
+		}
+
+		/// <summary>#1307 - the news back after a restart (real time: what went stale meanwhile is dropped as read).</summary>
+		internal static void Restore(List<string> cities, List<string> texts, List<long> untils) {
+			news.Clear();
+			for (int i = 0; (i < cities.Count) && (i < texts.Count) && (i < untils.Count); i++) {
+				if (!news.TryGetValue(cities[i], out List<Item> list)) {
+					list = new List<Item>();
+					news[cities[i]] = list;
+				}
+				list.Add(new Item { text = texts[i], until = untils[i] });
+			}
 		}
 
 		/// <summary>.vyvolat text: a GM's news for the criers of the city they stand in.</summary>

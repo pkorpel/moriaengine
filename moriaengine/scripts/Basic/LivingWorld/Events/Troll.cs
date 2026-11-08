@@ -32,13 +32,31 @@ namespace SteamEngine.CompiledScripts {
 		internal const int Leash = 3, MinDistance = 10;
 		public NPC Beast;
 		private int[] ford;
-		private bool beastDied, sawNight;
+		private bool beastDied;
+		internal bool sawNight; //tests: a restart test clears it, so the real clock's morning doesn't end the troll mid-test
 
 		/// <summary>The stone troll it left, if it turned.</summary>
 		public NPC Stone;
 
 		internal Troll(WorldEventKind kind, string city)
 			: base(kind, city) {
+		}
+
+		internal override void SaveTo(WorldEventRecord r) {
+			r.SetThing("beast", this.Beast);
+			r.SetThing("stone", this.Stone);
+			r.SetTiles("ford", (this.ford == null) ? null : new[] { this.ford });
+			r.SetBool("beastDied", this.beastDied);
+			r.SetBool("sawNight", this.sawNight);
+		}
+
+		internal override void LoadFrom(WorldEventRecord r) {
+			this.Beast = r.GetThing<NPC>("beast");
+			this.Stone = r.GetThing<NPC>("stone");
+			List<int[]> ford = r.GetTiles("ford");
+			this.ford = (ford.Count > 0) ? ford[0] : null;
+			this.beastDied = r.GetBool("beastDied");
+			this.sawNight = r.GetBool("sawNight");
 		}
 
 		internal override bool Begin(int playersNear) {
@@ -79,8 +97,8 @@ namespace SteamEngine.CompiledScripts {
 					WorldEvents.Reward(hero, this.City, Settings.trollGold, Settings.trollExp, Settings.trollFavour);
 				}
 				WorldEvents.SetOutcome(this.City, 0, 0, "Trol u brodu za " + this.CityName + " padl. Cesta je volna.");
-			} else if (this.Beast.IsDeleted) {
-				this.End(false); //a GM took it away: no outcome to tell
+			} else if ((this.Beast == null) || this.Beast.IsDeleted) {
+				this.End(false); //a GM took it away (before a save too: #1307): no outcome to tell
 			} else if (IsDawn() && this.sawNight) {
 				this.Dawn();
 			} else if (Globals.TimeInSeconds >= this.EndsAt) {
