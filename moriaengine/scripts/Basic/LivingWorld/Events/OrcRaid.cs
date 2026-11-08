@@ -49,7 +49,7 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			List<int[]> route = WorldEvents.RouteIn(this.centre, Settings.raidSteps);
-			if ((route == null) || (route.Count < Settings.raidSteps / 2)) {
+			if ((route == null) || (route.Count < Settings.raidSteps / 2) || (WorldSpots.Distance(route[0], this.centre.X, this.centre.Y) <= Leash + 4)) {
 				return false; //nowhere far enough to come from
 			}
 			Map map = Map.GetMap(this.centre.M);
@@ -104,6 +104,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			WorldEvents.SetOutcome(this.City, Settings.raidLostPercent, Settings.raidLostMinutes,
 				"Skreti vyplenili pole u " + this.CityName + ". Chleba je malo a ceny stoupaji.");
+		}
+
+		protected override bool IsFoe(NPC npc) {
+			return true; //every one of them is a raider
 		}
 
 		public override string Describe() {

@@ -50,8 +50,8 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			this.route = WorldEvents.RouteIn(this.centre, Settings.caravanSteps);
-			if ((this.route == null) || (this.route.Count < MinRoute)) {
-				return false;
+			if ((this.route == null) || (this.route.Count < MinRoute) || (WorldSpots.Distance(this.route[0], this.centre.X, this.centre.Y) <= ArrivedWithin + 6)) {
+				return false; //a road that starts in the square is no road
 			}
 			Map map = Map.GetMap(this.centre.M);
 			int[] from = this.route[0];
@@ -105,6 +105,7 @@ namespace SteamEngine.CompiledScripts {
 				this.Ambush();
 			}
 			if (this.Ambushed && (this.Alive(IsBandit) > 0)) {
+				this.NoteEscorts();
 				return; //the merchant waits out the fight
 			}
 			if (Point2D.GetSimpleDistance(this.Merchant, new Point2D(this.route[this.next][0], this.route[this.next][1])) <= 1) {
@@ -112,6 +113,21 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				Send(this.Merchant, this.route[this.next], this.centre.M, 1); //a go order given up is given again
 			}
+		}
+
+		/// <summary>Those who stood by the merchant in the fight: they're paid if he arrives, as those who fought are.</summary>
+		public readonly HashSet<Player> Escorts = new HashSet<Player>();
+
+		private void NoteEscorts() {
+			foreach (AbstractCharacter ch in this.Merchant.GetMap().GetPlayersInRange(this.Merchant.X, this.Merchant.Y, Settings.escortRange)) {
+				if ((ch is Player player) && !player.Flag_Dead && WorldEvents.IsOnCitysSide(player, this.City)) {
+					this.Escorts.Add(player);
+				}
+			}
+		}
+
+		protected override bool IsFoe(NPC npc) {
+			return IsBandit(npc);
 		}
 
 		private static bool IsBandit(NPC npc) {
@@ -132,17 +148,15 @@ namespace SteamEngine.CompiledScripts {
 					NPCAiTimer.GetFor(bandit)?.EngageTarget(this.Merchant);
 				}
 			}
-			this.Merchant.PetGoalPoint = null; //he stops where he is
+			this.Merchant.PetGoalPoint = null; //he stops where he is, his home with him
+			Send(this.Merchant, new[] { this.Merchant.X, this.Merchant.Y, this.Merchant.Z }, this.Merchant.M, 1);
+			this.NoteEscorts();
 			this.Merchant.Say("Prepadeni! Pomoc!");
 		}
 
 		private void Win() {
-			HashSet<Player> escorts = new HashSet<Player>(this.Heroes.Keys);
-			foreach (AbstractCharacter ch in this.Merchant.GetMap().GetPlayersInRange(this.Merchant.X, this.Merchant.Y, Settings.escortRange)) {
-				if ((ch is Player player) && !player.IsGM && !player.Flag_Dead) {
-					escorts.Add(player);
-				}
-			}
+			HashSet<Player> escorts = new HashSet<Player>(this.Heroes.Keys); //who fought, and who stood by him in the fight: not who waited in the square
+			escorts.UnionWith(this.Escorts);
 			this.Merchant.Say("Jsme tu! Diky vam, pratele.");
 			this.End(true);
 			foreach (Player escort in escorts) {

@@ -102,9 +102,21 @@ namespace SteamEngine.CompiledScripts {
 				long before = Reputation.PriceFor(player, 1000);
 				WorldEvent lost = WorldEvents.Start(raidKind, "Minas_Tirith");
 				bool lostStarted = (lost != null) && (lost.Npcs.Count == OrcRaid.SizeFor(1));
+				//nobody of the enemy realm, and no GM, counts as the city's or is credited for a raider
+				bool noStrangers = lost != null;
 				if (lost != null) {
+					player.Realm = Realm.Mordor;
+					noStrangers &= !WorldEvents.PlayersNear("Minas_Tirith").Contains(player);
+					KillAll(lost, player, n => n == lost.Npcs[1]);
+					player.Realm = Realm.Gondor;
+					account.PLevel = 4;
+					noStrangers &= !WorldEvents.PlayersNear("Minas_Tirith").Contains(player);
+					KillAll(lost, player, n => n == lost.Npcs[2]);
+					account.PLevel = 1;
+					noStrangers &= (lost.Heroes.Count == 0) && WorldEvents.PlayersNear("Minas_Tirith").Contains(player);
 					lost.EndsAt = Globals.TimeInSeconds;
 				}
+				Report("noStrangersCredited", noStrangers);
 				WorldEvents.Tick();
 				Report("raidLost", lostStarted && lost.Ended && !lost.Won && lost.Npcs.TrueForAll(n => n.IsDeleted)
 					&& (WorldEvents.PricePercent("Minas_Tirith") == s.raidLostPercent)
@@ -116,15 +128,25 @@ namespace SteamEngine.CompiledScripts {
 					&& (WorldEvents.Start(raidKind, "Minas_Tirith") == null));
 				WorldEvents.ResetForTests();
 
-				//the caravan: merchant and pack animals on the road, bandits halfway, the merchant waits out the fight, arrives, escorts paid
+				//the caravan: merchant and pack animals on the road, waypoint by waypoint; bandits at halfway, the merchant waits out the
+				//fight, arrives, escorts paid
 				GoTo(player, edoras);
 				Caravan caravan = WorldEvents.Start(caravanKind, "Edoras") as Caravan;
 				bool onRoad = (caravan != null) && (caravan.Merchant != null) && (caravan.Merchant.PetGoalPoint != null)
 					&& (caravan.Npcs.FindAll(n => n.Def == ThingDef.GetByDefname(CaravanKind.PackDef)).TrueForAll(n => n.FollowTarget == caravan.Merchant))
 					&& (caravan.Npcs.Count == 1 + s.caravanPack) && (Point2D.GetSimpleDistance(caravan.Merchant, edoras) > Caravan.ArrivedWithin);
-				bool ambushed = false, waited = false;
+				bool ambushed = false, waited = false, walked = false, packNoDeed = false;
 				if (caravan != null) {
-					caravan.Ambush();
+					GoTo(player, WorldEvents.CentreOf("Minas_Tirith")); //far from the road: no escort
+					List<int> path = new List<int>();
+					for (int i = 0; !caravan.Ambushed && (i < 40); i++) {
+						int[] w = caravan.Waypoint;
+						caravan.Merchant.Go(new Point4D(w[0], w[1], w[2], edoras.M));
+						path.Add(caravan.next);
+						WorldEvents.Tick();
+					}
+					walked = caravan.Ambushed && (path.Count >= 2) && (path[0] < caravan.ambushAt) && (path[path.Count - 1] >= caravan.ambushAt)
+						&& (path[path.Count - 2] < caravan.ambushAt) && (caravan.Escorts.Count == 0);
 					List<NPC> bandits = caravan.Npcs.FindAll(n => n.Def == ThingDef.GetByDefname(CaravanKind.BanditDef));
 					ambushed = (bandits.Count == Caravan.BanditsFor(1)) && bandits.TrueForAll(b => NPCAiTimer.GetFor(b).Target == caravan.Merchant);
 					foreach (NPC bandit in bandits) {
@@ -135,9 +157,11 @@ namespace SteamEngine.CompiledScripts {
 					int next = caravan.next;
 					WorldEvents.Tick();
 					waited = (caravan.next == next) && caravan.Describe().Contains("prepadli");
+					KillAll(caravan, player, n => n.Def == ThingDef.GetByDefname(CaravanKind.PackDef)); //a pack horse's killer is no hero
+					packNoDeed = !caravan.Heroes.ContainsKey(player);
 					KillAll(caravan, player, n => n.Def == ThingDef.GetByDefname(CaravanKind.BanditDef));
 				}
-				Report("caravanAmbush", onRoad && ambushed && waited);
+				Report("caravanAmbush", onRoad && walked && ambushed && waited && packNoDeed);
 				gold = player.Gold;
 				if (caravan != null) {
 					GoTo(player, edoras);
@@ -146,6 +170,22 @@ namespace SteamEngine.CompiledScripts {
 				WorldEvents.Tick();
 				Report("caravanArrived", (caravan != null) && caravan.Ended && caravan.Won && (player.Gold - gold == s.caravanGold)
 					&& (WorldEvents.PricePercent("Edoras") == s.caravanPercent) && CityNews.Of("Edoras").Exists(t => t.Contains("dorazila")));
+
+				//one who only waited in the square for it isn't paid
+				WorldEvents.ResetForTests();
+				GoTo(player, WorldEvents.CentreOf("Minas_Tirith"));
+				Caravan waitedFor = WorldEvents.Start(caravanKind, "Edoras") as Caravan;
+				gold = player.Gold;
+				if (waitedFor != null) {
+					waitedFor.Ambush();
+					foreach (NPC bandit in waitedFor.Npcs.FindAll(n => n.Def == ThingDef.GetByDefname(CaravanKind.BanditDef))) {
+						bandit.CauseDeath(null);
+					}
+					GoTo(player, edoras);
+					waitedFor.Merchant.Go(edoras);
+				}
+				WorldEvents.Tick();
+				Report("bystanderUnpaid", (waitedFor != null) && waitedFor.Won && (player.Gold == gold));
 
 				//lost: the merchant dies, the caravan goes, nothing gets cheaper
 				WorldEvents.ResetForTests();
@@ -157,28 +197,41 @@ namespace SteamEngine.CompiledScripts {
 				Report("caravanLost", (doomed != null) && doomed.Ended && !doomed.Won && doomed.Npcs.TrueForAll(n => n.IsDeleted)
 					&& (WorldEvents.PricePercent("Hobitin") == 0) && CityNews.Of("Hobitin").Exists(t => t.Contains("ztratila")));
 
-				//after a restart: an event's NPC with no event under way goes
+				//after a restart: the first tick clears an event's NPC with no event under way, and waits the gap before starting one
 				WorldEvents.ResetForTests();
 				NPC stray = (NPC) ((NPCDef) ThingDef.GetByDefname(OrcRaidKind.RaiderDef)).Create(edoras.X + 2, edoras.Y, edoras.Z, edoras.M);
 				stray.SetTag(WorldEvent.EventTK, "najezd/Edoras/999999");
-				Report("leftoversCleared", (WorldEvents.ClearLeftovers() >= 1) && stray.IsDeleted);
-
-				//the scheduler: off starts nothing; on, with the hour not dusk, only a caravan can start where a player is
 				GoTo(player, edoras);
-				s.enabled = false;
 				s.startChance = 100;
+				WorldEvents.autoStartOnTestServer = true;
+				WorldEvents.PretendBootForTests();
+				WorldEvents.Tick();
+				Report("leftoversCleared", stray.IsDeleted && (WorldEvents.Running.Count == 0));
+
+				//the scheduler: a test server starts nothing unless a test allows it; off starts nothing; on, with the hour not dusk,
+				//only a caravan can start where a player is; one at a time
+				WorldEvents.ClearScheduleForTests();
+				WorldEvents.autoStartOnTestServer = false;
+				WorldEvents.Tick();
+				bool testServerQuiet = WorldEvents.Running.Count == 0;
+				WorldEvents.autoStartOnTestServer = true;
+				WorldEvents.ClearScheduleForTests();
+				s.enabled = false;
 				WorldEvents.Tick();
 				bool offQuiet = WorldEvents.Running.Count == 0;
 				s.enabled = true;
+				WorldEvents.ClearScheduleForTests();
 				VenueClock.Override = 12;
 				WorldEvents.Tick();
-				VenueClock.Override = null;
 				bool onStarts = (WorldEvents.Running.Count == 1) && (WorldEvents.Running[0].Kind == caravanKind);
+				WorldEvents.ClearScheduleForTests();
 				WorldEvents.Tick();
+				VenueClock.Override = null;
 				bool oneAtATime = WorldEvents.Running.Count == 1;
-				Report("scheduler", offQuiet && onStarts && oneAtATime);
+				Report("scheduler", testServerQuiet && offQuiet && onStarts && oneAtATime);
 				WorldEvents.ResetForTests();
 			} finally {
+				WorldEvents.autoStartOnTestServer = false;
 				VenueClock.Override = null;
 				s.enabled = enabled;
 				s.startChance = chance;

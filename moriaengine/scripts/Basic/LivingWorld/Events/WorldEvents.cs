@@ -50,8 +50,8 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int caravanMinutes = 15, caravanSteps = 36, caravanPack = 2, banditBase = 2, banditPerPlayer = 1, banditMax = 8;
 
-		/// <summary>The caravan arrived: each escort's gold, experience, standing in the city; tiles from the merchant an escort
-		/// stands at the end; the goods cheaper (percent) for so many real minutes.</summary>
+		/// <summary>The caravan arrived: each escort's gold, experience, standing in the city; how near the merchant a player stood
+		/// in the fight to count as an escort; the goods cheaper (percent) for so many real minutes.</summary>
 		[SaveableData]
 		public int caravanGold = 250, caravanExp = 400, caravanFavour = 15, escortRange = 15, caravanPercent = -10, caravanOutcomeMinutes = 120;
 	}
@@ -160,9 +160,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Whether fighting this NPC of the event makes a hero: its raiders and bandits do, its merchant and pack animals don't.</summary>
+		protected abstract bool IsFoe(NPC npc);
+
 		internal void Credit(NPC dead, Character killedBy) {
+			if (!this.IsFoe(dead)) {
+				return; //killing the caravan's own horse is no deed
+			}
 			foreach (Character fighter in LevelingSystem.FindFighters(dead, killedBy, false)) {
-				if (fighter is Player player) {
+				if ((fighter is Player player) && WorldEvents.IsOnCitysSide(player, this.City)) {
 					this.Heroes.TryGetValue(player, out int kills);
 					this.Heroes[player] = kills + ((fighter == killedBy) ? 1 : 0);
 				}
@@ -195,7 +201,15 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly Dictionary<string, WorldEvent> byId = new Dictionary<string, WorldEvent>(StringComparer.Ordinal);
 		private static readonly List<CityOutcome> outcomes = new List<CityOutcome>();
 		private static double nextStartAt, nextChanceAt;
-		private static bool leftoversCleared;
+		private static bool leftoversCleared, gapAfterBoot;
+
+		/// <summary>Test servers (the harness's environment variable) start no event by themselves unless a test allows it:
+		/// hostile raiders and price changes would upset other tests.</summary>
+		public static bool autoStartOnTestServer;
+
+		private static bool IsTestServer {
+			get { return Environment.GetEnvironmentVariable(TestHarness.CommandsVariable) == "1"; }
+		}
 
 		/// <summary>The pilot cities (design section 4), as FlaggedRegion.City names them.</summary>
 		public static readonly string[] Cities = { "Minas_Tirith", "Edoras", "Hobitin", "Barad-dur", "Harad", "Umbar" };
@@ -254,7 +268,12 @@ namespace SteamEngine.CompiledScripts {
 			return (at == null) ? p : new Point4D(at[0], at[1], at[2], p.M);
 		}
 
-		/// <summary>The players who count as in the city now: online, alive, not GMs, near its centre.</summary>
+		/// <summary>A player whose deeds count for the city: no GM, and not of the realm at war with it.</summary>
+		public static bool IsOnCitysSide(Player player, string city) {
+			return (player != null) && !player.IsDeleted && !player.IsGM && !NPCAiTimer.IsOppositeRealm(player.Realm, Reputation.RealmOfCity(city));
+		}
+
+		/// <summary>The players who count as in the city now: online, alive, on its side (IsOnCitysSide), near its centre.</summary>
 		public static List<Player> PlayersNear(string city) {
 			List<Player> players = new List<Player>();
 			Point4D centre = CentreOf(city);
@@ -262,7 +281,7 @@ namespace SteamEngine.CompiledScripts {
 				return players;
 			}
 			foreach (AbstractCharacter ch in Map.GetMap(centre.M).GetPlayersInRange(centre.X, centre.Y, Settings.playerRange)) {
-				if ((ch is Player player) && !player.IsGM && !player.Flag_Dead && !player.Flag_Disconnected) {
+				if ((ch is Player player) && !player.Flag_Dead && !player.Flag_Disconnected && IsOnCitysSide(player, city)) {
 					players.Add(player);
 				}
 			}
@@ -302,8 +321,14 @@ namespace SteamEngine.CompiledScripts {
 			if ((ring.Count == 1) && (ring[0] == start)) {
 				return null;
 			}
+			//N steps out can still be just behind a wall: of the last ring, the tiles farthest from the centre in a straight line
+			int farthest = 0;
+			foreach (int[] tile in ring) {
+				farthest = Math.Max(farthest, WorldSpots.Distance(tile, centre.X, centre.Y));
+			}
+			List<int[]> far = ring.FindAll(t => WorldSpots.Distance(t, centre.X, centre.Y) >= farthest - 2);
 			List<int[]> route = new List<int[]>();
-			for (int[] tile = ring[Globals.dice.Next(ring.Count)]; tile != null; tile = from[Key(tile)]) {
+			for (int[] tile = far[Globals.dice.Next(far.Count)]; tile != null; tile = from[Key(tile)]) {
 				route.Add(tile);
 			}
 			return route;
@@ -317,9 +342,10 @@ namespace SteamEngine.CompiledScripts {
 		#region running
 		/// <summary>Every TickSeconds: leftovers of a past run go, the events move on, and now and then a new one starts.</summary>
 		internal static void Tick() {
-			if (!leftoversCleared) {
-				leftoversCleared = true;
-				ClearLeftovers();
+			EnsureLeftoversCleared();
+			if (!gapAfterBoot) {
+				gapAfterBoot = true; //nothing starts by itself in the first minutes after a boot
+				nextStartAt = Math.Max(nextStartAt, Globals.TimeInSeconds + (Settings.gapMinutes * 60.0));
 			}
 			foreach (WorldEvent e in running.ToArray()) {
 				try {
@@ -328,14 +354,15 @@ namespace SteamEngine.CompiledScripts {
 					throw;
 				} catch (Exception ex) {
 					Logger.WriteError(ex);
-					Finish(e); //a broken event mustn't stay forever
+					Stop(e); //a broken event mustn't stay forever, nor its raiders
+					continue;
 				}
 				if (e.Ended) {
 					Finish(e);
 				}
 			}
 			double now = Globals.TimeInSeconds;
-			if (!Settings.enabled || (running.Count >= Settings.maxRunning) || (now < nextStartAt) || (now < nextChanceAt)) {
+			if (!Settings.enabled || (IsTestServer && !autoStartOnTestServer) || (running.Count >= Settings.maxRunning) || (now < nextStartAt) || (now < nextChanceAt)) {
 				return;
 			}
 			nextChanceAt = now + 60;
@@ -376,9 +403,18 @@ namespace SteamEngine.CompiledScripts {
 			if ((kind == null) || !kind.IsFor(city) || IsBusy(city)) {
 				return null;
 			}
+			EnsureLeftoversCleared(); //before a new event can take a past run's id
 			WorldEvent e = kind.Make(city);
 			e.StartedAt = Globals.TimeInSeconds;
-			if (!e.Begin(PlayersNear(city).Count)) {
+			bool begun = false;
+			try {
+				begun = e.Begin(PlayersNear(city).Count);
+			} catch (FatalException) {
+				throw;
+			} catch (Exception ex) {
+				Logger.WriteError(ex);
+			}
+			if (!begun) {
 				foreach (NPC npc in e.Npcs) {
 					if (!npc.IsDeleted) {
 						npc.Delete();
@@ -407,6 +443,13 @@ namespace SteamEngine.CompiledScripts {
 		private static void Finish(WorldEvent e) {
 			running.Remove(e);
 			byId.Remove(e.Id);
+		}
+
+		private static void EnsureLeftoversCleared() {
+			if (!leftoversCleared) {
+				leftoversCleared = true;
+				ClearLeftovers();
+			}
 		}
 
 		/// <summary>The NPCs a past run's events left (a restart forgets the events, not their NPCs).</summary>
@@ -483,8 +526,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Pays a hero: gold, experience, standing in the city.</summary>
 		internal static void Reward(Player player, string city, int gold, int exp, int favour) {
-			if ((player == null) || player.IsDeleted) {
-				return;
+			if (!IsOnCitysSide(player, city)) {
+				return; //no GM, no enemy of the city
 			}
 			if (gold > 0) {
 				GoldUtils.Grant(player, (uint) gold);
@@ -507,11 +550,24 @@ namespace SteamEngine.CompiledScripts {
 			history.Clear();
 			nextStartAt = 0;
 			nextChanceAt = 0;
+			gapAfterBoot = true;
+		}
+
+		/// <summary>Tests: as just after a boot (the leftovers not yet cleared, the gap not yet waited).</summary>
+		public static void PretendBootForTests() {
+			leftoversCleared = false;
+			gapAfterBoot = false;
+		}
+
+		/// <summary>Tests: the scheduler may roll again at once.</summary>
+		public static void ClearScheduleForTests() {
+			nextStartAt = 0;
+			nextChanceAt = 0;
 		}
 		#endregion outcomes
 
 		/// <summary>.udalost: the events under way; .udalost start "key" ["City"] (the city a GM stands in, if left out);
-		/// .udalost stop (the events in the GM's city, or all).</summary>
+		/// .udalost stop ["vse"] (the events in the GM's city, or all).</summary>
 		[SteamFunction]
 		public static void Udalost(Character self, ScriptArgs sa) {
 			string[] args = ((sa == null) ? "" : sa.Args).Replace("\"", " ").Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -534,7 +590,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (verb == "stop") {
-				string here = Reputation.CityAt(self);
+				string here = ((args.Length > 1) && (args[1].ToLowerInvariant() == "vse")) ? null : Reputation.CityAt(self);
 				int stopped = 0;
 				foreach (WorldEvent e in running.ToArray()) {
 					if ((here == null) || string.Equals(e.City, here, StringComparison.OrdinalIgnoreCase)) {
@@ -551,7 +607,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (WorldEvent e in running) {
 				self.SysMessage(e.Describe() + " (zbyva " + Math.Max(0, (int) ((e.EndsAt - Globals.TimeInSeconds) / 60)) + " min)");
 			}
-			self.SysMessage("Pouziti: .udalost | .udalost start <" + string.Join("|", kinds.ConvertAll(k => k.Key)) + "> [mesto] | .udalost stop");
+			self.SysMessage("Pouziti: .udalost | .udalost start <" + string.Join("|", kinds.ConvertAll(k => k.Key)) + "> [mesto] | .udalost stop [vse]");
 		}
 	}
 
@@ -571,8 +627,15 @@ namespace SteamEngine.CompiledScripts {
 	public static class WorldEventsPage {
 		private const int HeadHue = 95, TextHue = 955, Row = 20, LineChars = 34;
 
+		internal const string QuietHint = "Ve svete se ted nic zvlastniho nedeje.";
+
 		internal static void Add(CompiledGumpDef gump, Player player, int width, int height) {
 			int y = 135;
+			List<string> recent = WorldEvents.RecentOutcomes();
+			if ((WorldEvents.Running.Count == 0) && (recent.Count == 0)) {
+				gump.AddLabel(85, y, TextHue, QuietHint);
+				return;
+			}
 			gump.AddLabel(85, y, HeadHue, "Prave se deje");
 			y += Row;
 			if (WorldEvents.Running.Count == 0) {
@@ -580,12 +643,13 @@ namespace SteamEngine.CompiledScripts {
 				y += Row;
 			}
 			foreach (WorldEvent e in WorldEvents.Running) {
-				y = AddWrapped(gump, y, e.Describe());
+				if (y < height - 80) {
+					y = AddWrapped(gump, y, e.Describe());
+				}
 			}
 			y += 8;
 			gump.AddLabel(85, y, HeadHue, "Nedavno");
 			y += Row;
-			List<string> recent = WorldEvents.RecentOutcomes();
 			if (recent.Count == 0) {
 				gump.AddLabel(90, y, TextHue, "Nic se nestalo.");
 			}

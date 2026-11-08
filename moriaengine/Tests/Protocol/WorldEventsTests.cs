@@ -33,8 +33,8 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains(journal.Strings, s => s.StartsWith("Skreti najezd na Edoras"));
 
 				this.Run(game, ".TestWorldEventsChain", "WORLDEVENTS_CHAIN_DONE");
-				this.AssertChecks("raidRules", "raidStarted", "raidWon", "raidLost", "startRefused", "caravanAmbush", "caravanArrived",
-					"caravanLost", "leftoversCleared", "scheduler");
+				this.AssertChecks("raidRules", "raidStarted", "raidWon", "noStrangersCredited", "raidLost", "startRefused", "caravanAmbush",
+					"caravanArrived", "bystanderUnpaid", "caravanLost", "leftoversCleared", "scheduler");
 			}
 		}
 	}
