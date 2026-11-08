@@ -258,6 +258,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Tabor")]
+		public WarCampSettings WarCampSettings {
+			get {
+				return WarCampSettings.instance;
+			}
+		}
+
 		[InfoField("Questy")]
 		public QuestPortSettings QuestPortSettings {
 			get {

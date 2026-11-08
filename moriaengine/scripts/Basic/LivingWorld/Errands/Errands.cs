@@ -88,6 +88,7 @@ namespace SteamEngine.CompiledScripts {
 					log.active.RemoveAt(i);
 					TakeBackItems(player, errand);
 					player.SysMessage("Ukol \"" + errand.name + "\" vyprsel.");
+					WarCamp.OnFailed(player, errand); //#1280 - an order run out costs standing
 				}
 			}
 			return log;
@@ -155,6 +156,9 @@ namespace SteamEngine.CompiledScripts {
 			while (pool.Count > 0) {
 				ErrandTemplate template = DrawByWeight(pool);
 				pool.Remove(template);
+				if (WarCamp.AboveRank(player, city, template.Tier)) {
+					continue; //#1280 - the camp gives no order above the rank
+				}
 				Errand errand = new Errand { key = template.Key, name = template.Name, giverId = Residents.IdOf(giverGem), city = city, tier = (int) template.Tier };
 				ErrandContext context = new ErrandContext(player, giverGem, city);
 				if (template.TryBuild(context, errand) && (errand.steps.Count > 0)) {
@@ -185,6 +189,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((giver == null) || (WhyNot(player, giver, errand.city) != null)) {
 				return false;
 			}
+			if (WarCamp.AboveRank(player, errand.city, errand.Tier)) {
+				return false; //#1280 - offered before the rank fell
+			}
 			if (Log(player).active.Contains(errand)) {
 				return false;
 			}
@@ -193,7 +200,7 @@ namespace SteamEngine.CompiledScripts {
 			int repeats = ((log.lastKey == errand.key) ? log.streak : 0) + log.active.FindAll(a => a.key == errand.key).Count;
 			errand.payPercent = Math.Max(Settings.payFloor, 100 - (repeats * Settings.repeatPenalty));
 			ErrandTemplate template = ErrandTemplates.Get(errand.key);
-			errand.expiresTicks = Now.AddMinutes((template == null) ? 60 : template.Minutes).Ticks;
+			errand.expiresTicks = Now.AddMinutes(WarCamp.Minutes(errand.city, (template == null) ? 60 : template.Minutes)).Ticks; //#1280 - an order's is shorter
 			errand.id = log.nextId++;
 			log.active.Add(errand);
 			log.Add(errand.giverId);
@@ -399,6 +406,7 @@ namespace SteamEngine.CompiledScripts {
 				share = (share * template.PayPercent(errand)) / 100;
 				template.OnDone(player, errand);
 			}
+			share = WarCamp.PayShare(player, errand.city, share); //#1280 - the rank's better share
 			log.streak = (log.lastKey == errand.key) ? log.streak + 1 : 1;
 			log.lastKey = errand.key;
 			log.done++;
@@ -449,6 +457,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Log(player).active.Remove(errand)) {
 				TakeBackItems(player, errand);
 				player.SysMessage("Vzdal jsi ukol \"" + errand.name + "\".");
+				WarCamp.OnFailed(player, errand); //#1280 - an order given up costs standing
 			}
 		}
 

@@ -244,7 +244,8 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || !player.IsPlayer || string.IsNullOrEmpty(city) || (delta == 0)) {
 				return Of(player, city);
 			}
-			bool wasHero = Level(player, city) == ReputationLevel.Hrdina;
+			ReputationLevel before = Level(player, city);
+			bool wasHero = before == ReputationLevel.Hrdina;
 			int now = Math.Max(Min, Math.Min(Max, Of(player, city) + delta)); //Of applies the drift so far, then it starts again
 			player.SetTag(CityKey(city), now);
 			player.SetTag(CityTimeKey(city), Now.Ticks);
@@ -264,6 +265,9 @@ namespace SteamEngine.CompiledScripts {
 				if (f.Rival != null) {
 					SetFaction(player, f.Rival, OfFaction(player, f.Rival) - (delta / 2));
 				}
+			}
+			if (WarCamp.IsCamp(city) && (player is Player p)) {
+				WarCamp.AfterChange(p, before); //#1280 - the camp's rank: a promotion pays
 			}
 			return now;
 		}
@@ -450,6 +454,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1280 - a city's level as the player reads it: Barad-dur's is the war camp's rank.</summary>
+		public static string CityLevelName(Character player, string city) {
+			return WarCamp.IsCamp(city) ? WarCamp.RankName(WarCamp.RankOf(player)) : LevelName(Level(player, city));
+		}
+
 		public static string LevelName(ReputationLevel level) {
 			switch (level) {
 				case ReputationLevel.Nepritel: return "Nepritel";
@@ -501,7 +510,7 @@ namespace SteamEngine.CompiledScripts {
 				int value = Reputation.Of(player, city);
 				ReputationLevel level = Reputation.Level(player, city);
 				this.AddLabel(14, y, LabelHue, city.Replace('_', ' '));
-				this.AddLabel(200, y, (level <= ReputationLevel.Podezrely) ? BadHue : ValueHue, Reputation.LevelName(level));
+				this.AddLabel(200, y, (level <= ReputationLevel.Podezrely) ? BadHue : ValueHue, Reputation.CityLevelName(player, city));
 				this.AddLabel(340, y, LabelHue, value.ToString(CultureInfo.InvariantCulture));
 				y += RowHeight;
 				foreach (Faction faction in Faction.All) {

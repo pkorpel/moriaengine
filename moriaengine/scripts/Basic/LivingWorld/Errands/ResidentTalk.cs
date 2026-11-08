@@ -27,8 +27,17 @@ namespace SteamEngine.CompiledScripts {
 			player.Dialog(player, dialog, new DialogArgs(npc));
 		}
 
+		/// <summary>#1280 - whether the resident serves in Barad-dur's war camp.</summary>
+		internal static bool IsCamp(Item gem) {
+			CityVenue work = (gem == null) ? null : Residents.WorkplaceOf(gem);
+			return (work != null) && WarCamp.IsCamp(work.City);
+		}
+
 		internal static string Greeting(Player player, Item gem) {
 			int friendship = Residents.Friendship(player, Residents.IdOf(gem));
+			if (IsCamp(gem)) {
+				return WarCamp.Greeting(player, friendship); //#1280 - a superior's favour, not a friend's welcome
+			}
 			if (friendship >= 7) {
 				return "Priteli! " + player.Name + ", rad te vidim. Pojd dal.";
 			}
@@ -85,7 +94,7 @@ namespace SteamEngine.CompiledScripts {
 				y += Row;
 			}
 			this.AddButton(16, y, 0xFA5, 0xFA7, AskButton, GumpButtonType.Reply, 0);
-			this.AddLabel(52, y + 2, TextHue, "Potrebujes neco?");
+			this.AddLabel(52, y + 2, TextHue, ResidentTalk.IsCamp(gem) ? "Rozkaz?" : "Potrebujes neco?"); //#1280 - orders in the camp
 			y += Row;
 			this.AddButton(16, y, 0xFB1, 0xFB3, 0, GumpButtonType.Reply, 0);
 			this.AddLabel(52, y + 2, TextHue, "Sbohem.");
@@ -136,7 +145,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>The giver's offer: what they want, and whether the player takes it. args: the giver, the errand offered (made, not
 	/// taken; it lives while this dialog does and is never saved).</summary>
 	public class D_ErrandOffer : CompiledGumpDef {
-		internal const int AcceptButton = 1;
+		internal const int AcceptButton = 1, RefuseButton = 2;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
@@ -146,10 +155,16 @@ namespace SteamEngine.CompiledScripts {
 			this.AddBackground(0, 0, 380, 220, 2620);
 			this.AddLabel(16, 12, 95, (errand == null) ? "" : errand.name);
 			this.AddHtml(16, 40, 348, 120, "<basefont color=#FFFFFF>" + ((errand == null) ? "" : errand.offer) + "</basefont>", false, true);
+			bool order = (errand != null) && WarCamp.IsCamp(errand.city);
 			this.AddButton(16, 175, 0xFA5, 0xFA7, AcceptButton, GumpButtonType.Reply, 0);
-			this.AddLabel(52, 177, 68, "Rad pomuzu.");
-			this.AddButton(200, 175, 0xFB1, 0xFB3, 0, GumpButtonType.Reply, 0);
-			this.AddLabel(236, 177, 955, "Ted ne.");
+			this.AddLabel(52, 177, 68, order ? "Rozumim." : "Rad pomuzu.");
+			if (order) { //#1280 - an order can be refused, at a price; closing the dialog only puts it off
+				this.AddButton(200, 175, 0xFB1, 0xFB3, RefuseButton, GumpButtonType.Reply, 0);
+				this.AddLabel(236, 177, 955, "Odmitnout.");
+			} else {
+				this.AddButton(200, 175, 0xFB1, 0xFB3, 0, GumpButtonType.Reply, 0);
+				this.AddLabel(236, 177, 955, "Ted ne.");
+			}
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
@@ -159,13 +174,20 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			Errand errand = args[1] as Errand;
+			if ((errand != null) && (gr.PressedButton == RefuseButton) && WarCamp.IsCamp(errand.city)) {
+				WarCamp.OnRefused(player, errand.city);
+				if ((npc != null) && !npc.IsDeleted) {
+					npc.Say("Tak ty odmitas rozkaz? To si zapamatuju.");
+				}
+				return;
+			}
 			if ((errand == null) || (gr.PressedButton != AcceptButton) || !Errands.CanTalk(player, npc)) {
 				return;
 			}
 			if (!Errands.Accept(player, errand)) {
 				player.SysMessage("Ukol uz nelze prijmout.");
 			} else if ((npc != null) && !npc.IsDeleted) {
-				npc.Say("Diky. Spoleham na tebe.");
+				npc.Say(WarCamp.IsCamp(errand.city) ? "Hni sebou." : "Diky. Spoleham na tebe.");
 			}
 		}
 	}
