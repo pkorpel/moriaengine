@@ -103,7 +103,7 @@ namespace SteamEngine.CompiledScripts {
 			player.SetRealSkillValue((int) SkillName.Mining, Q099.MiningNeeded);
 			Report("miningForty", noMining && dialog.BuildFor(podivin, player).HasResponse("q099:9"));
 
-			//exactly 250 000 in a cheque, then 15 levels for the realm
+			//exactly 250 000 in a cheque, then 10 levels for the realm (#1307)
 			dialog.Press("q099:9", podivin, player);
 			bool noCheque = Q099.GetStage(player) == Q099.Ready;
 			CashiersItem small = Cheque(player, 100000);
@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 			Notoriety.SetMurderCount(player, 5);
 			player.Experience = 100;
 			dialog.Press("q099:9", podivin, player);
-			Report("redeemedToGondor", noCheque && tooLittle && cheque.IsDeleted && (player.Realm == Realm.Gondor) && (player.Level == 25) && (player.Experience == 0)
+			Report("redeemedToGondor", noCheque && tooLittle && cheque.IsDeleted && (player.Realm == Realm.Gondor) && (player.Level == 40 - Q099.LevelsTaken) && (player.Experience == 0)
 				&& (Notoriety.GetMurderCount(player) == 0) && (player.Karma == 0) && (Q099.GetStage(player) == Q099.Done) && Q099.Journal.IsDone(player));
 
 			//a new exile starts again; Mordor's outcast goes back to Mordor
@@ -124,12 +124,46 @@ namespace SteamEngine.CompiledScripts {
 			Q099.SetStage(player, Q099.Ready);
 			Cheque(player, Q099.Price);
 			dialog.Press("q099:9", podivin, player);
-			Report("mordorBackAndAgain", again && (player.Realm == Realm.Mordor) && (player.Karma == Q099.MordorKarma) && (player.Level == 10));
+			Report("mordorBackAndAgain", again && (player.Realm == Realm.Mordor) && (player.Karma == Q099.MordorKarma) && (player.Level == 40 - (2 * Q099.LevelsTaken)));
 
 			//never below level 1
 			player.Level = 5;
 			Q099.TakeLevels(player, Q099.LevelsTaken);
 			Report("levelFloor", player.Level == 1);
+
+			//#1307 - the points the lost levels gave are taken back, spent or not: unspent first, then the bought skills' steps
+			//(the change back when a step cost more), the stats over the lower budget, and class abilities over the level reset
+			ProfessionDef profession = player.Profession;
+			player.Profession = Professions.Warrior;
+			player.Level = 30;
+			player.UnspentSkillPoints = 10;
+			SkillName[] bought = { SkillName.Swords, SkillName.Tactics }; //12 steps each, 23 points each: more than the 40 owed after the unspent
+			int[] boughtMin = new int[bought.Length];
+			for (int k = 0; k < bought.Length; k++) {
+				boughtMin[k] = Professions.Warrior.GetSkillMinimum(bought[k]);
+				player.SetRealSkillValue((int) bought[k], boughtMin[k] + (12 * LevelingSystem.SkillPointGain));
+			}
+			int allocated = player.StrPointsAllocated + player.DexPointsAllocated + player.IntPointsAllocated + player.VitPointsAllocated;
+			player.Str = (short) (player.Str + player.AttributePointBudget);
+			player.StrPointsAllocated += player.AttributePointBudget; //every stat point of level 30 spent
+			string ability = ClassAbilityTable.Rear[0].Name;
+			ClassAbilities.SetPoints(player, ability, 30 * 2); //every ability point of level 30 spent
+			int strBefore = player.Str;
+			Q099.TakeLevels(player, Q099.LevelsTaken);
+			int taken = 10; //the unspent first
+			bool someLeft = false;
+			for (int k = 0; k < bought.Length; k++) {
+				int now = player.GetRealSkillValue(bought[k]);
+				someLeft |= now > boughtMin[k];
+				for (int value = now; value < boughtMin[k] + (12 * LevelingSystem.SkillPointGain); value += LevelingSystem.SkillPointGain) {
+					taken += LevelingSystem.SkillRaiseCost(value);
+				}
+			}
+			Report("pointsTakenBack", (Q099.LevelsTaken == 10) && (player.Level == 30 - Q099.LevelsTaken) && //#1307 - the user's 10 levels
+				 (taken - player.UnspentSkillPoints == Q099.LevelingSkillPointsPerLevel * Q099.LevelsTaken)
+				&& (player.UnspentSkillPoints < 3) && someLeft && (player.AttributePointBudget == 0) && (player.Str < strBefore)
+				&& (ClassAbilities.Points(player, ability) == 0) && (ClassAbilities.Spare(player) == player.Level * 2));
+			player.Profession = profession;
 
 			bool plain = true;
 			for (int stage = 1; stage <= Q099.Done; stage++) {

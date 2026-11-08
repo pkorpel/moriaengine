@@ -184,11 +184,41 @@ namespace SteamEngine.CompiledScripts {
 				far.Delete();
 				near.Delete();
 				Report("crystalsDropInTheGatesDungeons", notOutside && dropped && notOffQuest && (QuestPortSettings.instance.terlakCrystalChance == 3));
+				//#1307 - the collector buys the player's own profession's artifact from the pack for a cheque; the next run asks fewer crystals
+				NPC collector = (NPC) ((NPCDef) ThingDef.GetByDefname(Q017.CollectorNpcDef)).Create(player.X + 1, player.Y, player.Z, player.M);
+				bool notOthers = !Q017CollectorSpeech.Buy(collector, player); //the priest's shield and the mage's hat in the pack, the warrior's own worn
+				Item own = Q017.GiveReward(player);
+				Q017.SetRuns(player, 4);
+				int cheques = Cheques(player);
+				bool bought = Q017CollectorSpeech.Buy(collector, player) && own.IsDeleted && (Cheques(player) == cheques + 1) && (Q017.GetRuns(player) == 2)
+					&& HasCheque(player, QuestPortSettings.instance.terlakCollectorPrice);
+				Q017.SetRuns(player, runs);
+				collector.Delete();
+				Report("theCollectorBuysTheCurrentArtifacts", notOthers && bought);
 				Report("journalTextsArePlain", Plain());
 			} finally {
 				player.Account.PLevel = plevel;
 			}
 			Console.WriteLine("Q017_CHAIN_DONE: runs=" + Q017.GetRuns(player));
+		}
+
+		private static int Cheques(Player player) {
+			int count = 0;
+			foreach (AbstractItem item in player.Backpack) {
+				if ((item is CashiersItem cheque) && cheque.IsCheck) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		private static bool HasCheque(Player player, int value) {
+			foreach (AbstractItem item in player.Backpack) {
+				if ((item is CashiersItem cheque) && cheque.IsCheck && (cheque.CheckValue == value)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>A run about to time out, and one ended by a death, both on the timer: checked by TestQ017RunsEndedCheck.</summary>

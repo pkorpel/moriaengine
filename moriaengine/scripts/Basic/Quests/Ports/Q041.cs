@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.Regions;
@@ -240,10 +241,36 @@ namespace SteamEngine.CompiledScripts {
 			return (at is double seconds) && (Globals.TimeInSeconds - seconds < GateQuietSeconds);
 		}
 
+		/// <summary>#1307 - everything the player held in the realm they leave: its office (the General, the first Nazgul), a Nazgul's
+		/// ring, a mayoralty, citizenship and candidacy, the realm uniform, a keep's captaincy.</summary>
+		internal static void LeaveRealmPosts(Player player, Realm old) {
+			RealmOffice office = RealmOffice.For(old);
+			if ((office != null) && (office.holder == player)) {
+				office.Dismiss();
+			}
+			PowerBadge ring = NazgulRings.RingOf(player);
+			if (ring != null) {
+				NazgulRings.TakeAway(ring, player);
+			}
+			foreach (Town town in new List<Town>(Town.All)) {
+				if (town.mayor == player) {
+					town.ClearMayor();
+				}
+				town.RemoveCitizen(player);
+				town.WithdrawCandidate(player);
+			}
+			RealmUniform.Remove(player);
+			KeepCaptains.DismissFrom(player);
+			player.SysMessage("Vse, co jsi drzel ve sve stare risi - urad, prsten, obcanstvi, uniforma i velitelstvi - zustava za tebou.");
+		}
+
 		/// <summary>The gate's change: Mordor to Gondor clears the murders and karma, Gondor to Mordor takes Erebor's -3000 karma
 		/// (its 30 000 kills marked Mordor's side, which the realm alone does here); the realm's capital is the new home.</summary>
 		internal static void ChangeRealm(Player player) {
 			bool male = player.Gender != Gender.Female;
+			if ((player.Realm == Realm.Mordor) || (player.Realm == Realm.Gondor)) {
+				LeaveRealmPosts(player, player.Realm); //#1307 - the user's call, against Erebor: nothing of the old realm goes along
+			}
 			if (player.Realm == Realm.Mordor) {
 				player.Realm = Realm.Gondor;
 				Notoriety.SetMurderCount(player, 0);

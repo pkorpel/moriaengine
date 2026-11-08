@@ -33,7 +33,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestQ017Chain", "Q017_CHAIN_DONE");
 				this.AssertChecks("theClientDrankTheFreePotion", "laterPotionsWantDeerEyes", "aLostBagCanBeAskedForAgain", "theFullBagAndGoldForAPotion", "theEntryGatesRules",
 					"theExitGivesTheProfessionsItem", "theRewardsRules", "laterRunsWantMoreCrystalsAndWaitFourHours", "crystalsDropInTheGatesDungeons",
-					"journalTextsArePlain");
+					"theCollectorBuysTheCurrentArtifacts", "journalTextsArePlain");
 
 				foreach (string ending in new[] { "timeout", "death" }) {
 					this.Run(game, ".TestQ017RunsEndedStart \"" + ending + "\"", "Q017_RUN_STARTED:");

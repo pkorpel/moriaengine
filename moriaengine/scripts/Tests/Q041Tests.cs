@@ -187,6 +187,21 @@ namespace SteamEngine.CompiledScripts {
 				&& (player.Home.X == gondorHome.X) && (player.Home.Y == gondorHome.Y) && (player.X == gondorHome.X) && (player.Y == gondorHome.Y) && (Q041.GetStage(player) == Q041.Done)
 				&& (Q041.Changes(player) == 1) && Q041.Journal.IsDone(player));
 
+			//#1307 - Gondor's posts: an office, a city's mayoralty and citizenship, the realm uniform; all stay behind at the switch
+			RealmOffice office = RealmOffice.For(Realm.Gondor) ?? new RealmOffice { realm = Realm.Gondor };
+			Character holderBefore = office.holder;
+			office.holder = player;
+			Town town = Town.ForCity("Minas_Tirith");
+			Item tempStone = null;
+			if (town == null) {
+				tempStone = (Item) ThingDef.GetByDefname("i_townstone").Create(player.X, player.Y, player.Z, player.M);
+				town = Town.ForStone(tempStone, "Minas_Tirith");
+			}
+			town.AddCitizen(player);
+			town.SetMayor(player);
+			RealmUniform.Grant(player, 12, null);
+			bool heldThem = (office.holder == player) && (town.FindCitizen(player) != null) && (town.mayor == player) && (RealmUniform.EntryOf(player) != null);
+
 			//a minute's quiet after a change, then Gondor to Mordor; the next price grows
 			Q041.SetStage(player, 9);
 			gates.On_Step(gate, player);
@@ -196,6 +211,12 @@ namespace SteamEngine.CompiledScripts {
 			Point4D mordorHome = NationData.GetHome(Nation.Mordoran);
 			Report("toMordorAndAgain", quiet && (player.Realm == Realm.Mordor) && (player.Karma == Q041.MordorKarma) && (player.Home.X == mordorHome.X) && (player.Home.Y == mordorHome.Y)
 				&& (Q041.Changes(player) == 2) && (Q041.BagsWanted(player) == 3) && dialog.BuildFor(paserak, player).HasResponse("q041_bring_money"));
+			Report("theOldRealmsPostsStayBehind", heldThem && (office.holder == null) && (town.FindCitizen(player) == null) && (town.mayor != player)
+				&& (RealmUniform.EntryOf(player) == null));
+			office.holder = holderBefore;
+			if (tempStone != null) {
+				tempStone.Delete();
+			}
 			gate.Delete();
 			portal.Delete();
 

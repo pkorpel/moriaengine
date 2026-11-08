@@ -487,10 +487,15 @@ namespace SteamEngine.CompiledScripts {
 		/// the quest (Erebor had no source for them).</summary>
 		[SaveableData]
 		public int terlakCrystalChance = 3;
+
+		/// <summary>#1307 - the cheque the collector Sberatel gives for one of Terlak's artifacts (Erebor's 50 000).</summary>
+		[SaveableData]
+		public int terlakCollectorPrice = 50000;
 	}
 
-	/// <summary>#1268 - the collector Sberatel (spk_q017_sberatel): Erebor's bought only the OLD versions of Terlak's items, refusing
-	/// one named as the current reward, so with only current ones in the world he never buys.</summary>
+	/// <summary>#1268 - the collector Sberatel (spk_q017_sberatel): Erebor's bought only the OLD versions of Terlak's items. #1307, the
+	/// user's call: he buys the current ones as Erebor did the old: the player's own profession's artifact from the pack for a
+	/// cheque (terlakCollectorPrice), and the next run's entry asks 2 crystals fewer.</summary>
 	public sealed class Q017CollectorSpeech : AbstractSpeech {
 		private static readonly string[] greetings = { "hi", "ahoj", "zdrav", "cau" };
 		private static readonly string[] trade = { "vymen", "vymena", "vymenit", "zamen", "artefakt" };
@@ -515,24 +520,40 @@ namespace SteamEngine.CompiledScripts {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
 			if (SkillTeacherSpeech.ContainsAny(speech, trade)) {
-				npc.Say(HasOwnReward(player) ? "Tyto novy nesbiram, jenom stary!" : "Nevidim u tebe zadnou vec kterou potrebuji");
+				Buy(npc, player);
 			} else if (SkillTeacherSpeech.ContainsAny(speech, greetings)) {
-				npc.Say("Zdravim, sbiram stare artefakty od alchymisty Terlaka! Nemas nejaky na VYMENu ?");
+				npc.Say("Zdravim, sbiram artefakty od alchymisty Terlaka! Nemas nejaky na VYMENu ?");
 			}
 			return SpeechResult.IgnoredOrActedUpon;
 		}
 
-		private static bool HasOwnReward(Player player) {
+		/// <summary>#1307 - the player's own profession's artifact from the pack for a cheque; the next entry asks 2 crystals fewer.
+		/// False when there's none to buy.</summary>
+		internal static bool Buy(NPC npc, Player player) {
+			Item artifact = OwnReward(player);
+			if (artifact == null) {
+				npc.Say("Nevidim u tebe zadnou vec kterou potrebuji");
+				return false;
+			}
+			npc.Say("Ano to je ono!");
+			artifact.Delete();
+			CashiersItem.CreateCheck(player, Math.Max(1, QuestPortSettings.instance.terlakCollectorPrice));
+			Q017.SetRuns(player, Q017.GetRuns(player) - 2);
+			return true;
+		}
+
+		//the player's own profession's artifact in the pack (not worn), as Erebor's findid on the pack
+		internal static Item OwnReward(Player player) {
 			Q017.Reward own = Q017.RewardOf(player.Profession);
 			if ((own == null) || (player.Backpack == null)) {
-				return false;
+				return null;
 			}
 			foreach (AbstractItem item in player.Backpack) {
 				if ((item is Item mine) && (Q017.RewardOf(mine) == own)) {
-					return true;
+					return mine;
 				}
 			}
-			return false;
+			return null;
 		}
 	}
 }

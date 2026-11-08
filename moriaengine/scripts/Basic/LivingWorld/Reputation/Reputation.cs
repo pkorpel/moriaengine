@@ -90,9 +90,10 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>An outcast belongs to no city: distrusted everywhere, but not an enemy.</summary>
 		[SaveableData]
 		public int outcastStart = -200;
-		/// <summary>The level a town stone wants for citizenship (ReputationLevel, 3 = Znamy): raise it once errands give standing.</summary>
+		/// <summary>The level a town stone wants for citizenship (ReputationLevel, 4 = Vazeny: #1307, the user's call, as the design
+		/// says).</summary>
 		[SaveableData]
-		public int citizenshipMinLevel = (int) ReputationLevel.Znamy;
+		public int citizenshipMinLevel = (int) ReputationLevel.Vazeny;
 		[SaveableData]
 		public int crimeLoss = 50, murderLoss = 300, harmResidentLoss = 20, killResidentLoss = 150;
 		[SaveableData]

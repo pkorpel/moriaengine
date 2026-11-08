@@ -24,7 +24,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #1278 - Erebor's q099 "Vyvrhel" (questy/q099_vyvrhel.scp, q099_vyvrhel_items.scp): Podivin frees an outcast of their exile.
 	/// Four bags to fill (100 grizzly tails, 80 earth elemental ears, 50 eye essences, 5 poison phoenix feathers), Mining 40, then a
-	/// cheque of exactly 250 000 and 15 levels: the realm comes back (Erebor's function vyvrhel: Gondor with no murders, fame or
+	/// cheque of exactly 250 000 and 10 levels (#1307, the user's call; Erebor took 15): the realm comes back (Erebor's function vyvrhel: Gondor with no murders, fame or
 	/// karma, Mordor with -3000 karma). Erebor also wanted tag.vykoupeni, which nothing in the archive sets: here every outcast may ask.
 	/// <para>Erebor's char tag q099: 1 met him, 2/4/6/8 filling a bag, 3/5/7 a bag handed in, 9 ready; it was removed at the end, here
 	/// 10 marks it done and a new exile starts it again.</para>
@@ -32,7 +32,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class Q099 {
 		public const string PodivinDef = "c_q099_vyvrhel", ChequeDef = "i_cashiers_check";
 		public static readonly string[] BagDefs = { "i_q099_vyvrhel_1", "i_q099_vyvrhel_2", "i_q099_vyvrhel_3", "i_q099_vyvrhel_4" };
-		public const int Ready = 9, Done = 10, Price = 250000, LevelsTaken = 15, MiningNeeded = 400;
+		public const int Ready = 9, Done = 10, Price = 250000, LevelsTaken = 10, MiningNeeded = 400;
 		public const short MordorKarma = -3000;
 
 		private static readonly TagKey stageTK = TagKey.Acquire("_q099Vyvrhel_");
@@ -106,15 +106,106 @@ namespace SteamEngine.CompiledScripts {
 			npc.Dialog(player, SingletonScript<D_Q099Podivin>.Instance, npc);
 		}
 
-		/// <summary>srazitlevely(15), which the archive calls but doesn't hold: 15 levels down (not below 1), the experience toward
-		/// the next gone, and the skill and ability points those levels gave taken from what is left unspent.</summary>
+		/// <summary>srazitlevely, which the archive calls but doesn't hold: levels down (not below 1), the experience toward the next
+		/// gone, and (#1307, the user's call) the points those levels gave taken back, spent or not, so levels earned again pay
+		/// fairly: skill points from what's unspent, then from the skills bought with them (5.0 a step, the highest first, each step
+		/// refunding what it cost); attribute points from the stats (the highest first, never under the profession's start); class
+		/// abilities, which count their points from the level, reset to be spent again if they're over.</summary>
 		internal static void TakeLevels(Player player, int levels) {
 			int lost = Math.Min(levels, Math.Max(0, player.Level - 1));
 			player.Level -= lost;
 			player.Experience = 0;
-			player.UnspentSkillPoints = Math.Max(0, player.UnspentSkillPoints - (5 * lost));
+			TakeSkillPoints(player, LevelingSkillPointsPerLevel * lost);
 			player.UnspentAbilityPoints = Math.Max(0, player.UnspentAbilityPoints - (2 * lost));
+			TakeAttributePoints(player);
+			if (ClassAbilities.Spare(player) < 0) {
+				ClassAbilities.Reset(player);
+				player.SysMessage("Tve schopnosti byly zapomenuty. Rozdel body znovu.");
+			}
 			player.RefreshTitle();
+		}
+
+		internal const int LevelingSkillPointsPerLevel = 5; //LevelingSystem.AddExperience's grant
+
+		//the skill points owed: unspent first, then 5.0 steps of the point-bought skills, the highest first
+		private static void TakeSkillPoints(Player player, int owed) {
+			int fromUnspent = Math.Min(owed, Math.Max(0, player.UnspentSkillPoints));
+			player.UnspentSkillPoints -= fromUnspent;
+			owed -= fromUnspent;
+			ProfessionDef profession = player.Profession;
+			while ((owed > 0) && (profession != null)) {
+				SkillDef highest = null;
+				int highestValue = -1;
+				foreach (SkillDef skill in SkillDef.AllSkillDefs) {
+					int value = player.GetRealSkillValue(skill);
+					if (LevelingSystem.IsSkillPointSpendable((SkillName) skill.Id) && (value - LevelingSystem.SkillPointGain >= profession.GetSkillMinimum(skill))
+							&& (value > highestValue)) {
+						highest = skill;
+						highestValue = value;
+					}
+				}
+				if (highest == null) {
+					break; //nothing bought left to take: the rest is forgiven
+				}
+				int lowered = highestValue - LevelingSystem.SkillPointGain;
+				player.SetRealSkillValue(highest, lowered);
+				owed -= LevelingSystem.SkillRaiseCost(lowered);
+			}
+			if (owed < 0) {
+				player.UnspentSkillPoints += -owed; //the last step cost more than was owed: the change back
+			}
+		}
+
+		//the attribute budget over: a point at a time from the highest stat above the profession's start
+		private static void TakeAttributePoints(Player player) {
+			ProfessionDef profession = player.Profession;
+			while ((player.AttributePointBudget < 0) && (profession != null)) {
+				AttributeStat? highest = null;
+				int highestValue = -1;
+				foreach (AttributeStat stat in new[] { AttributeStat.Str, AttributeStat.Dex, AttributeStat.Int, AttributeStat.Vit }) {
+					int value = StatOf(player, stat);
+					int[] range = profession.GetStatRange(stat);
+					int floor = ((range != null) && (range.Length > 0)) ? range[0] : 1;
+					if ((value > floor) && (value > highestValue)) {
+						highest = stat;
+						highestValue = value;
+					}
+				}
+				if (highest == null) {
+					break;
+				}
+				LowerStat(player, highest.Value);
+			}
+		}
+
+		private static int StatOf(Player player, AttributeStat stat) {
+			switch (stat) {
+				case AttributeStat.Str: return player.Str;
+				case AttributeStat.Dex: return player.Dex;
+				case AttributeStat.Int: return player.Int;
+				default: return player.Vit;
+			}
+		}
+
+		private static void LowerStat(Player player, AttributeStat stat) {
+			switch (stat) {
+				case AttributeStat.Str:
+					player.Str -= 1;
+					player.StrPointsAllocated -= 1;
+					break;
+				case AttributeStat.Dex:
+					player.Dex -= 1;
+					player.DexPointsAllocated -= 1;
+					break;
+				case AttributeStat.Int:
+					player.Int -= 1;
+					player.IntPointsAllocated -= 1;
+					break;
+				default:
+					player.Vit -= 1;
+					player.VitPointsAllocated -= 1;
+					break;
+			}
 		}
 
 		/// <summary>Erebor's function vyvrhel on an outcast: the realm back.</summary>
@@ -219,7 +310,7 @@ namespace SteamEngine.CompiledScripts {
 					d.SetText("Tenhle ukol neni ani tak pro me, ale pro tebe. Nato abys <?src.sex(prezil,prezila)?> transformaci musis byt silnejsi! Bez kopat! Az budes <?src.sex(schopnej,schopna)?> kopat zeleznou rudu tak se vrat.");
 					d.Html();
 				} else {
-					d.SetText("Vyborne, si dostatecne <?src.sex(silny,silna)?> a <?src.sex(pripraven,pripravena)?>. Ted mi prines 250 000 v seku a muzme se do toho pustit! Ale bude te to stat 15 urovni.");
+					d.SetText("Vyborne, si dostatecne <?src.sex(silny,silna)?> a <?src.sex(pripraven,pripravena)?>. Ted mi prines 250 000 v seku a muzme se do toho pustit! Ale bude te to stat 10 urovni.");
 					d.Html();
 					d.SetText("Podat sek");
 					d.Response(false, true, "q099:9");
