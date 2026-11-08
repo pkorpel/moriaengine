@@ -199,6 +199,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			body.Name = NameOf(gem);
 			gem.SetTag(bodyTK, body);
+			CityFlavour.Dress((Item) gem, body); //#1282 - Harad's people are dark-skinned
 			VenueRole role = RoleOf((Item) gem);
 			if (role != null) {
 				body.Title = role.Name.ToLowerInvariant();
@@ -316,6 +317,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (string.Equals(city, "Hobitin", StringComparison.OrdinalIgnoreCase)) {
 				return female ? "NAMES_HOBBIT_FEMALE" : "NAMES_HOBBIT_MALE";
+			}
+			if (string.Equals(city, CityFlavour.Harad, StringComparison.OrdinalIgnoreCase)) {
+				return female ? "NAMES_HARAD_FEMALE" : "NAMES_HARAD_MALE"; //#1282
+			}
+			if (string.Equals(city, CityFlavour.Umbar, StringComparison.OrdinalIgnoreCase)) {
+				return female ? "NAMES_UMBAR_FEMALE" : "NAMES_UMBAR_MALE";
 			}
 			return female ? "NAMES_HUMANFEMALE" : "NAMES_HUMANMALE";
 		}

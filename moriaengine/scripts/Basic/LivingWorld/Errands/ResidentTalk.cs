@@ -44,7 +44,7 @@ namespace SteamEngine.CompiledScripts {
 			if (friendship >= 3) {
 				return "Zdravim te, " + player.Name + ". Co te ke mne privadi?";
 			}
-			return ErrandContext.Pick("Co si prejes?", "Ano? Potrebujes neco?", "Dobry den. Jak ti mohu pomoci?");
+			return CityFlavour.StrangerGreeting(CityFlavour.CityOf(gem)) ?? ErrandContext.Pick("Co si prejes?", "Ano? Potrebujes neco?", "Dobry den. Jak ti mohu pomoci?"); //#1282
 		}
 	}
 
