@@ -1,0 +1,100 @@
+//#1284 - the world events' people (WorldEvents.cs, OrcRaid.cs, Caravan.cs). Made by the events and gone with them; a
+//restart clears any left (WorldEvents.ClearLeftovers). Not Erebor's: the archive's bandits (c_zm_bandita, 2000 hits) are a
+//dungeon's, far too strong for a road.
+
+[NPCDef c_event_raider]
+TEVENTS = e_character
+NAME = "Skreti najezdnik"
+model = 0x11
+AngerSound = snd_MONSTER_ORC1
+IdleSound = snd_MONSTER_ORC1 + 1
+AttackSound = snd_MONSTER_ORC1 + 2
+HurtSound = snd_MONSTER_ORC1 + 3
+DeathSound = snd_MONSTER_ORC1 + 4
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 120
+Dex = 90
+Int = 30
+MaxHits = 110 150
+Wrestling = 550 700
+Tactics = 550 700
+NoAnimate = 1
+AggroMode = Hostile
+
+[NPCDef c_event_raid_chief]
+TEVENTS = e_character
+NAME = "Velitel najezdniku"
+model = 0x11
+Color = 0x0455
+AngerSound = snd_MONSTER_ORC1
+IdleSound = snd_MONSTER_ORC1 + 1
+AttackSound = snd_MONSTER_ORC1 + 2
+HurtSound = snd_MONSTER_ORC1 + 3
+DeathSound = snd_MONSTER_ORC1 + 4
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 200
+Dex = 110
+Int = 50
+MaxHits = 350 420
+Wrestling = 750 850
+Tactics = 750 850
+NoAnimate = 1
+AggroMode = Hostile
+
+[NPCDef c_event_bandit]
+TEVENTS = e_character
+NAME = "Lupic"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 110
+Dex = 100
+Int = 50
+MaxHits = 100 140
+Wrestling = 500 650
+Tactics = 500 650
+Fencing = 500 650
+NoAnimate = 1
+AggroMode = Hostile
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_dagger
+
+[NPCDef c_event_merchant]
+TEVENTS = e_character
+NAME = "Kupec"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 150
+Dex = 80
+Int = 90
+MaxHits = 300 350
+Wrestling = 300 400
+Tactics = 300 400
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+
+[NPCDef c_event_packhorse]
+TEVENTS = e_character
+NAME = "Nakladni kun"
+model = 0x123
+CAN = MT_WALK|MT_RUN
+Str = 150
+Dex = 60
+Int = 10
+MaxHits = 150 200
+Wrestling = 100
+Tactics = 100
+NoAnimate = 1
+AggroMode = Calm

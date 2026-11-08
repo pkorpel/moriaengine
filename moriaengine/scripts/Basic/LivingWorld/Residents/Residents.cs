@@ -311,7 +311,7 @@ namespace SteamEngine.CompiledScripts {
 			return realm;
 		}
 
-		private static string NameList(string city, bool female) {
+		internal static string NameList(string city, bool female) {
 			if (IsOrcCity(city)) {
 				return "NAMES_ORC";
 			}
