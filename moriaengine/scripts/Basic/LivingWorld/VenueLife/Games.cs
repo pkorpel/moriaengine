@@ -25,6 +25,11 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int armMinutes = 20, armPerHour = 10, armRounds = 15;
 
+		/// <summary>How strong the residents are at arm wrestling and the drinking contest (Str; a player's toughness at drinking is
+		/// (Str + Vit) / 2). Residents' own Str is one value for all (120), so it says nothing about the person.</summary>
+		[SaveableData]
+		public int armRivalStr = 60, drinkRivalToughness = 60;
+
 		/// <summary>The drinking contest: its stake, once in drinkMinutes real minutes; each round lowers the chance to keep up
 		/// by drinkRoundPenalty percent.</summary>
 		[SaveableData]
@@ -76,8 +81,13 @@ namespace SteamEngine.CompiledScripts {
 			return (who.GetTag(at) is long then) && ((Errands.Now.Ticks - then) < minutes * TimeSpan.TicksPerMinute);
 		}
 
+		/// <summary>Double a stake back, without overflowing an int a GM's setting could make large.</summary>
+		private static uint Double(int stake) {
+			return (uint) Math.Min(uint.MaxValue, 2L * Math.Max(0, stake));
+		}
+
 		private static TagKey ArmAtKey(Item gem) {
-			return TagKey.Acquire("_game_arm_at_" + Residents.IdOf(gem) + "_");
+			return Tavern.KeyFor("_game_arm_at_", Residents.IdOf(gem)); //a saved tag's name holds only word characters
 		}
 
 		#region Arm wrestling
@@ -91,7 +101,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Dialog(player, dialog, new DialogArgs(npc));
 		}
 
-		/// <summary>A bout for `bet` from the pack: each pull both roll up to their strength, the stronger pull moves the hands one
+		/// <summary>A bout for `bet` from the pack: each pull both roll up to their strength (the resident's is armRivalStr), the stronger pull moves the hands one
 		/// notch; three notches win, double the stake back; no winner after armRounds pulls returns it. False when no bout was had.</summary>
 		public static bool Wrestle(Player player, NPC npc, int bet) {
 			Item gem = Residents.GemOf(npc);
@@ -120,7 +130,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			player.SetTag(armCountTK, count + 1);
 			player.SetTag(ArmAtKey(gem), now);
-			int mine = Math.Max(1, (int) player.Str), theirs = Math.Max(1, (int) npc.Str);
+			int mine = Math.Max(1, (int) player.Str), theirs = Math.Max(1, Settings.armRivalStr);
 			int notch = 0, pulls = 0;
 			while ((Math.Abs(notch) < Pulls) && (pulls < Settings.armRounds)) {
 				pulls++;
@@ -133,8 +143,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			npc.Say("Ruce na stul... ted!");
 			if (notch >= Pulls) {
-				GoldUtils.Grant(player, (uint) (bet * 2));
-				npc.Say(ErrandContext.Pick("Au! Mas silu jako medved.", "Tos me polozil.", "Pristi kolo bude moje.") + " Tvoje vyhra, " + (bet * 2) + " zlatych.");
+				GoldUtils.Grant(player, Double(bet));
+				npc.Say(ErrandContext.Pick("Au! Mas silu jako medved.", "Tos me polozil.", "Pristi kolo bude moje.") + " Tvoje vyhra, " + Double(bet) + " zlatych.");
 			} else if (notch <= -Pulls) {
 				npc.Say(ErrandContext.Pick("Ha! Na me nemas.", "Jeste trochu potrenuj.", "Ruka jako proutek.") + " Sazka je moje.");
 			} else {
@@ -155,7 +165,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Item gem in Residents.OfVenue(venue.VenueId)) {
 				string role = Residents.RoleKeyOf(gem);
 				NPC body = Residents.BodyOf(gem);
-				if (((role == "patron") || (role == "grunt")) && (body != null) && !body.IsDeleted && (VenueRegistry.At(body) == venue)) {
+				if (((role == "patron") || (role == "grunt")) && (body != null) && !body.IsDeleted && !body.Flag_Dead && (VenueRegistry.At(body) == venue)) {
 					name = Residents.NameOf(gem);
 					return body;
 				}
@@ -163,12 +173,12 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		/// <summary>How well one keeps up: the player's Str and Vit, a rival's Str (50 for the absent toper).</summary>
+		/// <summary>How well one keeps up: the player's Str and Vit; any rival drinkRivalToughness.</summary>
 		private static int Toughness(Character ch) {
 			if (ch is Player p) {
 				return (p.Str + p.Vit) / 2;
 			}
-			return (ch == null) ? 50 : ch.Str;
+			return Settings.drinkRivalToughness;
 		}
 
 		private static int HoldChance(int round, int toughness) {
@@ -207,8 +217,8 @@ namespace SteamEngine.CompiledScripts {
 				GoldUtils.Grant(player, (uint) stake);
 				host.Say("Po " + round + ". korbeli padli oba naraz. Remiza, sazka se vraci.");
 			} else if (iHold) {
-				GoldUtils.Grant(player, (uint) (stake * 2));
-				host.Say("Po " + round + ". korbeli je " + name + " pod stolem! Vitez bere " + (stake * 2) + " zlatych.");
+				GoldUtils.Grant(player, Double(stake));
+				host.Say("Po " + round + ". korbeli je " + name + " pod stolem! Vitez bere " + Double(stake) + " zlatych.");
 				rival?.Say(ErrandContext.Pick("Hik... jeste jeden...", "Kde... kde je stul?", "Ty pijes jako trpaslik."));
 			} else {
 				player.Stam = 0;
@@ -294,9 +304,9 @@ namespace SteamEngine.CompiledScripts {
 			new[] { "Kdo ji dela, ten ji neprodava; kdo ji kupuje, ten ji nepotrebuje; kdo ji potrebuje, ten o ni nevi.", "rakev" }
 		};
 
-		/// <summary>The real day a player last made this resident a friend with a right answer.</summary>
+		/// <summary>When a player last made this resident a friend with a right answer.</summary>
 		internal static TagKey RiddleDayKey(Item gem) {
-			return TagKey.Acquire("_game_riddle_day_" + Residents.IdOf(gem) + "_");
+			return Tavern.KeyFor("_game_riddle_day_", Residents.IdOf(gem));
 		}
 
 		/// <summary>An answer as compared: lower case, no diacritics, letters only.</summary>
@@ -315,7 +325,7 @@ namespace SteamEngine.CompiledScripts {
 				npc.Say("Uz jsi jednu hadal. Nech mi chvili na premysleni.");
 				return;
 			}
-			int riddle = (player.GetTag(RiddleTK) is int asked) ? asked : Roll(Riddles.Length); //an unanswered one stays the same
+			int riddle = ((player.GetTag(RiddleTK) is int asked) && (asked >= 0) && (asked < Riddles.Length)) ? asked : Roll(Riddles.Length); //an unanswered one stays the same
 			player.SetTag(RiddleTK, riddle);
 			npc.Say("Hadej: " + Riddles[riddle][0]);
 			D_Riddle dialog = SingletonScript<D_Riddle>.Instance;
@@ -323,7 +333,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Dialog(player, dialog, new DialogArgs(npc, riddle));
 		}
 
-		/// <summary>The player's answer to the riddle they were asked: right pays riddleExp (and the first right one of a real day
+		/// <summary>The player's answer to the riddle they were asked: right pays riddleExp (and the first right one in a real day
 		/// a friendship point), wrong is told the answer. Either way the next riddle waits riddleMinutes. False when there was no
 		/// such riddle to answer.</summary>
 		public static bool Answer(Player player, NPC npc, int riddle, string answer) {
@@ -343,9 +353,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			LevelingSystem.AddExperience(player, Math.Max(0, Settings.riddleExp));
 			Item gem = Residents.GemOf(npc);
-			int today = (int) (Errands.Now.Ticks / TimeSpan.TicksPerDay);
-			if ((gem != null) && !((player.GetTag(RiddleDayKey(gem)) is int day) && (day == today))) {
-				player.SetTag(RiddleDayKey(gem), today);
+			if ((gem != null) && !Recently(player, RiddleDayKey(gem), 24 * 60)) {
+				player.SetTag(RiddleDayKey(gem), Errands.Now.Ticks);
 				Residents.AddFriendship(player, Residents.IdOf(gem), 1);
 			}
 			npc.Say(ErrandContext.Pick("Spravne! Ty jsi bystry.", "Uhodl jsi. Tu mas neco za odmenu.", "Presne tak.") + " (" + Settings.riddleExp + " zkusenosti)");
@@ -354,7 +363,8 @@ namespace SteamEngine.CompiledScripts {
 		#endregion
 	}
 
-	/// <summary>#1298 - arm wrestling's bets (the dice's three); it comes back after each bout. args: the resident.</summary>
+	/// <summary>#1298 - arm wrestling's bets (the dice's three), a bout a click; it doesn't come back, as the resident then rests
+	/// their arm. args: the resident.</summary>
 	public class D_ArmWrestle : CompiledGumpDef {
 		internal const int FirstBet = 1;
 

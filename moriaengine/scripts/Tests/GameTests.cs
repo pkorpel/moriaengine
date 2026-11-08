@@ -258,7 +258,13 @@ namespace SteamEngine.CompiledScripts {
 			Games.AskRiddle(player, scholar, scholarGem);
 			bool rightAgain = Games.Answer(player, scholar, 0, "HREBEN");
 			bool friendOnce = Residents.Friendship(player, Residents.IdOf(scholarGem)) == friendship + 1;
-			Report("riddleRightPaysAndAFriendOnceADay", right && friend && rightAgain && friendOnce);
+			Errands.NowOverride = start.AddHours(25);
+			Queue(1);
+			Games.AskRiddle(player, scholar, scholarGem);
+			bool nextDay = Games.Answer(player, scholar, 1, "dira") && (Residents.Friendship(player, Residents.IdOf(scholarGem)) == friendship + 2);
+			Report("riddleRightPaysAndAFriendOnceADay", right && friend && rightAgain && friendOnce && nextDay);
+			Report("perResidentTagsSurviveASave", (Games.RiddleDayKey(scholarGem).ToString().IndexOf('/') < 0)
+				&& System.Text.RegularExpressions.Regex.IsMatch(Games.RiddleDayKey(scholarGem).ToString(), @"^\w+$"));
 
 			bool ascii = true;
 			foreach (string[] riddle in Games.Riddles) {
@@ -277,8 +283,11 @@ namespace SteamEngine.CompiledScripts {
 			player.Account.PLevel = 4;
 			Errands.NowOverride = start.AddDays(1);
 			gold = player.Gold;
+			Queue(1000, 0, 1000, 0, 1000, 0); //winning rolls everywhere: a missing GM rule would show as more gold
 			bool gmArm = !Games.Wrestle(player, patron, bet);
+			Queue(0, 99);
 			Games.Drink(player, innkeeper, Gem(player, "tavern", "innkeeper"));
+			Queue(0, 999, 0, 999, 0, 999, 0, 999, 0, 999);
 			Games.ArcheryContest(player, captain, captainGem);
 			player.Account.PLevel = 1;
 			Report("aGmDoesNotPlayForMoney", gmArm && (player.Gold == gold));
