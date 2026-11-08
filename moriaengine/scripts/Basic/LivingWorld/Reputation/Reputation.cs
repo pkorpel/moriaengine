@@ -269,6 +269,9 @@ namespace SteamEngine.CompiledScripts {
 			if (WarCamp.IsCamp(city) && (player is Player p)) {
 				WarCamp.AfterChange(p, before); //#1280 - the camp's rank: a promotion pays
 			}
+			if ((delta > 0) && (player is Player friend)) {
+				Deeds.CheckComputed(friend); //#1296 - friend of the cities
+			}
 			return now;
 		}
 

@@ -649,6 +649,7 @@ namespace SteamEngine.CompiledScripts {
 			log.streak = (log.lastKey == errand.key) ? log.streak + 1 : 1;
 			log.lastKey = errand.key;
 			log.done++;
+			Deeds.Add(player, Deeds.Courier); //#1296
 			ErrandSettings s = Settings;
 			int gold, exp, friend, rep;
 			switch (errand.Tier) {
