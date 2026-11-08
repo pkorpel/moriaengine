@@ -201,6 +201,43 @@ namespace SteamEngine.CompiledScripts {
 			"Kapitani se hadaji o kotviste. Brzy bude tect krev.",
 		};
 
+		//#1304 - the other cities' news
+		private static readonly string[] dolAmrothLore = {
+			"Labuti rytiri cvici na plazi. Knize chysta turnaj.",
+			"Svetlo na majaku slablo. Prej je strazce nemocny.",
+			"V pristavu se objevili cizi namornici. Vyptavaji se na lode do Pelargiru.",
+		};
+		private static readonly string[] dwarfLore = {
+			"V hlubinach nasli novou zilu mithrilu. Nebo to aspon rikaji.",
+			"Havrani nesli zpravu ze Zeleznych hor. Nikdo nevi, co v ni stalo.",
+			"Na trhu nekdo prodaval Arcikam. Byl to obycejny kus skla.",
+		};
+		private static readonly string[] daleLore = {
+			"Clunari z Jezerniho mesta zase zvedli myto.",
+			"Zvony v Dolu zvonily cele rano. Prej na pocest padleho draka.",
+			"Na rybim trhu chybi ryby. Nekdo paseruje.",
+		};
+		private static readonly string[] fornostLore = {
+			"Na mohylach za mestem se v noci sviti. Nikdo tam nechce chodit.",
+			"Hranicari prisli z divociny a nic nerekli. Jako vzdycky.",
+			"V ruinach nekdo nasel stary mec s pismem, ktere nikdo neprecte.",
+		};
+		private static readonly string[] elfLore = {
+			"Kral chysta hostinu pod hvezdami. Svetla se prej ztraceji, kdyz se nekdo priblizi.",
+			"Pavouci na jihu lesa jsou kazdou zimu drzejsi.",
+			"Z jezera priplavaly sudy s vinem. Kral bude spokojen.",
+		};
+		private static readonly string[] havensLore = {
+			"Dalsi lod je skoro hotova. Brzy odpluje na zapad.",
+			"Cirdan prej stoji na molu cele noci a diva se na more.",
+			"Prichazeji elfove z celeho severu. Loucit se.",
+		};
+		private static readonly string[] rhunLore = {
+			"Kone z rhunskych stepi se prodavaji az do Mordoru.",
+			"Z vychodu prijelo vozy plne kouzelnych latek.",
+			"Nacelnici se zase hadaji, kdo povede jizdu na zapad.",
+		};
+
 		/// <summary>The city's own news, or null: city keys are FlaggedRegion.City's (Minas_Tirith, Barad-dur).</summary>
 		internal static string[] LocalLore(string city) {
 			switch ((city ?? "").Replace('_', ' ').ToLowerInvariant()) {
@@ -212,8 +249,22 @@ namespace SteamEngine.CompiledScripts {
 					return shireLore;
 				case "barad-dur":
 				case "nurn":
-				case "rhun":
 					return mordorLore;
+				case "rhun":
+					return rhunLore; //#1304 - Easterlings, not orcs: their own talk, still Mordor's side
+				case "dol amroth":
+					return dolAmrothLore;
+				case "erebor":
+				case "dainovo kralovstvi":
+					return dwarfLore;
+				case "dol":
+					return daleLore;
+				case "fornost":
+					return fornostLore;
+				case "kralovstvi lesnich elfu":
+					return elfLore;
+				case "sede pristavy":
+					return havensLore;
 				case "harad":
 					return haradLore;
 				case "umbar":
@@ -226,7 +277,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The common news is Gondor's talk, so Mordor's orcs keep to their own.</summary>
 		public static string Lore(string city) {
 			string[] local = LocalLore(city);
-			bool mordor = local == mordorLore;
+			bool mordor = (local == mordorLore) || (local == rhunLore); //#1304 - Rhun is on Mordor's side too
 			string[] pool = ((local == null) || (!mordor && (Globals.dice.Next(3) == 0))) ? CommonLore : local;
 			return pool[Globals.dice.Next(pool.Length)];
 		}

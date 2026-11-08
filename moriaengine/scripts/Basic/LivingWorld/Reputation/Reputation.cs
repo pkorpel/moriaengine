@@ -46,6 +46,18 @@ namespace SteamEngine.CompiledScripts {
 			new Faction("um_corsairs", "Korzarsti kapitani", "Umbar", "um_harbour"),
 			new Faction("um_fences", "Otrokari a paseraci", "Umbar", null),
 			new Faction("um_harbour", "Pani pristavu", "Umbar", "um_corsairs"),
+			//#1304 - the other cities
+			new Faction("da_swans", "Labuti rytiri", "Dol_Amroth", null),
+			new Faction("da_harbour", "Pristav Dol Amrothu", "Dol_Amroth", null),
+			new Faction("er_smiths", "Kovari pod horou", "Erebor", null),
+			new Faction("er_merchants", "Kupci Ereboru", "Erebor", null),
+			new Faction("dl_bargemen", "Vorari z jezera", "Dol", null),
+			new Faction("dl_market", "Trh v Dolu", "Dol", null),
+			new Faction("fo_rangers", "Hranicari severu", "Fornost", null),
+			new Faction("el_court", "Dvur lesniho krale", "Kralovstvi_lesnich_elfu", null),
+			new Faction("sp_shipwrights", "Stavitele lodi", "Sede_pristavy", null),
+			new Faction("rh_horselords", "Konari z Rhunu", "Rhun", null),
+			new Faction("nu_overseers", "Dozorci Nurnu", "Nurn", null),
 		};
 
 		public static Faction Get(string key) {

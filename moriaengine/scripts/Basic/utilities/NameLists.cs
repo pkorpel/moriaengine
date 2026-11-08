@@ -38,6 +38,11 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
+		/// <summary>#1304 - whether the list holds the name.</summary>
+		public static bool Contains(string listName, string name) {
+			return byName.TryGetValue(listName, out NameList list) && !list.unloaded && list.names.Contains(name);
+		}
+
 		/// <summary>Every "#NAMES_x" in the text becomes a random name of that list.</summary>
 		public static string Resolve(string text) {
 			if (string.IsNullOrEmpty(text) || (text.IndexOf('#') < 0)) {

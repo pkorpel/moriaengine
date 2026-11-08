@@ -31,14 +31,14 @@ namespace SteamEngine.CompiledScripts {
 			this.AnimalName = animalName;
 		}
 
-		private static readonly string[] gondorPilots = { "Minas_Tirith", "Edoras", "Hobitin" };
+		private static readonly string[] gondorPilots = { "Minas_Tirith", "Edoras", "Hobitin", "Dol_Amroth", "Erebor", "Dol", "Fornost" }; //#1304 - Yule in Gondor's other cities too
 
 		public static readonly FestivalKind[] All = {
-			new FestivalKind("slunovrat", "Slavnost slunovratu", new[] { "Minas_Tirith", "Edoras" }, 6, 20, 6, 26, "i_cake", PigDef, "selatko"),
-			new FestivalKind("dozinky", "Dozinky", new[] { "Edoras", "Hobitin" }, 9, 15, 9, 30, "i_bread_loaf", PigDef, "selatko"),
+			new FestivalKind("slunovrat", "Slavnost slunovratu", new[] { "Minas_Tirith", "Edoras", "Dol_Amroth", "Fornost", "Dol" }, 6, 20, 6, 26, "i_cake", PigDef, "selatko"),
+			new FestivalKind("dozinky", "Dozinky", new[] { "Edoras", "Hobitin", "Dol", "Fornost" }, 9, 15, 9, 30, "i_bread_loaf", PigDef, "selatko"),
 			new FestivalKind("oslava", "Hobiti oslava", new[] { "Hobitin" }, 9, 20, 9, 24, "i_cake", PigDef, "selatko"),
 			new FestivalKind("yule", "Svatek Yule", gondorPilots, 12, 20, 1, 2, "i_mug_ale", PigDef, "selatko"),
-			new FestivalKind("den_oka", "Den Oka", new[] { "Barad-dur", "Harad", "Umbar" }, 3, 20, 3, 26, "i_ham", RatDef, "uprchly krysak")
+			new FestivalKind("den_oka", "Den Oka", new[] { "Barad-dur", "Harad", "Umbar", "Nurn", "Rhun" }, 3, 20, 3, 26, "i_ham", RatDef, "uprchly krysak")
 		};
 
 		public override string Key { get { return this.key; } }

@@ -304,7 +304,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>The pilot cities (design section 4), as FlaggedRegion.City names them.</summary>
-		public static readonly string[] Cities = { "Minas_Tirith", "Edoras", "Hobitin", "Barad-dur", "Harad", "Umbar" };
+		public static readonly string[] Cities = { "Minas_Tirith", "Edoras", "Hobitin", "Barad-dur", "Harad", "Umbar",
+			"Dol_Amroth", "Erebor", "Dol", "Fornost", "Kralovstvi_lesnich_elfu", "Sede_pristavy", "Nurn", "Rhun" }; //#1304 - the other cities too (not the abandoned Dainovo_kralovstvi, nor the test London)
 
 		private sealed class CityOutcome {
 			internal string city, text, eventId;
