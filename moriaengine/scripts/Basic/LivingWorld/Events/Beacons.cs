@@ -164,6 +164,10 @@ namespace SteamEngine.CompiledScripts {
 		public static void Init() {
 			QuestNpc.Attach(BeaconsKind.BeaconDef, SingletonScript<E_EventBeacon>.Instance);
 			QuestNpc.Attach(FireKind.FireDef, SingletonScript<E_EventFire>.Instance);
+			QuestNpc.Attach(FestivalKind.HostDef, SingletonScript<E_FestivalHost>.Instance);
+			QuestNpc.Attach(FestivalKind.OrcHostDef, SingletonScript<E_FestivalHost>.Instance);
+			QuestNpc.Attach(FestivalKind.PigDef, SingletonScript<E_FestivalAnimal>.Instance);
+			QuestNpc.Attach(FestivalKind.RatDef, SingletonScript<E_FestivalAnimal>.Instance);
 		}
 	}
 }

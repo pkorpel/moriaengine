@@ -126,6 +126,43 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1289 - a festival by the calendar: midsummer's day starts Minas Tirith's; the client asks the host for food and
+	/// catches the runaway piglet; the server walks the game, the end, the calendar and Mordor's day of the Eye.</summary>
+	[Collection(WorldEventsCollection.Name)]
+	public class FestivalTests : LivingWorldTestBase {
+		public FestivalTests(GameServerPairFixture servers)
+			: base(servers, "worldeventtests", "WORLDEVENTS") {
+		}
+
+		private string State(TestGameClient game, string want) {
+			string state = "";
+			for (int i = 0; (i < 40) && !state.Contains(want); i++) {
+				System.Threading.Thread.Sleep(250);
+				this.Run(game, ".TestWorldEventsState", "WORLDEVENTS_STATE:");
+				state = this.LastLine("WORLDEVENTS_STATE:");
+			}
+			return state;
+		}
+
+		[Fact]
+		public void FestivalsComeWithTheirDays() {
+			using (TestGameClient game = this.Login("Host slavnosti")) {
+				this.Run(game, ".TestWorldEventsFestivalSetup", "WORLDEVENTS_FESTIVAL:");
+				string setup = this.LastLine("WORLDEVENTS_FESTIVAL:");
+				Assert.Contains("started=1", setup);
+				game.SendDoubleClick((uint) Number(setup, "host"));
+				Assert.Contains("kind=slunovrat city=Minas_Tirith fed=1", this.State(game, "fed=1"));
+
+				this.Run(game, ".TestWorldEventsFestivalAnimal", "WORLDEVENTS_ANIMAL:");
+				game.SendDoubleClick((uint) Number(this.LastLine("WORLDEVENTS_ANIMAL:"), "uid"));
+				Assert.Contains("rounds=1", this.State(game, "rounds=1"));
+
+				this.Run(game, ".TestWorldEventsFestivalChain", "WORLDEVENTS_FESTIVAL_DONE");
+				this.AssertChecks("festivalFood", "festivalGame", "festivalEnds", "festivalCalendar", "festivalMordor");
+			}
+		}
+	}
+
 	[CollectionDefinition(Name)]
 	public class WorldEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "WorldEvents";

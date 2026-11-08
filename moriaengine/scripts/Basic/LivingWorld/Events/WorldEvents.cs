@@ -85,6 +85,11 @@ namespace SteamEngine.CompiledScripts {
 		/// the curer's standing (and the healers' faction in Minas Tirith); friendship with each one cured (0-10 scale).</summary>
 		[SaveableData]
 		public int feverCount = 4, feverMinutes = 30, feverGold = 100, feverExp = 150, feverFavour = 15, feverFriendship = 2;
+
+		/// <summary>#1289 - festivals: real minutes one lasts, the city's prices lower (percent) while it does, rounds of the
+		/// runaway-animal game, each catch's gold and experience, and each guest's experience and standing at the end.</summary>
+		[SaveableData]
+		public int festivalMinutes = 60, festivalDiscount = 5, festivalRounds = 5, festivalPrizeGold = 150, festivalPrizeExp = 200, festivalExp = 100, festivalFavour = 5;
 	}
 
 	/// <summary>#1284 - a kind of world event: where and when it can start, and a fresh one.</summary>
@@ -110,6 +115,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The area whose spawn point is the event's centre in `city`.</summary>
 		public virtual string AreaFor(string city) {
 			return "a_" + city.Replace('-', '_');
+		}
+
+		/// <summary>#1289 - starts by the calendar (a festival): once a day per place when its time comes and a player is there,
+		/// with no chance roll or gap; the random pick never takes it.</summary>
+		public virtual bool StartsByCalendar {
+			get { return false; }
+		}
+
+		/// <summary>#1289 - counts toward maxRunning (festivals don't: a city's feast doesn't stop a raid elsewhere).</summary>
+		public virtual bool CountsTowardLimit {
+			get { return true; }
 		}
 
 		/// <summary>The place's name in what the event says.</summary>
@@ -272,7 +288,8 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly List<WorldEvent> running = new List<WorldEvent>();
 		private static readonly Dictionary<string, WorldEvent> byId = new Dictionary<string, WorldEvent>(StringComparer.Ordinal);
 		private static readonly List<CityOutcome> outcomes = new List<CityOutcome>();
-		private static double nextStartAt, nextChanceAt;
+		private static double nextStartAt, nextChanceAt, nextCalendarAt;
+		private static readonly Dictionary<string, DateTime> heldOn = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 		private static bool leftoversCleared, gapAfterBoot;
 
 		/// <summary>Test servers (the harness's environment variable) start no event by themselves unless a test allows it:
@@ -304,6 +321,9 @@ namespace SteamEngine.CompiledScripts {
 			Register(new TrollKind());
 			Register(new FireKind());
 			Register(new FeverKind());
+			foreach (FestivalKind festival in FestivalKind.All) {
+				Register(festival);
+			}
 			QuestJournalPages.Register(D_QuestJournal.SectionEvents, WorldEventsPage.Add);
 		}
 
@@ -461,7 +481,14 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			double now = Globals.TimeInSeconds;
-			if (!Settings.enabled || (IsTestServer && !autoStartOnTestServer) || (running.Count >= Settings.maxRunning) || (now < nextStartAt) || (now < nextChanceAt)) {
+			if (!Settings.enabled || (IsTestServer && !autoStartOnTestServer)) {
+				return;
+			}
+			if (now >= nextCalendarAt) {
+				nextCalendarAt = now + 60;
+				TryStartByCalendar();
+			}
+			if ((running.FindAll(e => e.Kind.CountsTowardLimit).Count >= Settings.maxRunning) || (now < nextStartAt) || (now < nextChanceAt)) {
 				return;
 			}
 			nextChanceAt = now + 60;
@@ -474,7 +501,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static bool TryStartAny() {
 			List<KeyValuePair<WorldEventKind, string>> choices = new List<KeyValuePair<WorldEventKind, string>>();
 			foreach (WorldEventKind kind in kinds) {
-				if (!kind.IsTime()) {
+				if (kind.StartsByCalendar || !kind.IsTime()) {
 					continue;
 				}
 				foreach (string city in kind.Places) {
@@ -491,6 +518,27 @@ namespace SteamEngine.CompiledScripts {
 				choices.RemoveAt(i);
 			}
 			return false;
+		}
+
+		/// <summary>#1289 - the calendar's events whose day it is, where a player is and they haven't been held today.</summary>
+		internal static int TryStartByCalendar() {
+			int started = 0;
+			foreach (WorldEventKind kind in kinds.ToArray()) {
+				if (!kind.StartsByCalendar || !kind.IsTime()) {
+					continue;
+				}
+				foreach (string city in kind.Places) {
+					if (kind.IsFor(city) && !IsBusy(city) && !HeldToday(kind, city) && (PlayersNear(city, kind).Count > 0) && (Start(kind, city) != null)) {
+						started++;
+					}
+				}
+			}
+			return started;
+		}
+
+		/// <summary>#1289 - whether a calendar event was held in the place today (real UTC date, in memory).</summary>
+		public static bool HeldToday(WorldEventKind kind, string city) {
+			return heldOn.TryGetValue(kind.Key + "/" + city, out DateTime day) && (day == Errands.Now.Date);
 		}
 
 		private static bool IsBusy(string city) {
@@ -519,7 +567,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 			running.Add(e);
 			byId[e.Id] = e;
-			nextStartAt = Globals.TimeInSeconds + (Settings.gapMinutes * 60.0);
+			if (kind.StartsByCalendar) {
+				heldOn[kind.Key + "/" + city] = Errands.Now.Date; //once a day, a GM's start too
+			} else {
+				nextStartAt = Globals.TimeInSeconds + (Settings.gapMinutes * 60.0);
+			}
 			EnsureRunning();
 			return e;
 		}
@@ -700,6 +752,8 @@ namespace SteamEngine.CompiledScripts {
 			landmarks.Clear();
 			nextStartAt = 0;
 			nextChanceAt = 0;
+			nextCalendarAt = 0;
+			heldOn.Clear();
 			gapAfterBoot = true;
 		}
 
@@ -718,6 +772,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void ClearScheduleForTests() {
 			nextStartAt = 0;
 			nextChanceAt = 0;
+			nextCalendarAt = 0;
 		}
 		#endregion outcomes
 
