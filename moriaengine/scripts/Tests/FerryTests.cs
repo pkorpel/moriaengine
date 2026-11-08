@@ -126,6 +126,7 @@ namespace SteamEngine.CompiledScripts {
 			//no ghosts; no fare, no ride
 			Beside(player, dolAmroth);
 			player.CauseDeath(null);
+			GoldUtils.GrantToBank(player, 1000); //a ghost could pay from the bank: the refusal must be what stops them
 			Beside(player, dolAmroth);
 			gold = player.Gold;
 			bool noGhosts = player.Flag_Dead && !Ferry.Take(player, dolAmroth, islandStop) && (player.Gold == gold);
