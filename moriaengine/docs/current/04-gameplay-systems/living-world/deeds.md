@@ -13,7 +13,7 @@ Code is in `scripts/Basic/LivingWorld/Deeds/Deeds.cs`. The numbers are in `.sett
 |---|---|---|---|
 | Lovec (`lovec`) | monsters killed | 10, 100, 1000, 10000 | Lovec zverat, Lovec, Postrach divociny, Legenda lovu |
 | Posel (`posel`) | errands done | 5, 25, 100, 500 | Pomocnik, Spolehlivy posel, Mistr poslu, Hlas mest |
-| Cestovatel (`cestovatel`) | different cities entered | 3, 8, 15, 30 | Poutnik, Cestovatel, Svetobeznik, Znalec Stredozeme |
+| Cestovatel (`cestovatel`) | different cities entered | 3, 6, 10, 14 | Poutnik, Cestovatel, Svetobeznik, Znalec Stredozeme |
 | Obrance (`obrance`) | world events won as a hero | 1, 5, 20, 50 | Obrance, Strazce, Hrdina mest, Stit kraje |
 | Host slavnosti (`slavnosti`) | festivals attended | 1, 5, 15, 30 | Host, Stamgast slavnosti, Duse slavnosti, Kral slavnosti |
 | Pritel mest (`pritel`) | cities where the player is at least Vazeny | 1, 2, 4, 6 | Vitany host, Pritel mesta, Pritel mest, Milacek Stredozeme |
@@ -21,12 +21,14 @@ Code is in `scripts/Basic/LivingWorld/Deeds/Deeds.cs`. The numbers are in `.sett
 How each one counts:
 - **Lovec:** from `NPC.On_Death`. Every player who fought the monster counts it, the same fighters that experience
   goes to (`LevelingSystem.FindFighters`, without parties). Not counted: a monster worth no experience, a resident, a
-  pet, a summoned creature, or a death nobody caused. A pet its own owner attacks turns on them and is wild again
+  pet, or a summoned creature. A monster that dies with no killer (poison, bleeding) still counts for those who fought
+  it lately, as experience does; one nobody fought counts for nobody. A pet its own owner attacks turns on them and is wild again
   (`NPC.On_HostileAction`), so killing your own pet counts, just as it already pays experience. The troll is worth no
   experience, so it doesn't count.
 - **Posel:** from `Errands.Finish`, so only a finished errand counts. Giving up doesn't, and neither does running out.
 - **Cestovatel:** from `FlaggedRegion.On_Enter`. The first time the player enters an area of a city, that city counts.
-  The cities seen are kept in a player tag.
+  The cities seen are kept in a player tag. The map names 16 cities (`City =` in map.def, London and Sede_pristavy
+  among them), so the tiers stop at 14.
 - **Obrance:** from `WorldEvents.Reward`, which every event win pays through: raids, corsairs, the caravan, the
   beacons, the troll, the fire, the fever. Each hero is paid once per event, so each counts it once.
 - **Host slavnosti:** counted for every guest at a festival's end. The animal game's prize counts toward no deed.

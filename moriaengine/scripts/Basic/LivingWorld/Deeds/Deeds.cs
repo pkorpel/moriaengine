@@ -51,7 +51,7 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly Deed[] All = {
 			new Deed(Slayer, "Lovec", "zabitych nestvur", new[] { 10, 100, 1000, 10000 }, new[] { "Lovec zverat", "Lovec", "Postrach divociny", "Legenda lovu" }),
 			new Deed(Courier, "Posel", "splnenych ukolu", new[] { 5, 25, 100, 500 }, new[] { "Pomocnik", "Spolehlivy posel", "Mistr poslu", "Hlas mest" }),
-			new Deed(Explorer, "Cestovatel", "navstivenych mest", new[] { 3, 8, 15, 30 }, new[] { "Poutnik", "Cestovatel", "Svetobeznik", "Znalec Stredozeme" }),
+			new Deed(Explorer, "Cestovatel", "navstivenych mest", new[] { 3, 6, 10, 14 }, new[] { "Poutnik", "Cestovatel", "Svetobeznik", "Znalec Stredozeme" }),
 			new Deed(Defender, "Obrance", "vyhranych udalosti", new[] { 1, 5, 20, 50 }, new[] { "Obrance", "Strazce", "Hrdina mest", "Stit kraje" }),
 			new Deed(Festival, "Host slavnosti", "navstivenych slavnosti", new[] { 1, 5, 15, 30 }, new[] { "Host", "Stamgast slavnosti", "Duse slavnosti", "Kral slavnosti" }),
 			new Deed(Friend, "Pritel mest", "mest, kde jsi vazeny", new[] { 1, 2, 4, 6 }, new[] { "Vitany host", "Pritel mesta", "Pritel mest", "Milacek Stredozeme" }, CitiesThatRespect)
@@ -107,10 +107,13 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || player.IsGM) {
 				return;
 			}
-			int count = Count(player, deed);
-			int tier = Tier(player, deed);
 			DeedSettings s = DeedSettings.instance;
-			while ((tier < deed.Tiers.Length) && (count >= deed.Tiers[tier])) {
+			while (true) {
+				int count = Count(player, deed);
+				int tier = Tier(player, deed); //read each time: a reward's own effects may have paid a tier meanwhile
+				if ((tier >= deed.Tiers.Length) || (count < deed.Tiers[tier])) {
+					break;
+				}
 				long factor = 1;
 				for (int i = 0; i < tier; i++) {
 					factor *= Math.Max(1, s.growth);
@@ -157,12 +160,12 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || player.IsGM || string.IsNullOrEmpty(city)) {
 				return;
 			}
-			string word = "|" + Reputation.Word(city) + "|";
+			string word = Reputation.Word(city);
 			string visited = player.GetTag(visitedTK) as string ?? "|";
-			if (visited.Contains(word)) {
+			if (visited.Contains("|" + word + "|")) {
 				return;
 			}
-			player.SetTag(visitedTK, visited + Reputation.Word(city) + "|");
+			player.SetTag(visitedTK, visited + word + "|");
 			Add(player, Explorer);
 		}
 
@@ -201,7 +204,7 @@ namespace SteamEngine.CompiledScripts {
 			int y = 135;
 			bool any = false;
 			foreach (Deed deed in Deeds.All) {
-				any |= Deeds.Count(player, deed) > 0;
+				any |= (Deeds.Count(player, deed) > 0) || (Deeds.Tier(player, deed) > 0);
 			}
 			if (!any) {
 				gump.AddLabel(85, y, HintHue, "Zatim nemas zadne skutky.");

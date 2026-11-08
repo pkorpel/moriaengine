@@ -143,8 +143,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("Ve svete se ted nic zvlastniho nedeje.", string.Join("|", menu.Strings));
 				client.SendGumpResponse(menu.GumpUid, 34);
 				menu = client.ReadGumpDialogWithStrings(Wait);
-				Assert.Contains("Pritel mest", menu.Strings); //#1296 - the deeds: Vazeny in Edoras is a friend of one city
-				Assert.DoesNotContain("Zatim nemas zadne skutky.", string.Join("|", menu.Strings));
+				Assert.Contains("Vitany host", menu.Strings); //#1296 - the deeds: Vazeny in Edoras is a friend of one city, its first title
 				//the city page's button: .povest, and the journal stays open on the city
 				client.SendGumpResponse(menu.GumpUid, 32);
 				menu = client.ReadGumpDialogWithStrings(Wait);

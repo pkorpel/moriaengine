@@ -30,7 +30,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Equal("Postrach divociny", journal.Strings[slayer + 2]);
 				int explorer = journal.Strings.IndexOf("Cestovatel");
 				Assert.True(explorer >= 0, texts);
-				Assert.Equal("3/8", journal.Strings[explorer + 1]);
+				Assert.Equal("3/6", journal.Strings[explorer + 1]);
 				Assert.Equal("Poutnik", journal.Strings[explorer + 2]);
 				int courier = journal.Strings.IndexOf("Posel");
 				Assert.True(courier >= 0, texts);
