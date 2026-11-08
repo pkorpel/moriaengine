@@ -62,8 +62,8 @@ namespace SteamEngine.CompiledScripts {
 			int y = 135;
 			ReputationLevel level = Reputation.Level(player, city);
 			gump.AddLabel(85, y, HeadHue, city.Replace('_', ' '));
-			gump.AddLabel(200, y, (level <= ReputationLevel.Podezrely) ? BadHue : ValueHue, Reputation.LevelName(level));
-			gump.AddLabel(85, y + Row, LabelHue, "Povest " + Reputation.Of(player, city).ToString(CultureInfo.InvariantCulture));
+			gump.AddLabel(200, y, (level <= ReputationLevel.Podezrely) ? BadHue : ValueHue, Reputation.CityLevelName(player, city));
+			gump.AddLabel(85, y + Row, LabelHue, "Povest " + Reputation.Of(player, city).ToString(CultureInfo.InvariantCulture) + RivalCaptains.ServingLine(player, city));
 			y += 2 * Row + 6;
 			foreach (Faction faction in Faction.All) {
 				if (faction.City == city) {
@@ -75,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			y += 8;
 			List<Item> friends = FriendsIn(player, city);
-			gump.AddLabel(85, y, HeadHue, "Pratele");
+			gump.AddLabel(85, y, HeadHue, WarCamp.IsCamp(city) ? "Prizen" : "Pratele"); //#1280 - in the camp, a superior's favour
 			y += Row;
 			if (friends.Count == 0) {
 				gump.AddLabel(90, y, LabelHue, "Zatim tu nikoho neznas.");

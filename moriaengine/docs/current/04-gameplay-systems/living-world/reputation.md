@@ -64,6 +64,8 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
 
 ## Effects
 
+- **Barad-dur** reads its reputation as a rank in the war camp, and its residents give orders: see [war-camp.md](war-camp.md) (#1280).
+
 - **Shops:** the basic vendor, the alchemists and the Prodejce charge the level's price where the player stands, and refuse an enemy. A GM pays list price. A price setting of 0 refuses only at Nepritel; at any other level it means list price, never free.
 - **Where:** the city of a point is `VenueRegistry.CityAt` (the smallest city area holding it), remembered per tile.
 - **Guards:** your own realm's guards stop protecting a player the city counts as Nepritel (`GuardSpeech.IsProtectedBy`). Since guards attack on sight whoever they don't protect, such a player is attacked. The enemy realm's guards attack them anyway.

@@ -30,6 +30,9 @@ would break.
 **Venues** (#1240) come from a file, `scripts/Setup/venues.txt`, which `.venues export` writes: `VenueSetup` places each venue that is missing,
 by its id. See [venues.md](../04-gameplay-systems/living-world/venues.md).
 
+**War camp** (#1280, `WarCampSetup`, `.SetupWarCamp`): Barad-dur's rival captains, Gorbag and Shagrat, either side of the city's spawn
+point. See [war-camp.md](../04-gameplay-systems/living-world/war-camp.md).
+
 **Quest ports** (#1264, `QuestPortsSetup`, `.SetupQuestPorts`): the NPCs of the Erebor quests ported for #1237, so far q006's, q007's, q009's,
 q017's, q018's, q026's, q008's, q31's, q041's and q099's NPCs, gates, chest, rune, wheel, the temple and Dol Guldur fixtures, Ancam's corral
 and the smuggler's portal and realm gate. See the quests' pages in [quests/](../04-gameplay-systems/quests/README.md).
