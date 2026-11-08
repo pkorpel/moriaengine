@@ -183,3 +183,9 @@ Equip = i_dagger
 NAME = "Majak"
 TYPE = t_normal
 model = 0x0DE1
+
+//#1286 - fire in the city: a fire field to beat out.
+[ItemDef i_event_fire]
+NAME = "Ohen"
+TYPE = t_normal
+model = 0x398C
