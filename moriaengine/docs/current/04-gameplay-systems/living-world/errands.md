@@ -121,6 +121,41 @@ gang) follow in step 27b.
 
 The war camp gives orders, not these.
 
+## Things in the world (#1293)
+
+**A Things step** puts NPCs or items in the world as it begins: in a venue, in the streets a few steps from the city's centre,
+or on a road out of the city, beside the player if no spot is found. The player then catches, kills or uses them:
+- **Catch** an NPC with a double click right beside it. Such NPCs can't be hurt, so nobody can strike one down and leave the
+  step undoable.
+- **Use** an item with a double click within 2 tiles, on the same floor and in sight.
+- **Kill** an NPC, by the player or with the player among its fighters. A kill by anyone else alone doesn't count, and
+  another takes its place.
+
+They're the errand's player's alone: anyone else's double click is told it's none of their business. A thing that flees runs
+from the player each second when they come within 3 tiles, three times; then it tires and can be caught. When the last one is
+done, the step is done.
+
+**Clean-up:** the things go with the errand: done, given up or run out. Each also checks every minute, and goes when its
+errand is over, its step passed, or its player gone, even after a restart. A thing is only ever found by its uid together
+with its errand's mark, so a uid freed by a caught or killed thing and reused for anything else is never touched.
+
+**In the journal**, a Things step shows its place (the venue, the streets, the road out), and the arrow points to the
+nearest of its things. Code: `Errands.Things(...)`, `Errands.UseThing`, `Errands.OnThingDeath`; a template's
+`OnThing` decides what a catch or a use does (by default the thing goes).
+
+Templates (`ThingErrands.cs`, design 9.1's numbers 4, 13, 14, 16, 28 and 29):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Uteklo (the runaway) | `runaway` | any worker | the giver's cat hides in another venue; caught the first time, she slips away to another and stays there; then back to the giver |
+| Lampar (the lamplighter) | `lamplighter` | any worker | light 4 lamps in the streets within 15 minutes; a lit one stays lit until the errand ends |
+| Krysy ve sklepe (the cellar) | `cellar` | a tavern, brewery, bakery, market or house worker | kill 3 rats in the giver's venue |
+| Zlodej (stop thief) | `thief` | any worker | catch the fleeing pickpocket in the streets (he tires after three runs) and bring the purse back |
+| Ztracena zasilka (the missing shipment) | `shipment` | a market, caravanserai, harbour or tailor worker | search the overturned cart on the road out of the city, then carry the cloth back |
+| Verbovani (press gang) | `pressgang` | the war camp's mess hall or barracks only | drag 3 drunk orcs out of the mess hall |
+
+The war camp gives orders, not these, except press gang, which is its own.
+
 ## Limits (`.settings` "Ukoly")
 
 Both `.settings` categories, "Ukoly" and #1243's "Povest", are now in the settings dialog.

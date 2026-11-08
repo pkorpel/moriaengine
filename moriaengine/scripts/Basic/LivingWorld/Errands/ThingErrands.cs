@@ -77,6 +77,10 @@ namespace SteamEngine.CompiledScripts {
 				if (spot != null) {
 					cat.SetTag(ThingErrands.MovedTK, 1);
 					cat.Go(new Point4D((ushort) spot[0], (ushort) spot[1], (sbyte) spot[2], next.M));
+					NPCAiTimer ai = NPCAiTimer.GetFor(cat);
+					if (ai != null) {
+						ai.hasHome = false; //her home is where she hides now, or she'd walk back to the first venue
+					}
 					player.SysMessage("Kocka ti proklouzla mezi prsty! Zahledl jsi ji, jak utika k: " + next.Label + ".");
 					return false;
 				}
@@ -144,7 +148,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>16. Stop, thief: a pickpocket robs the giver and runs; catch him (or strike him down) and bring the purse back.</summary>
+	/// <summary>16. Stop, thief: a pickpocket robs the giver and runs; he tires after a few runs; catch him and bring the purse back.</summary>
 	internal sealed class ThiefErrand : ErrandTemplate {
 		public override string Key { get { return "thief"; } }
 		public override string Name { get { return "Zlodej"; } }

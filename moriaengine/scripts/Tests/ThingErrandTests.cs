@@ -83,7 +83,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestThingErrandsBesideThief(Character self) {
 			Player player = (Player) self;
 			Errand errand = Errands.Active(player).Find(e => e.key == "thief");
-			NPC thief = (errand == null) ? null : Errands.ThingsOf(errand.Current).Find(t => t is NPC) as NPC;
+			NPC thief = (errand == null) ? null : Errands.ThingsOf(player, errand).Find(t => t is NPC) as NPC;
 			if (thief == null) {
 				Console.WriteLine("THINGERRANDS_THIEF: uid=0");
 				return;
@@ -167,7 +167,7 @@ namespace SteamEngine.CompiledScripts {
 
 				//the client's thief, caught by a double click: the errand went on to bringing the purse back
 				Errand caught = Errands.Active(player).Find(e => e.key == "thief");
-				Report("thiefCaughtByClick", (caught != null) && (caught.index == 1) && Errands.ThingsOf(caught.steps[0]).Count == 0 && Talk(player, caught) && caught.IsDone);
+				Report("thiefCaughtByClick", (caught != null) && (caught.index == 1) && (caught.steps[0].thingUids == "") && Talk(player, caught) && caught.IsDone);
 
 				//the runaway: the cat in another venue; from afar she can't be caught; the first catch she slips to another venue; the second holds
 				Fresh(player);
@@ -175,7 +175,7 @@ namespace SteamEngine.CompiledScripts {
 				bool runOk = (runaway != null) && (runaway.steps[0].Kind == ErrandStepKind.Things) && (runaway.steps[0].venueId != tavern.VenueId);
 				if (runOk) {
 					Errands.Accept(player, runaway);
-					NPC cat = Errands.ThingsOf(runaway.Current).Find(t => t is NPC) as NPC;
+					NPC cat = Errands.ThingsOf(player, runaway).Find(t => t is NPC) as NPC;
 					runOk &= (cat != null) && (cat.GetTimer(ErrandThingFleeTimer.Key) != null) && (VenueRegistry.At(cat) == VenueRegistry.ById(runaway.steps[0].venueId));
 					NPCAiTimer.Freeze(cat, 60);
 					player.Go(new Point4D(cat.X + 3, cat.Y, cat.Z, cat.M));
@@ -184,7 +184,8 @@ namespace SteamEngine.CompiledScripts {
 					runOk &= !Errands.UseThing(cat, Residents.BodyOf(innkeeper)) && (cat.GetTag(ThingErrands.MovedTK) == null); //not anyone else's to catch, even with its player beside
 					Point4D was = new Point4D(cat.X, cat.Y, cat.Z, cat.M);
 					runOk &= Errands.UseThing(cat, player) && !cat.IsDeleted && (cat.GetTag(ThingErrands.MovedTK) != null) && (runaway.index == 0)
-						&& (Point2D.GetSimpleDistance(cat, was) > 2);
+						&& (Point2D.GetSimpleDistance(cat, was) > 2) && !NPCAiTimer.GetFor(cat).hasHome //her home moves with her
+						&& (Errands.Where(runaway.steps[0]) == VenueRegistry.ById(runaway.steps[0].venueId).Label) && cat.Flag_Invulnerable;
 					if (cat.IsDeleted) {
 						runOk = false; //caught at the first try: she didn't slip away
 					} else {
@@ -195,19 +196,33 @@ namespace SteamEngine.CompiledScripts {
 				Report("runaway", runOk);
 				built.Add(runaway);
 
-				//given up, the errand's things go with it
+				//given up, the errand's things go with it, but never something else under a uid in its list (a freed uid is soon
+				//another's); run out, a thing's check finds its errand gone
 				Fresh(player);
 				Errand dropped = Build(player, new RunawayErrand(), innkeeper);
 				Errands.Accept(player, dropped);
-				List<Thing> left = Errands.ThingsOf(dropped.Current);
+				List<Thing> left = Errands.ThingsOf(player, dropped);
+				Item stranger = (Item) ThingDef.GetByDefname(ThingErrands.GoodsDef).Create(new Point4D(player.X, player.Y, player.Z, player.M));
+				dropped.Current.thingUids += "," + stranger.Uid;
+				bool checks = (left.Count == 1) && (left[0].GetTimer(ErrandThingCheckTimer.Key) != null);
 				Errands.GiveUp(player, dropped);
-				Report("thingsGoWithTheErrand", (left.Count == 1) && left.TrueForAll(t => t.IsDeleted));
+				bool cleaned = checks && left.TrueForAll(t => t.IsDeleted) && !stranger.IsDeleted;
+				stranger.Delete();
+				Fresh(player);
+				Errand expiring = Build(player, new CellarErrand(), innkeeper);
+				Errands.Accept(player, expiring);
+				List<Thing> expiringRats = Errands.ThingsOf(player, expiring);
+				bool liveBefore = expiringRats.TrueForAll(Errands.IsLiveThing);
+				Errands.NowOverride = DateTime.UtcNow.AddHours(3);
+				bool deadAfter = expiringRats.TrueForAll(r => !Errands.IsLiveThing(r)); //each rat's check timer deletes it
+				Errands.NowOverride = null;
+				Report("thingsGoWithTheErrand", cleaned && (expiringRats.Count == CellarErrand.Rats) && liveBefore && deadAfter);
 
 				//the lamplighter: four lamps in the streets; a lit one again counts nothing; all lit, on to the giver
 				Fresh(player);
 				Errand lamps = Build(player, new LamplighterErrand(), innkeeper);
 				Errands.Accept(player, lamps);
-				List<Thing> placed = Errands.ThingsOf(lamps.Current);
+				List<Thing> placed = Errands.ThingsOf(player, lamps);
 				bool lampOk = (placed.Count == LamplighterErrand.Lamps) && placed.TrueForAll(t => t is Item) && ((lamps.Expires - DateTime.UtcNow).TotalMinutes <= 15.5);
 				if (lampOk) {
 					Beside(player, placed[0]);
@@ -227,16 +242,13 @@ namespace SteamEngine.CompiledScripts {
 				Fresh(player);
 				Errand cellar = Build(player, new CellarErrand(), innkeeper);
 				Errands.Accept(player, cellar);
-				List<Thing> rats = Errands.ThingsOf(cellar.Current);
+				List<Thing> rats = Errands.ThingsOf(player, cellar);
 				bool ratOk = (rats.Count == CellarErrand.Rats) && rats.TrueForAll(r => VenueRegistry.At(r) == tavern);
 				if (ratOk) {
-					((NPC) rats[0]).CauseDeath(null);
-					ratOk &= cellar.Current.progress == 0;
-					Errands.GiveUp(player, cellar);
-					Fresh(player);
-					cellar = Build(player, new CellarErrand(), innkeeper);
-					Errands.Accept(player, cellar);
-					foreach (Thing rat in Errands.ThingsOf(cellar.Current)) {
+					((NPC) rats[0]).CauseDeath(null); //killed by nobody: doesn't count, and another rat takes its place
+					List<Thing> after = Errands.ThingsOf(player, cellar);
+					ratOk &= (cellar.Current.progress == 0) && (after.Count == CellarErrand.Rats) && !after.Contains(rats[0]);
+					foreach (Thing rat in Errands.ThingsOf(player, cellar)) {
 						Beside(player, rat);
 						((NPC) rat).CauseDeath(player);
 					}
@@ -245,16 +257,16 @@ namespace SteamEngine.CompiledScripts {
 				Report("cellar", ratOk);
 				built.Add(cellar);
 
-				//stop thief: he runs; struck down counts as caught
+				//stop thief: he runs from his player a few times, can't be struck down, and once tired he's caught (not held still)
 				Fresh(player);
 				Errand thief = Build(player, new ThiefErrand(), merchant);
 				Errands.Accept(player, thief);
-				NPC pickpocket = Errands.ThingsOf(thief.Current).Find(t => t is NPC) as NPC;
-				bool thiefOk = (pickpocket != null) && (pickpocket.GetTimer(ErrandThingFleeTimer.Key) != null);
+				NPC pickpocket = Errands.ThingsOf(player, thief).Find(t => t is NPC) as NPC;
+				bool thiefOk = (pickpocket != null) && (pickpocket.GetTimer(ErrandThingFleeTimer.Key) != null) && pickpocket.Flag_Invulnerable;
 				if (pickpocket != null) {
-					Beside(player, pickpocket);
-					pickpocket.CauseDeath(player);
-					thiefOk &= (thief.index == 1) && Talk(player, thief) && thief.IsDone;
+					pickpocket.SetTag(ErrandThingFleeTimer.RunsTK, ErrandThingFleeTimer.Runs); //run out of breath
+					player.Go(new Point4D(pickpocket.X, pickpocket.Y, pickpocket.Z, pickpocket.M));
+					thiefOk &= Errands.UseThing(pickpocket, player) && pickpocket.IsDeleted && (thief.index == 1) && Talk(player, thief) && thief.IsDone;
 				}
 				Report("thief", thiefOk);
 				built.Add(thief);
@@ -263,14 +275,17 @@ namespace SteamEngine.CompiledScripts {
 				Fresh(player);
 				Errand shipment = Build(player, new ShipmentErrand(), merchant);
 				Errands.Accept(player, shipment);
-				Item cart = Errands.ThingsOf(shipment.Current).Find(t => t is Item) as Item;
+				Item cart = Errands.ThingsOf(player, shipment).Find(t => t is Item) as Item;
 				Point4D centre = WorldEvents.CentreOf("Edoras");
 				bool shipOk = (cart != null) && (Point2D.GetSimpleDistance(cart, centre) >= 10) && (Build(player, new ShipmentErrand(), innkeeper) == null);
 				if (cart != null) {
 					Beside(player, cart);
 					Errands.UseThing(cart, player);
-					shipOk &= (shipment.index == 1) && (Errands.CountIn(player.Backpack, (ItemDef) ThingDef.GetByDefname(ThingErrands.GoodsDef)) == 0) //the goods are the errand's
-						&& Talk(player, shipment) && shipment.IsDone;
+					bool goodsInPack = false;
+					foreach (AbstractItem item in player.Backpack) {
+						goodsInPack |= (item.Def == ThingDef.GetByDefname(ThingErrands.GoodsDef)) && Errands.IsErrandItem(item); //the errand's goods to carry
+					}
+					shipOk &= (shipment.index == 1) && goodsInPack && Talk(player, shipment) && shipment.IsDone;
 				}
 				Report("shipment", shipOk);
 				built.Add(shipment);
@@ -282,7 +297,7 @@ namespace SteamEngine.CompiledScripts {
 				bool gangOk = (gang != null) && (Build(player, new PressGangErrand(), innkeeper) == null);
 				if (gang != null) {
 					Errands.Accept(player, gang);
-					List<Thing> drunks = Errands.ThingsOf(gang.Current);
+					List<Thing> drunks = Errands.ThingsOf(player, gang);
 					gangOk &= drunks.Count == PressGangErrand.Drunks;
 					foreach (Thing drunk in drunks) {
 						Beside(player, drunk);
