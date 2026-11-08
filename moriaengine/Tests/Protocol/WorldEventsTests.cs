@@ -82,6 +82,50 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1286 - fire and fever: the client beats a fire out with three double clicks and cures a sick resident with a
+	/// double click (the resident's usual talk gives way to the cure); the server walks the rest.</summary>
+	[Collection(WorldEventsCollection.Name)]
+	public class CityEventsTests : LivingWorldTestBase {
+		public CityEventsTests(GameServerPairFixture servers)
+			: base(servers, "worldeventtests", "WORLDEVENTS") {
+		}
+
+		private string State(TestGameClient game, string want) {
+			string state = "";
+			for (int i = 0; (i < 40) && !state.Contains(want); i++) {
+				System.Threading.Thread.Sleep(250);
+				this.Run(game, ".TestWorldEventsState", "WORLDEVENTS_STATE:");
+				state = this.LastLine("WORLDEVENTS_STATE:");
+			}
+			return state;
+		}
+
+		[Fact]
+		public void FiresAreBeatenOutAndFeversCured() {
+			using (TestGameClient game = this.Login("Hasic Edorasu")) {
+				this.Run(game, ".TestWorldEventsCitySetup", "WORLDEVENTS_CITY:");
+				string city = this.LastLine("WORLDEVENTS_CITY:");
+				Assert.Contains("house=1", city);
+				int burning = Number(city, "burning");
+				uint fire = (uint) Number(city, "fire");
+				for (int i = 0; i < 3; i++) {
+					game.SendDoubleClick(fire);
+					System.Threading.Thread.Sleep(400);
+				}
+				Assert.Contains("burning=" + (burning - 1), this.State(game, "burning=" + (burning - 1)));
+
+				this.Run(game, ".TestWorldEventsFeverStart", "WORLDEVENTS_FEVER:");
+				string fever = this.LastLine("WORLDEVENTS_FEVER:");
+				int sick = Number(fever, "sick");
+				game.SendDoubleClick((uint) Number(fever, "uid"));
+				Assert.Contains("sick=" + (sick - 1), this.State(game, "sick=" + (sick - 1)));
+
+				this.Run(game, ".TestWorldEventsCityChain", "WORLDEVENTS_CITY_DONE");
+				this.AssertChecks("feverCured", "feverLost", "fireBlows", "fireOut", "fireLost");
+			}
+		}
+	}
+
 	[CollectionDefinition(Name)]
 	public class WorldEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "WorldEvents";
