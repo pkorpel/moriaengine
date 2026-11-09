@@ -1,0 +1,82 @@
+//#1317 - the things of the stories of Erebor and Dale (EreborStories.cs): only their errand's player can catch, kill or use them,
+//and they go when the errand ends.
+
+[NPCDef c_errand_axe_orc]
+TEVENTS = e_character
+NAME = "Skret se sekerou"
+model = 0x11
+CAN = MT_WALK|MT_RUN|MT_USEHANDS
+Str = 90
+Dex = 60
+Int = 30
+MaxHits = 90 110
+Wrestling = 500
+Tactics = 500
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_errand_con_man]
+TEVENTS = e_character
+NAME = "Podvodnik"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 40
+Dex = 90
+Int = 70
+MaxHits = 40
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0480
+Equip = random_pants
+EquipColor = colors_all
+
+[NPCDef c_errand_bargeman]
+TEVENTS = e_character
+NAME = "Pramar"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 60
+Dex = 80
+Int = 40
+MaxHits = 60
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0711
+Equip = random_pants
+EquipColor = colors_all
+
+[ItemDef i_errand_raven_perch]
+NAME = "Havrani bidlo"
+TYPE = t_normal
+model = 0x0DBF
+
+[ItemDef i_errand_ancestral_axe]
+NAME = "Sekera predku"
+TYPE = t_normal
+model = 0x0F49
+Color = 0482
+
+[ItemDef i_errand_deep_vein]
+NAME = "Hluboka zila"
+TYPE = t_normal
+model = 0x1363
+
+[ItemDef i_errand_fake_arkenstone]
+NAME = "Arcikam (sklo)"
+TYPE = t_normal
+model = 0x0F26
+WEIGHT = 0.1
+
+[ItemDef i_errand_contraband]
+NAME = "Bedna bez cla"
+TYPE = t_normal
+model = 0x09A9
+WEIGHT = 5
