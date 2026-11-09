@@ -49,7 +49,6 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["Where"] = PLEVEL_PLAYER;//Show my coordinates and map region position
 			this.commands["Sendgmpage"] = PLEVEL_PLAYER;//Post a new GMPage using an input dialog
 			this.commands["Resync"] = PLEVEL_PLAYER;//resend nearby stuff
-			this.commands["Messages"] = PLEVEL_PLAYER;//delayed messages board
 
 			//New command (#102/A1): "use whatever I'm holding" shortcut, double-clicks the
 			//equipped hand1 item (falling back to hand2) via the real Trigger_DClick path.
@@ -208,6 +207,9 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["ThrowExplosion"] = PLEVEL_PLAYER;//#927
 			this.commands["ThrowDispel"] = PLEVEL_PLAYER;//#927
 			this.commands["NavrhBan"] = PLEVEL_PLAYER;
+			this.commands["Ms"] = PLEVEL_PLAYER; //#901 - the waiting messages
+			this.commands["Rms"] = PLEVEL_PLAYER;
+			this.commands["ClearMs"] = PLEVEL_PLAYER;
 			this.commands["Honor"] = PLEVEL_PLAYER;
 			this.commands["TownControl"] = PLEVEL_PLAYER;
 			this.commands["TownGuardsKill"] = PLEVEL_PLAYER;
