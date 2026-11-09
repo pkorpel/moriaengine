@@ -5,11 +5,13 @@ using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1315 - .udalost's dialog for GMs: the events under way (go there, stop one, stop all), and starting one: a kind,
-	/// then one of its places. args: the kind picked ("" = the overview) and the event ids or places as listed, so a button
-	/// finds what its row showed even if the list changed meanwhile.</summary>
+	/// then one of its places. #1335 - each kind's description page (what it does, where, when, what it pays), from an info button
+	/// beside it or the places page. args: the kind picked ("" = the overview, "?" + key = its description) and the event ids or
+	/// places as listed, so a button finds what its row showed even if the list changed meanwhile.</summary>
 	public class D_WorldEvents : CompiledGumpDef {
 		private const int Width = 540, Row = 22, LabelHue = 955, ValueHue = 52, BadHue = 33, MaxRunningRows = 10;
-		internal const int StopAll = 2, Back = 3, GoBase = 100, StopBase = 200, KindBase = 300, PlaceBase = 400;
+		internal const int StopAll = 2, Back = 3, Describe = 4, StartFromDescription = 5, GoBase = 100, StopBase = 200, KindBase = 300, PlaceBase = 400, InfoBase = 500;
+		private const string DescriptionView = "?";
 
 		public static void Show(Player gm, WorldEventKind kind) {
 			string[] listed;
@@ -24,6 +26,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 			gm.DialogForget(SingletonScript<D_WorldEvents>.Instance);
 			gm.Dialog(gm, SingletonScript<D_WorldEvents>.Instance, new DialogArgs((kind == null) ? "" : kind.Key, listed));
+		}
+
+		/// <summary>#1335 - a kind's description page.</summary>
+		public static void ShowDescription(Player gm, WorldEventKind kind) {
+			gm.DialogForget(SingletonScript<D_WorldEvents>.Instance);
+			gm.Dialog(gm, SingletonScript<D_WorldEvents>.Instance, new DialogArgs(DescriptionView + kind.Key, new string[0]));
 		}
 
 		internal static List<string> PlacesOf(WorldEventKind kind) {
@@ -46,6 +54,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			WorldEventKind described = DescribedKind((string) args[0]);
+			if (described != null) {
+				this.Description(described);
+				return;
+			}
 			WorldEventKind kind = WorldEvents.KindOf((string) args[0]);
 			string[] listed = (string[]) args[1];
 			if (kind == null) {
@@ -95,7 +108,8 @@ namespace SteamEngine.CompiledScripts {
 				int x = 14 + ((k % 2) * (Width / 2));
 				int rowY = y + ((k / 2) * Row);
 				this.AddButton(x, rowY, 4005, 4007, KindBase + k, GumpButtonType.Reply, 0);
-				this.AddLabelCropped(x + 36, rowY, (Width / 2) - 60, Row, LabelHue, kinds[k].Name + " (" + kinds[k].Key + ")");
+				this.AddButton(x + 34, rowY, 4011, 4013, InfoBase + k, GumpButtonType.Reply, 0); //#1335 - what it does
+				this.AddLabelCropped(x + 68, rowY, (Width / 2) - 76, Row, LabelHue, kinds[k].Name); //the key (for .udalost start) is on its description
 			}
 		}
 
@@ -120,19 +134,58 @@ namespace SteamEngine.CompiledScripts {
 			}
 			this.AddButton(14, height - 34, 4014, 4016, Back, GumpButtonType.Reply, 0);
 			this.AddLabel(50, height - 32, LabelHue, "Zpet");
+			this.AddButton(130, height - 34, 4011, 4013, Describe, GumpButtonType.Reply, 0);
+			this.AddLabel(166, height - 32, LabelHue, "Popis");
+		}
+
+		private static WorldEventKind DescribedKind(string view) {
+			return ((view != null) && view.StartsWith(DescriptionView, StringComparison.Ordinal)) ? WorldEvents.KindOf(view.Substring(DescriptionView.Length)) : null;
+		}
+
+		/// <summary>#1335 - what the kind does: where it can run (its own places), then its description with the live numbers.</summary>
+		private void Description(WorldEventKind kind) {
+			const int height = 420;
+			List<string> places = PlacesOf(kind).ConvertAll(kind.PlaceName);
+			this.SetLocation(40, 40);
+			this.AddPage(0);
+			this.AddBackground(0, 0, Width, height, 2620);
+			this.AddLabel(14, 12, ValueHue, kind.Name + " (" + kind.Key + ")");
+			string how = kind.StartsByCalendar ? "" : "<br>Sama od sebe zacne, jen kdyz je u stredu hrac strany mesta a dovoli to .settings Udalosti (pauza, sance, nejvic naraz).";
+			this.AddHtml(14, 40, Width - 28, 84, "<basefont color=#FFFFFF>Kde: " + ((places.Count > 0) ? string.Join(", ", places) : "nikde") + how
+				+ "<br>Odmeny jen hracum strany mesta (ne GM, ne nepratelske risi); povest jen ve mestech nektere rise.</basefont>", false, false);
+			this.AddHtml(14, 128, Width - 28, height - 176, kind.Description, true, true);
+			this.AddButton(14, height - 34, 4014, 4016, Back, GumpButtonType.Reply, 0);
+			this.AddLabel(50, height - 32, LabelHue, "Zpet");
+			if (places.Count > 0) {
+				this.AddButton(130, height - 34, 4005, 4007, StartFromDescription, GumpButtonType.Reply, 0);
+				this.AddLabel(166, height - 32, LabelHue, "Zacit...");
+			}
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
 			if (!(gi.Cont is Player gm)) {
 				return;
 			}
+			WorldEventKind described = DescribedKind((string) args[0]);
 			WorldEventKind kind = WorldEvents.KindOf((string) args[0]);
 			string[] listed = (string[]) args[1];
 			int button = gr.PressedButton;
 			if (button == 0) {
 				return;
 			}
+			if (described != null) {
+				if (button == StartFromDescription) {
+					Show(gm, described);
+				} else {
+					Show(gm, null);
+				}
+				return;
+			}
 			if (kind != null) {
+				if (button == Describe) {
+					ShowDescription(gm, kind);
+					return;
+				}
 				if ((button >= PlaceBase) && (button - PlaceBase < listed.Length)) {
 					gm.SysMessage(WorldEvents.StartByGm(kind, listed[button - PlaceBase]));
 				}
@@ -142,6 +195,10 @@ namespace SteamEngine.CompiledScripts {
 			IList<WorldEventKind> kinds = WorldEvents.Kinds;
 			if ((button >= KindBase) && (button - KindBase < kinds.Count)) {
 				Show(gm, kinds[button - KindBase]);
+				return;
+			}
+			if ((button >= InfoBase) && (button - InfoBase < kinds.Count)) {
+				ShowDescription(gm, kinds[button - InfoBase]);
 				return;
 			}
 			if (button == StopAll) {

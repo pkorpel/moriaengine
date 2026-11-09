@@ -17,6 +17,20 @@ namespace SteamEngine.CompiledScripts {
 			return Array.Exists(WorldEvents.Cities, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
 		}
 
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: kdykoli.<br>"
+					+ "Co se deje: az " + s.feverCount + " obyvatel mesta onemocni. Vyvolavaci a denik je jmenuji, obcas kaslou. Leci se dvojklikem na nemocneho: "
+					+ "stoji 1 cisty obvaz a 1 koren zensenu (bez nich se otevre obvykly rozhovor).<br>"
+					+ "Vyhra: vsichni vyleceni do " + EventText.Time(s.feverMinutes) + ". Za kazde vyleceni " + s.feverGold + " zl a " + s.feverExp
+					+ " zkusenosti, lecitel ma " + s.feverFavour + " povesti (v Minas Tirith i u Domu uzdraveni) a +" + s.feverFriendship
+					+ " pratelstvi s vylecenym. GM muze lecit bez odmeny.<br>"
+					+ "Prohra: cas vyprsi (nikdo neumre, nemocni se uzdravuji pomalu). Kdyz nemocny zemre ci zmizi, udalost bezi dal, ale uz nejde vyhrat: "
+					+ "nikdo nedostane nic.";
+			}
+		}
+
 		public override WorldEvent Make(string city) {
 			return new Fever(this, city);
 		}

@@ -49,6 +49,19 @@ namespace SteamEngine.CompiledScripts {
 			return VenueClock.IsOpen(s.raidDuskFrom, s.raidDuskTo, VenueClock.Hour);
 		}
 
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: sam od sebe za soumraku, " + EventText.Hours(s.raidDuskFrom, s.raidDuskTo) + " (GM kdykoli).<br>"
+					+ "Co se deje: nacelnik a skreti, celkem " + EventText.Band(s.raidBase, s.raidPerPlayer, s.raidMax) + ", prijdou " + s.raidSteps
+					+ " kroku zvenku a tahnou na stred mesta. Utoci na kazdeho, koho potkaji.<br>"
+					+ "Vyhra: vsichni skreti padnou do " + EventText.Time(s.raidMinutes) + ". Kazdy hrac strany mesta, ktery s nimi bojoval, dostane " + s.raidGold + " zl + "
+					+ s.raidKillGold + " zl za kazdeho sveho zabiteho, " + s.raidExp + " zkusenosti a " + s.raidFavour + " povesti. "
+					+ "Mesto slavi: ceny " + EventText.Pct(s.raidWonPercent) + " na " + EventText.Time(s.raidWonMinutes) + ". Porazi-li je jen straze, nikdo nedostane nic.<br>"
+					+ "Prohra: cas vyprsi, skreti odtahnou s urodou: ceny " + EventText.Pct(s.raidLostPercent) + " na " + EventText.Time(s.raidLostMinutes) + ".";
+			}
+		}
+
 		public override WarbandRules Rules {
 			get {
 				WorldEventSettings s = WorldEventSettings.instance;
@@ -84,6 +97,20 @@ namespace SteamEngine.CompiledScripts {
 
 		public override bool IsFor(string city) {
 			return string.Equals(city, City, StringComparison.OrdinalIgnoreCase);
+		}
+
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: kdykoli.<br>"
+					+ "Co se deje: lode z Umbaru vylodi v Pelargiru (pristav Dol Amrothu) kapitana a korzary, celkem " + EventText.Band(s.corsairBase, s.corsairPerPlayer, s.corsairMax)
+					+ ". Prijdou " + s.corsairSteps + " kroku zvenku a tahnou na stred pristavu. Utoci na kazdeho.<br>"
+					+ "Vyhra: vsichni padnou do " + EventText.Time(s.corsairMinutes) + ". Kazdy hrac strany mesta, ktery s nimi bojoval, dostane " + s.corsairGold + " zl + " + s.corsairKillGold
+					+ " zl za kazdeho sveho zabiteho, " + s.corsairExp + " zkusenosti a " + s.corsairFavour + " povesti. Pristav zustane otevreny: ceny "
+					+ EventText.Pct(s.corsairWonPercent) + " na " + EventText.Time(s.corsairWonMinutes) + ".<br>"
+					+ "Prohra: cas vyprsi, pristav se zavre: ceny " + EventText.Pct(s.corsairLostPercent) + " na " + EventText.Time(s.corsairLostMinutes) + ".<br>"
+					+ "Ceny plati pro cele mesto Dol Amroth (Pelargir je jeho cast).";
+			}
 		}
 
 		public override string AreaFor(string city) {
