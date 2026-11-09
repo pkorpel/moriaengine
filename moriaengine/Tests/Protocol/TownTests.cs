@@ -217,7 +217,7 @@ namespace SteamEngine.Tests.Protocol {
 				mayor.SendSpeech(".remember");
 				Thread.Sleep(300);
 				mayor.SendTargetUid(otherUid);
-				Thread.Sleep(300);
+				Assert.NotNull(TryReadMessageContaining(mayor, "zapamatovan", Wait));
 				Assert.Contains("name=Maskovany_Muz", this.Ask(other, ".TestTownDisguise \"Maskovany Muz\"", "TOWN_DISGUISE:"));
 				this.Press(mayor, stone, AddBan);
 				Thread.Sleep(300);
@@ -228,8 +228,20 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("TOWN_BAN_NAMES: Town_Ban_Tester end", this.Ask(mayor, ".TestTownBanNames", "TOWN_BAN_NAMES:"));
 				this.Ask(other, ".TestTownDisguise \"back\"", "TOWN_DISGUISE:");
 				mayor.SendSpeech(".rememberclear");
-				other.SendSpeech(".remembered"); //a plain player's command too
-				Assert.NotNull(TryReadMessageContaining(other, "Nemas nikoho ulozeneho v pameti", Wait));
+				mayor.SendSpeech(".remembered");
+				Assert.NotNull(TryReadMessageContaining(mayor, "Nemas nikoho ulozeneho v pameti", Wait));
+
+				//a plain player's commands; and the memory answers only the blacklists' cursors, not any other one
+				uint mayorUid = (uint) Number(this.Ask(mayor, ".TestTownReportUid", "TOWN_UID:"), "uid");
+				other.SendSpeech(".remember");
+				Thread.Sleep(300);
+				other.SendTargetUid(mayorUid);
+				Assert.NotNull(TryReadMessageContaining(other, "zapamatovan", Wait));
+				other.SendSpeech(".remember"); //an ordinary cursor
+				Thread.Sleep(300);
+				other.SendSpeech(".remembered");
+				Assert.NotNull(TryReadMessageContaining(other, "jen pro navrh nebo zapis na blacklist", Wait));
+				other.SendSpeech(".rememberclear");
 
 				//a criminal is safe from their own town's guards, and only those
 				Assert.Contains("protected=True", this.Ask(mayor, ".TestTownCriminal", "TOWN_CRIMINAL:"));

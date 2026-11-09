@@ -56,7 +56,9 @@ A ban is on the character under that name, as on Erebor, so a masked character i
 As a mask changes the name, `.remember` (#905) keeps a targeted player and the name they have now. `.remembered` answers
 an open cursor with that player from anywhere (Sphere's `last`, as Erebor's), and a ban or suggestion of them then files
 the remembered name: the mayor's, `.navrhban` and the General's. `.rememberclear` forgets them. All three are player
-commands.
+commands. Two changes from Erebor: a player's `.remembered` answers only those blacklist cursors (Erebor's answered any
+cursor from anywhere, so a pact or a house friend could reach across the world; a GM's still does), and the mayor's and
+a Nazgul's own ban use the remembered name too (Erebor's `blacklist_him` overwrote it with the current one).
 
 Every blacklist target (the mayor's, `.navrhban`, the General's) also takes a player's severed head and treats it
 as that player, as Erebor's `@targon_item` (#906). A head that isn't a player's, or any other item, is refused and

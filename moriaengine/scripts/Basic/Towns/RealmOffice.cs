@@ -214,7 +214,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>i_target_ban</summary>
-	public class Targ_RealmBan : CompiledTargetDef {
+	public class Targ_RealmBan : CompiledTargetDef, IRememberedTarget {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			RealmOffice office = (RealmOffice) parameter;
 			if (targetted.IsGM) {

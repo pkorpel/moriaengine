@@ -304,6 +304,13 @@ namespace SteamEngine.Networking {
 			this.conn.SendSinglePacket(packet);
 		}
 
+		/// <summary>#905 - whose cursor waits on this client (the target def that opened it), or null.</summary>
+		public object PendingTargetOwner {
+			get {
+				return this.targonDeleg?.Target;
+			}
+		}
+
 		/// <summary>#905 - Sphere's LAST: the cursor waiting on this client is answered with `thing` from the server, wherever
 		/// it is (Erebor's .remembered). The client's cursor goes first, so the target may open a new one. False when no
 		/// cursor was waiting.</summary>
