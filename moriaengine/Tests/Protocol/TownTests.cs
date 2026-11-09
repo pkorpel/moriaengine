@@ -201,7 +201,12 @@ namespace SteamEngine.Tests.Protocol {
 				mayor.SendSpeech(".navrhban");
 				Thread.Sleep(300);
 				mayor.SendTargetUid(npcHead);
-				Assert.Throws<TimeoutException>(() => mayor.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(2))); //no reason asked
+				string refusal = "";
+				DateTime until = DateTime.UtcNow.AddSeconds(5);
+				while (!refusal.Contains("Toto neni hlava hrace") && (DateTime.UtcNow < until)) {
+					refusal = mayor.ReadSystemMessage(until - DateTime.UtcNow); //skips the rest, a reason gump too
+				}
+				Assert.Contains("Toto neni hlava hrace", refusal);
 
 				//a criminal is safe from their own town's guards, and only those
 				Assert.Contains("protected=True", this.Ask(mayor, ".TestTownCriminal", "TOWN_CRIMINAL:"));

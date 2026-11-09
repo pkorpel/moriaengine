@@ -55,7 +55,8 @@ A ban is on the character under that name, as on Erebor, so a masked character i
 
 Every blacklist target (the mayor's, `.navrhban`, the General's) also takes a player's severed head and treats it
 as that player, as Erebor's `@targon_item` (#906). A head that isn't a player's, or any other item, is refused and
-ends the target ("To neni hlava hrace", "Zameruj lidi, nebo jejich hlavy").
+ends the target with Erebor's lines ("To neni hlava hrace" / "Zameruj lidi, nebo jejich hlavy"; for `.navrhban`
+"Toto neni hlava hrace" / "Navrhuj lidi, nebo jejich hlavy").
 
 Guards go by their home's town: a guard attacks a blacklisted player on sight and answers calls about
 them, shouting a warning first at someone still outside the walls. A guard protects a citizen of its own
