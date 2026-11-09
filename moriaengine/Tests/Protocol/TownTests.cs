@@ -174,6 +174,40 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(300);
 				Assert.Contains("banned=1", this.Report(other));
 
+				//#906 - their severed head stands for them, to suggest and to ban
+				this.Press(mayor, stone, Blacklist);
+				list = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(list.GumpUid, 100);
+				mayor.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("banned=0 suggested=0", this.Report(other));
+				uint head = (uint) Number(this.Ask(mayor, ".TestTownHead " + otherUid, "TOWN_HEAD:"), "uid");
+				mayor.SendSpeech(".navrhban");
+				Thread.Sleep(300);
+				mayor.SendTargetUid(head);
+				input = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Hlava" } });
+				Thread.Sleep(300);
+				Assert.Contains("banned=0 suggested=1", this.Report(other));
+				this.Press(mayor, stone, AddBan);
+				Thread.Sleep(300);
+				mayor.SendTargetUid(head);
+				input = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Hlava" } });
+				Thread.Sleep(300);
+				Assert.Contains("banned=1", this.Report(other));
+
+				//an NPC's head is no one to blacklist
+				uint npcHead = (uint) Number(this.Ask(mayor, ".TestTownHead \"npc\"", "TOWN_HEAD:"), "uid");
+				mayor.SendSpeech(".navrhban");
+				Thread.Sleep(300);
+				mayor.SendTargetUid(npcHead);
+				string refusal = "";
+				DateTime until = DateTime.UtcNow.AddSeconds(5);
+				while (!refusal.Contains("Toto neni hlava hrace") && (DateTime.UtcNow < until)) {
+					refusal = mayor.ReadSystemMessage(until - DateTime.UtcNow); //skips the rest, a reason gump too
+				}
+				Assert.Contains("Toto neni hlava hrace", refusal);
+
 				//a criminal is safe from their own town's guards, and only those
 				Assert.Contains("protected=True", this.Ask(mayor, ".TestTownCriminal", "TOWN_CRIMINAL:"));
 			}
@@ -293,11 +327,12 @@ namespace SteamEngine.Tests.Protocol {
 				//the General bans for the whole realm, and a guard of any town of it knows
 				this.Ask(gm, ".TestTownPrepare 0", "TOWN_READY:");
 				uint gmUid = (uint) Number(this.Ask(gm, ".TestRealmReport", "REALM_REPORT:"), "uid");
+				uint gmHead = (uint) Number(this.Ask(general, ".TestTownHead " + gmUid, "TOWN_HEAD:"), "uid"); //#906 - by their head
 				general.SendDoubleClick(stone);
 				list = general.ReadGumpDialogWithStrings(Wait);
 				general.SendGumpResponse(list.GumpUid, RealmAddBan);
 				Thread.Sleep(300);
-				general.SendTargetUid(gmUid);
+				general.SendTargetUid(gmHead);
 				var input = general.ReadGumpDialogWithStrings(Wait);
 				general.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Zradce" } });
 				general.ReadGumpDialogWithStrings(Wait);
