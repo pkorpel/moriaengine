@@ -1,0 +1,32 @@
+//#1317 - the things of the woodland realm's stories (WoodlandStories.cs): only their errand's player can kill or use them, and
+//they go when the errand ends.
+
+[NPCDef c_errand_mirkwood_spider]
+TEVENTS = e_character
+NAME = "Obri pavouk"
+model = c_spider_giant
+CAN = MT_WALK|MT_RUN
+Str = 80
+Dex = 70
+Int = 20
+MaxHits = 70 90
+Wrestling = 500
+Tactics = 450
+NoAnimate = 1
+AggroMode = Calm
+
+[ItemDef i_errand_elf_light]
+NAME = "Svetlo hostiny"
+TYPE = t_normal
+model = 0x0A15
+
+[ItemDef i_errand_river_barrel]
+NAME = "Prazdny sud"
+TYPE = t_normal
+model = 0x0FAE
+
+[ItemDef i_errand_east_cask]
+NAME = "Sud vina z vychodu"
+TYPE = t_normal
+model = 0x0FAE
+Color = 0485

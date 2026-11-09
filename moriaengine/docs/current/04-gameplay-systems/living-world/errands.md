@@ -222,6 +222,15 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Spehove korzaru (corsair spies) | `corsairspies` | a harbour or barracks worker in Dol Amroth | catch the 2 spies in the streets (they run), then bring the giver the letter for Umbar one carried |
 | Majak bez strazce (the lighthouse keeper fell ill) | `lighthouse` | a harbour worker in Dol Amroth | come in the evening (18-23), light the lighthouse fire on the road out, bring 5 ginseng for the keeper; 4 hours |
 
+**The woodland realm** (`WoodlandStories.cs`, things in `woodlandstories.def`; given in Thranduil's own town only: Lorien shares the city on the map, but has no king, river or lake town):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Mizici hostina (the vanishing feast) | `elffeast` | a tavern or library worker of the woodland realm | follow the 3 lights of the elves' feast on the road out (each goes out as it's reached), then tell the giver |
+| Pavouci hnizda (spider nests) | `spidernests` | any worker of the woodland realm | kill 3 great spiders on the road out, then report |
+| Beh v sudech (the barrel run) | `barrelrun` | a harbour, tavern or brewery worker | push off the 3 barrels stuck on the road out, within 10 minutes of taking it, then report |
+| Vino z vychodu (wine from the east) | `eastwine` | a tavern worker of the woodland realm | fetch the cask of eastern wine waiting in Rhun's streets (across the realms, about 90 minutes), then tell the giver (a large errand) |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -251,7 +260,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
+Not built yet (design 9.3, being added under #1317): the other stories (Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
 
