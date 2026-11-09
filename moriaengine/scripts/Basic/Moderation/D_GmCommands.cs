@@ -64,6 +64,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("invis", "neviditelnost zapnout / vypnout"),
 				new Entry("invul", "nesmrtelnost zapnout / vypnout"),
 				new Entry("tele", "teleport (kurzor)"),
+				new Entry("presun", "presunout postavu nebo vec (2 kurzory)"),
 				new Entry("flip", "otocit vec (kurzor)"),
 				new Entry("addbooster", "dat booster, druh 0-5 (kurzor)", Arg.Number)),
 			new Group("Svet",
