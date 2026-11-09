@@ -82,7 +82,7 @@ A hero with no good deed in the city for `heroRecentDays` (30) shows as Cteny.
 - **Citizenship** at a town stone wants `citizenshipMinLevel` or better in that city (`Reputation.MayBecomeCitizen`, from
   `Town.TryJoin`). The default is the design's Vazeny (#1307, the user's call): citizenship is a goal earned through errands and
   deeds. A world whose settings were saved before keeps its old value until a GM changes it in `.settings`.
-- **`.povest`** (a player command) lists the six pilot cities, any other city where the player has a standing, and their factions,
+- **`.povest`** (a player command) lists the six pilot cities, any other city where the player has a standing, and their factions (never the enemy realm's cities, #1312),
   with level and value, two cities a page. The journal's Mesto tab ([journal.md](../quests/journal.md#zivy-svet-1245)) shows it
   too, a city a page, with the player's friends there.
 

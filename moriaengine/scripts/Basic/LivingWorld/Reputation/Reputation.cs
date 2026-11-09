@@ -172,9 +172,22 @@ namespace SteamEngine.CompiledScripts {
 			return realm;
 		}
 
+		/// <summary>#1312 - a city of the realm at war with the player's (Gondor and Mordor; outcasts and those of no realm have none).</summary>
+		public static bool IsEnemyCity(Character player, string city) {
+			if ((player == null) || string.IsNullOrEmpty(city)) {
+				return false;
+			}
+			return AreEnemyRealms(player.Realm, RealmOfCity(city));
+		}
+
+		/// <summary>Gondor and Mordor, either way round; outcasts and no realm are nobody's enemy here.</summary>
+		public static bool AreEnemyRealms(Realm a, Realm b) {
+			return ((a == Realm.Gondor) && (b == Realm.Mordor)) || ((a == Realm.Mordor) && (b == Realm.Gondor));
+		}
+
 		/// <summary>The two realms at war: an act against the other realm is no crime against your own city.</summary>
 		public static bool AreEnemies(Character a, Character b) {
-			return (a != null) && (b != null) && (((a.Realm == Realm.Gondor) && (b.Realm == Realm.Mordor)) || ((a.Realm == Realm.Mordor) && (b.Realm == Realm.Gondor)));
+			return (a != null) && (b != null) && AreEnemyRealms(a.Realm, b.Realm);
 		}
 
 		private static int Start(Character player, string city) {
@@ -462,7 +475,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>The cities shown in .povest: the pilot cities and any the player has a standing in.</summary>
+		/// <summary>The cities shown in .povest: the pilot cities and any the player has a standing in, but the enemy realm's (#1312).</summary>
 		public static List<string> CitiesOf(Character player) {
 			List<string> cities = new List<string> { "Minas_Tirith", "Edoras", "Hobitin", "Barad-dur", "Harad", "Umbar" };
 			foreach (FlaggedRegion area in AllCityAreas()) {
@@ -470,6 +483,7 @@ namespace SteamEngine.CompiledScripts {
 					cities.Add(area.City);
 				}
 			}
+			cities.RemoveAll(city => IsEnemyCity(player, city));
 			return cities;
 		}
 

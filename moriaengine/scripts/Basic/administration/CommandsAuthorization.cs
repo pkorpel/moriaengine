@@ -68,6 +68,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			this.commands["WhoAmI"] = PLEVEL_PLAYER; //#1011: Erebor's
 			this.commands["Povest"] = PLEVEL_PLAYER; //#1243: reputation in the cities
+			this.commands["ArrowEnd"] = PLEVEL_PLAYER; //#1312: Erebor's, the quest arrow off
 			//#1116: Erebor's conquest and keep commands, plevel 1 in its skillgains.scp list; each checks who may use it
 			foreach (string conquest in new[] { "Dobyvani", "KeepControl", "KeepGuardsStop", "KeepGuardsContinue", "KeepGuardsFlee", "KeepGuardsCome",
 					"MordorKeepControl", "MordorKeepGuardsStop", "MordorKeepGuardsContinue", "MordorKeepGuardsFlee", "MordorKeepGuardsCome",
