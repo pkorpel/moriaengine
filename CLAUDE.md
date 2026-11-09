@@ -1,5 +1,8 @@
 # moriaengine — working state
 
+## NOW (2026-11-09): the open issues that need no decision, small first (../moria-1286)
+User: "start with the ones that need no decision". Order: #1020 missing loc texts, #948 name-colour test, #906 severed head on a blacklist, #901 messages via the offline mailbox, #837 Grandmaster leftovers, #861/#952 stale tests, then #905/#908/#911, #1234, #820, #393, #840, #530. Usual rules, one PR per issue, questions at the end. NOW: #1020 (branch 1020-missing-loc-texts).
+
 ## DONE (2026-11-09): #1335 .udalost event descriptions (PR below; branch udalost-descriptions in ../moria-1286)
 User: "For events (items in .udalost menu) - add a button which shows description of those events, so GMs can easily find out what event does when triggering". Done: WorldEventKind.Description for all 12 kinds (EventText helpers), D_WorldEvents info button per kind -> description view ('?'+key: Kde + self-start + who is paid, then the text), Popis on places page, Zacit.../Zpet; overview labels without the key. Test: WorldEventsTests dialog walk (layout must draw the buttons: a server takes any button number), every kind described + follows raidGold. Reds: no info button (needed the layout assert, the first red passed!), hard-coded gold. Review: caravan pay = fighters + those near during the ambush, raid/corsair pay only the city's side; doc places refreshed.
 
