@@ -178,6 +178,18 @@ checks first that a spot exists (`Errands.CanPlace`), or it isn't offered: a thi
 elves' letters are given in Hobitin and their chest stands about 330 tiles west, at Sede_pristavy. The errand ends at the
 chest, so the thanks come as a message.
 
+## The remaining cities' stories (#1317)
+
+The rest of design 9.3, one region at a time, on the same machinery.
+
+**The Shire** (`ShireStories.cs`, things in `shirestories.def`):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Zlodeji hub (mushroom thieves) | `mushrooms` | a farm, market, tavern, bakery or brewery worker in Hobitin | catch the 3 young hobbits who flee on the road out of town, then tell the giver: turned in (full pay) or let off with a share of the mushrooms (half the pay and 6 mushrooms) |
+| Narozeninova oslava (the birthday party) | `birthday` | any worker in Hobitin | two invitations, fetch the fireworks from a third resident and bring them, a cake (`i_cake`, cooked), then come in the evening (19-23); 3 hours. The party: the host's fireworks, and every player within 12 tiles and in the host's sight is a guest (150 exp, once in 24 real hours each: a game day is only 24 minutes), the errand's player included |
+| Stribrne lzicky (the silver spoons) | `spoons` | any worker in Hobitin | catch the relative in the streets (she flees), pick up the 3 spoons she drops there, bring them back |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -207,7 +219,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built (design 9.3): the other stories (the Shire's mushroom thieves and party, Fornost's barrow, Edoras's eored and hall
+Not built yet (design 9.3, being added under #1317): the other stories (Fornost's barrow, Edoras's eored and hall
 song, Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
