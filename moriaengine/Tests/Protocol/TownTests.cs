@@ -339,7 +339,8 @@ namespace SteamEngine.Tests.Protocol {
 				var holders = general.ReadGumpDialogWithStrings(Wait);
 				string holderTexts = string.Join(" | ", holders.Strings);
 				Assert.Contains("General Gondoru: | General Town General", holderTexts);
-				Assert.Contains("Starostove:", holderTexts);
+				Assert.Contains("Starostove: | Minas Tirith |", holderTexts); //every town, capitals first
+				Assert.Contains("Nazgulove: | Barad-dur | -", holderTexts);
 				Assert.Contains("Kapitanove: | Osgiliath Zapadni Breh | -", holderTexts);
 				Assert.Contains("Prvni nazgul:", holderTexts);
 				general.SendGumpResponse(holders.GumpUid, 0);
