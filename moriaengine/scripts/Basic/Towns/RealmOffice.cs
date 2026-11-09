@@ -227,7 +227,7 @@ namespace SteamEngine.CompiledScripts {
 				D_TownInput.Ask(self, "Udej duvod pro blacklist:", "", reason => {
 					office.bans.Add(new TownBan { who = targetted, name = targetted.Name, reason = reason });
 					self.SysMessage(targetted.Name + " uspesne pridan na globalni cernou listinu");
-					targetted.RedMessage("Byl jsi dan na globalni cernou listinu");
+					DelayedMessages.SendRed(targetted, "Byl jsi dan na globalni cernou listinu"); //#901
 					D_RealmBans.Show(office, self);
 				});
 			}
@@ -332,7 +332,7 @@ namespace SteamEngine.CompiledScripts {
 			} else if ((button >= FirstRowButton) && office.CanEdit(player) && ((button - FirstRowButton) < office.bans.Count)) {
 				TownBan ban = office.bans[button - FirstRowButton];
 				office.bans.RemoveAt(button - FirstRowButton);
-				ban.who.SysMessage(ban.name + " byl odstranen z globalni cerne listiny");
+				DelayedMessages.Send(ban.who, ban.name + " byl odstranen z globalni cerne listiny"); //#901
 				Show(office, player);
 			}
 		}
