@@ -451,7 +451,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static List<Point4D> ThingSpots(Errand errand, ErrandStep step, int count, string seed) {
 			List<Point4D> spots = new List<Point4D>();
 			CityVenue venue = (step.venueId.Length > 0) ? VenueRegistry.ById(step.venueId) : null;
-			Point4D centre = WorldEvents.CentreOf(string.IsNullOrEmpty(step.thingCity) ? errand.city : step.thingCity);
+			Point4D centre = string.IsNullOrEmpty(step.thingCity) ? (GiverTownCentre(errand) ?? WorldEvents.CentreOf(errand.city)) : WorldEvents.CentreOf(step.thingCity);
 			switch ((ErrandThingPlace) step.thingPlace) {
 				case ErrandThingPlace.Venue:
 					for (int i = 0; (venue != null) && (i < count); i++) {
@@ -481,6 +481,32 @@ namespace SteamEngine.CompiledScripts {
 					break;
 			}
 			return spots;
+		}
+
+		/// <summary>#1317 - a city can be several towns (Dol Amroth with Pelargir and Linhir, the Shire, Dale with Esgaroth): the centre of
+		/// the one the giver works in (the smallest of the city's areas holding the workplace), or null to use the city's.</summary>
+		private static Point4D GiverTownCentre(Errand errand) {
+			Item gem = Residents.ById(errand.giverId);
+			CityVenue work = (gem == null) ? null : Residents.WorkplaceOf(gem);
+			if ((work == null) || string.IsNullOrEmpty(errand.city)) {
+				return null;
+			}
+			Point2D at = new Point2D(work.X, work.Y);
+			FlaggedRegion town = null;
+			long smallest = long.MaxValue;
+			foreach (FlaggedRegion area in VenueRegistry.AreasOf(errand.city)) {
+				if ((area.Mapplane == work.M) && area.ContainsPoint(at)) {
+					long tiles = 0;
+					foreach (ImmutableRectangle rect in area.Rectangles) {
+						tiles += (long) (rect.Width + 1) * (rect.Height + 1);
+					}
+					if (tiles < smallest) {
+						smallest = tiles;
+						town = area;
+					}
+				}
+			}
+			return (town == null) ? null : WorldEvents.CentreOfArea(town);
 		}
 
 		/// <summary>#1300 - whether a Things step would find a spot for its things (else they'd stand beside the player): a template

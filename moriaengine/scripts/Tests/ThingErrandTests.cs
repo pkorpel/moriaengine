@@ -177,13 +177,20 @@ namespace SteamEngine.CompiledScripts {
 					Errands.Accept(player, runaway);
 					NPC cat = Errands.ThingsOf(player, runaway).Find(t => t is NPC) as NPC;
 					runOk &= (cat != null) && (cat.GetTimer(ErrandThingFleeTimer.Key) != null) && (VenueRegistry.At(cat) == VenueRegistry.ById(runaway.steps[0].venueId));
+					Console.WriteLine("THINGERRANDS_RUNAWAY_STAGE: ok=" + runOk); //#1313
 					NPCAiTimer.Freeze(cat, 60);
 					player.Go(new Point4D(cat.X + 3, cat.Y, cat.Z, cat.M));
 					runOk &= !Errands.UseThing(cat, player) && (runaway.index == 0);
+					Console.WriteLine("THINGERRANDS_RUNAWAY_STAGE: ok=" + runOk); //#1313
 					Beside(player, cat);
 					runOk &= !Errands.UseThing(cat, Residents.BodyOf(innkeeper)) && (cat.GetTag(ThingErrands.MovedTK) == null); //not anyone else's to catch, even with its player beside
+					Console.WriteLine("THINGERRANDS_RUNAWAY_STAGE: ok=" + runOk); //#1313
 					Point4D was = new Point4D(cat.X, cat.Y, cat.Z, cat.M);
-					runOk &= Errands.UseThing(cat, player) && !cat.IsDeleted && (cat.GetTag(ThingErrands.MovedTK) != null) && (runaway.index == 0)
+					bool used = Errands.UseThing(cat, player);
+					Console.WriteLine("THINGERRANDS_RUNAWAY: used=" + used + " deleted=" + cat.IsDeleted + " moved=" + (cat.GetTag(ThingErrands.MovedTK) != null) + " index=" + runaway.index
+						+ " slipped=" + (cat.IsDeleted ? -1 : Point2D.GetSimpleDistance(cat, was)) + " hasHome=" + (!cat.IsDeleted && NPCAiTimer.GetFor(cat).hasHome)
+						+ " where=" + Errands.Where(runaway.steps[0]) + " label=" + VenueRegistry.ById(runaway.steps[0].venueId).Label + " invul=" + cat.Flag_Invulnerable); //#1313
+					runOk &= used && !cat.IsDeleted && (cat.GetTag(ThingErrands.MovedTK) != null) && (runaway.index == 0)
 						&& (Point2D.GetSimpleDistance(cat, was) > 2) && !NPCAiTimer.GetFor(cat).hasHome //her home moves with her
 						&& (Errands.Where(runaway.steps[0]) == VenueRegistry.ById(runaway.steps[0].venueId).Label) && cat.Flag_Invulnerable;
 					if (cat.IsDeleted) {

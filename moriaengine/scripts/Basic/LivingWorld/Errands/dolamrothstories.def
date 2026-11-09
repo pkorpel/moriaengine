@@ -1,0 +1,37 @@
+//#1317 - the things of Dol Amroth's stories (DolAmrothStories.cs): only their errand's player can catch or use them, and they go
+//when the errand ends.
+
+[NPCDef c_errand_corsair_spy]
+TEVENTS = e_character
+NAME = "Speh korzaru"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 50
+Dex = 90
+Int = 60
+MaxHits = 50
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0455
+Equip = random_pants
+EquipColor = 0x0455
+
+[ItemDef i_errand_quintain]
+NAME = "Turnajovy terc"
+TYPE = t_normal
+model = 0x1070
+
+[ItemDef i_errand_corsair_letter]
+NAME = "Dopis pro Umbar"
+TYPE = t_normal
+model = 0x0E34
+WEIGHT = 0.1
+
+[ItemDef i_errand_lighthouse_fire]
+NAME = "Ohen majaku"
+TYPE = t_normal
+model = 0x0DE3

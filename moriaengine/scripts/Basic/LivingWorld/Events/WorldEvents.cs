@@ -405,6 +405,19 @@ namespace SteamEngine.CompiledScripts {
 			return found;
 		}
 
+		/// <summary>#1317 - the centre of one area (a town of a city with several, as Pelargir of Dol Amroth), remembered.</summary>
+		public static Point4D CentreOfArea(StaticRegion area) {
+			string key = "area|" + area.Defname;
+			if (centres.TryGetValue(key, out Point4D known)) {
+				return known;
+			}
+			Point4D p = area.P;
+			int[] at = WorldSpots.NearestStandable(Map.GetMap(p.M), p.X, p.Y, 4);
+			Point4D found = (at == null) ? p : new Point4D(at[0], at[1], at[2], p.M);
+			centres[key] = found;
+			return found;
+		}
+
 		private static Point4D FindCentre(string city, WorldEventKind kind) {
 			StaticRegion area = StaticRegion.GetByDefname((kind == null) ? ("a_" + city.Replace('-', '_')) : kind.AreaFor(city));
 			if (area == null) {
