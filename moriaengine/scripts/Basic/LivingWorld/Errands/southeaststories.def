@@ -1,0 +1,55 @@
+//#1317 - the things of the stories of Umbar, Harad and Rhun (SouthEastStories.cs): only their errand's player can catch, kill or use
+//them, and they go when the errand ends.
+
+[NPCDef c_errand_mumak_calf]
+TEVENTS = e_character
+NAME = "Mumaci mlade"
+model = c_bull_brown_lt
+Color = 0386
+CAN = MT_WALK|MT_RUN
+Str = 120
+Dex = 70
+Int = 10
+MaxHits = 120
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_errand_desert_bandit]
+TEVENTS = e_character
+NAME = "Poustni lupic"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 70
+Dex = 80
+Int = 30
+MaxHits = 60 80
+Wrestling = 450
+Tactics = 450
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0455
+Equip = random_pants
+EquipColor = 0x0455
+
+[NPCDef c_errand_wild_horse]
+TEVENTS = e_character
+NAME = "Divoky kun"
+model = 0xc8
+Color = 0455
+CAN = MT_WALK|MT_RUN
+Str = 100
+Dex = 90
+Int = 10
+MaxHits = 80
+NoAnimate = 1
+AggroMode = Calm
+
+[ItemDef i_errand_spice_crate]
+NAME = "Bedna koreni"
+TYPE = t_normal
+model = 0x09A9
+Color = 0485
