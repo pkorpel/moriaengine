@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 			Map map = self.GetMap();
 			int cx = self.X;
 			int cy = self.Y;
-			for (int r = 1; r <= 200; r++) {
+			for (int r = 1; r <= 1000; r++) { //#861 - the spawn moved since V-9: no water within 200 tiles of it any more
 				for (int dx = -r; dx <= r; dx++) {
 					for (int dy = -r; dy <= r; dy++) {
 						if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != r) {
@@ -52,13 +52,20 @@ namespace SteamEngine.CompiledScripts {
 						Direction dir;
 						if (TryFindApproach(map, wx, wy, out ax, out ay, out dir)) {
 							Console.WriteLine("WATER_CROSSING_FOUND: wx=" + wx + " wy=" + wy +
-								" ax=" + ax + " ay=" + ay + " dir=" + (int) dir);
+								" ax=" + ax + " ay=" + ay + " dir=" + (int) dir + " from=" + cx + "," + cy + " r=" + r);
 							return;
 						}
 					}
 				}
 			}
 			Console.WriteLine("WATER_CROSSING_FOUND: none");
+		}
+
+		private static bool IsBare(Map map, int x, int y) {
+			foreach (AbstractInternalItem s in map.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				return false;
+			}
+			return true;
 		}
 
 		private static bool TryFindApproach(Map map, int wx, int wy, out int ax, out int ay, out Direction dir) {
@@ -72,7 +79,8 @@ namespace SteamEngine.CompiledScripts {
 			foreach (var c in candidates) {
 				int tx = wx + c.Dx;
 				int ty = wy + c.Dy;
-				if (map.IsValidPos(tx, ty) && !map.IsMapTileWater(tx, ty)) {
+				if (map.IsValidPos(tx, ty) && !map.IsMapTileWater(tx, ty) && IsBare(map, tx, ty) && IsBare(map, wx, wy)
+						&& (Math.Abs(map.GetTileZ(tx, ty) - map.GetTileZ(wx, wy)) <= 2)) { //#861 - a fair crossing: no statics, no cliff
 					ax = tx;
 					ay = ty;
 					dir = c.Dir;

@@ -207,6 +207,15 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("LEVEL_STAT_BONUS: " + LevelingSystem.LevelStatBonus(level));
 		}
 
+		/// <summary>#952 - a skill as a master's teaching leaves it (past the 25/50/75 steps points can't cross, #882).</summary>
+		[SteamFunction]
+		public static void TestMasterTaught(Character self, ScriptArgs sa) {
+			string[] parts = SplitArgs(sa);
+			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), parts[0], true);
+			self.SetRealSkillValue((int) skill, Convert.ToInt32(parts[1], CultureInfo.InvariantCulture));
+			Console.WriteLine("LEVELING_MASTER_TAUGHT: skillValue=" + self.GetRealSkillValue(skill) + " end");
+		}
+
 		[SteamFunction]
 		public static void TestSpendSkillPoint(Character self, ScriptArgs sa) {
 			Player player = (Player) self;
