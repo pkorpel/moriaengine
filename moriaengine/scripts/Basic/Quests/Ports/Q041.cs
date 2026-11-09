@@ -529,11 +529,13 @@ namespace SteamEngine.CompiledScripts {
 			d.Page("Pozdrav");
 			d.SetText("Vitej...");
 			d.Html();
+			GrandmasterEnvoyHint.Request(d, player); //#837
 			bool bargain = Q041.GetStage(player) == 6;
 			if (bargain) {
 				d.SetText("Posila me za tebou nas spolecny pritel. Pry by se ti hodila trocha hmotne vypomoci...");
 				d.Response(false, false, "q041_paserak_send_him");
 			}
+			GrandmasterEnvoyHint.Answer(d, player);
 			d.Page("Kdo jsi?");
 			d.SetText("Jmenuju se Borek a jsem zemedelec. Mam tady male policko a snazim se nejak uzivit. Nekdy je to ale tezke... sakra tezke.");
 			d.Html();
@@ -564,7 +566,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnButton(string button, Character npc, Player player) {
-			if (Q041.GetStage(player) != 6) {
+			if (GrandmasterEnvoyHint.OnButton(button, player) || (Q041.GetStage(player) != 6)) { //#837
 				return;
 			}
 			if (button == "q041_doesnt_have_items") {

@@ -520,6 +520,7 @@ namespace SteamEngine.CompiledScripts {
 			d.Page("Pozdrav");
 			d.SetText("Bud <src.sex(\"zdrav\",\"zdrava\")>!");
 			d.Html();
+			GrandmasterEnvoyHint.Request(d, player); //#837
 			if (q == 13) {
 				d.SetText("*Povedet o Eriolovi, jeho vnukovi a prizracich*");
 				d.Response(false, false, "q006_tellStory", true);
@@ -536,6 +537,7 @@ namespace SteamEngine.CompiledScripts {
 					d.Response(false, true, "q006_idleExit");
 				}
 			}
+			GrandmasterEnvoyHint.Answer(d, player); //#837
 			d.Page("Kdo jsi?");
 			d.SetText("Jmenuji se Unas. Jsem kouzelnik.");
 			d.Html();
@@ -597,7 +599,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnButton(string button, Character npc, Player player) {
-			if (Q026.UnasButton(button, player)) { //#1272
+			if (Q026.UnasButton(button, player) || GrandmasterEnvoyHint.OnButton(button, player)) { //#1272, #837
 				return;
 			}
 			int q = Q006.GetStage(player);

@@ -539,6 +539,65 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#837 - f_q000_shouldBePromoted_Request/Answer/Button (velmistr.scp): another quest's NPC tells a hero ready for the
+	/// rank that the envoy looks for them, which sets the optional stage 12. On Unas (d_q023_CarodejUnas) and Borek
+	/// (d_mq002_borek); the other NPCs Erebor had say it (q010, q013, q034, gq002) have no dialogs here.</summary>
+	public static class GrandmasterEnvoyHint {
+		public const string Button = "q000_go4VM";
+
+		/// <summary>The line on the greeting page.</summary>
+		internal static void Request(QuestDialogContent d, Player player) {
+			if (GrandmasterQuest.CanBePromoted(player)) {
+				d.SetText("<def_questDialog_colorTextResponse>Omlouvam se za svou troufalost, ale zda se mi, ze na me koukas trochu rospacite. Stalo se neco? Nejsi prvni, kdo se tu na mee takhle diva.");
+				d.Response(true, false, "q000_getVMDir");
+			}
+		}
+
+		/// <summary>Its pages.</summary>
+		internal static void Answer(QuestDialogContent d, Player player) {
+			if (!GrandmasterQuest.CanBePromoted(player)) {
+				return;
+			}
+			d.Page("q000_getVMDir");
+			d.SetText("Omlouvam se, ja jen, ze je tu ted slyset spousta zvesti o <src.sex(\"jistem muzi, ktery cestoval\",\"jiste zene, ktera cestovala\")> pres pul sveta aby <src.sex(\"pomohl\",\"pomohla\")> dceram Elqiry. Ty se strasne podobas popisu te osoby, je mi to hloupe.");
+			d.Html();
+			d.SetText("No to je tedy hloupost...");
+			d.Response(false, false, "q000_plainPage");
+			d.SetText("Nemusis se citit hloupe, jsem to opravdu ja.");
+			d.Response(false, false, "q000_getVMDir_2");
+			d.Page("q000_plainPage");
+			d.SetText("Ja vim...");
+			d.Html();
+			d.Page("q000_getVMDir_2");
+			d.SetText("To jsi opravdu ty! Neuveritelna nahoda, ze jsi <src.splitRealm(\"zavital\",\"zavitala\")> zrovna sem. Jeden by rekl, ze pobezis rovnou za nasim zmocnencem...");
+			d.Html();
+			d.SetText("Za zmocnencem? Proc?");
+			d.Response(false, false, "q000_getVMDir_3");
+			d.Page("q000_getVMDir_3");
+			d.SetText("Ty to nevis? Shani te Zmocnenec <src.splitRealm(\"Gondoru\",\"Mordoru\")>. Vsichni o tom mluvi. <src.sex(\"Mel\",\"Mela\")> by jsi za nim dojit. Urcite se doslechl o tvych zasluhach.");
+			d.Html();
+			d.SetText("*Podekovat a jit za Zmocnencem*");
+			d.SaveText(Button);
+			d.Response(false, true, Button, true);
+			d.SetText("Kde najdu Zmocnence <src.splitRealm(\"Gondoru\",\"Mordoru\")>?");
+			d.Response(false, false, "q000_whereIsHe");
+			d.Page("q000_whereIsHe");
+			d.SetText("Zmocnence najdes <src.splitRealm(\"v Minas Thirith\",\"ve Rhunu\")>. Tam uz se doptas.");
+			d.Html();
+			d.SameResponse(false, true, Button, true);
+		}
+
+		/// <summary>True when it was this button.</summary>
+		internal static bool OnButton(string button, Player player) {
+			if ((button != Button) || !GrandmasterQuest.CanBePromoted(player)) {
+				return false;
+			}
+			player.SysMessage("Mozna by ses " + GrandmasterQuest.Sex(player, "mel", "mela") + " jit za tim Zmocnencem podivat.");
+			GrandmasterQuest.Advance(player, 12); //qtag(q000_velmistr,12,38)
+			return true;
+		}
+	}
+
 	/// <summary>#833 - the q000 branch of d_gq030_zmocnenec and d_mq030_zmocnenec: the envoy who grants the rank.</summary>
 	public abstract partial class D_Q000EnvoyBase : QuestDialogDef {
 		protected override void Build(QuestDialogContent d, Character npc, Player player) {

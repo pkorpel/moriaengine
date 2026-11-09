@@ -82,6 +82,84 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("Q000_PREPARED: done");
 		}
 
+		/// <summary>#837 - the envoy hint on Unas's and Borek's dialogs: offered to a hero at stage 11 only, and following it
+		/// sets stage 12.</summary>
+		[SteamFunction]
+		public static void TestQ000Hint(Character self) {
+			Player player = (Player) self;
+			NPC unas = (NPC) ((NPCDef) ThingDef.GetByDefname(Q006.UnasDef)).Create(player.X + 30, player.Y, player.Z, player.M);
+			NPC borek = (NPC) ((NPCDef) ThingDef.GetByDefname(Q041.BorekDef)).Create(player.X + 32, player.Y, player.Z, player.M);
+			D_Q006Unas unasDialog = SingletonScript<D_Q006Unas>.Instance;
+			D_Q041Borek borekDialog = SingletonScript<D_Q041Borek>.Instance;
+			GrandmasterQuest.SetStage(player, 5);
+			bool notTooEarly = !unasDialog.BuildFor(unas, player).HasResponse("q000_getVMDir") && !borekDialog.BuildFor(borek, player).HasResponse("q000_getVMDir");
+			GrandmasterQuest.SetStage(player, 11);
+			bool unasOffers = unasDialog.BuildFor(unas, player).HasResponse("q000_getVMDir") && unasDialog.BuildFor(unas, player).HasResponse(GrandmasterEnvoyHint.Button);
+			bool borekOffers = borekDialog.BuildFor(borek, player).HasResponse("q000_getVMDir") && borekDialog.BuildFor(borek, player).HasResponse(GrandmasterEnvoyHint.Button);
+			borekDialog.Press(GrandmasterEnvoyHint.Button, borek, player);
+			int afterBorek = GrandmasterQuest.GetStage(player);
+			GrandmasterQuest.SetStage(player, 11);
+			unasDialog.Press(GrandmasterEnvoyHint.Button, unas, player);
+			int afterUnas = GrandmasterQuest.GetStage(player);
+			bool stillPromotable = GrandmasterQuest.CanBePromoted(player);
+			unas.Delete();
+			borek.Delete();
+			Console.WriteLine("Q000_HINT: notTooEarly=" + notTooEarly + " unasOffers=" + unasOffers + " borekOffers=" + borekOffers +
+				" afterBorek=" + afterBorek + " afterUnas=" + afterUnas + " stillPromotable=" + stillPromotable + " end");
+		}
+
+		private static readonly TagKey breathRinaldTK = TagKey.Acquire("_q000test_breathRinald_");
+
+		/// <summary>#837 - Rinald three tiles south of the hero, facing them, turns into the daemon: his breath comes.</summary>
+		[SteamFunction]
+		public static void TestQ000Breath(Character self) {
+			Player player = (Player) self;
+			player.Hits = player.MaxHits;
+			NPC rinald = (NPC) ((NPCDef) ThingDef.GetByDefname(GrandmasterQuest.RinaldDef)).Create(player.X, player.Y + 3, player.Z, player.M);
+			NPCAiTimer.Freeze(rinald, 60);
+			rinald.Direction = Direction.North;
+			GrandmasterQuest.TransformRinald(rinald);
+			player.SetTag(breathRinaldTK, rinald);
+			Console.WriteLine("Q000_BREATH: hits=" + player.Hits + " tiles=" + RinaldBreath.CountLiveTiles() + " end");
+		}
+
+		[SteamFunction]
+		public static void TestQ000BreathReport(Character self) {
+			Player player = (Player) self;
+			NPC rinald = player.GetTag(breathRinaldTK) as NPC;
+			Console.WriteLine("Q000_BREATH_REPORT: lost=" + (player.MaxHits - player.Hits) + " rinaldUnhurt=" + ((rinald != null) && (rinald.Hits == rinald.MaxHits)) + " end");
+			if (rinald != null) {
+				rinald.Delete();
+			}
+			player.RemoveTag(breathRinaldTK);
+			player.Hits = player.MaxHits;
+		}
+
+		/// <summary>#837 - the hero dies in Rinald's cave: where the body lies.</summary>
+		[SteamFunction]
+		public static void TestQ000Die(Character self) {
+			Player player = (Player) self;
+			Point4D back = player.GetTag(TagKey.Acquire("_q000CaveReturn_")) as Point4D;
+			player.CauseDeath(null);
+			Corpse corpse = null;
+			foreach (Thing t in player.GetMap().GetThingsInRectangle(new ImmutableRectangle(player.X - 2, player.Y - 2, player.X + 2, player.Y + 2))) {
+				corpse = (t as Corpse) ?? corpse;
+			}
+			bool inCave = corpse != null;
+			if (back != null) {
+				foreach (Thing t in Map.GetMap(back.M).GetThingsInRectangle(new ImmutableRectangle(back.X, back.Y, back.X, back.Y))) {
+					corpse = (t as Corpse) ?? corpse;
+				}
+			}
+			Console.WriteLine("Q000_DIED: back=" + (back != null) + " corpseLeftInCave=" + inCave + " corpseAtReturn=" + ((corpse != null) && (back != null) && (corpse.X == back.X) && (corpse.Y == back.Y)) + " end");
+		}
+
+		[SteamFunction]
+		public static void TestQ000Resurrect(Character self) {
+			self.Resurrect();
+			Console.WriteLine("Q000_RESURRECTED: dead=" + self.Flag_Dead + " end");
+		}
+
 		/// <summary>Beside the thing, and its uid.</summary>
 		[SteamFunction]
 		public static void TestQ000GoTo(Character self, ScriptArgs sa) {

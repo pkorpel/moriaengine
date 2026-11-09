@@ -224,8 +224,8 @@ namespace SteamEngine.CompiledScripts {
 			return rinald.Name == "Rinald";
 		}
 
-		/// <summary>Erebor's f_q000_rinaldTransfer, some seconds after the player said his name: he turns into a daemon and
-		/// can be hurt. Not ported: his breath (f_dragon_fire), and e_rinald's weakening by profession.</summary>
+		/// <summary>Erebor's f_q000_rinaldTransfer, some seconds after the player said his name: he turns into a daemon, can be
+		/// hurt (e_rinald weakens him by profession, #1140) and breathes a wall of fire (#837, RinaldBreath).</summary>
 		internal static void TransformRinald(NPC rinald) {
 			rinald.Sound((int) SoundNames.lightningstrike);
 			rinald.Model = ThingDef.GetByDefname("c_daemon_mage1").Model;
@@ -233,6 +233,19 @@ namespace SteamEngine.CompiledScripts {
 			rinald.Color = 0x445;
 			rinald.Flag_Invulnerable = false;
 			rinald.AggroMode = AggroMode.Hostile;
+			RinaldBreath.Breathe(rinald, MonsterSpecialAttacks.RinaldDef?.BreathDamage ?? 35); //#837 f_dragon_fire(35)
+		}
+
+		/// <summary>#837 - e_q000_dungeon's @DeathCorpse: a body falling in the cave goes back to where its player came in
+		/// from, and the ghost is taken out at once (f_q000_dungeonPort), not on the next minute.</summary>
+		internal static void OnBodyLaid(Player player, Corpse corpse) {
+			if (!player.HasTimer(caveTimerTK)) {
+				return;
+			}
+			if (player.GetTag(caveReturnTK) is Point4D back) {
+				corpse.P(back.X, back.Y, back.Z, back.M);
+			}
+			ExpelFromCave(player);
 		}
 
 		/// <summary>Erebor's f_q000_vg_CaveEntrance_test + f_q000_vg_CaveEntrance.</summary>
@@ -325,8 +338,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>i_q000_delayer's @timer, once a minute: the time left, and out when it's up. A player who died in there
-		/// is taken out with the next tick, without their corpse.</summary>
+		/// <summary>i_q000_delayer's @timer, once a minute: the time left, and out when it's up (at once after a death in
+		/// there, OnBodyLaid).</summary>
 		internal static void OnCaveMinute(Player player) {
 			Region cave = StaticRegion.GetByDefname(CaveRegion);
 			if (player.Region != cave) {

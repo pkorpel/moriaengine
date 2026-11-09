@@ -1518,6 +1518,11 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.InvulHitsCap = value; } }
 		}
 
+		public int RinaldBreathDamage {
+			get { return MonsterSpecialAttacks.RinaldDef?.BreathDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.BreathDamage = value; } }
+		}
+
 		public int OdinvisKrikCryOneIn {
 			get { return MonsterSpecialAttacks.OdinvisKrikDef?.CryOneIn ?? 0; }
 			set { if (MonsterSpecialAttacks.OdinvisKrikDef != null) { MonsterSpecialAttacks.OdinvisKrikDef.CryOneIn = value; } }
