@@ -753,8 +753,10 @@ namespace SteamEngine.Regions {
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"), SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		/// <summary>#1148 - where someone put at this point stands: the highest walkable surface (the terrain, or a Surface
 		/// static, multi part or item, as GetStartZ counts them) whose top is at most half a character's height above the
-		/// point's Z; the terrain when the point is below all of them. It used to be the terrain alone, so every Go(x, y, z)
-		/// into a house dropped to the ground floor (a knockback on a house floor threw the player down to the street).</summary>
+		/// point's Z; the lowest of them when the point is below all of them (Sphere's GetHeightPoint: m_Lowest). It used to be
+		/// the terrain alone, so every Go(x, y, z) into a house dropped to the ground floor (a knockback on a house floor threw
+		/// the player down to the street). #1324: the terrain is one of the surfaces, not the start: in a hall under a mountain
+		/// the land lies far above, a roof, and the floor below is where one stands.</summary>
 		public int GetFixedZ(IPoint3D point) {
 			int x = point.X;
 			int y = point.Y;
@@ -763,22 +765,29 @@ namespace SteamEngine.Regions {
 				return landZ;
 			}
 			int reach = point.Z + (PlayerHeight / 2);
-			int best = landZ;
+			int best = (landZ <= reach) ? landZ : int.MinValue; //#1324 - land above (a hall under a mountain) is a roof, not the floor
+			int lowest = landZ;
 			foreach (AbstractInternalItem staticItem in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				ItemDispidInfo idi = staticItem.DispidInfo;
 				int top = staticItem.Z + idi.CalcHeight;
-				if (((idi.Flags & TileFlag.Surface) != 0) && (top <= reach) && (top > best)) {
-					best = top;
+				if ((idi.Flags & TileFlag.Surface) != 0) {
+					lowest = Math.Min(lowest, top);
+					if ((top <= reach) && (top > best)) {
+						best = top;
+					}
 				}
 			}
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				int top = item.Z + idi.CalcHeight;
-				if (((idi.Flags & TileFlag.Surface) != 0) && (top <= reach) && (top > best)) {
-					best = top;
+				if ((idi.Flags & TileFlag.Surface) != 0) {
+					lowest = Math.Min(lowest, top);
+					if ((top <= reach) && (top > best)) {
+						best = top;
+					}
 				}
 			}
-			return best;
+			return (best == int.MinValue) ? lowest : best; //below everything: up onto the lowest, as Sphere
 		}
 
 		/// <summary>Sphere's PLAYER_HEIGHT.</summary>
