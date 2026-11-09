@@ -181,3 +181,30 @@ commands. `.kick` does the same thing.
 
 Test: `GmToolsTests.SummonFreezeGoClientsKick` (protocol: the real cursors on an NPC, `.gouid`, `.goname`, the
 `.clients` dialog and its Kick).
+
+### .presun (#1331)
+
+Erebor's GM move (`funkce.scp`, `[function presun]` and its memory `i_presouvatko`), on `.gmmenu` in the GM group. Code:
+`Presun.cs`.
+- **The first cursor** ("Co chces presunout?") takes a character or an item: on the ground, in a pack or a chest, or worn.
+- **The second cursor** ("Kam s nim?" / "Kam s tim?") takes the place:
+  - ground or a static: that point;
+  - a character or an item: where it stands. An item in a container counts as where the container stands, or its holder.
+- An item leaves its container or wearer for the ground there. A character is teleported (logged to the server log).
+- GM only (plevel 4: it's not on the player list).
+
+Two changes from Erebor:
+- Erebor's memory removed itself after 60 s. A cursor here needs no cleanup.
+- A first target on the ground asks again; Erebor's silently ended.
+
+As with any cursor, the client targets only what it can see: an item in a container once the container is open.
+
+Worth knowing:
+- A moved NPC keeps its home and walks back (#1206), and an idle guard far from its spawn teleports home. Set the home or move
+  the spawn for a lasting change.
+- A backpack moved drops to the ground with all it holds. Its owner gets a new, empty one.
+- A house-locked item stays locked where it lands.
+- A static's point is its base height, as on Erebor: a thing put on a table lands in it, not on top.
+
+Test: `PresunTests.AGmMovesCharactersAndItems` (protocol: a torch out of the GM's pack, a hare onto a rock in a chest, a ground
+first target asked again).
