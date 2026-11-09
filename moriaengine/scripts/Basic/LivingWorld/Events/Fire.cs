@@ -19,6 +19,19 @@ namespace SteamEngine.CompiledScripts {
 			return Array.Exists(WorldEvents.Cities, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
 		}
 
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: kdykoli.<br>"
+					+ "Co se deje: v nahodnem oznacenem dome mesta (bez oznacenych mist kousek od stredu) zacne horet " + s.fireStart + " ohnu. Kazdych "
+					+ s.fireSpreadSeconds + " s pribude dalsi vedle horiciho. Hasi se dvojklikem do 2 poli, na stejnem patre a na dohled. Uder stoji "
+					+ s.fireBeatStamina + " staminy, " + s.fireBeats + " udery ohen uhasi.<br>"
+					+ "Vyhra: vse uhaseno do " + EventText.Time(s.fireMinutes) + ". Kdo ze strany mesta dal aspon " + s.fireBeats + " udery, dostane jednou "
+					+ s.fireGold + " zl, " + s.fireExp + " zkusenosti, " + s.fireFavour + " povesti a +" + s.fireFriendship + " pratelstvi s obyvateli domu.<br>"
+					+ "Prohra: hori " + s.fireMax + " ohnu naraz, nebo cas vyprsi. Dum vyhori.";
+			}
+		}
+
 		public override WorldEvent Make(string city) {
 			return new Fire(this, city);
 		}

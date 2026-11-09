@@ -23,6 +23,20 @@ namespace SteamEngine.CompiledScripts {
 			return string.Equals(city, City, StringComparison.OrdinalIgnoreCase);
 		}
 
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: kdykoli.<br>"
+					+ "Co se deje: " + s.beaconCount + " majaku stoji v rade od Minas Tirith smerem k Edorasu, asi kazdych " + s.beaconSpacing
+					+ " poli. Gondorsky chat vola po jejich zapaleni. Zapaluji se dvojklikem do 2 poli, ale jen po poradi. Duch ani nekdo z nepratelske rise "
+					+ "je nezapali, GM ano (bez odmeny).<br>"
+					+ "Vyhra: vsechny hori do " + EventText.Time(s.beaconMinutes) + ". Kazdy zapalovac na strane mesta dostane " + s.beaconGold + " zl, "
+					+ s.beaconExp + " zkusenosti a " + s.beaconFavour + " povesti. Vsichni hraci Gondoru maji " + EventText.Pct(s.beaconBonusPercent)
+					+ " zkusenosti navic na " + EventText.Time(s.beaconBonusMinutes) + " (ne kdyz zapalovali jen GM).<br>"
+					+ "Prohra: cas vyprsi, majaky zmizi.";
+			}
+		}
+
 		public override WorldEvent Make(string city) {
 			return new Beacons(this, city);
 		}

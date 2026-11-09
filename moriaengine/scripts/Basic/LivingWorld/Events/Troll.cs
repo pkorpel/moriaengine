@@ -23,6 +23,18 @@ namespace SteamEngine.CompiledScripts {
 			return VenueClock.IsOpen(s.trollNightFrom, s.trollNightTo, VenueClock.Hour);
 		}
 
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: sam od sebe v noci, " + EventText.Hours(s.trollNightFrom, s.trollNightTo) + " (GM kdykoli; rano zacaty ceka na dalsi usvit).<br>"
+					+ "Co se deje: silny trol stoji na ceste " + s.trollSteps + " kroku za mestem a napada kazdeho. Kdyz ho nikdo nezamestnava, vrati se na sve misto.<br>"
+					+ "Vyhra: za usvitu, pokud s nim hraci strany mesta nedavno bojovali, zkameni. Kamen zustane jako pamatka "
+					+ EventText.Time(s.trollStoneMinutes) + ". Bojovnici dostanou " + s.trollGold + " zl, " + s.trollExp + " zkusenosti a " + s.trollFavour
+					+ " povesti. Zabity pred usvitem: zaplaceno stejne, kamen nezustane.<br>"
+					+ "Prohra: za usvitu s nim nikdo nebojoval, odejde do kopcu. Bez usvitu do " + EventText.Time(s.trollMinutes) + " odejde take.";
+			}
+		}
+
 		public override WorldEvent Make(string city) {
 			return new Troll(this, city);
 		}

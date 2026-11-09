@@ -33,7 +33,40 @@ namespace SteamEngine.CompiledScripts {
 			WorldEventKind raid = WorldEvents.KindOf("najezd");
 			int kind = new List<WorldEventKind>(WorldEvents.Kinds).IndexOf(raid);
 			int place = D_WorldEvents.PlacesOf(raid).IndexOf("Edoras");
-			Console.WriteLine("WORLDEVENTS_DIALOG: kind=" + (D_WorldEvents.KindBase + kind) + " place=" + (D_WorldEvents.PlaceBase + place) + " stop=" + D_WorldEvents.StopBase);
+			Console.WriteLine("WORLDEVENTS_DIALOG: kind=" + (D_WorldEvents.KindBase + kind) + " place=" + (D_WorldEvents.PlaceBase + place) + " stop=" + D_WorldEvents.StopBase
+				+ " info=" + (D_WorldEvents.InfoBase + kind) + " describe=" + D_WorldEvents.Describe + " start=" + D_WorldEvents.StartFromDescription + " back=" + D_WorldEvents.Back);
+		}
+
+		private static bool IsPlainAscii(string text) {
+			foreach (char c in text) {
+				if (c > 126) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		/// <summary>#1335 - every kind has a description, plain ASCII (Czech without diacritics), and its numbers are .settings' live
+		/// ones: a changed raid pay shows at once.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsDescriptions(Character self) {
+			bool all = true;
+			foreach (WorldEventKind kind in WorldEvents.Kinds) {
+				string text = kind.Description;
+				bool ok = (text.Length > 100) && text.StartsWith("Kdy:", StringComparison.Ordinal) && (text.IndexOf('{') < 0) && IsPlainAscii(text);
+				if (!ok) {
+					Console.WriteLine("WORLDEVENTS_DESCRIPTION: " + kind.Key + " is wrong: " + text);
+				}
+				all &= ok;
+			}
+			Report("everyKindIsDescribed", all);
+			WorldEventSettings s = WorldEventSettings.instance;
+			int gold = s.raidGold;
+			s.raidGold = 777;
+			bool live = WorldEvents.KindOf("najezd").Description.Contains("777 zl");
+			s.raidGold = gold;
+			Report("theDescriptionReadsTheSettings", live && !WorldEvents.KindOf("najezd").Description.Contains("777 zl"));
+			Console.WriteLine("WORLDEVENTS_DESCRIPTIONS_DONE");
 		}
 
 		[SteamFunction]

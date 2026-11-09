@@ -136,6 +136,35 @@ namespace SteamEngine.CompiledScripts {
 		public virtual string PlaceName(string city) {
 			return city.Replace('_', ' ');
 		}
+
+		/// <summary>#1335 - what it does, for .udalost's description page (Czech, without diacritics): when it can happen, what
+		/// happens, how it's won or lost and what it pays, with .settings' live numbers. The dialog adds where it can happen.</summary>
+		public virtual string Description {
+			get { return ""; }
+		}
+	}
+
+	/// <summary>#1335 - numbers as the events' descriptions write them.</summary>
+	internal static class EventText {
+		/// <summary>A price change: "+15 %", "-5 %".</summary>
+		internal static string Pct(int percent) {
+			return ((percent > 0) ? "+" : "") + percent.ToString(CultureInfo.InvariantCulture) + " %";
+		}
+
+		/// <summary>A while: "45 min", "6 h" (whole hours from two up).</summary>
+		internal static string Time(int minutes) {
+			return ((minutes >= 120) && (minutes % 60 == 0)) ? ((minutes / 60).ToString(CultureInfo.InvariantCulture) + " h") : (minutes.ToString(CultureInfo.InvariantCulture) + " min");
+		}
+
+		/// <summary>A game hours window: "17-21 h herniho casu".</summary>
+		internal static string Hours(int from, int to) {
+			return from.ToString(CultureInfo.InvariantCulture) + "-" + to.ToString(CultureInfo.InvariantCulture) + " h herniho casu";
+		}
+
+		/// <summary>A band's size: "3 az 12 (+2 za kazdeho hrace u mesta)".</summary>
+		internal static string Band(int baseCount, int perPlayer, int max) {
+			return baseCount + " az " + max + " (+" + perPlayer + " za kazdeho hrace u mesta)";
+		}
 	}
 
 	/// <summary>#1284 - one event under way, saved with the world since #1307 (WorldEventsStore). Its NPCs

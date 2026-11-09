@@ -73,6 +73,25 @@ namespace SteamEngine.CompiledScripts {
 		public override WorldEvent Make(string city) {
 			return new Festival(this, city);
 		}
+
+		/// <summary>#1335 - its days as "20.6.-26.6.".</summary>
+		public string Days {
+			get { return (this.from % 100) + "." + (this.from / 100) + ".-" + (this.to % 100) + "." + (this.to / 100) + "."; }
+		}
+
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				string food = Errands.ItemName(this.FoodDef);
+				return "Kdy: sama od sebe ve dnech " + this.Days + " (skutecne datum, UTC), jednou za den v miste, kdyz je u stredu hrac strany mesta "
+					+ "a nic jineho tam nebezi. GM kdykoli a v kterykoli den (pocita se za ten den).<br>"
+					+ "Co se deje: trva " + EventText.Time(s.festivalMinutes) + ". Hostitel u stredu da kazdemu hraci jednou " + ((food.Length > 0) ? food : this.FoodDef)
+					+ ". Hra: chyt " + this.AnimalName + " (utika, nejde zranit, chyta se dvojklikem hned vedle). Vitez ze strany mesta dostane "
+					+ s.festivalPrizeGold + " zl a " + s.festivalPrizeExp + " zkusenosti a pak utece dalsi, celkem az " + s.festivalRounds + " kol. "
+					+ "Ceny ve meste " + EventText.Pct(-s.festivalDiscount) + " po dobu slavnosti.<br>"
+					+ "Konec: kazdy host ze strany mesta (najedeny nebo lovec) dostane " + s.festivalExp + " zkusenosti a " + s.festivalFavour + " povesti.";
+			}
+		}
 	}
 
 	public sealed class Festival : WorldEvent {
