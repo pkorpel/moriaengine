@@ -38,7 +38,7 @@ and the criers' news. A restart goes on where the save left off, and the events'
 
 ## The orc raid (`najezd`)
 
-**Where and when:** Gondor's pilot cities (Minas Tirith, Edoras, Hobitin), at dusk: game hours `raidDuskFrom` to
+**Where and when:** the Gondor realm's cities (since #1304 more than the pilots; `.udalost`'s description lists them), at dusk: game hours `raidDuskFrom` to
 `raidDuskTo` (17 to 21).
 
 **Start:** a warband comes in from a tile `raidSteps` (24) real walking steps out of the city and makes for the centre:
@@ -125,7 +125,7 @@ and closed houses, and the chain bends round walls and hills while still heading
 
 ## The troll at the ford (`trol`, #1286)
 
-**Where and when:** Gondor's pilot cities, at night (game hours `trollNightFrom` to `trollNightTo`, 22 to 4).
+**Where and when:** the Gondor realm's cities, at night (game hours `trollNightFrom` to `trollNightTo`, 22 to 4).
 
 **The troll:** a strong hostile troll (`c_event_troll`, ~2000 hits) stands on a road `trollSteps` (30) walking steps out of the
 city, at least 10 tiles from the centre. When nobody keeps it busy, it walks back to its spot.
@@ -195,11 +195,11 @@ any festival on any day, and that counts as the day's.
 
 | Festival | Key | Places | Days | Food |
 |---|---|---|---|---|
-| Slavnost slunovratu (Midsummer) | `slunovrat` | Minas Tirith, Edoras | 20-26 June | cake |
-| Dozinky (harvest) | `dozinky` | Edoras, Hobitin | 15-30 September | bread |
+| Slavnost slunovratu (Midsummer) | `slunovrat` | Minas Tirith, Edoras, Dol Amroth, Fornost, Dol | 20-26 June | cake |
+| Dozinky (harvest) | `dozinky` | Edoras, Hobitin, Dol, Fornost | 15-30 September | bread |
 | Hobiti oslava (the hobbit party) | `oslava` | Hobitin | 20-24 September | cake |
-| Svatek Yule | `yule` | Minas Tirith, Edoras, Hobitin | 20 December - 2 January | ale |
-| Den Oka (the day of the Eye) | `den_oka` | Barad-dur, Harad, Umbar | 20-26 March (my pick) | ham |
+| Svatek Yule | `yule` | Minas Tirith, Edoras, Hobitin, Dol Amroth, Erebor, Dol, Fornost | 20 December - 2 January | ale |
+| Den Oka (the day of the Eye) | `den_oka` | Barad-dur, Harad, Umbar, Nurn, Rhun | 20-26 March (my pick) | ham |
 
 **A festival in a city** (`festivalMinutes`, 60):
 - **The host:** a host stands by the centre (`c_event_festival_host`, an orc in Mordor's cities), frozen and invulnerable.
@@ -230,6 +230,9 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 ## GM command
 
 - `.udalost` opens the GMs' dialog (#1315, `D_WorldEvents`): the events under way with their place, line and minutes left, each with *go there* and *stop*, *Zastavit vse*, whether events start by themselves (`.settings` Udalosti), and every kind to start: pick one, then one of its places (a place where something runs already is marked). From the console it lists the running events.
+- **What a kind does** (#1335): the info button beside each kind (and *Popis* on its places page) opens its description: where it
+  can run (from the kind itself), when it starts by itself, what happens, how it's won or lost and what it pays, in Czech with
+  `.settings`' live numbers (`WorldEventKind.Description`). *Zacit...* goes on to its places, *Zpet* back to the overview.
 - `.udalost "start <kind> [City]"` (kinds: `najezd`, `karavana`, `korzari`, `majaky`, `trol`, `pozar`, `horecka`, and the
   festivals' keys) starts one now, whatever the hour. Without a city, it starts in the city
   the GM stands in. As with other GM commands, the words go in quotes.

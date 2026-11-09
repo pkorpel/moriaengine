@@ -56,6 +56,24 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("Ted nic nebezi.", dialog.Strings);
 				this.Run(game, ".TestWorldEventsState", "WORLDEVENTS_STATE:");
 				Assert.Contains("running=0", this.LastLine("WORLDEVENTS_STATE:"));
+
+				//#1335 - the raid's description from its info button: what it does and where; on to its places, back to the
+				//description by Popis, then back to the overview
+				Assert.Matches(@"4011\s+4013\s+1\s+0\s+" + Number(buttons, "info") + @"\b", dialog.LayoutText); //the info button is drawn: a server takes any button number sent
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "info"));
+				dialog = ReadUntil(game, "Skreti najezd (najezd)");
+				Assert.Contains(dialog.Strings, s => s.StartsWith("Kdy: sam od sebe za soumraku", StringComparison.Ordinal) && s.Contains("zkusenosti"));
+				Assert.Contains(dialog.Strings, s => s.Contains("Kde: ") && s.Contains("Edoras") && s.Contains("Minas Tirith"));
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "start"));
+				dialog = ReadUntil(game, "Zacit: Skreti najezd");
+				Assert.Matches(@"4011\s+4013\s+1\s+0\s+" + Number(buttons, "describe") + @"\b", dialog.LayoutText);
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "describe"));
+				dialog = ReadUntil(game, "Skreti najezd (najezd)");
+				Assert.Contains(dialog.Strings, s => s.StartsWith("Kdy: sam od sebe za soumraku", StringComparison.Ordinal)); //Popis gave the description, not the overview
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "back"));
+				dialog = ReadUntil(game, "Udalosti ve svete");
+				this.Run(game, ".TestWorldEventsDescriptions", "WORLDEVENTS_DESCRIPTIONS_DONE");
+				this.AssertChecks("everyKindIsDescribed", "theDescriptionReadsTheSettings");
 				game.SendGumpResponse(dialog.GumpUid, 0);
 			}
 		}

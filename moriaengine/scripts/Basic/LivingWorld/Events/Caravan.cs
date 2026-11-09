@@ -18,6 +18,20 @@ namespace SteamEngine.CompiledScripts {
 			return Array.Exists(WorldEvents.Cities, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
 		}
 
+		public override string Description {
+			get {
+				WorldEventSettings s = WorldEventSettings.instance;
+				return "Kdy: kdykoli.<br>"
+					+ "Co se deje: kupec a " + s.caravanPack + " soumari vyjdou " + s.caravanSteps + " kroku za mestem a jdou do stredu mesta. V pulce cesty je "
+					+ "z obou stran prepadnou bandite, celkem " + EventText.Band(s.banditBase, s.banditPerPlayer, s.banditMax) + ". Kupec se zastavi a vola o pomoc, "
+					+ "dal jde az po padu vsech banditu.<br>"
+					+ "Vyhra: kupec dojde ke stredu do " + EventText.Time(s.caravanMinutes) + ". Kazdy hrac strany mesta, ktery s utocniky bojoval nebo behem prepadeni stal do " + s.escortRange
+					+ " poli od kupce, dostane " + s.caravanGold + " zl, " + s.caravanExp + " zkusenosti a " + s.caravanFavour + " povesti. Ceny "
+					+ EventText.Pct(s.caravanPercent) + " na " + EventText.Time(s.caravanOutcomeMinutes) + ".<br>"
+					+ "Prohra: kupec zemre nebo cas vyprsi. Karavana je pryc, ceny se nemeni.";
+			}
+		}
+
 		public override WorldEvent Make(string city) {
 			return new Caravan(this, city);
 		}
