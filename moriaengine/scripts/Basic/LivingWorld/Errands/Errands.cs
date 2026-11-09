@@ -486,8 +486,21 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#1317 - a city can be several towns (Dol Amroth with Pelargir and Linhir, the Shire, Dale with Esgaroth): the centre of
 		/// the one the giver works in (the smallest of the city's areas holding the workplace), or null to use the city's.</summary>
 		private static Point4D GiverTownCentre(Errand errand) {
-			FlaggedRegion town = TownOf(Residents.ById(errand.giverId), errand.city);
-			return (town == null) ? null : WorldEvents.CentreOfArea(town);
+			Item gem = Residents.ById(errand.giverId);
+			FlaggedRegion town = TownOf(gem, errand.city);
+			if (town == null) {
+				return null;
+			}
+			//one area can be two places: Erebor's gate hall and its halls deep in the mountain, 1600 tiles apart, joined by a teleport;
+			//when the workplace's part isn't the centre's, the workplace is the centre
+			Point4D centre = WorldEvents.CentreOfArea(town);
+			CityVenue work = Residents.WorkplaceOf(gem);
+			foreach (ImmutableRectangle rect in town.Rectangles) {
+				if (rect.Contains(work.X, work.Y)) {
+					return rect.Contains(centre.X, centre.Y) ? centre : new Point4D(work.X, work.Y, work.Z, work.M);
+				}
+			}
+			return centre;
 		}
 
 		/// <summary>#1317 - the town of a city a resident works in: the smallest of the city's areas holding the workplace, or null.</summary>
