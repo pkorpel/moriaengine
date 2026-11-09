@@ -251,6 +251,18 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Karavana s koreninami (the spice caravan) | `spicecaravan` | a caravanserai or market worker in Harad | kill the 2 desert bandits on the road out, pick up the 2 spice crates, bring them |
 | Obchod s konmi (horse trading) | `horsetrade` | a stable or kennels worker in Rhun | catch 2 wild horses on the steppe on the road out (they run), then sell them to the giver |
 
+**The wild** (`WildStories.cs`, things in `wildstories.def`; the troll at dusk is the world event):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Hadanky ve tme (a cave creature's riddles) | `caveriddles` | a tavern or library worker of any city | at the dark pool on the road out a voice asks one of the games' folk riddles (the same one until answered); the answer is typed into its dialog. Right: the step is done. Wrong: the creature comes out at the hero (calm to others, gone in 2 minutes) and the pool stays dark that long. Then tell the giver |
+| Cerny jezdec u privozu (the ferry and the Black Rider) | `blackrider` | any worker in Hobitin | reach the ferry on the road out within 15 minutes and pull the rope; as the step begins a Black Rider sets out after the hero (calm to others, gone when the rope is pulled, when the errand is given up or runs out, or in 5 minutes; none for a GM; each errand its own rider). Then report |
+| Zpevavy poustevnik (the singing hermit) | `singinghermit` | any worker in Hobitin, Fornost or Edoras | find the hermit's hut on the road out, then the lost traveller he sings of, then tell the giver |
+
+**`ErrandTemplate.OnStepStart`** (#1317) runs as each step begins, after its things are placed: the Black Rider's start. **`ErrandTemplate.OnEnd`** runs as the errand ends, done, given up or run out, when its things are cleared: the rider goes with it.
+
+The riddle's dialog takes no answer from a ghost; a wrong answer asks no new riddle until the creature calms down.
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -280,7 +292,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (the wild).
+All of design 9.3's stories are built (#1300, #1317).
 
 ## Limits (`.settings` "Ukoly")
 

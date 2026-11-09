@@ -46,6 +46,14 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>#1317 - a step of the errand begins (its things are placed, its item made): the Black Rider sets out after the hero.</summary>
+		public virtual void OnStepStart(Player player, Errand errand) {
+		}
+
+		/// <summary>#1317 - the errand ends, done, given up or run out (as its things are cleared): the Black Rider goes with it.</summary>
+		public virtual void OnEnd(Player player, Errand errand) {
+		}
+
 		/// <summary>#1252 - anything the errand does as it's done, before the pay (a debtor's friendship).</summary>
 		public virtual void OnDone(Player player, Errand errand) {
 		}

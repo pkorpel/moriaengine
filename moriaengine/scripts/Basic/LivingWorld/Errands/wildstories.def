@@ -1,0 +1,69 @@
+//#1317 - the things and creatures of the wild's stories (WildStories.cs): only their errand's player can use or catch the things;
+//the cave creature and the Black Rider go after a few minutes (WildVanishTimer) and set on that hero alone.
+
+[NPCDef c_errand_cave_creature]
+TEVENTS = e_character
+NAME = "Bytost z jeskyne"
+model = C_MAN
+Color = 0385
+CAN = MT_WALK|MT_RUN
+Str = 60
+Dex = 100
+Int = 50
+MaxHits = 70 90
+Wrestling = 550
+Tactics = 500
+NoAnimate = 1
+AggroMode = Calm
+
+[NPCDef c_errand_black_rider]
+TEVENTS = e_character
+NAME = "Cerny jezdec"
+model = C_MAN
+Color = 0001
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 90
+Dex = 90
+Int = 60
+MaxHits = 200
+Wrestling = 600
+Tactics = 600
+NoAnimate = 1
+AggroMode = Calm
+Equip = i_robe
+EquipColor = 0x0001
+
+[NPCDef c_errand_lost_traveller]
+TEVENTS = e_character
+NAME = "Zbloudily poutnik"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 40
+Dex = 40
+Int = 40
+MaxHits = 40
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+
+[ItemDef i_errand_dark_pool]
+NAME = "Temna tun"
+TYPE = t_normal
+model = 0x1E03
+Color = 0001
+
+[ItemDef i_errand_ferry_rope]
+NAME = "Lano privozu"
+TYPE = t_normal
+model = 0x1EA0
+
+[ItemDef i_errand_hermit_hut]
+NAME = "Poustevnikova chyse"
+TYPE = t_normal
+model = 0x0A57
