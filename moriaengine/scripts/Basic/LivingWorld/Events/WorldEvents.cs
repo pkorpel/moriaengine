@@ -498,6 +498,92 @@ namespace SteamEngine.CompiledScripts {
 			return route;
 		}
 
+		/// <summary>#1329 - the walks out of a town, found once per area and centre and kept for the server's run (a big town's walk
+		/// out takes some hundreds of ms; a recompile starts afresh): a few roads to pick from.</summary>
+		private static readonly Dictionary<string, List<List<int[]>>> routesOut = new Dictionary<string, List<List<int[]>>>(StringComparer.OrdinalIgnoreCase);
+		private const int RoutesOutKept = 8;
+
+		/// <summary>#1329 - a walk into a town from outside it: out from the centre ring by ring by the real movement rules until some
+		/// walk has gone `beyond` steps in a row outside the area (a step out through a notch or a corner and back in doesn't count);
+		/// from one of the tiles whose walk has been outside the longest, tile by tile back to the centre, so the route begins with that
+		/// stretch past the edge. None (an empty list) when no walk gets outside within `maxSteps` steps (or the centre can't be left); near the cap the
+		/// stretch may be shorter (or an island's shore ends it). The area is on the centre's map plane. A few remembered roads, from
+		/// different tiles; none when the area isn't left.</summary>
+		public static List<List<int[]>> RoutesOutOf(Point4D centre, StaticRegion area, int beyond, int maxSteps) {
+			string key = area.Defname + "|" + centre.X.ToString(CultureInfo.InvariantCulture) + "," + centre.Y.ToString(CultureInfo.InvariantCulture) + ","
+				+ centre.M.ToString(CultureInfo.InvariantCulture) + "|" + beyond.ToString(CultureInfo.InvariantCulture) + "|" + maxSteps.ToString(CultureInfo.InvariantCulture);
+			if (!routesOut.TryGetValue(key, out List<List<int[]>> routes)) {
+				routes = WalkOutOf(centre, area, beyond, maxSteps);
+				routesOut[key] = routes;
+			}
+			return new List<List<int[]>>(routes); //the roads themselves are only read
+		}
+
+		private static List<List<int[]>> WalkOutOf(Point4D centre, StaticRegion area, int beyond, int maxSteps) {
+			Map map = Map.GetMap(centre.M);
+			Dictionary<long, int[]> from = new Dictionary<long, int[]>();
+			Dictionary<long, int> run = new Dictionary<long, int>(); //how many steps in a row a tile's walk has been outside, ending on it
+			int[] start = { centre.X, centre.Y, centre.Z };
+			from[Key(start)] = null;
+			run[Key(start)] = 0;
+			List<int[]> ring = new List<int[]> { start };
+			List<int[]> longest = new List<int[]>(), outsideTiles = new List<int[]>();
+			int longestRun = 0;
+			for (int step = 0; (step < maxSteps) && (longestRun < beyond); step++) {
+				List<int[]> next = new List<int[]>();
+				foreach (int[] tile in ring) {
+					Point3D probe = new Point3D(tile[0], tile[1], tile[2]);
+					int parentRun = run[Key(tile)];
+					for (int dir = 0; dir < 8; dir++) {
+						if (map.CheckMovement(probe, walker, (Direction) dir, false, out int x, out int y, out int z)) {
+							int[] reached = { x, y, z };
+							long key = Key(reached);
+							if (!from.ContainsKey(key)) {
+								from[key] = tile;
+								int outside = area.ContainsPoint(x, y) ? 0 : parentRun + 1;
+								run[key] = outside;
+								next.Add(reached);
+								if (outside > longestRun) {
+									longestRun = outside;
+									longest.Clear();
+								}
+								if ((outside > 0) && (outside == longestRun)) {
+									longest.Add(reached);
+								}
+								if (outside > 0) {
+									outsideTiles.Add(reached);
+								}
+							}
+						}
+					}
+				}
+				if (next.Count == 0) {
+					break;
+				}
+				ring = next;
+			}
+			List<int[]> ends = new List<int[]>();
+			while (longest.Count > 0) {
+				int pick = Globals.dice.Next(longest.Count);
+				ends.Add(longest[pick]);
+				longest.RemoveAt(pick);
+			}
+			if (ends.Count < RoutesOutKept) { //few tiles that far out (an island's shore): the other tiles outside too, the farthest out first
+				outsideTiles.RemoveAll(t => ends.Contains(t));
+				outsideTiles.Sort((a, b) => run[Key(b)].CompareTo(run[Key(a)]));
+				ends.AddRange(outsideTiles.GetRange(0, Math.Min(outsideTiles.Count, RoutesOutKept - ends.Count)));
+			}
+			List<List<int[]>> routes = new List<List<int[]>>();
+			foreach (int[] end in ends.GetRange(0, Math.Min(ends.Count, RoutesOutKept))) {
+				List<int[]> route = new List<int[]>();
+				for (int[] tile = end; tile != null; tile = from[Key(tile)]) {
+					route.Add(tile);
+				}
+				routes.Add(route);
+			}
+			return routes;
+		}
+
 		/// <summary>The tiles a walker reaches from `start` in at most `steps` steps by the real movement rules, start included.</summary>
 		public static List<int[]> Reachable(Map map, int[] start, int steps) {
 			HashSet<long> seen = new HashSet<long> { Key(start) };
