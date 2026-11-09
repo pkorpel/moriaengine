@@ -127,7 +127,20 @@ The war camp gives orders, not these.
 or on a road out of the city, beside the player if no spot is found. "The city" is the town the giver works in: a city of several
 towns on the map (Dol Amroth with Pelargir and Linhir, the Shire's, Dale with Esgaroth, the woodland realm with Lorien) centres
 the streets and the road on the smallest of its areas holding the giver's workplace (#1317; before, a Pelargir harbourmaster's
-spies stood in Dol Amroth, 600 tiles away). The player then catches, kills or uses them:
+spies stood in Dol Amroth, 600 tiles away). The player then catches, kills or uses them.
+
+**On the road out** (#1329) means outside the town's area: the road is walked from the centre by the real movement rules until
+some walk has gone 10 steps in a row outside the area (the giver's town; a step sent to another city, that city's area at its
+centre; a step out through a notch in the area's rectangles and back in doesn't count), and the things lie two tiles apart on
+that stretch past the edge (`Errands.OutsideSpots`). An island's short shore (Cair Andros) takes the ends of other roads out too,
+so the things stand on their own tiles. Before, a fixed walk of 30 steps stayed inside nearly every town (always in Minas Tirith,
+Hobitin, Harad, Umbar, Barad-dur, Dol Amroth and more; about half the time on Edoras's hill). The roads out of the 32 areas of
+the 14 cities are 10-107 steps today (Edoras and Linhir among the shortest, Dol Amroth the longest). A walk of up to 150 steps is
+tried; a town left by fewer than 10 steps in a row by then uses that shorter stretch, a town it can't leave at all gets the old 30 steps. The first walk out of a town takes up to about 0.9 s (Dol Amroth); it is kept
+with up to 7 other roads for the server's run (a recompile starts afresh), so later ones cost nothing; a door or wall changed
+since stays unseen until then.
+
+The things are then:
 - **Catch** an NPC with a double click right beside it. Such NPCs can't be hurt, so nobody can strike one down and leave the
   step undoable.
 - **Use** an item with a double click within 2 tiles, on the same floor and in sight.

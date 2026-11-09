@@ -419,6 +419,10 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey ThingTK = TagKey.Acquire("_errand_thing_");
 		internal const int ThingSpread = 15, ThingMinFromCentre = 4, OutsideSteps = 30;
 
+		/// <summary>#1329 - Outside things (OutsideSpots): the road out is walked until it has been this many steps past the town's edge;
+		/// a town not left within OutsideMaxSteps gets the old walk of OutsideSteps.</summary>
+		internal const int OutsideBeyond = 10, OutsideMaxSteps = 150;
+
 		/// <summary>A Things step's things still in the world: only those that still carry the errand's mark, as a uid freed by a
 		/// caught or killed thing is soon another's (an item, a resident, a player), and must never be taken for one of these.</summary>
 		internal static List<Thing> ThingsOf(ErrandStep step, string mark) {
@@ -475,10 +479,8 @@ namespace SteamEngine.CompiledScripts {
 					}
 					break;
 				default:
-					List<int[]> road = (centre == null) ? null : WorldEvents.RouteIn(centre, OutsideSteps);
-					for (int i = 0; (road != null) && (i < count); i++) {
-						int[] tile = road[Math.Min(i * 2, road.Count - 1)]; //along the road, not all on one tile
-						spots.Add(new Point4D((ushort) tile[0], (ushort) tile[1], (sbyte) tile[2], centre.M));
+					if (centre != null) {
+						spots.AddRange(OutsideSpots(centre, TownAround(errand, step, centre), count));
 					}
 					break;
 			}
@@ -505,17 +507,79 @@ namespace SteamEngine.CompiledScripts {
 			return centre;
 		}
 
+		/// <summary>#1329 - `count` spots on a road out of the town, on its stretch past the edge, two tiles apart (outside the town for
+		/// real: a fixed walk of OutsideSteps stayed inside nearly every town, Edoras's hill about half the time). A short stretch (an
+		/// island's shore) takes the ends of the other roads out too, so the things don't stand on one tile. A town not left (or none)
+		/// gets the old walk.</summary>
+		internal static List<Point4D> OutsideSpots(Point4D centre, FlaggedRegion town, int count) {
+			List<Point4D> spots = new List<Point4D>();
+			List<List<int[]>> roads = (town == null) ? null : WorldEvents.RoutesOutOf(centre, town, OutsideBeyond, OutsideMaxSteps);
+			if ((roads == null) || (roads.Count == 0)) {
+				List<int[]> road = WorldEvents.RouteIn(centre, OutsideSteps);
+				for (int i = 0; (road != null) && (i < count); i++) {
+					int[] tile = road[Math.Min(i * 2, road.Count - 1)]; //along the road, not all on one tile
+					spots.Add(new Point4D((ushort) tile[0], (ushort) tile[1], (sbyte) tile[2], centre.M));
+				}
+				return spots;
+			}
+			//each road begins with its stretch past the edge: one of the longest first, then the rest by their stretch
+			List<int> stretches = roads.ConvertAll(road => {
+				int past = 0;
+				while ((past < road.Count) && !town.ContainsPoint(road[past][0], road[past][1])) {
+					past++;
+				}
+				return past;
+			});
+			List<int> order = new List<int>();
+			for (int r = 0; r < roads.Count; r++) {
+				order.Add(r);
+			}
+			order.Sort((a, b) => stretches[b].CompareTo(stretches[a]));
+			int longest = order.FindAll(r => stretches[r] == stretches[order[0]]).Count;
+			int first = Globals.dice.Next(longest);
+			int head = order[first];
+			order[first] = order[0];
+			order[0] = head;
+			foreach (int r in order) {
+				List<int[]> road = roads[r];
+				for (int i = 0; (i < stretches[r]) && (spots.Count < count); i += 2) {
+					int[] tile = road[i];
+					if (!spots.Exists(o => (o.X == tile[0]) && (o.Y == tile[1]))) {
+						spots.Add(new Point4D((ushort) tile[0], (ushort) tile[1], (sbyte) tile[2], centre.M));
+					}
+				}
+			}
+			for (int i = 0; (spots.Count > 0) && (spots.Count < count); i++) {
+				spots.Add(spots[i]); //too few tiles outside for them all: some share
+			}
+			return spots;
+		}
+
+		/// <summary>#1329 - the town an Outside step's things must leave: the giver's (TownOf), or for a step in another city (or a
+		/// giver gone) the city's area holding the centre the things are placed from.</summary>
+		private static FlaggedRegion TownAround(Errand errand, ErrandStep step, Point4D centre) {
+			if (string.IsNullOrEmpty(step.thingCity)) {
+				return TownOf(Residents.ById(errand.giverId), errand.city) ?? TownAt(errand.city, centre.X, centre.Y, centre.M);
+			}
+			return TownAt(step.thingCity, centre.X, centre.Y, centre.M);
+		}
+
 		/// <summary>#1317 - the town of a city a resident works in: the smallest of the city's areas holding the workplace, or null.</summary>
 		public static FlaggedRegion TownOf(Item gem, string city) {
 			CityVenue work = (gem == null) ? null : Residents.WorkplaceOf(gem);
-			if ((work == null) || string.IsNullOrEmpty(city)) {
+			return (work == null) ? null : TownAt(city, work.X, work.Y, work.M);
+		}
+
+		/// <summary>#1329 - the smallest of the city's areas holding the spot, or null.</summary>
+		public static FlaggedRegion TownAt(string city, int x, int y, byte m) {
+			if (string.IsNullOrEmpty(city)) {
 				return null;
 			}
-			Point2D at = new Point2D(work.X, work.Y);
+			Point2D at = new Point2D(x, y);
 			FlaggedRegion town = null;
 			long smallest = long.MaxValue;
 			foreach (FlaggedRegion area in VenueRegistry.AreasOf(city)) {
-				if ((area.Mapplane == work.M) && area.ContainsPoint(at)) {
+				if ((area.Mapplane == m) && area.ContainsPoint(at)) {
 					long tiles = 0;
 					foreach (ImmutableRectangle rect in area.Rectangles) {
 						tiles += (long) (rect.Width + 1) * (rect.Height + 1);
