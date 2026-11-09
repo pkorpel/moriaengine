@@ -346,6 +346,7 @@ namespace SteamEngine.Tests.Protocol {
 				string dressed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
 				Assert.Contains("uniform=True", dressed);
 				Assert.Contains("cape=0x481", dressed);
+				Assert.Contains("horse=0x481/0x3e9f", dressed); //#908 - the General's color, i_mt_horse_tan's look
 				general.SendSpeech(".honor");
 				Thread.Sleep(300);
 				string honored = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
@@ -358,6 +359,9 @@ namespace SteamEngine.Tests.Protocol {
 				string undressed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
 				Assert.Contains("uniform=False", undressed);
 				Assert.DoesNotContain("cape=0x481", undressed);
+				Assert.DoesNotContain("horse=0x481", undressed);
+				Assert.DoesNotContain("/0x3e9f", undressed);
+				Assert.Contains("dressed=True restored=True uniform=False", this.Ask(general, ".TestRealmDismountCheck", "REALM_DISMOUNT:")); //#908 - off the horse
 
 				//the General bans for the whole realm, and a guard of any town of it knows
 				this.Ask(gm, ".TestTownPrepare 0", "TOWN_READY:");

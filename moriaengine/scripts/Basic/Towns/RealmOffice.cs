@@ -4,6 +4,7 @@ using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
+using SteamEngine.Networking;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
@@ -404,7 +405,10 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey storedColorTK = TagKey.Acquire("_uniStoreColor_");
 		private static readonly TagKey storedModelTK = TagKey.Acquire("_uniStoreModel_");
 		private static readonly TimerKey refreshTK = TimerKey.Acquire("_uniformRefresh_");
+		private static readonly TagKey storedMountColorTK = TagKey.Acquire("_uniStoreMountColor_");
+		internal static readonly TagKey MountItemTK = TagKey.Acquire("_uniMountItem_");
 		private const int LayerMount = 25;
+		internal const int UniformHorseItem = 0x3E9F; //#908 - i_mt_horse_tan, the look of every office's horse
 
 		private sealed class Piece {
 			internal int layer, color;
@@ -416,15 +420,15 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly Piece[] generalPieces = {
-			P(22, 0x481, "i_robe"), P(20, 0x481, "i_cape"), P(7, 0x481), P(3, 0x481, null, "i_boots_calf"), P(LayerMount, 0), P(6, 0x481, null, "i_hat_floppy")
+			P(22, 0x481, "i_robe"), P(20, 0x481, "i_cape"), P(7, 0x481), P(3, 0x481, null, "i_boots_calf"), P(LayerMount, 0x481), P(6, 0x481, null, "i_hat_floppy")
 		};
 
 		private static readonly Piece[] ringPieces = {
-			P(22, 1, "i_robe", "i_deathshroud"), P(20, 0x692, "i_cape"), P(7, 1), P(3, 1, null, "i_boots_calf"), P(LayerMount, 0)
+			P(22, 1, "i_robe", "i_deathshroud"), P(20, 0x692, "i_cape"), P(7, 1), P(3, 1, null, "i_boots_calf"), P(LayerMount, 0x690)
 		};
 
 		private static readonly Piece[] leadingRingPieces = {
-			P(22, 1, "i_robe", "i_deathshroud"), P(20, 0x689, "i_cape"), P(7, 1), P(3, 1, null, "i_boots_calf"), P(LayerMount, 0)
+			P(22, 1, "i_robe", "i_deathshroud"), P(20, 0x689, "i_cape"), P(7, 1), P(3, 1, null, "i_boots_calf"), P(LayerMount, 0x690)
 		};
 
 		private static Piece[] PiecesOf(PowerBadge badge) {
@@ -445,6 +449,31 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
+			RestoreMount(ch, ch.Mount as Character);
+		}
+
+		/// <summary>#908 - the mount back to its own color and look (the uniform broke, the office went, the rider got off).</summary>
+		public static void RestoreMount(Character rider, Character mount) {
+			if ((mount == null) || ((mount.GetTag(storedMountColorTK) == null) && (mount.GetTag(MountItemTK) == null))) {
+				return;
+			}
+			if ((rider != null) && (rider.Mount == mount)) {
+				CharSyncQueue.AboutToChangeMount(rider);
+			}
+			object color = mount.GetTag(storedMountColorTK);
+			if (color != null) {
+				mount.Color = Convert.ToInt32(color);
+				mount.RemoveTag(storedMountColorTK);
+			}
+			mount.RemoveTag(MountItemTK);
+		}
+
+		//Erebor's layer 25 uni_layer: the horse in the office's color, looking like i_mt_horse_tan
+		private static void DressMount(Character rider, Character mount, int color) {
+			CharSyncQueue.AboutToChangeMount(rider);
+			mount.SetTag(storedMountColorTK, mount.Color);
+			mount.Color = color;
+			mount.SetTag(MountItemTK, UniformHorseItem);
 		}
 
 		private static bool IsWorn(Character ch, Piece piece) {
@@ -498,6 +527,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 			bool complete = Has(ch);
 			foreach (Piece piece in PiecesOf(badge)) {
+				if ((piece.layer == LayerMount) && (ch.Mount is Character mount)) {
+					RestoreMount(ch, mount);
+					if (complete) {
+						DressMount(ch, mount, piece.color);
+					}
+					continue;
+				}
 				AbstractItem item = (piece.layer != LayerMount) ? ch.FindLayer(piece.layer) : null;
 				if (item == null) {
 					continue;
