@@ -102,6 +102,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 			return TargetResult.Done;
 		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			return CorpseCarving.TargetPlayerByHead(self, targetted, "Zameruj lidi, nebo jejich hlavy", "To neni hlava hrace", owner => this.On_TargonChar(self, owner, parameter)); //#906
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("Zameruj lidi.");
+			return TargetResult.Done;
+		}
 	}
 
 	/// <summary>i_navrhban_target</summary>
@@ -124,6 +133,15 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage("Navrhl jsi hrace " + targetted.Name + " na blacklist mesta " + town.Name);
 				});
 			}
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			return CorpseCarving.TargetPlayerByHead(self, targetted, "Navrhuj lidi, nebo jejich hlavy", "Toto neni hlava hrace", owner => this.On_TargonChar(self, owner, parameter)); //#906
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("Navrhuj lidi, nebo jejich hlavy");
 			return TargetResult.Done;
 		}
 	}

@@ -1,3 +1,4 @@
+using System;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
@@ -38,6 +39,22 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static bool IsHead(Item item) {
 			return (item != null) && ((item.Def.PrettyDefname == "i_flesh_head") || (item.Def.PrettyDefname == "i_flesh_head_2"));
+		}
+
+		/// <summary>#906 - the blacklist targets' @targon_item (i_target_town, i_navrhban_target, i_target_ban): a player's
+		/// severed head stands for that player. Not a head: notAHead; a head that isn't a player's: notAPlayersHead; both end
+		/// the target, as Erebor's `remove`.</summary>
+		internal static TargetResult TargetPlayerByHead(Player self, Item targetted, string notAHead, string notAPlayersHead, Func<Character, TargetResult> onPlayer) {
+			if (!IsHead(targetted)) {
+				self.SysMessage(notAHead);
+				return TargetResult.Done;
+			}
+			Character owner = HeadOf(targetted);
+			if ((owner == null) || !owner.IsPlayer) {
+				self.SysMessage(notAPlayersHead);
+				return TargetResult.Done;
+			}
+			return onPlayer(owner);
 		}
 
 		/// <summary>The one whose head this is, or null.</summary>
