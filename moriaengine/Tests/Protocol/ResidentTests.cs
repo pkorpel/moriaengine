@@ -44,6 +44,9 @@ namespace SteamEngine.Tests.Protocol {
 				game.ReadGumpDialogWithStrings(Wait);
 				this.Run(game, ".TestResidentRenamed", "RESIDENT_RENAME_DONE");
 				this.AssertChecks("theDialogRenamedHim");
+				this.Run(game, ".TestResidentHomes", "RESIDENT_HOMES_DONE"); //#1315
+				this.AssertChecks("theHealersHeal", "aPatientDoesnt", "aGemOnItsOwnSpotIsntMoved", "aGhostClickingTheHealerLives", "anAosClientsClickToo", "aMovedGemMovesTheHome", "theNextBodyKeepsIt",
+					"infoShowsTheHome", "infoMovesAResidentsHome", "butOnlyInsideItsVenue", "andNotItsLeash", "theMovedSpotSurvivesARebuild", "anyOtherNpcTakesAnyHome", "countsFollowTheTypeAndTheSetup");
 			}
 		}
 	}

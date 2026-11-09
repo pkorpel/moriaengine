@@ -16,6 +16,7 @@ The GM's tools for players who break the rules: the jail, Erebor's labour camp, 
 - **A character's `.info`** shows *Jailed* and *InLabourCamp*.
   - **Jail / Forgive** jails a free player or forgives a jailed one.
   - **Labour camp** opens that player's `.lagrmenu` dialog.
+- **An NPC's `.info`** (#1315) shows *Home* and *Home leash*, both editable, and *Home here*; see [residents.md](../04-gameplay-systems/living-world/residents.md#gm-tools) for residents.
 
 The engine also has Sphere's `.x <command>` prefix, which runs a command on a targeted object.
 

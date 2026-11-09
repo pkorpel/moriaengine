@@ -96,6 +96,9 @@ namespace SteamEngine.CompiledScripts {
 			if (this.Existing != null && !this.Existing.IsDeleted) {
 				string id = this.Existing.VenueId ?? VenueRegistry.NextId(this.City);
 				bool moved = CityVenue.FormatRects(this.Existing.Rectangles) != CityVenue.FormatRects(this.Rects);
+				if (this.Existing.VenueType != this.Type) {
+					Residents.ClearCounts(this.Existing); //#1315 - a new type starts from its own counts (roles of the same name differ by type)
+				}
 				VenueRegistry.Fill(this.Existing, id, this.Type, this.Title, this.City, this.Opens, this.Closes, this.Rects, this.ZMin, this.ZMax);
 				if (moved) { //the marker stands in the venue, where .venues sends a GM
 					Point4D spot = VenueRegistry.MarkerSpot(this.Rects, this.ZMin, this.ZMax, this.M);
@@ -141,7 +144,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1240 - a venue's settings: type, name, hours, its area (found from the room, or corners by cursor).</summary>
 	public class D_Venue : CompiledGumpDef {
 		private const int Width = 420, LabelHue = 955, ValueHue = 52, ButtonHue = 2301;
-		internal const int Save = 1, Rescan = 2, Corners = 3, AddRect = 4, Outline = 5, Delete = 6, FillRoles = 7, PrevType = 10, NextType = 11;
+		internal const int Save = 1, Rescan = 2, Corners = 3, AddRect = 4, Outline = 5, Delete = 6, FillRoles = 7, RoleCounts = 8, PrevType = 10, NextType = 11;
 		internal const int TitleEntry = 20, OpensEntry = 21, ClosesEntry = 22;
 
 		public static void Show(Character gm, VenueDraft draft) {
@@ -175,7 +178,10 @@ namespace SteamEngine.CompiledScripts {
 			Button(this, y += 24, AddRect, "Pridat dalsi obdelnik");
 			Button(this, y += 24, Outline, "Ukazat obrys");
 			if (draft.Existing != null) {
-				Button(this, y += 24, FillRoles, "Obsadit role (" + Residents.OfVenue(draft.Existing.VenueId).Count + "/" + draft.Type.RoleCount + ")");
+				int wanted = (draft.Type == draft.Existing.VenueType) ? Residents.RoleCountOf(draft.Existing) : draft.Type.RoleCount;
+				Button(this, y += 24, FillRoles, "Obsadit role (" + Residents.OfVenue(draft.Existing.VenueId).Count + "/" + wanted + ")");
+				this.AddButton(230, y, 4005, 4007, RoleCounts, GumpButtonType.Reply, 0); //#1315 - how many of each role
+				this.AddLabel(266, y, ButtonHue, "Pocty obyvatel");
 				Button(this, y += 24, Delete, "Smazat misto");
 			}
 			this.AddButton(14, 324, 4023, 4025, Save, GumpButtonType.Reply, 0);
@@ -252,6 +258,22 @@ namespace SteamEngine.CompiledScripts {
 						Show(gm, VenueDraft.For(draft.Existing));
 					}
 					break;
+				case RoleCounts:
+					if ((draft.Existing != null) && !draft.Existing.IsDeleted) {
+						string problem3;
+						CityVenue saved = draft.Save(out problem3); //the counts are of the type picked now
+						if (saved == null) {
+							gm.RedMessage(problem3);
+							Show(gm, draft);
+						} else {
+							int stray = Residents.RemoveStrayRoles(saved);
+							if (stray > 0) {
+								gm.SysMessage("Odeslo obyvatel jine role: " + stray + ".");
+							}
+							D_VenueRoles.Show(gm, saved);
+						}
+					}
+					break;
 				case Delete:
 					if ((draft.Existing != null) && !draft.Existing.IsDeleted) {
 						int gone = Residents.OfVenue(draft.Existing.VenueId).Count; //#1242 - its residents go with it (CityVenue.On_Destroy)
@@ -268,9 +290,80 @@ namespace SteamEngine.CompiledScripts {
 					} else {
 						int stray = Residents.RemoveStrayRoles(venue); //#1242 - a new type drops the old type's people
 						gm.SysMessage("Ulozeno: " + venue.Label + " (" + venue.VenueId + ")." + ((stray > 0) ? " Odeslo obyvatel jine role: " + stray + "." : ""));
+						Show(gm, VenueDraft.For(venue)); //#1315 - back, now with the saved venue's buttons (fill its roles)
 					}
 					break;
 			}
+		}
+	}
+
+	/// <summary>#1315 - how many people of each role a venue has: fewer for a small house, more for a big one. A lower count sends
+	/// the extra residents away, a higher one fills the role at once. args: the venue.</summary>
+	public class D_VenueRoles : CompiledGumpDef {
+		private const int LabelHue = 955, ValueHue = 52, ButtonHue = 2301, Row = 24;
+		internal const int Back = 1, MinusBase = 100, PlusBase = 200;
+
+		public static void Show(Character gm, CityVenue venue) {
+			List<string> keys = new List<string>();
+			if (venue.VenueType != null) {
+				foreach (VenueRole role in venue.VenueType.Roles) {
+					keys.Add(role.Key);
+				}
+			}
+			gm.Dialog(gm, SingletonScript<D_VenueRoles>.Instance, new DialogArgs(venue, keys.ToArray()));
+		}
+
+		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			CityVenue venue = (CityVenue) args[0];
+			VenueRole[] roles = (venue.VenueType == null) ? new VenueRole[0] : venue.VenueType.Roles;
+			int height = 110 + (roles.Length * Row);
+			this.SetLocation(40, 40);
+			this.AddPage(0);
+			this.AddBackground(0, 0, 420, height, 2620);
+			this.AddLabel(14, 12, ValueHue, "Pocty obyvatel: " + venue.Label);
+			this.AddLabel(14, 40, LabelHue, "Role");
+			this.AddLabel(180, 40, LabelHue, "Pocet");
+			this.AddLabel(290, 40, LabelHue, "Ted / druh");
+			int y = 64;
+			for (int i = 0; i < roles.Length; i++) {
+				int people = 0;
+				foreach (Item gem in Residents.OfVenue(venue.VenueId)) {
+					people += (Residents.RoleKeyOf(gem) == roles[i].Key) ? 1 : 0;
+				}
+				this.AddLabel(14, y, LabelHue, roles[i].Name);
+				this.AddButton(170, y, 5603, 5607, MinusBase + i, GumpButtonType.Reply, 0);
+				this.AddLabel(198, y, ValueHue, Residents.CountOf(venue, roles[i]).ToString(CultureInfo.InvariantCulture));
+				this.AddButton(222, y, 5601, 5605, PlusBase + i, GumpButtonType.Reply, 0);
+				this.AddLabel(290, y, LabelHue, people.ToString(CultureInfo.InvariantCulture) + " / " + roles[i].Count.ToString(CultureInfo.InvariantCulture));
+				y += Row;
+			}
+			this.AddButton(14, height - 34, 4014, 4016, Back, GumpButtonType.Reply, 0);
+			this.AddLabel(50, height - 32, ButtonHue, "Zpet k mistu");
+		}
+
+		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
+			CityVenue venue = (CityVenue) args[0];
+			Character gm = (Character) gi.Cont;
+			if ((venue == null) || venue.IsDeleted || (gr.PressedButton == 0)) {
+				return;
+			}
+			if (gr.PressedButton == Back) {
+				D_Venue.Show(gm, VenueDraft.For(venue));
+				return;
+			}
+			string[] keys = (string[]) args[1]; //the rows as shown: a type changed meanwhile doesn't shift them onto other roles
+			bool plus = gr.PressedButton >= PlusBase;
+			int i = gr.PressedButton - (plus ? PlusBase : MinusBase);
+			VenueRole role = ((i >= 0) && (i < keys.Length) && (venue.VenueType != null)) ? Array.Find(venue.VenueType.Roles, r => r.Key == keys[i]) : null;
+			if (role != null) {
+				Residents.SetCount(venue, role, Residents.CountOf(venue, role) + (plus ? 1 : -1));
+				if (plus) {
+					gm.SysMessage(role.Name + ": " + Residents.CountOf(venue, role) + ", novych obyvatel " + Residents.FillRoles(venue) + ".");
+				} else {
+					gm.SysMessage(role.Name + ": " + Residents.CountOf(venue, role) + ", odeslo obyvatel " + Residents.RemoveStrayRoles(venue) + ".");
+				}
+			}
+			Show(gm, venue);
 		}
 	}
 
@@ -300,7 +393,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1240 - the venues of a city, or all: go, edit.</summary>
 	public class D_Venues : CompiledGumpDef {
 		private const int PageSize = 14, LabelHue = 955, ValueHue = 52;
-		private const int GoBase = 100, EditBase = 200, NextPage = 2, PrevPage = 3;
+		private const int GoBase = 100, EditBase = 200, NextPage = 2, PrevPage = 3, Proposals = 4;
 
 		public static void Show(Character gm, string city, int page) {
 			gm.Dialog(gm, SingletonScript<D_Venues>.Instance, new DialogArgs(city ?? "", page));
@@ -327,12 +420,11 @@ namespace SteamEngine.CompiledScripts {
 			int y = 44;
 			for (int i = page * PageSize; (i < list.Count) && (i < (page + 1) * PageSize); i++) {
 				CityVenue venue = list[i];
-				VenueType type = venue.VenueType;
 				int row = i - (page * PageSize); //ids by row on the page: absolute ones of a long list run into the next range
 				this.AddButton(14, y, 4005, 4007, GoBase + row, GumpButtonType.Reply, 0);
 				this.AddButton(46, y, 4011, 4013, EditBase + row, GumpButtonType.Reply, 0);
 				this.AddLabel(84, y, LabelHue, venue.Label);
-				this.AddLabel(330, y, ValueHue, (venue.City ?? "-") + ", " + venue.TileCount + " pol., role " + ((type == null) ? 0 : type.RoleCount));
+				this.AddLabel(330, y, ValueHue, (venue.City ?? "-") + ", " + venue.TileCount + " pol., role " + Residents.RoleCountOf(venue));
 				y += 22;
 			}
 			if (page > 0) {
@@ -341,6 +433,8 @@ namespace SteamEngine.CompiledScripts {
 			if ((page + 1) * PageSize < list.Count) {
 				this.AddButton(500, 80 + (PageSize * 22), 4005, 4007, NextPage, GumpButtonType.Reply, 0);
 			}
+			this.AddButton(200, 80 + (PageSize * 22), 4011, 4013, Proposals, GumpButtonType.Reply, 0); //#1315 - .venues navrh
+			this.AddLabel(236, 82 + (PageSize * 22), LabelHue, "Budovy bez mista");
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
@@ -351,6 +445,8 @@ namespace SteamEngine.CompiledScripts {
 			int button = gr.PressedButton;
 			if (button == NextPage || button == PrevPage) {
 				Show(gm, city, page + ((button == NextPage) ? 1 : -1));
+			} else if (button == Proposals) {
+				VenueCommands.Propose(gm, (city.Length > 0) ? city : VenueRegistry.CityAt(gm));
 			} else if ((button >= EditBase) && (button < EditBase + PageSize) && (Row(page, button - EditBase) < list.Count)) {
 				D_Venue.Show(gm, VenueDraft.For(list[Row(page, button - EditBase)]));
 			} else if ((button >= GoBase) && (button < GoBase + PageSize) && (Row(page, button - GoBase) < list.Count)) {

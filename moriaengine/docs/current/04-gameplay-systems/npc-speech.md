@@ -123,6 +123,9 @@ Erebor or here: 0.99z8 only lets an NPC understand ghost speech if it has the he
 invulnerable (`CanUnderstandGhost`), and Erebor's healers are plain vendor-brain NPCs; here no NPC sees a ghost, so
 none hears one. Erebor's ghosts were resurrected by **single-clicking** a healer - `e_healer`, now a real ability
 (`HealerAbilityDef`, see [Monster abilities](monster-abilities.md)). Both share `Healer` (`MonsterSpecialAttacks/Healer.cs`).
+The click is asked on both click paths: `Character.On_Click` (3.0.6m) and `On_AosClick` (TazUO and other AOS-tooltip
+clients; missing until #1122). The ghost must have died at least 5 s before (#1070). Since #1315 the healer and herbalist
+of a Houses of Healing venue are healers too ([residents.md](living-world/residents.md)).
 
 Not ported: `resurrect_player`'s account log line (`accMsg`), and Sphere's hard-coded healer-brain reactions
 (Erebor's healers don't have that brain).
