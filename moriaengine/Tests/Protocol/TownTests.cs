@@ -333,6 +333,16 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(300);
 				string appointed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
 				Assert.Contains("holder=General_Town_General name=General_Town_General badge=True uniform=False", appointed);
+
+				//#911 - everyone may see who holds the offices: the General among them
+				general.SendSpeech(".hracskefunkce");
+				var holders = general.ReadGumpDialogWithStrings(Wait);
+				string holderTexts = string.Join(" | ", holders.Strings);
+				Assert.Contains("General Gondoru: | General Town General", holderTexts);
+				Assert.Contains("Starostove:", holderTexts);
+				Assert.Contains("Kapitanove: | Osgiliath Zapadni Breh | -", holderTexts);
+				Assert.Contains("Prvni nazgul:", holderTexts);
+				general.SendGumpResponse(holders.GumpUid, 0);
 				double strength = Number(appointed, "str");
 				double vitality = Number(appointed, "vit");
 

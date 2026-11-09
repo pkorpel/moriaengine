@@ -69,6 +69,12 @@ Guards go by their home's town: a guard attacks a blacklisted player on sight an
 them, shouting a warning first at someone still outside the walls. A guard protects a citizen of its own
 town even when criminal, though not a murderer.
 
+## Who holds the offices
+
+`.hracskefunkce` (#911, Erebor's `d_playertitle` in `systems/scane.scp`) shows anyone the General of Gondor, each Gondor
+town's mayor, the four keeps' captains (in the colour the reader sees them in), the First Nazgul and the Nazgul ruling
+each Mordor town. Erebor listed fixed stones; here it's every town stone, by realm and name.
+
 ## The General of Gondor
 
 `systems/generals.scp`. A GM appoints one on `i_generalstone` (`.SetupTowns` stands it in Minas Tirith): the
