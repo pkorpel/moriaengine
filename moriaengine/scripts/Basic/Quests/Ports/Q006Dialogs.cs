@@ -536,10 +536,12 @@ namespace SteamEngine.CompiledScripts {
 					d.Response(false, true, "q006_idleExit");
 				}
 			}
+			GrandmasterEnvoyHint.Answer(d, player); //#837
 			d.Page("Kdo jsi?");
 			d.SetText("Jmenuji se Unas. Jsem kouzelnik.");
 			d.Html();
 			Q026.UnasLines(d, player); //#1272 - the tomb curse
+			GrandmasterEnvoyHint.Request(d, player); //#837 - on "Kdo jsi?", after q026's, as d_q023_CarodejUnas
 			d.Page("Mohu pomoci?");
 			d.SetText("Nepotrebuji pomoc.");
 			d.Html();
@@ -597,7 +599,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnButton(string button, Character npc, Player player) {
-			if (Q026.UnasButton(button, player)) { //#1272
+			if (Q026.UnasButton(button, player) || GrandmasterEnvoyHint.OnButton(button, player)) { //#1272, #837
 				return;
 			}
 			int q = Q006.GetStage(player);

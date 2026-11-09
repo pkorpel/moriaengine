@@ -77,7 +77,7 @@ namespace SteamEngine.CompiledScripts {
 	/// killing (Erebor's could leave him at 0 and alive).</summary>
 	[ViewableClass]
 	public class RinaldAbilityDef : PassiveAbilityDef {
-		private FieldValue resistStep, armorStep, craftKillOneIn, invulHitsStep, invulHitsCap;
+		private FieldValue resistStep, armorStep, craftKillOneIn, invulHitsStep, invulHitsCap, breathDamage;
 
 		public RinaldAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -86,6 +86,7 @@ namespace SteamEngine.CompiledScripts {
 			this.craftKillOneIn = this.InitTypedField("rinaldCraftKillOneIn", 20, typeof(int));
 			this.invulHitsStep = this.InitTypedField("rinaldInvulHitsStep", 200, typeof(int));
 			this.invulHitsCap = this.InitTypedField("rinaldInvulHitsCap", 5000, typeof(int));
+			this.breathDamage = this.InitTypedField("rinaldBreathDamage", 35, typeof(int)); //#837 f_dragon_fire(35)
 		}
 
 		public int ResistStep { get { return (int) this.resistStep.CurrentValue; } set { this.resistStep.CurrentValue = value; } }
@@ -93,6 +94,7 @@ namespace SteamEngine.CompiledScripts {
 		public int CraftKillOneIn { get { return (int) this.craftKillOneIn.CurrentValue; } set { this.craftKillOneIn.CurrentValue = value; } }
 		public int InvulHitsStep { get { return (int) this.invulHitsStep.CurrentValue; } set { this.invulHitsStep.CurrentValue = value; } }
 		public int InvulHitsCap { get { return (int) this.invulHitsCap.CurrentValue; } set { this.invulHitsCap.CurrentValue = value; } }
+		public int BreathDamage { get { return (int) this.breathDamage.CurrentValue; } set { this.breathDamage.CurrentValue = value; } }
 	}
 
 	/// <summary>#1022 e_odinvis_krik (the living helm): when hit, 1 in CryOneIn "crying.", and a second later every player

@@ -166,6 +166,34 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#837 - the quest's leftovers: other NPCs mention the envoy, Rinald breathes fire as he turns, and a body
+		/// falling in his cave goes back out with its ghost at once.</summary>
+		[Fact]
+		public void EnvoyHintRinaldsBreathAndADeathInTheCave() {
+			using (var admin = this.Connect(AdminAccount, "Quest Admin")) {
+				this.Ask(admin, ".SetupGrandmasterQuest", "SETUP_DONE:");
+			}
+			using (var client = this.Connect("grandmasterleftovers", "Leftover Hero")) {
+				string hint = this.Ask(client, ".TestQ000Hint", "Q000_HINT:");
+				Assert.Contains("notTooEarly=True unasOffers=True borekOffers=True afterBorek=12 afterUnas=12 stillPromotable=True", hint);
+
+				string breath = this.Ask(client, ".TestQ000Breath", "Q000_BREATH:");
+				Assert.True(int.Parse(Field(breath, "tiles="), CultureInfo.InvariantCulture) >= 9, breath); //nine flames across his front
+				Thread.Sleep(3000);
+				string burnt = this.Ask(client, ".TestQ000BreathReport", "Q000_BREATH_REPORT:");
+				Assert.True(int.Parse(Field(burnt, "lost="), CultureInfo.InvariantCulture) > 0, "the hero three tiles in front should be burnt: " + burnt);
+				Assert.Contains("rinaldUnhurt=True", burnt);
+
+				this.Ask(client, ".TestQ000Prepare \"8 2 12 Gondor\"", "Q000_PREPARED:");
+				this.EnterCave(client);
+				string died = this.Ask(client, ".TestQ000Die", "Q000_DIED:");
+				Assert.Contains("back=True corpseLeftInCave=False corpseAtReturn=True", died);
+				Assert.NotNull(TryReadMessageContaining(client, "Tohle se ti nepovedlo", Wait)); //out at once, not on the next minute
+				Assert.DoesNotContain("region=a_Slunecni_jeskyne", this.State(client));
+				this.Ask(client, ".TestQ000Resurrect", "Q000_RESURRECTED:");
+			}
+		}
+
 		private void EnterCave(TestGameClient client) {
 			this.Ask(client, ".TestQ000StepOn \"entrance\"", "Q000_STEPPED:");
 			Assert.NotNull(TryReadMessageContaining(client, "Musis spechat", Wait));

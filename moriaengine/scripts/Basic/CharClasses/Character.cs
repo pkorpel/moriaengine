@@ -1451,6 +1451,9 @@ namespace SteamEngine.CompiledScripts {
 					//still valid. See MonsterSpecialAttacks.TryApplySelfRes's own doc comment.
 					MonsterSpecialAttacks.TryApplySelfRes(this, corpse);
 					MonsterSpecialAttacks.OnBodyLaid(this, corpse, killedBy, undead); //#1022 OCS helpers, e_necroslave
+					if (this is Player dyingPlayer) {
+						GrandmasterQuest.OnBodyLaid(dyingPlayer, corpse); //#837 a death in Rinald's cave
+					}
 				}
 
 				//#797 - a_tevent_e_explode blasts everyone who fought it, same "position still
