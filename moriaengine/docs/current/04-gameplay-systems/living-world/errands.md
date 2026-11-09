@@ -204,6 +204,13 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Sraz eoredu (the eored's muster) | `eored` | a stable or barracks worker in Edoras | ride to the eored's 3 banners on the road out within 20 minutes, mounted at each (on foot a banner doesn't count), then report |
 | Pisen pro sin (a song for the hall) | `hallsong` | a tavern or town hall worker in Edoras, offered from Musicianship 30.0 | learn the old verse from another resident, then play it at the bard's stool in the giver's venue (an instrument in the pack and Erebor's Musicianship roll, `Bard.Plays`; a poor try can be played again after 3 s), then hear the giver's thanks |
 
+**Minas Tirith** (`MinasTirithStories.cs`, things in `minastirithstories.def`; the beacons are the world event, the Citadel helm step 30's):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Zapomenuta bylina (the forgotten herb) | `forgottenherb` | the healer or herbalist of the Houses of Healing in Minas Tirith | ask an old resident (an elder if the city has one), who remembers the rhyme (kingsfoil, athelas), gather 3 plants on the road out, bring them |
+| Zahada v archivu (the Steward's archives) | `archives` | a librarian, scholar or scribe in Minas Tirith | search the 3 dusty crates of records in the giver's venue (the last holds a note naming who borrowed the missing page), get the page from that resident (a worker), return it to the giver |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -233,7 +240,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
+Not built yet (design 9.3, being added under #1317): the other stories (Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
 
