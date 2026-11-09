@@ -93,11 +93,26 @@ namespace SteamEngine.CompiledScripts {
 			//the same room isn't proposed again, others are
 			List<FoundRoom> rooms = RoomScan.Candidates("Edoras", self.MovementSettings);
 			bool overlaps = false;
+			int rentedTiles = 0;
+			Map venueMap = Map.GetMap(venue.M);
 			foreach (FoundRoom candidate in rooms) {
 				foreach (int[] tile in candidate.Tiles) {
 					overlaps |= venue.Contains(tile[0], tile[1], tile[2]);
+					rentedTiles += RoomScan.IsRental(venueMap, tile[0], tile[1]) ? 1 : 0;
 				}
 			}
+			//#1312 - Edoras has player houses (dum), none of them is proposed
+			int edorasHouses = 0;
+			foreach (StaticRegion region in StaticRegion.AllRegions) {
+				FlaggedRegion house = region as FlaggedRegion;
+				if ((house != null) && (house.HouseNumber != 0) && (house.Mapplane == venue.M)) {
+					ImmutableRectangle first = System.Linq.Enumerable.First(house.Rectangles);
+					edorasHouses += (VenueRegistry.CityAt(new Point4D(first.MinX, first.MinY, 0, (byte) house.Mapplane)) == "Edoras") ? 1 : 0;
+				}
+			}
+			Console.WriteLine("VENUE_HOUSES: Edoras=" + edorasHouses + " rentedTiles=" + rentedTiles);
+			Report("edorasHasHouses", edorasHouses > 0);
+			Report("noHouseIsProposed", rentedTiles == 0);
 			Console.WriteLine("VENUE_CANDIDATES: Edoras=" + rooms.Count);
 			Report("edorasHasOtherRooms", rooms.Count > 0);
 			Report("aMarkedRoomIsntProposed", !overlaps);

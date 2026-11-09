@@ -242,7 +242,8 @@ namespace SteamEngine.CompiledScripts {
 				this.AddButton(ResponseX, y, 0xfa5, 0xfa7, 0, GumpButtonType.Page, page);
 			}
 			if (response.isLong) {
-				this.AddHtml(ResponseX + 35, y, Width - 85, 2 * RowHeight, response.text, false, false);
+				//#1312 - coloured as the short ones: HTML without a colour is black on this background, so it couldn't be read
+				this.AddHtml(ResponseX + 35, y, Width - 85, 2 * RowHeight, "<basefont color=" + (response.isEmote ? "#ffff88" : "#D7DF01") + ">" + response.text + "</basefont>", false, false);
 			} else {
 				this.AddLabel(ResponseX + 35, y, response.isEmote ? QuestDialogContent.ColorEmote : QuestDialogContent.ColorResponse, response.text);
 			}

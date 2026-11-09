@@ -282,6 +282,9 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendSpeech(".gmmenu");
 			var (menuUid, layout, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
 			Assert.Contains("Moderace", strings);
+			foreach (string livingWorld in new[] { ".venue", ".venues", ".resident", ".udalost", ".vyvolat" }) { //#1312
+				Assert.Contains(livingWorld, strings);
+			}
 			int goname = ButtonBeside(layout, strings, ".goname");
 			client.SendGumpResponse(menuUid, goname, new System.Collections.Generic.Dictionary<int, string> { { goname, "Gmtool Wolf" } });
 			Thread.Sleep(500);

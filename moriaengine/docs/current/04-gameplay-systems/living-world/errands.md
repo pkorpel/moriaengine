@@ -11,7 +11,7 @@ A **double click on a resident** opens their dialog (`D_ResidentTalk`). It shows
 - **"Potrebujes neco?"**, which opens an offer (`D_ErrandOffer`: the giver's words, then "Rad pomuzu" or "Ted ne"). If there is no offer, the resident says why;
 - **"Sbohem."**
 
-Steps are done only by picking a line in the dialog, never by a typed word (design 5.5). The player must be alive, within 3 tiles of the resident and see them, both to open the dialog and when a button is pressed. A button names its errand by the errand's number (`Errand.id`, given when taken), not by its place in a list, so a list changed while the dialog was open can't send it to another errand. The offer travels in its own dialog's args, and a new offer closes the old one.
+Steps are done only by picking a line in the dialog, never by a typed word (design 5.5). The player must be alive, within 4 tiles of the resident and see them (3 until #1312: residents wander while talked to, and a player one step behind was out of reach), both to open the dialog and when a button is pressed. A button names its errand by the errand's number (`Errand.id`, given when taken), not by its place in a list, so a list changed while the dialog was open can't send it to another errand. The offer travels in its own dialog's args, and a new offer closes the old one.
 
 ## What an errand is
 
@@ -25,7 +25,7 @@ An `Errand`, saved on the player in the `_errands_` tag (an `ErrandLog`), holds:
 |---|---|
 | Talk | the player picks the line |
 | Deliver | a message: the line. An item (made in the pack when the step begins, marked as the errand's) is taken back. When the errand ends any other way, the item is deleted wherever it went: worn, dropped, in a chest (#1258; before that only the pack and bank were searched, so an errand's sword could be kept). It never stacks with the player's own items of its kind (#1260, `Item.CanStackWith`) |
-| Fetch | the pack holds N of an item def; they are taken |
+| Fetch | the pack holds N of an item def; they are taken. The task names the def in brackets, as a single item shows it ("20 polen dreva (log)"), and the offer adds "Prines: 20x log" (#1312: only that def counts, "polena" could have meant any wood) |
 | Collect | a [collector bag](../quests/collectors.md) of a def has N or more; the bag is taken |
 | Wait | it is between two game hours (`VenueClock`) |
 | Choose | the player picks one of the answers; it stays on the errand for later steps or chains |
@@ -220,7 +220,7 @@ Both `.settings` categories, "Ukoly" and #1243's "Povest", are now in the settin
 | perCityPerDay, perGiverPerDay | 6, 1 | errands taken per game day (24 real minutes) in a city and from one resident |
 | repeatPenalty, payFloor | 25, 25 | the same template again in a row pays 25% less each time, down to 25% |
 
-The giver won't offer a second errand while the first is open. Nobody offers errands to the city's enemy (reputation Nepritel): an enemy earns no standing this way, and the shops refuse them too. The repeat penalty counts the same template done in a row and also the same one held now, so holding three at once doesn't avoid it. An errand's time runs from when it's taken. An errand that runs out is dropped, and its item is taken back, the next time the player's errands are read.
+The giver won't offer a second errand while the first is open. Nobody offers errands in the enemy realm's towns (#1312: a Gondor player in Barad-dur, Harad or Umbar and Mordor's in Minas Tirith, Edoras or Hobitin; `Reputation.IsEnemyCity`, outcasts and those of no realm aren't anyone's enemy here), nor to the city's enemy (reputation Nepritel): an enemy earns no standing this way, and the shops refuse them too. The repeat penalty counts the same template done in a row and also the same one held now, so holding three at once doesn't avoid it. An errand's time runs from when it's taken. An errand that runs out is dropped, and its item is taken back, the next time the player's errands are read.
 
 Harad and Umbar add two templates of their own (`caravan` and `contraband`), and their errands also serve the faction of the giver's workplace: see [harad-umbar.md](harad-umbar.md) (#1282). In Barad-dur errands are orders: [war-camp.md](war-camp.md).
 
@@ -247,7 +247,7 @@ The Ukoly tab (section 31) lists each errand with:
 - whom to see and where they are at this hour (their venue from the schedule);
 - the minutes left.
 
-Each errand has two buttons: one points the quest arrow (0xBA) at the resident, the other gives the errand up (its item goes back).
+Each errand has two buttons: one points the quest arrow (0xBA) at the resident, the other gives the errand up (its item goes back) after a confirm dialog (#1312: one click gave it up by accident; "Ne" shows the journal again). `.arrowend` (Erebor's, a player command) takes the arrow away.
 
 ## Tests
 

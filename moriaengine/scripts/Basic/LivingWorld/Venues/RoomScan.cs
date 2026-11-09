@@ -151,7 +151,10 @@ namespace SteamEngine.CompiledScripts {
 							if (!IsCovered(map, x, y, z) || (VenueRegistry.At(new Point4D(x, y, z, area.Mapplane)) != null)) {
 								continue;
 							}
-							FoundRoom room = Scan(map, new Point3D(x, y, z), settings, seen, true);
+							if (IsRental(map, x, y)) {
+								continue;
+							}
+							FoundRoom room = WithoutRentals(map, Scan(map, new Point3D(x, y, z), settings, seen, true));
 							if ((room != null) && (room.Tiles.Count >= MinRoomTiles)) {
 								room.M = (byte) area.Mapplane;
 								rooms.Add(room);
@@ -162,6 +165,25 @@ namespace SteamEngine.CompiledScripts {
 			}
 			rooms.Sort((a, b) => b.Tiles.Count.CompareTo(a.Tiles.Count));
 			return rooms;
+		}
+
+		/// <summary>#1312 - a player's house, stall or field (Erebor's tag.housenumber): rented to players, never a venue.</summary>
+		public static bool IsRental(Map map, int x, int y) {
+			FlaggedRegion area = RegionEventSystem.AreaOf(map.GetRegionFor(x, y));
+			return (area != null) && (area.HouseNumber != 0);
+		}
+
+		//a room flooded in from outside a house's region: half of it or more inside one is the house's (null), else the
+		//house's tiles are cut off (a region's edge and the walls rarely agree)
+		private static FoundRoom WithoutRentals(Map map, FoundRoom room) {
+			if (room == null) {
+				return null;
+			}
+			List<int[]> kept = room.Tiles.FindAll(tile => !IsRental(map, tile[0], tile[1]));
+			if (kept.Count == room.Tiles.Count) {
+				return room;
+			}
+			return ((kept.Count * 2) <= room.Tiles.Count) ? null : new FoundRoom(kept, room.TooBig);
 		}
 
 		/// <summary>Rectangles covering exactly the tiles: runs along each row, a run joined to the rectangle above when it spans the same.</summary>

@@ -29,9 +29,9 @@ namespace SteamEngine.Tests.Protocol {
 				var dialog = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains(dialog.Strings, s => s.Contains("Povest ve mestech"));
 				Assert.Contains(dialog.Strings, s => s.Contains("Edoras"));
-				Assert.Contains(dialog.Strings, s => s.Contains("Barad-dur"));
-				Assert.Contains(dialog.Strings, s => s.Contains("Nepritel"));
-				Assert.Contains(dialog.Strings, s => s.Contains("Gorbagova tlupa"));
+				Assert.Contains(dialog.Strings, s => s.Contains("Minas Tirith"));
+				Assert.DoesNotContain(dialog.Strings, s => s.Contains("Barad-dur")); //#1312 - the enemy realm's cities aren't listed
+				Assert.DoesNotContain(dialog.Strings, s => s.Contains("Gorbagova tlupa"));
 			}
 		}
 	}

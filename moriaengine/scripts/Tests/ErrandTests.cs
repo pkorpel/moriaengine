@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -115,6 +116,18 @@ namespace SteamEngine.CompiledScripts {
 			return count;
 		}
 
+		//#1312 - CanTalk from a tile this far, in the resident's sight, in any of the 8 directions; null if no such tile
+		private static bool? TalksFrom(Player player, NPC npc, int distance) {
+			for (int dir = 0; dir < 8; dir++) {
+				int dx = new[] { 0, 1, 1, 1, 0, -1, -1, -1 }[dir], dy = new[] { -1, -1, 0, 1, 1, 1, 0, -1 }[dir];
+				player.Go(new Point4D((ushort) (npc.X + (dx * distance)), (ushort) (npc.Y + (dy * distance)), npc.Z, npc.M));
+				if ((Point2D.GetSimpleDistance(player, npc) == distance) && player.CanSeeLOS(npc).Allow) {
+					return Errands.CanTalk(player, npc);
+				}
+			}
+			return null;
+		}
+
 		private static void Near(Player player, NPC npc) {
 			player.Go(new Point4D(npc.X, npc.Y, npc.Z, npc.M));
 		}
@@ -127,7 +140,19 @@ namespace SteamEngine.CompiledScripts {
 			Errand errand = (active.Count == 1) ? active[0] : null;
 			Report("theClientTookIt", (errand != null) && (errand.key == "test_errand"));
 			Report("theLetterWasDelivered", (errand != null) && (errand.index == 1) && (Letters(player) == 0));
+			string apple = Errands.ItemName(FetchDef);
+			Report("theFetchNamesTheItem", (errand != null) && (apple.Length > 0) && errand.Current.task.EndsWith(" (" + apple + ")", StringComparison.Ordinal)
+				&& Errands.Wanted(errand) == "2x " + apple); //#1312
 			Console.WriteLine("ERRAND_AFTER_DONE");
+		}
+
+		/// <summary>#1312 - the account's plevel and max plevel (what a typed command is checked against), so a player
+		/// command is tried as a plain player.</summary>
+		[SteamFunction]
+		public static void TestErrandPlevel(Character self, int plevel) {
+			typeof(AbstractAccount).GetField("maxPlevel", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(self.Account, (byte) plevel);
+			self.Account.PLevel = (byte) plevel;
+			Console.WriteLine("ERRAND_PLEVEL: " + self.Account.PLevel + " max=" + self.Account.MaxPLevel);
 		}
 
 		/// <summary>The rest of the steps, the pay, the limits, running out and giving up, on the server.</summary>
@@ -160,6 +185,8 @@ namespace SteamEngine.CompiledScripts {
 			apples.Amount = 3;
 			player.Go(new Point4D((ushort) (giverBody.X + 8), giverBody.Y, giverBody.Z, giverBody.M));
 			Report("notFromAfar", !Errands.Do(player, errand, giverBody) && (errand.index == 1));
+			Report("fourTilesAwayTalks", TalksFrom(player, giverBody, 4) == true); //#1312
+			Report("fiveTilesAwayDoesnt", TalksFrom(player, giverBody, 5) == false);
 			Near(player, giverBody);
 			Report("twoApplesTaken", Errands.Do(player, errand, giverBody) && (Errands.CountIn(player.Backpack, apple) == 1) && (errand.index == 2));
 			VenueClock.Override = 10;
@@ -194,6 +221,25 @@ namespace SteamEngine.CompiledScripts {
 			Reputation.Set(player, "Edoras", -900);
 			Report("anEnemyOfTheCityGetsNone", (Errands.WhyNot(player, giver, "Edoras") != null) && (Errands.Make(player, giver) == null));
 			Reputation.Set(player, "Edoras", standing);
+			//#1312 - no errands in the enemy realm's towns, nor are they listed; outcasts and those of no realm see all
+			Realm realm = player.Realm;
+			bool mordorRefused, gondorNotRefused;
+			List<string> mordorSees, gondorSees, outcastSees;
+			try {
+				player.Realm = Realm.Mordor;
+				mordorRefused = (Errands.WhyNot(player, giver, "Edoras") == Errands.EnemyRealmRefusal) && (Errands.Make(player, giver) == null);
+				mordorSees = Reputation.CitiesOf(player);
+				player.Realm = Realm.Gondor;
+				gondorNotRefused = Errands.WhyNot(player, giver, "Edoras") != Errands.EnemyRealmRefusal;
+				gondorSees = Reputation.CitiesOf(player);
+				player.Realm = Realm.GondorOutcast;
+				outcastSees = Reputation.CitiesOf(player);
+			} finally {
+				player.Realm = realm;
+			}
+			Report("anEnemyRealmGetsNone", mordorRefused && gondorNotRefused);
+			Report("enemyCitiesArentListed", !mordorSees.Contains("Edoras") && mordorSees.Contains("Barad-dur") && !gondorSees.Contains("Umbar") && gondorSees.Contains("Edoras")
+				&& outcastSees.Contains("Edoras") && outcastSees.Contains("Umbar"));
 
 			//an errand runs out
 			log.day = -1;

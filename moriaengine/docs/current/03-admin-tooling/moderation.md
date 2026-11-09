@@ -5,8 +5,9 @@ The GM's tools for players who break the rules: the jail, Erebor's labour camp, 
 
 ## GM menu and .info
 
-- **`.gmmenu`** (#1114) lists the GM commands in four groups: moderation, players, GM, world. Each has a line saying
-  what it does.
+- **`.gmmenu`** (#1114) lists the GM commands in five groups: moderation, players, GM, world and the living world's towns (#1312: `.venue`,
+  `.venues`, `.resident`, `.udalost`, `.vyvolat`). Each has a line saying what it does. Each group goes to the shorter
+  column, so the window stays as low as it can.
   - A button runs the command exactly as if typed, through `Commands.PlayerCommand`, so it gets the same permission
     check and argument parsing.
   - A command that takes an argument (`.afk` seconds, `.afklog` filter, `.goname`, `.gouid`, `.gocli`,

@@ -18,8 +18,8 @@ namespace SteamEngine.CompiledScripts {
 	public class D_TownConfirm : CompiledGumpDef {
 		private const int YesButton = 1;
 
-		public static void Ask(Player player, string question, Action onYes) {
-			player.Dialog(player, SingletonScript<D_TownConfirm>.Instance, new DialogArgs(question, onYes));
+		public static void Ask(Player player, string question, Action onYes, Action onNo = null) {
+			player.Dialog(player, SingletonScript<D_TownConfirm>.Instance, new DialogArgs(question, onYes, onNo));
 		}
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
@@ -37,6 +37,8 @@ namespace SteamEngine.CompiledScripts {
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
 			if (gr.PressedButton == YesButton) {
 				((Action) args[1])();
+			} else {
+				((Action) args[2])?.Invoke();
 			}
 		}
 	}

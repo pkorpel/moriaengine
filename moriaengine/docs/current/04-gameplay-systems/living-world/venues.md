@@ -39,7 +39,7 @@ Opening hours can run past midnight (a tavern opens 8 to 2), and 0 to 24 means a
 | `.venue` | Inside a venue: edit it. Elsewhere: a new venue from the room you stand in, its outline shown with sparkles |
 | `.venues` | The venues of the city you stand in: go there, edit |
 | `.venues vse` | All venues |
-| `.venues navrh` | Roofed rooms of the city that aren't venues yet, biggest first: go, mark as a venue, skip |
+| `.venues navrh` | Roofed rooms of the city that aren't venues yet, biggest first: go, mark as a venue, skip. Players' houses, stalls and fields (regions with a house number) are left out, also a room half or more inside one; a smaller part inside one is cut off (#1312) |
 | `.venues export` | Write every venue to `scripts/Setup/venues.txt` |
 
 **The dialog** (`D_Venue`):

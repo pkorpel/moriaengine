@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using Xunit;
 
@@ -19,6 +20,8 @@ namespace SteamEngine.Tests.Protocol {
 				var gump = game.ReadGumpSkippingQuestScroll(Wait);
 				Assert.Contains(gump.Strings, s => s.Contains("Talathwen"));
 				Assert.Contains(gump.Strings, s => s.Contains("Vitej v mem kramku !"));
+				//#1312 - a long response (two rows, HTML) is coloured, the "Mohu pomoci?" page's second answer was black on black
+				Assert.Contains(gump.Strings, s => s.StartsWith("<basefont color=#D7DF01>Vsiml jsem si dokonalych tvaru", StringComparison.Ordinal));
 				this.Run(game, ".TestQ009Button \"krejci_1:1\"", "Q009_BUTTON:");
 				game.SendGumpResponse(gump.GumpUid, Q009Q018Steps.IdOf(this.LastLine("Q009_BUTTON:")));
 				string state = "";

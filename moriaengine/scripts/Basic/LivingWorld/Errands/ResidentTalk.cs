@@ -157,7 +157,8 @@ namespace SteamEngine.CompiledScripts {
 			this.AddPage(0);
 			this.AddBackground(0, 0, 380, 220, 2620);
 			this.AddLabel(16, 12, 95, (errand == null) ? "" : errand.name);
-			this.AddHtml(16, 40, 348, 120, "<basefont color=#FFFFFF>" + ((errand == null) ? "" : errand.offer) + "</basefont>", false, true);
+			string wanted = (errand == null) ? "" : Errands.Wanted(errand); //#1312 - which item exactly
+			this.AddHtml(16, 40, 348, 120, "<basefont color=#FFFFFF>" + ((errand == null) ? "" : errand.offer) + ((wanted.Length > 0) ? "<br><br>Prines: " + wanted : "") + "</basefont>", false, true);
 			bool order = (errand != null) && WarCamp.IsCamp(errand.city);
 			this.AddButton(16, 175, 0xFA5, 0xFA7, AcceptButton, GumpButtonType.Reply, 0);
 			this.AddLabel(52, 177, 68, order ? "Rozumim." : "Rad pomuzu.");
@@ -232,8 +233,16 @@ namespace SteamEngine.CompiledScripts {
 			if (errand != null) {
 				if (((button - FirstButton) % 2) == 0) {
 					Errands.PointTo(player, errand);
-				} else {
-					Errands.GiveUp(player, errand);
+				} else { //#1312 - asked first, a give up was one click away
+					int id = errand.id;
+					D_TownConfirm.Ask(player, "Opravdu se chces vzdat ukolu \"" + errand.name + "\"?", () => {
+						Errand still = Errands.ById(player, id);
+						if (still != null) {
+							Errands.GiveUp(player, still);
+						}
+						QuestJournal.Open(player, D_QuestJournal.SectionErrands);
+					}, () => QuestJournal.Open(player, D_QuestJournal.SectionErrands));
+					return;
 				}
 			}
 			QuestJournal.Open(player, D_QuestJournal.SectionErrands);

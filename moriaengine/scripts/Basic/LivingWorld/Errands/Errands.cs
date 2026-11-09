@@ -58,8 +58,10 @@ namespace SteamEngine.CompiledScripts {
 	public static class Errands {
 		internal static readonly TagKey LogTK = TagKey.Acquire("_errands_");
 		internal static readonly TagKey ItemTK = TagKey.Acquire("_errand_item_");
+		public const string EnemyRealmRefusal = "Pro nepritele nasi rise tu zadnou praci nemam."; //#1312
+
 		/// <summary>How near a resident a player must be to talk to them, and see them.</summary>
-		public const int Reach = 3;
+		public const int Reach = 4; //#1312 - the user's call: residents wander while talked to, 3 left players out of reach
 
 		public static DateTime? NowOverride;
 
@@ -102,6 +104,9 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Why this giver offers nothing now (null when they can): the player's limits and the giver's.</summary>
 		public static string WhyNot(Player player, Item giverGem, string city) {
+			if (Reputation.IsEnemyCity(player, city)) {
+				return EnemyRealmRefusal; //#1312 - the enemy realm's towns have no work for you
+			}
 			ErrandLog log = Log(player);
 			ErrandSettings s = Settings;
 			if (log.active.Count >= s.maxActive) {
@@ -872,6 +877,12 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>#1312 - Erebor's .arrowend (arrowquest 0): the quest arrow off.</summary>
+		[SteamFunction]
+		public static void ArrowEnd(Player self) {
+			self.QuestArrow(false, self);
+		}
+
 		// ---- builders for templates ----
 
 		public static ErrandStep Talk(Item resident, string task, string say, string reply) {
@@ -882,8 +893,31 @@ namespace SteamEngine.CompiledScripts {
 			return new ErrandStep { kind = (int) ErrandStepKind.Deliver, residentId = Residents.IdOf(resident), itemDef = itemDef ?? "", task = task, say = say, reply = reply };
 		}
 
+		/// <summary>#1312 - the task names the item in brackets, as the player sees it: only that def counts ("polena" was any of
+		/// a dozen woods).</summary>
 		public static ErrandStep Fetch(Item resident, string itemDef, int count, string task, string say, string reply) {
+			string name = ItemName(itemDef);
+			if ((name.Length > 0) && !task.EndsWith(name + ")", StringComparison.Ordinal)) {
+				task = task.EndsWith(")", StringComparison.Ordinal) ? task.Substring(0, task.Length - 1) + ", " + name + ")" : task + " (" + name + ")"; //"(chce vino, wine)", one bracket
+			}
 			return new ErrandStep { kind = (int) ErrandStepKind.Fetch, residentId = Residents.IdOf(resident), itemDef = itemDef, count = count, task = task, say = say, reply = reply };
+		}
+
+		/// <summary>An item def's name as a single item shows it, "" if there's no such def.</summary>
+		public static string ItemName(string itemDef) {
+			return (ThingDef.GetByDefname(itemDef) is ItemDef def) ? (def.Name ?? "") : "";
+		}
+
+		/// <summary>#1312 - the things an errand wants brought, for its offer: "20x log".</summary>
+		public static string Wanted(Errand errand) {
+			List<string> wanted = new List<string>();
+			foreach (ErrandStep step in errand.steps) {
+				string name = (step.Kind == ErrandStepKind.Fetch) ? ItemName(step.itemDef) : "";
+				if (name.Length > 0) {
+					wanted.Add(step.count.ToString(CultureInfo.InvariantCulture) + "x " + name);
+				}
+			}
+			return string.Join(", ", wanted);
 		}
 
 		public static ErrandStep Collect(Item resident, string bagDef, int count, string task, string say, string reply) {

@@ -75,6 +75,12 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("housepad", "dlazdice pred dvermi (kurzor)"),
 				new Entry("housemove", "presunout cedulku domu (kurzor)"),
 				new Entry("portzonepoint", "sem posilat mrtve z PvP areny")),
+			new Group("Mesta", //#1312 - the living world's (#1237)
+				new Entry("venue", "oznacit / upravit misto, kde stojis"),
+				new Entry("venues", "mista ve meste; vse, navrh, obsadit, export", Arg.Text),
+				new Entry("resident", "obyvatel mesta (kurzor)"),
+				new Entry("udalost", "udalosti; start druh [mesto], stop [vse]", Arg.Text),
+				new Entry("vyvolat", "zprava vyvolavacum ve meste", Arg.Text)),
 		};
 
 		private const int Width = 760, Row = 20, Margin = 12, ColumnWidth = 370, Hue = 955, TitleHue = 0x481, CommandHue = 0x35;
@@ -96,16 +102,21 @@ namespace SteamEngine.CompiledScripts {
 			self.Dialog(self, SingletonScript<D_GmCommands>.Instance, new DialogArgs());
 		}
 
-		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
-			int rowsLeft = 0, rowsRight = 0;
+		/// <summary>#1312 - each group goes to the shorter column, so the window stays as low as it can.</summary>
+		internal static int[] Columns(out int rows) {
+			int[] column = new int[groups.Length];
+			int[] filled = new int[2];
 			for (int g = 0; g < groups.Length; g++) {
-				if ((g % 2) == 0) {
-					rowsLeft += groups[g].entries.Length + 2;
-				} else {
-					rowsRight += groups[g].entries.Length + 2;
-				}
+				column[g] = (filled[1] < filled[0]) ? 1 : 0;
+				filled[column[g]] += groups[g].entries.Length + 2;
 			}
-			int height = (System.Math.Max(rowsLeft, rowsRight) * Row) + (3 * Margin) + Row;
+			rows = System.Math.Max(filled[0], filled[1]);
+			return column;
+		}
+
+		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			int[] columns = Columns(out int rows);
+			int height = (rows * Row) + (3 * Margin) + Row;
 			this.SetLocation(40, 40);
 			this.AddPage(0);
 			this.AddBackground(0, 0, Width, height, 9200);
@@ -114,7 +125,7 @@ namespace SteamEngine.CompiledScripts {
 			int[] y = { Margin + Row + Margin, Margin + Row + Margin };
 			int index = 0;
 			for (int g = 0; g < groups.Length; g++) {
-				int column = g % 2;
+				int column = columns[g];
 				int x = Margin + (column * ColumnWidth);
 				this.AddLabel(x, y[column], TitleHue, groups[g].title);
 				y[column] += Row;
