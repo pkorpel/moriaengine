@@ -37,7 +37,7 @@ Opening hours can run past midnight (a tavern opens 8 to 2), and 0 to 24 means a
 | Command | What it does |
 |---|---|
 | `.venue` | Inside a venue: edit it. Elsewhere: a new venue from the room you stand in, its outline shown with sparkles |
-| `.venues` | The venues of the city you stand in: go there, edit |
+| `.venues` | The venues of the city you stand in: go there, edit; *Budovy bez mista* at the bottom is `.venues navrh` (#1315) |
 | `.venues vse` | All venues |
 | `.venues navrh` | Roofed rooms of the city that aren't venues yet, biggest first: go, mark as a venue, skip. Players' houses, stalls and fields (regions with a house number) are left out, also a room half or more inside one; a smaller part inside one is cut off (#1312) |
 | `.venues export` | Write every venue to `scripts/Setup/venues.txt` |
@@ -48,7 +48,7 @@ Opening hours can run past midnight (a tavern opens 8 to 2), and 0 to 24 means a
 - *Nastavit rohy kurzorem* replaces the area with two cursor corners, which open-air venues use;
 - *Pridat dalsi obdelnik* adds one, for an L-shaped house;
 - *Ukazat obrys* shows the outline;
-- *Smazat* deletes the venue at once; *Ulozit* saves the rest.
+- *Smazat* deletes the venue at once; *Ulozit* saves the rest and shows the dialog again as the saved venue's (#1315), so a new venue's roles are filled from it at once.
 
 The city is found by itself: the smallest area with Erebor's city name holding the spot, as houses find theirs.
 

@@ -18,6 +18,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey roleTK = TagKey.Acquire("_res_role_");
 		private static readonly TagKey venueTK = TagKey.Acquire("_res_venue_");
 		private static readonly TagKey homeTK = TagKey.Acquire("_res_home_");
+		private static readonly TagKey placedTK = TagKey.Acquire("_res_placed_"); //#1315 - x,y where the gem was put when made
 		private static readonly TagKey traitsTK = TagKey.Acquire("_res_traits_");
 		private static readonly TagKey spawnGemTK = TagKey.Acquire("spawnGem");
 		private static readonly TagKey pieceIdTK = TagKey.Acquire("_worldPieceId_");
@@ -73,6 +74,24 @@ namespace SteamEngine.CompiledScripts {
 
 		public static string VenueIdOf(Thing gem) {
 			return gem.GetTag(venueTK) as string;
+		}
+
+		/// <summary>#1315 - a gem made before #1315 has no record of where it was put: where it stands when first seen is that, so
+		/// its computed spot shifting later (furniture added: SpotsOf's CanFit) never pins it as moved.</summary>
+		internal static void EnsurePlaced(Item gem) {
+			if ((gem.GetTag(placedTK) == null) && (gem.Cont == null)) {
+				gem.SetTag(placedTK, gem.X.ToString(CultureInfo.InvariantCulture) + "," + gem.Y.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+
+		/// <summary>#1315 - x,y where the gem was put when made, or null (made before #1315).</summary>
+		internal static int[] PlacedAt(Item gem) {
+			string[] xy = (gem.GetTag(placedTK) as string ?? "").Split(',');
+			int x, y;
+			if ((xy.Length == 2) && int.TryParse(xy[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out x) && int.TryParse(xy[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out y)) {
+				return new[] { x, y };
+			}
+			return null;
 		}
 
 		public static string HomeIdOf(Thing gem) {
@@ -163,15 +182,99 @@ namespace SteamEngine.CompiledScripts {
 			return gems.Count;
 		}
 
-		/// <summary>After a venue's type changed: residents of roles the new type doesn't have, or beyond a role's count, leave.
-		/// Returns how many.</summary>
+		public const int MaxRoleCount = 10;
+
+		private static TagKey CountKey(string roleKey) {
+			return TagKey.Acquire("_venue_n_" + roleKey);
+		}
+
+		/// <summary>#1315 - how many of a role this venue wants: the GM's number for it (D_VenueRoles, a tag on the venue), else
+		/// the type's. A small house of healing needs fewer people than the type says.</summary>
+		public static int CountOf(CityVenue venue, VenueRole role) {
+			object n = venue.GetTag(CountKey(role.Key));
+			return (n == null) ? role.Count : Convert.ToInt32(n, CultureInfo.InvariantCulture);
+		}
+
+		public static void SetCount(CityVenue venue, VenueRole role, int count) {
+			count = Math.Max(0, Math.Min(MaxRoleCount, count));
+			if (count == role.Count) {
+				venue.RemoveTag(CountKey(role.Key));
+			} else {
+				venue.SetTag(CountKey(role.Key), count);
+			}
+		}
+
+		/// <summary>#1315 - back to the type's counts (the venue's type changed).</summary>
+		public static void ClearCounts(CityVenue venue) {
+			List<TagKey> counts = new List<TagKey>();
+			foreach (KeyValuePair<TagKey, object> tag in venue.GetAllTags()) {
+				if (tag.Key.Name.StartsWith("_venue_n_", StringComparison.Ordinal)) {
+					counts.Add(tag.Key);
+				}
+			}
+			foreach (TagKey key in counts) {
+				venue.RemoveTag(key);
+			}
+		}
+
+		/// <summary>#1315 - whether a resident of this id belongs in the venue by its type and counts now (a setup file from before a
+		/// count was lowered doesn't bring the extra one back).</summary>
+		public static bool Fits(CityVenue venue, string roleKey, string id) {
+			VenueRole role = (venue.VenueType == null) ? null : Array.Find(venue.VenueType.Roles, r => r.Key == roleKey);
+			int n;
+			return (role != null) && int.TryParse(id.Substring(id.LastIndexOf('/') + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out n) && (n <= CountOf(venue, role));
+		}
+
+		/// <summary>All the people the venue wants, by its counts.</summary>
+		public static int RoleCountOf(CityVenue venue) {
+			int count = 0;
+			if (venue.VenueType != null) {
+				foreach (VenueRole role in venue.VenueType.Roles) {
+					count += CountOf(venue, role);
+				}
+			}
+			return count;
+		}
+
+		/// <summary>#1315 - the venue's own counts for .venues export: "healer=1,patient=0", only those not the type's.</summary>
+		public static string CountsText(CityVenue venue) {
+			List<string> counts = new List<string>();
+			if (venue.VenueType != null) {
+				foreach (VenueRole role in venue.VenueType.Roles) {
+					if (venue.GetTag(CountKey(role.Key)) != null) {
+						counts.Add(role.Key + "=" + CountOf(venue, role).ToString(CultureInfo.InvariantCulture));
+					}
+				}
+			}
+			return string.Join(",", counts);
+		}
+
+		public static void ApplyCounts(CityVenue venue, string text) {
+			if ((venue.VenueType == null) || string.IsNullOrEmpty(text)) {
+				return;
+			}
+			foreach (string pair in text.Split(',')) {
+				string[] kv = pair.Split('=');
+				int n;
+				if ((kv.Length == 2) && int.TryParse(kv[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out n)) {
+					foreach (VenueRole role in venue.VenueType.Roles) {
+						if (role.Key == kv[0].Trim()) {
+							SetCount(venue, role, n);
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>After a venue's type changed: residents of roles the new type doesn't have, or beyond a role's count (#1315: the
+		/// venue's count), leave. Returns how many.</summary>
 		public static int RemoveStrayRoles(CityVenue venue) {
 			int gone = 0;
 			foreach (Item gem in OfVenue(venue.VenueId)) {
 				VenueRole role = RoleOf(gem);
 				string id = IdOf(gem) ?? "";
 				int n;
-				bool beyond = (role != null) && int.TryParse(id.Substring(id.LastIndexOf('/') + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out n) && (n > role.Count);
+				bool beyond = (role != null) && int.TryParse(id.Substring(id.LastIndexOf('/') + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out n) && (n > CountOf(venue, role));
 				if ((role == null) || beyond) {
 					NPC body = BodyOf(gem);
 					if (body != null) {
@@ -206,9 +309,26 @@ namespace SteamEngine.CompiledScripts {
 			}
 			NPC npc = body as NPC;
 			if (npc != null) {
+				EnsureRoleAbilities((Item) gem, npc);
 				ResidentSchedule.Apply((Item) gem, npc, true);
 			}
 			ResidentSchedule.EnsureRunning();
+		}
+
+		/// <summary>#1315 - the healing venue's healer and herbalist are healers: a ghost clicking one is brought back (e_healer,
+		/// as the archive's healer NPCs); the patients aren't.</summary>
+		public static bool IsHealerRole(Item gem) {
+			CityVenue work = WorkplaceOf(gem);
+			string role = RoleKeyOf(gem);
+			return (work != null) && (work.VenueType != null) && (work.VenueType.Key == "healing") && ((role == "healer") || (role == "herbalist"));
+		}
+
+		/// <summary>#1315 - what the role gives the body: a fresh one (Prepare), and one spawned before the role gave it (the scheduler).</summary>
+		internal static void EnsureRoleAbilities(Item gem, NPC npc) {
+			AbilityDef healer = MonsterSpecialAttacks.HealerDef;
+			if ((healer != null) && IsHealerRole(gem) && !npc.HasAbility(healer, out _)) {
+				npc.SetRealAbilityPoints(healer, 1);
+			}
 		}
 
 		/// <summary>The roles of a venue that have nobody yet, filled: the count each role wants, by ids that stay
@@ -227,7 +347,7 @@ namespace SteamEngine.CompiledScripts {
 			int added = 0;
 			List<string> namesInCity = NamesInCity(venue.City);
 			foreach (VenueRole role in type.Roles) {
-				for (int n = 1; n <= role.Count; n++) {
+				for (int n = 1; n <= CountOf(venue, role); n++) {
 					string id = venue.VenueId + "/" + role.Key + "/" + n.ToString(CultureInfo.InvariantCulture);
 					if (ById(id) != null) {
 						continue;
@@ -263,6 +383,9 @@ namespace SteamEngine.CompiledScripts {
 			gem.SetTag(venueTK, venue.VenueId);
 			SetHome(gem, homeId);
 			gem.SetTag(traitsTK, traits ?? "");
+			if (gem.GetTag(placedTK) == null) {
+				gem.SetTag(placedTK, gem.X.ToString(CultureInfo.InvariantCulture) + "," + gem.Y.ToString(CultureInfo.InvariantCulture));
+			}
 			if (all != null && !all.Contains(gem)) {
 				all.Add(gem);
 			}
@@ -482,7 +605,7 @@ namespace SteamEngine.CompiledScripts {
 			if (venue == null) {
 				return;
 			}
-			int[] spot = SpotIn(venue, Residents.IdOf(gem));
+			int[] spot = SpotFor(gem, venue);
 			if (spot == null) {
 				return;
 			}
@@ -538,6 +661,33 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return new Point4D(spot[0], spot[1], spot[2], target.M);
+		}
+
+		/// <summary>#1315 - the resident's spot in this venue: at work, where a GM moved its gem to (MovedSpot); else its own spot
+		/// (SpotIn). A new body after a death keeps a moved one.</summary>
+		public static int[] SpotFor(Item gem, CityVenue venue) {
+			if (venue == Residents.WorkplaceOf(gem)) {
+				int[] moved = MovedSpot(gem);
+				if (moved != null) {
+					return moved;
+				}
+			}
+			return SpotIn(venue, Residents.IdOf(gem));
+		}
+
+		/// <summary>#1315 - where a GM moved the gem inside its workplace, or null: the gem on the ground in the workplace, away from
+		/// where it was put when made (a gem from before #1315 has no record of that: away from its own spot). Editing the venue's
+		/// area moves SpotIn, not the gem, so it doesn't count as moved.</summary>
+		public static int[] MovedSpot(Item gem) {
+			CityVenue work = Residents.WorkplaceOf(gem);
+			if ((work == null) || (gem.Cont != null) || (gem.M != work.M) || !work.Contains(gem.X, gem.Y, gem.Z)) {
+				return null;
+			}
+			int[] placed = Residents.PlacedAt(gem) ?? SpotIn(work, Residents.IdOf(gem));
+			if ((placed != null) && (placed[0] == gem.X) && (placed[1] == gem.Y)) {
+				return null;
+			}
+			return new int[] { gem.X, gem.Y, gem.Z };
 		}
 
 		/// <summary>A tile of the venue a character can stand on, the same one for the same resident: residents of one venue spread
@@ -610,6 +760,8 @@ namespace SteamEngine.CompiledScripts {
 				NPC npc = Residents.BodyOf(gem);
 				if (npc != null) {
 					try {
+						Residents.EnsurePlaced(gem);
+						Residents.EnsureRoleAbilities(gem, npc);
 						Apply(gem, npc, false);
 						moved++;
 					} catch (FatalException) {

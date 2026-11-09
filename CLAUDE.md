@@ -1,7 +1,8 @@
 # moriaengine — working state
 
-## NOW (2026-11-09): #1315 second testing feedback, one PR (branch 1315-testing-feedback-2 in ../moria-1286)
-User: (1) .venue dialog reloads after save, (2) healing venue residents act as healers, (3) a moved resident spawn's new NPC keeps the old home, (4) NPC .info shows home + GM change, (5) .venues dialog button for navrh, (6) .udalost dialog (start/stop/what runs where), (7) question on Gorbag/Shagrat switching (answer only). Usual rules.
+## DONE (2026-11-09): #1315 second testing feedback + resident counts + #1122, one PR (branch 1315-testing-feedback-2 in ../moria-1286)
+User: (1) .venue dialog reloads after save, (2) healing venue residents act as healers, (3) a moved resident spawn's new NPC keeps the old home, (4) NPC .info shows home + GM change, (5) .venues dialog button for navrh, (6) .udalost dialog (start/stop/what runs where), (7) question on Gorbag/Shagrat switching (answer only). Usual rules. Added by the user: per-venue role counts (D_VenueRoles). Found: #1122's second cause, AOS clients' clicks go to On_AosClick, which never asked the healer; the test client clicks through On_Click, so test the AOS path server-side (Trigger_AosClick).
+NEXT (user, 2026-11-09): the remaining cities/towns = design 9.3's unbuilt regional stories (#1306 list), one PR per region; questions saved for the very end.
 
 ## DONE (2026-11-09): #1312 the user's first testing feedback, 8 items, one PR (branch 1312-testing-feedback in ../moria-1286)
 User tried #1237/#1307 in game: (1) Talathwen's long response invisible (QuestDialog HTML without basefont), (2) new commands missing from .gmmenu, (3) .venues navrh proposes player houses (skip HouseNumber != 0), (4) fetch/collect tasks name the item in brackets, (5) .arrowend cancels the quest arrow, (6) give-up confirm dialog, (7) no errands in enemy-realm towns (not listed either), (8) talking reach 4. Usual rules: tests, red checks, fast tier, related protocol classes, review agent + ## Review.

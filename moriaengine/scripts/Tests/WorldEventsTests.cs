@@ -27,6 +27,15 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("WORLDEVENTS_SETUP_DONE");
 		}
 
+		/// <summary>#1315 - .udalost dialog's buttons for the raid on Edoras: the kind's, the place's, the first running row's stop.</summary>
+		[SteamFunction]
+		public static void TestWorldEventsDialogButtons(Character self) {
+			WorldEventKind raid = WorldEvents.KindOf("najezd");
+			int kind = new List<WorldEventKind>(WorldEvents.Kinds).IndexOf(raid);
+			int place = D_WorldEvents.PlacesOf(raid).IndexOf("Edoras");
+			Console.WriteLine("WORLDEVENTS_DIALOG: kind=" + (D_WorldEvents.KindBase + kind) + " place=" + (D_WorldEvents.PlaceBase + place) + " stop=" + D_WorldEvents.StopBase);
+		}
+
 		[SteamFunction]
 		public static void TestWorldEventsState(Character self) {
 			IList<WorldEvent> running = WorldEvents.Running;
