@@ -498,23 +498,32 @@ namespace SteamEngine.CompiledScripts {
 			return route;
 		}
 
-		/// <summary>#1329 - the walks out of a town, found once per area and centre and kept for the server's run (a big town's walk
-		/// out takes some hundreds of ms; a recompile starts afresh): a few roads to pick from.</summary>
-		private static readonly Dictionary<string, List<List<int[]>>> routesOut = new Dictionary<string, List<List<int[]>>>(StringComparer.OrdinalIgnoreCase);
+		/// <summary>#1329 - the walks out of a town, found once per area and centre: a few roads to pick from, each only its stretch
+		/// past the edge (all a placement needs). #1333 - kept with the world (RoadsOutStore) and walked by .SetupWorld
+		/// (RoadsOutSetup), as a big town's walk takes up to ~0.9 s; .ResetRoadsOut forgets them.</summary>
+		internal static readonly Dictionary<string, List<List<int[]>>> routesOut = new Dictionary<string, List<List<int[]>>>(StringComparer.Ordinal);
 		private const int RoutesOutKept = 8;
 
-		/// <summary>#1329 - a walk into a town from outside it: out from the centre ring by ring by the real movement rules until some
-		/// walk has gone `beyond` steps in a row outside the area (a step out through a notch or a corner and back in doesn't count);
-		/// from one of the tiles whose walk has been outside the longest, tile by tile back to the centre, so the route begins with that
-		/// stretch past the edge. None (an empty list) when no walk gets outside within `maxSteps` steps (or the centre can't be left); near the cap the
-		/// stretch may be shorter (or an island's shore ends it). The area is on the centre's map plane. A few remembered roads, from
-		/// different tiles; none when the area isn't left.</summary>
-		public static List<List<int[]>> RoutesOutOf(Point4D centre, StaticRegion area, int beyond, int maxSteps) {
-			string key = area.Defname + "|" + centre.X.ToString(CultureInfo.InvariantCulture) + "," + centre.Y.ToString(CultureInfo.InvariantCulture) + ","
+		/// <summary>#1333 - the walks out of a town made since the boot (a test reads it: loaded roads are never walked).</summary>
+		internal static int roadsWalked;
+
+		internal static string RoadsOutKey(Point4D centre, StaticRegion area, int beyond, int maxSteps) {
+			return area.Defname + "|" + centre.X.ToString(CultureInfo.InvariantCulture) + "," + centre.Y.ToString(CultureInfo.InvariantCulture) + ","
 				+ centre.M.ToString(CultureInfo.InvariantCulture) + "|" + beyond.ToString(CultureInfo.InvariantCulture) + "|" + maxSteps.ToString(CultureInfo.InvariantCulture);
+		}
+
+		/// <summary>#1329 - the roads out of a town: out from the centre ring by ring by the real movement rules until some walk has gone
+		/// `beyond` steps in a row outside the area (a step out through a notch or a corner and back in doesn't count); from each of a
+		/// few tiles whose walk has been outside the longest, that stretch past the edge, the far end first (#1333: only the stretch,
+		/// the way back in isn't kept). None (an empty list) when no walk gets outside within `maxSteps` steps (or the centre can't be
+		/// left); near the cap the stretch may be shorter (or an island's shore ends it). The area is on the centre's map plane.
+		/// Walked once, then remembered (and saved).</summary>
+		public static List<List<int[]>> RoutesOutOf(Point4D centre, StaticRegion area, int beyond, int maxSteps) {
+			string key = RoadsOutKey(centre, area, beyond, maxSteps);
 			if (!routesOut.TryGetValue(key, out List<List<int[]>> routes)) {
 				routes = WalkOutOf(centre, area, beyond, maxSteps);
 				routesOut[key] = routes;
+				roadsWalked++;
 			}
 			return new List<List<int[]>>(routes); //the roads themselves are only read
 		}
@@ -576,8 +585,8 @@ namespace SteamEngine.CompiledScripts {
 			List<List<int[]>> routes = new List<List<int[]>>();
 			foreach (int[] end in ends.GetRange(0, Math.Min(ends.Count, RoutesOutKept))) {
 				List<int[]> route = new List<int[]>();
-				for (int[] tile = end; tile != null; tile = from[Key(tile)]) {
-					route.Add(tile);
+				for (int[] tile = end; (tile != null) && !area.ContainsPoint(tile[0], tile[1]); tile = from[Key(tile)]) {
+					route.Add(tile); //the stretch past the edge only: the rest of the way in is never used, nor saved
 				}
 				routes.Add(route);
 			}
