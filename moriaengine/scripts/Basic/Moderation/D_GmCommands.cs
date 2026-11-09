@@ -81,7 +81,8 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("venues", "mista ve meste; vse, navrh, obsadit, export", Arg.Text),
 				new Entry("resident", "obyvatel mesta (kurzor)"),
 				new Entry("udalost", "udalosti; start druh [mesto], stop [vse]", Arg.Text),
-				new Entry("vyvolat", "zprava vyvolavacum ve meste", Arg.Text)),
+				new Entry("vyvolat", "zprava vyvolavacum ve meste", Arg.Text),
+				new Entry("resetroadsout", "zapomenout cesty z mest (po zmene oblasti mesta)")),
 		};
 
 		private const int Width = 760, Row = 20, Margin = 12, ColumnWidth = 370, Hue = 955, TitleHue = 0x481, CommandHue = 0x35;

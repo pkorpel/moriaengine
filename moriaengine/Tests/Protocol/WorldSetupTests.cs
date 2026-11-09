@@ -18,7 +18,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const int QuestPortPieces = 52; //#1307 - the three ferrymen (Dol Amroth, Umbar, the island); #1264 - q006's Eriol, Qworet, Unas and the innkeeper; #1266 - q007's six NPCs, the Dryad, the pirates' chest and two pirates; #1268 - q017's two gates, Gargamel and the collector; #1270 - q009's tailor, q018's three NPCs, the rune and the wheel; #1272 - q026's Andor, Roxana, the temple's tapestry, door and books, Dol Guldur's tile, wall and box; #1274 - q008's Ancam, gate, two pads, the mustang and four monsters, q31's two cooks; #1278 - q041's smuggler, portal, gate, elf and Borek, q099's Podivin
 		private const int WarCampPieces = 2; //#1280 - Barad-dur's rival captains, Gorbag and Shagrat
 		private const int AllPieces = ExpertPieces + MasterPieces + GrandmasterPieces + EntrancePieces + TownPieces + HouseSigns + TravelStones + StallAndFieldSigns + CampGuard + ArenaPieces + ConquestPieces + QuestPortPieces + WarCampPieces;
-		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(90); //#1333: a fresh world's .SetupWorld also walks the roads out of the towns
 		private static bool autoAccountCreationEnabled;
 
 		private readonly GameServerPairFixture fixture;
