@@ -54,17 +54,20 @@ Each resident is a world piece: a spawn gem of one (`WorldPieces.Npc`, the gem `
 - the body is on another plane;
 - it's a fresh body.
 
-**Each resident's spot is fixed:** a standable tile of the venue chosen by its id, so the people of one venue spread over it.
+**Each resident's spot is fixed:** a standable tile of the venue chosen by its id, so the people of one venue spread over it. A GM moves the spot at work by moving the gem to another tile of the workplace (or with the NPC's `.info` *Home*): a gem standing in its workplace away from where it was put when made is the resident's spot there (`ResidentSchedule.MovedSpot`/`SpotFor`, #1315), for this body and the next after a death. Home and the evening tavern keep their own spots. Editing a venue's area doesn't count as moving its residents' gems. `.venues export` writes such a spot as the resident line's 9th field, and `.SetupWorld` puts the gem back on it.
 
 **The scheduler** is a saved timer on Globals, `ResidentSchedulerTimer`, every 20 s, started by the first resident. It looks up each body through the gem's tag rather than searching the map.
 
 ## GM tools
 
 - **`.venue`'s dialog:** *Obsadit role (n/m)* fills the venue's missing roles, by the type picked now (it saves first).
+- **Pocty obyvatel (#1315):** beside it, how many people of each role this venue has, with - and + (0 to 10). A small house gets fewer than its type says, a big one more. A lower count sends the extra residents away at once (the highest numbers of the role); a higher one fills the role at once. The counts are tags on the venue (`Residents.CountOf`), used by filling and by the stray sweep, and `.venues export` writes them as the venue line's 11th field (`healer=1,patient=0`, only those not the type's), so `.SetupWorld` keeps them.
 - **`.venues obsadit`:** fills every venue of the city you stand in.
 - **`.resident`:** with the cursor on a resident, shows the name (editable), role, workplace, home, traits, where they should be now and their friendship with you. *Poslat na misto* puts them there.
+- **Healers (#1315):** the healer and herbalist of a Houses of Healing venue get `e_healer`, as the archive's healer NPCs: a ghost single-clicking one within 4 tiles is resurrected (from a TazUO client too since #1122: its clicks take the AOS path, which never asked the healer), an outcast is told they're cursed. Patients don't. A body spawned before #1315 gets it at the scheduler's next round.
+- **An NPC's `.info`** (any NPC, #1315): *Home* (x,y,z,m; typed as x,y,z or x,y,z,m), *Home leash*, and *Home here* (where it stands). For a resident the point must be inside its workplace, and the gem moves there (it takes effect when the resident is at work); its leash is the schedule's and can't be set. Any other NPC keeps the new home until it dies (a spawn's next one starts at the spawn).
 - **Deleting a venue** in its dialog removes its residents too.
-- **Export and setup:** `.venues export` writes resident lines (`R|id|venue|role|female|name|home|traits`) after the venues. `VenueSetup` brings back the missing ones with the same names, roles, homes and traits, once their venues exist. Their first body is named at once.
+- **Export and setup:** `.venues export` writes resident lines (`R|id|venue|role|female|name|home|traits|spot`, spot only for a moved gem) after the venues. `VenueSetup` brings back the missing ones with the same names, roles, homes and traits, once their venues exist. Their first body is named at once.
 
 ## Tests
 

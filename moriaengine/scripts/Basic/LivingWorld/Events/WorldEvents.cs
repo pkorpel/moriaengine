@@ -358,6 +358,27 @@ namespace SteamEngine.CompiledScripts {
 			get { return running.AsReadOnly(); }
 		}
 
+		/// <summary>#1315 - every kind, for the GMs' dialog.</summary>
+		public static IList<WorldEventKind> Kinds {
+			get { return kinds.AsReadOnly(); }
+		}
+
+		/// <summary>A GM's start of a kind in a city (the command's and the dialog's): what the GM is told.</summary>
+		public static string StartByGm(WorldEventKind kind, string city) {
+			EnsureRunning();
+			string known = (city == null) ? null : System.Linq.Enumerable.FirstOrDefault(kind.Places, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
+			if ((known == null) || !kind.IsFor(known)) {
+				return kind.Name + " nemuze byt v " + (city ?? "(zadne mesto)") + ".";
+			}
+			WorldEvent e = Start(kind, known);
+			return (e == null) ? "Udalost se nepodarilo zacit (uz tam nejaka bezi, nebo neni misto)." : "Zacala: " + e.Describe();
+		}
+
+		/// <summary>The minutes an event has left.</summary>
+		public static int MinutesLeft(WorldEvent e) {
+			return Math.Max(0, (int) ((e.EndsAt - Globals.TimeInSeconds) / 60));
+		}
+
 		public static void EnsureRunning() {
 			if (!Globals.Instance.HasTimer(timerTK)) {
 				WorldEventTimer timer = new WorldEventTimer();
@@ -839,7 +860,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion outcomes
 
-		/// <summary>.udalost: the events under way; .udalost start "key" ["City"] (the city a GM stands in, if left out);
+		/// <summary>.udalost: the GMs' dialog (#1315; the events under way as lines from the console); .udalost start "key" ["City"] (the city a GM stands in, if left out);
 		/// .udalost stop ["vse"] (the events in the GM's city, or all).</summary>
 		[SteamFunction]
 		public static void Udalost(Character self, ScriptArgs sa) {
@@ -853,13 +874,7 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage("Pouziti: .udalost start <" + string.Join("|", kinds.ConvertAll(k => k.Key)) + "> [mesto]");
 					return;
 				}
-				string known = (city == null) ? null : System.Linq.Enumerable.FirstOrDefault(kind.Places, c => string.Equals(c, city, StringComparison.OrdinalIgnoreCase));
-				if ((known == null) || !kind.IsFor(known)) {
-					self.SysMessage(kind.Name + " nemuze byt v " + (city ?? "(zadne mesto)") + ".");
-					return;
-				}
-				WorldEvent e = Start(kind, known);
-				self.SysMessage((e == null) ? "Udalost se nepodarilo zacit (uz tam nejaka bezi, nebo neni misto)." : "Zacala: " + e.Describe());
+				self.SysMessage(StartByGm(kind, city));
 				return;
 			}
 			if (verb == "stop") {
@@ -874,11 +889,15 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Ukonceno udalosti: " + stopped + ".");
 				return;
 			}
+			if ((verb.Length == 0) && (self is Player gm)) {
+				D_WorldEvents.Show(gm, null); //#1315 - the GMs' dialog: what runs where, stop, start
+				return;
+			}
 			if (running.Count == 0) {
 				self.SysMessage("Ve svete ted zadna udalost nebezi." + (Settings.enabled ? "" : " (Udalosti jsou v .settings vypnute.)"));
 			}
 			foreach (WorldEvent e in running) {
-				self.SysMessage(e.Describe() + " (zbyva " + Math.Max(0, (int) ((e.EndsAt - Globals.TimeInSeconds) / 60)) + " min)");
+				self.SysMessage(e.Describe() + " (zbyva " + MinutesLeft(e) + " min)");
 			}
 			self.SysMessage("Pouziti: .udalost | .udalost start <" + string.Join("|", kinds.ConvertAll(k => k.Key)) + "> [mesto] | .udalost stop [vse]");
 		}

@@ -229,7 +229,7 @@ standing and bath-house discounts, so the vendor dialogs show it. Several outcom
 
 ## GM command
 
-- `.udalost` lists the running events with their minutes left.
+- `.udalost` opens the GMs' dialog (#1315, `D_WorldEvents`): the events under way with their place, line and minutes left, each with *go there* and *stop*, *Zastavit vse*, whether events start by themselves (`.settings` Udalosti), and every kind to start: pick one, then one of its places (a place where something runs already is marked). From the console it lists the running events.
 - `.udalost "start <kind> [City]"` (kinds: `najezd`, `karavana`, `korzari`, `majaky`, `trol`, `pozar`, `horecka`, and the
   festivals' keys) starts one now, whatever the hour. Without a city, it starts in the city
   the GM stands in. As with other GM commands, the words go in quotes.

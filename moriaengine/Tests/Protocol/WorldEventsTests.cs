@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
@@ -35,7 +36,38 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestWorldEventsChain", "WORLDEVENTS_CHAIN_DONE");
 				this.AssertChecks("raidRules", "raidStarted", "raidWon", "noStrangersCredited", "raidLost", "startRefused", "caravanAmbush",
 					"caravanArrived", "bystanderUnpaid", "caravanLost", "leftoversCleared", "scheduler");
+
+				//#1315 - .udalost's dialog: a raid started on Edoras by kind and place, listed, stopped
+				this.Run(game, ".TestWorldEventsSetup", "WORLDEVENTS_SETUP_DONE");
+				this.Run(game, ".TestWorldEventsDialogButtons", "WORLDEVENTS_DIALOG:");
+				string buttons = this.LastLine("WORLDEVENTS_DIALOG:");
+				game.SendSpeech(".udalost");
+				var dialog = ReadUntil(game, "Udalosti ve svete");
+				Assert.Contains("Ted nic nebezi.", dialog.Strings);
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "kind"));
+				dialog = ReadUntil(game, "Zacit: ");
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "place"));
+				dialog = ReadUntil(game, "Udalosti ve svete");
+				Assert.Contains(dialog.Strings, s => s.EndsWith(", Edoras"));
+				this.Run(game, ".TestWorldEventsState", "WORLDEVENTS_STATE:");
+				Assert.Contains("running=1 kind=najezd city=Edoras", this.LastLine("WORLDEVENTS_STATE:"));
+				game.SendGumpResponse(dialog.GumpUid, Number(buttons, "stop"));
+				dialog = ReadUntil(game, "Udalosti ve svete");
+				Assert.Contains("Ted nic nebezi.", dialog.Strings);
+				this.Run(game, ".TestWorldEventsState", "WORLDEVENTS_STATE:");
+				Assert.Contains("running=0", this.LastLine("WORLDEVENTS_STATE:"));
+				game.SendGumpResponse(dialog.GumpUid, 0);
 			}
+		}
+
+		//the next gump with this text start (skipping any the server sent before it)
+		private static (int GumpUid, string LayoutText, System.Collections.Generic.List<string> Strings) ReadUntil(TestGameClient game, string start) {
+			var dialog = game.ReadGumpDialogWithStrings(Wait);
+			for (int i = 0; (i < 5) && !dialog.Strings.Exists(s => s.StartsWith(start, StringComparison.Ordinal)); i++) {
+				dialog = game.ReadGumpDialogWithStrings(Wait);
+			}
+			Assert.Contains(dialog.Strings, s => s.StartsWith(start, StringComparison.Ordinal));
+			return dialog;
 		}
 	}
 

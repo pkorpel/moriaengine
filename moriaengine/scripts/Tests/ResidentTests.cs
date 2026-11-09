@@ -265,6 +265,132 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("RESIDENT_BESIDE none");
 		}
 
+		/// <summary>#1315 - a healing venue's healer and herbalist are healers (a patient isn't); a gem a GM moved inside the
+		/// venue is the resident's spot, for this body and the next; the NPC's .info Home reads it and moves it (inside the
+		/// venue only), and an NPC that isn't a resident takes any home.</summary>
+		[SteamFunction]
+		public static void TestResidentHomes(Character self) {
+			Player player = (Player) self;
+			try {
+				Clean();
+				CityVenue lecebna = OpenAirIn("a_Edoras", "Edoras", "healing");
+				Residents.FillRoles(lecebna);
+				Item healer = null, herbalist = null, patient = null;
+				foreach (Item gem in Residents.OfVenue(lecebna.VenueId)) {
+					switch (Residents.RoleKeyOf(gem)) {
+						case "healer": healer = gem; break;
+						case "herbalist": herbalist = gem; break;
+						case "patient": patient = gem; break;
+					}
+				}
+				AbilityDef healerDef = MonsterSpecialAttacks.HealerDef;
+				Report("theHealersHeal", (healer != null) && (herbalist != null) && Residents.BodyOf(healer).HasAbility(healerDef, out _) && Residents.BodyOf(herbalist).HasAbility(healerDef, out _));
+				Report("aPatientDoesnt", (patient != null) && !Residents.BodyOf(patient).HasAbility(healerDef, out _));
+				Report("aGemOnItsOwnSpotIsntMoved", (patient != null) && (ResidentSchedule.MovedSpot(patient) == null) && (ResidentSchedule.MovedSpot(healer) == null));
+				NPC healerBody = Residents.BodyOf(healer);
+				NPCAiTimer.Freeze(healerBody, 60);
+				player.Go(new Point4D(healerBody.X + 1, healerBody.Y, healerBody.Z, healerBody.M));
+				player.CauseDeath(null);
+				player.SetTag(TagKey.Acquire("_diedAt_"), Globals.TimeInSeconds - 10); //past #1070's 5 s before a ghost may rise
+				bool dead = player.Flag_Dead;
+				healerBody.Trigger_Click(player); //a 3.0.6m client's click
+				Report("aGhostClickingTheHealerLives", dead && !player.Flag_Dead);
+				if (!player.Flag_Dead) {
+					player.CauseDeath(null);
+				}
+				player.SetTag(TagKey.Acquire("_diedAt_"), Globals.TimeInSeconds - 10);
+				dead = player.Flag_Dead;
+				healerBody.Trigger_AosClick(player); //#1122 - TazUO's (an AOS-tooltip client) goes this way
+				Report("anAosClientsClickToo", dead && !player.Flag_Dead);
+				if (player.Flag_Dead) {
+					player.Resurrect();
+				}
+
+				//the gem moved to another spot of the venue: the home goes there, also for the next body
+				int[] was = new[] { healer.X, healer.Y, healer.Z };
+				int[] moved = null;
+				for (int i = 0; (moved == null) && (i < 50); i++) {
+					int[] spot = ResidentSchedule.SpotIn(lecebna, "moved/" + i);
+					if ((spot != null) && (Point2D.GetSimpleDistance(spot[0], spot[1], was[0], was[1]) >= 2)) {
+						moved = spot;
+					}
+				}
+				healer.P(moved[0], moved[1], moved[2], lecebna.M);
+				ResidentSchedule.ApplyAll();
+				NPCAiTimer ai = NPCAiTimer.GetFor(healerBody);
+				Report("aMovedGemMovesTheHome", (ai.homeX == moved[0]) && (ai.homeY == moved[1]));
+				healerBody.Delete();
+				if (healer.GetTimer(spawnTimerTK) != null) {
+					healer.DeleteTimer(spawnTimerTK);
+				}
+				healer.TryTrigger(spawnNowTK, new ScriptArgs());
+				NPC next = Residents.BodyOf(healer);
+				NPCAiTimer nextAi = (next == null) ? null : NPCAiTimer.GetFor(next);
+				Report("theNextBodyKeepsIt", (nextAi != null) && (nextAi.homeX == moved[0]) && (nextAi.homeY == moved[1]) && (next.X == moved[0]) && (next.Y == moved[1])
+					&& next.HasAbility(healerDef, out _));
+
+				//.info's Home: read, moved inside the venue (the gem goes too), refused outside it
+				Report("infoShowsTheHome", (string) Dialogs.NPCDescriptor.GetHome(next) == moved[0] + "," + moved[1] + "," + moved[2] + "," + lecebna.M);
+				Dialogs.NPCDescriptor.SetHome(next, was[0] + "," + was[1] + "," + was[2]);
+				Report("infoMovesAResidentsHome", (nextAi.homeX == was[0]) && (nextAi.homeY == was[1]) && (healer.X == was[0]) && (healer.Y == was[1]));
+				bool refused = false;
+				try {
+					Dialogs.NPCDescriptor.SetHome(next, (lecebna.X + 40) + "," + lecebna.Y + "," + lecebna.Z);
+				} catch (SEException) {
+					refused = true;
+				}
+				bool leashRefused = false;
+				try {
+					Dialogs.NPCDescriptor.SetLeash(next, 9);
+				} catch (SEException) {
+					leashRefused = true;
+				}
+				Report("butOnlyInsideItsVenue", refused && (nextAi.homeX == was[0]) && (healer.X == was[0]));
+				Report("andNotItsLeash", leashRefused);
+				//the moved spot goes into .venues export, and .SetupWorld puts the resident back on it
+				healer.P(moved[0], moved[1], moved[2], lecebna.M);
+				string healerId = Residents.IdOf(healer), lecebnaId = lecebna.VenueId;
+				string path = Path.Combine(Path.GetTempPath(), "moria-residents-" + Guid.NewGuid().ToString("N") + ".txt");
+				VenueFile.PathOverride = path;
+				try {
+					VenueFile.Export(path);
+					bool written = File.ReadAllText(path).Contains("|" + moved[0] + "," + moved[1] + "," + moved[2] + "\n");
+					lecebna.Delete();
+					new VenueSetup().Run(self);
+					Item back = Residents.ById(healerId);
+					NPCAiTimer backAi = ((back == null) || (Residents.BodyOf(back) == null)) ? null : NPCAiTimer.GetFor(Residents.BodyOf(back));
+					Report("theMovedSpotSurvivesARebuild", written && (back != null) && (back.X == moved[0]) && (back.Y == moved[1]) && (backAi != null) && (backAi.homeX == moved[0])
+						&& (VenueRegistry.ById(lecebnaId) != null));
+				} finally {
+					VenueFile.PathOverride = null;
+					File.Delete(path);
+				}
+				NPC sheep = (NPC) ((NPCDef) ThingDef.GetByDefname("c_rabbit")).Create(player.X, player.Y, player.Z, player.M);
+				NPCAiTimer sheepAi = NPCAiTimer.GetFor(sheep);
+				if (sheepAi != null) {
+					Dialogs.NPCDescriptor.SetHome(sheep, (player.X + 30) + "," + player.Y + "," + player.Z);
+				}
+				Report("anyOtherNpcTakesAnyHome", (sheepAi != null) && sheepAi.hasHome && (sheepAi.homeX == player.X + 30) && (sheepAi.homeY == player.Y));
+				sheep.Delete();
+
+				//a count lowered: a setup line beyond it isn't brought back; a new type starts from its own counts
+				CityVenue again = VenueRegistry.ById(lecebnaId);
+				Residents.SetCount(again, Array.Find(again.VenueType.Roles, r => r.Key == "patient"), 0);
+				bool fits = !Residents.Fits(again, "patient", lecebnaId + "/patient/1") && Residents.Fits(again, "healer", lecebnaId + "/healer/1");
+				bool counted = Residents.CountsText(again) == "patient=0";
+				VenueDraft retyped = VenueDraft.For(again);
+				retyped.SetType(VenueType.Get("tavern").IndexOf());
+				bool saved = retyped.Save(out string problem) != null;
+				retyped = VenueDraft.For(again);
+				retyped.SetType(VenueType.Get("healing").IndexOf()); //and back: the old patient count mustn't come back with it
+				saved &= retyped.Save(out problem) != null;
+				Report("countsFollowTheTypeAndTheSetup", fits && counted && saved && (Residents.CountsText(again) == ""));
+			} finally {
+				Clean();
+				Console.WriteLine("RESIDENT_HOMES_DONE");
+			}
+		}
+
 		[SteamFunction]
 		public static void TestResidentRenamed(Character self) {
 			bool found = false;

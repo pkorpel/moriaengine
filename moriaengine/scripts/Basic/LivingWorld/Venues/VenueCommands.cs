@@ -11,6 +11,17 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1240 - the GM's venue tools: .venue marks or edits the venue where you stand, .venues lists them, finds rooms
 	/// not yet venues (navrh) and writes them all to the setup file (export).</summary>
 	public static class VenueCommands {
+		/// <summary>.venues navrh, also the venues list's button (#1315): the city's roofed rooms that aren't venues yet.</summary>
+		public static void Propose(Character gm, string city) {
+			if (city == null) {
+				gm.SysMessage("Nestojis v zadnem meste.");
+				return;
+			}
+			List<FoundRoom> rooms = RoomScan.Candidates(city, gm.MovementSettings);
+			gm.SysMessage("Budov bez mista: " + rooms.Count + ".");
+			D_VenueProposals.Show(gm, city, rooms, 0);
+		}
+
 		[SteamFunction]
 		public static void Venue(Character self) {
 			CityVenue here = VenueRegistry.At(self);
@@ -43,13 +54,7 @@ namespace SteamEngine.CompiledScripts {
 					D_Venues.Show(self, null, 0);
 					break;
 				case "navrh":
-					if (city == null) {
-						self.SysMessage("Nestojis v zadnem meste.");
-						return;
-					}
-					List<FoundRoom> rooms = RoomScan.Candidates(city, self.MovementSettings);
-					self.SysMessage("Budov bez mista: " + rooms.Count + ".");
-					D_VenueProposals.Show(self, city, rooms, 0);
+					Propose(self, city);
 					break;
 				case "obsadit":
 					if (city == null) {
@@ -92,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 		public static int Export(string path, out int residents) {
 			StringBuilder text = new StringBuilder();
 			text.Append("# #1240 venues, written by .venues export; .SetupWorld places those missing\n");
-			text.Append("# id|city|type|opens|closes|m|zmin|zmax|rects|title\n");
+			text.Append("# id|city|type|opens|closes|m|zmin|zmax|rects|title|counts (counts only where a GM changed them, #1315)\n");
 			List<CityVenue> venues = new List<CityVenue>(VenueRegistry.All);
 			venues.Sort((a, b) => string.Compare(a.VenueId, b.VenueId, StringComparison.OrdinalIgnoreCase));
 			foreach (CityVenue venue in venues) {
@@ -101,20 +106,32 @@ namespace SteamEngine.CompiledScripts {
 					.Append(venue.Opens.ToString(CultureInfo.InvariantCulture)).Append('|').Append(venue.Closes.ToString(CultureInfo.InvariantCulture)).Append('|')
 					.Append(venue.M.ToString(CultureInfo.InvariantCulture)).Append('|').Append(venue.ZMin.ToString(CultureInfo.InvariantCulture)).Append('|')
 					.Append(venue.ZMax.ToString(CultureInfo.InvariantCulture)).Append('|').Append(CityVenue.FormatRects(venue.Rectangles)).Append('|')
-					.Append(Clean(venue.Title)).Append('\n');
+					.Append(Clean(venue.Title)).Append(Counts(venue)).Append('\n');
 			}
-			text.Append("# R|id|venue|role|female|name|home|traits (#1242 residents)\n");
+			text.Append("# R|id|venue|role|female|name|home|traits|spot (#1242 residents; spot x,y,z only where a GM moved the gem, #1315)\n");
 			List<Item> gems = new List<Item>(Residents.AllGems);
 			residents = gems.Count;
 			gems.Sort((a, b) => string.Compare(Residents.IdOf(a), Residents.IdOf(b), StringComparison.OrdinalIgnoreCase));
 			foreach (Item gem in gems) {
 				text.Append("R|").Append(Residents.IdOf(gem)).Append('|').Append(Residents.VenueIdOf(gem)).Append('|').Append(Residents.RoleKeyOf(gem)).Append('|')
 					.Append(Residents.IsFemale(gem) ? '1' : '0').Append('|').Append(Clean(Residents.NameOf(gem))).Append('|').Append(Residents.HomeIdOf(gem) ?? "").Append('|')
-					.Append(string.Join(",", Residents.TraitsOf(gem))).Append('\n');
+					.Append(string.Join(",", Residents.TraitsOf(gem))).Append(MovedSpot(gem)).Append('\n');
 			}
 			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
 			File.WriteAllText(path, text.ToString());
 			return venues.Count;
+		}
+
+		//#1315 - "|x,y,z" when a GM moved the gem inside its workplace, nothing otherwise (the line keeps its 8 fields)
+		private static string MovedSpot(Item gem) {
+			int[] at = ResidentSchedule.MovedSpot(gem);
+			return (at == null) ? "" : "|" + at[0].ToString(CultureInfo.InvariantCulture) + "," + at[1].ToString(CultureInfo.InvariantCulture) + "," + at[2].ToString(CultureInfo.InvariantCulture);
+		}
+
+		//#1315 - "|healer=1,..." when a GM changed the venue's role counts, nothing otherwise (the line keeps its 10 fields)
+		private static string Counts(CityVenue venue) {
+			string counts = Residents.CountsText(venue);
+			return (counts.Length == 0) ? "" : "|" + counts;
 		}
 
 		private static string Clean(string text) {
@@ -132,12 +149,27 @@ namespace SteamEngine.CompiledScripts {
 				if (!line.StartsWith("R|", StringComparison.Ordinal)) {
 					continue;
 				}
-				string[] parts = line.Split(new[] { '|' }, 8);
-				if ((parts.Length == 8) && (parts[1].Length > 0) && (parts[2].Length > 0) && (parts[3].Length > 0)) {
-					lines.Add(new ResidentLine(parts[1], parts[2], parts[3], parts[4] == "1", parts[5], (parts[6].Length == 0) ? null : parts[6], parts[7]));
+				string[] parts = line.Split(new[] { '|' }, 9);
+				if ((parts.Length >= 8) && (parts[1].Length > 0) && (parts[2].Length > 0) && (parts[3].Length > 0)) {
+					lines.Add(new ResidentLine(parts[1], parts[2], parts[3], parts[4] == "1", parts[5], (parts[6].Length == 0) ? null : parts[6], parts[7],
+						(parts.Length == 9) ? ParseSpot(parts[8]) : null)); //a file from before #1315 has no spot
 				}
 			}
 			return lines;
+		}
+
+		private static int[] ParseSpot(string text) {
+			string[] xyz = text.Split(',');
+			int[] spot = new int[3];
+			if (xyz.Length != 3) {
+				return null;
+			}
+			for (int i = 0; i < 3; i++) {
+				if (!int.TryParse(xyz[i].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out spot[i])) {
+					return null;
+				}
+			}
+			return spot;
 		}
 
 		/// <summary>The file's venues, skipping comments and broken lines.</summary>
@@ -151,15 +183,16 @@ namespace SteamEngine.CompiledScripts {
 				if ((line.Length == 0) || line.StartsWith("#", StringComparison.Ordinal) || line.StartsWith("R|", StringComparison.Ordinal)) {
 					continue;
 				}
-				string[] parts = line.Split(new[] { '|' }, 10);
+				string[] parts = line.Split(new[] { '|' }, 11);
 				int opens, closes, m, zMin, zMax;
-				if ((parts.Length == 10) && (VenueType.Get(parts[2]) != null) &&
+				if ((parts.Length >= 10) && (VenueType.Get(parts[2]) != null) &&
 						int.TryParse(parts[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out opens) && int.TryParse(parts[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out closes) &&
 						int.TryParse(parts[5], NumberStyles.Integer, CultureInfo.InvariantCulture, out m) && int.TryParse(parts[6], NumberStyles.Integer, CultureInfo.InvariantCulture, out zMin) &&
 						int.TryParse(parts[7], NumberStyles.Integer, CultureInfo.InvariantCulture, out zMax)) {
 					List<ImmutableRectangle> rects = CityVenue.ParseRects(parts[8]);
 					if (rects.Count > 0) {
-						lines.Add(new VenueLine(parts[0], (parts[1].Length == 0) ? null : parts[1], VenueType.Get(parts[2]), opens, closes, (byte) m, zMin, zMax, rects, parts[9]));
+						lines.Add(new VenueLine(parts[0], (parts[1].Length == 0) ? null : parts[1], VenueType.Get(parts[2]), opens, closes, (byte) m, zMin, zMax, rects, parts[9],
+							(parts.Length == 11) ? parts[10] : "")); //#1315 - role counts, absent before
 					}
 				}
 			}
@@ -170,8 +203,10 @@ namespace SteamEngine.CompiledScripts {
 	public sealed class ResidentLine {
 		public readonly string Id, VenueId, RoleKey, Name, HomeId, Traits;
 		public readonly bool Female;
+		public readonly int[] Spot; //#1315 - where a GM moved the gem, or null
 
-		public ResidentLine(string id, string venueId, string roleKey, bool female, string name, string homeId, string traits) {
+		public ResidentLine(string id, string venueId, string roleKey, bool female, string name, string homeId, string traits, int[] spot = null) {
+			this.Spot = spot;
 			this.Id = id;
 			this.VenueId = venueId;
 			this.RoleKey = roleKey;
@@ -188,8 +223,10 @@ namespace SteamEngine.CompiledScripts {
 		public readonly int Opens, Closes, ZMin, ZMax;
 		public readonly byte M;
 		public readonly List<ImmutableRectangle> Rects;
+		public readonly string Counts; //#1315 - the GM's role counts ("healer=1,patient=0"), "" for the type's
 
-		public VenueLine(string id, string city, VenueType type, int opens, int closes, byte m, int zMin, int zMax, List<ImmutableRectangle> rects, string title) {
+		public VenueLine(string id, string city, VenueType type, int opens, int closes, byte m, int zMin, int zMax, List<ImmutableRectangle> rects, string title, string counts = "") {
+			this.Counts = counts;
 			this.Id = id;
 			this.City = city;
 			this.Type = type;

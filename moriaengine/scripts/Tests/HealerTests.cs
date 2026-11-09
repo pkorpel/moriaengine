@@ -51,6 +51,7 @@ namespace SteamEngine.CompiledScripts {
 			bool seesMe = healer.CanSeeLOS(self).Allow; //before dying - no NPC sees a ghost
 			if (dead) {
 				self.CauseDeath(null);
+				self.SetTag(TagKey.Acquire("_diedAt_"), Globals.TimeInSeconds - 10); //#1122 - past #1070's 5 s before a ghost may rise
 			}
 			Console.WriteLine("HEALER_SETUP: healer=" + healer.Uid + " seesMe=" + seesMe + " dead=" + self.Flag_Dead + " realm=" + self.Realm);
 		}

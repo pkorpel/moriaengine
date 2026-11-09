@@ -191,6 +191,23 @@ namespace SteamEngine.CompiledScripts {
 			Report("withOneRectangleFromTheCorners", (market != null) && (market.Rectangles.Count == 1) && (market.Rectangles[0].Width == 4) && (market.Rectangles[0].Height == 3));
 			Report("ofTheTypePicked", (market != null) && (market.VenueType.Key == "bathhouse"));
 			Report("withTheHoursTyped", (market != null) && (market.Opens == 7) && (market.Closes == 19));
+			//#1315 - the client lowered the bathers from the type's 2 to 1: one left, and the count goes into the export and back
+			int bathers = 0;
+			bool exported = false;
+			if (market != null) {
+				foreach (Item gem in Residents.OfVenue(market.VenueId)) {
+					bathers += (Residents.RoleKeyOf(gem) == "bather") ? 1 : 0;
+				}
+				string path = Path.Combine(Path.GetTempPath(), "moria-venues-" + Guid.NewGuid().ToString("N") + ".txt");
+				try {
+					VenueFile.Export(path, out int residents);
+					exported = VenueFile.Read(path).Exists(line => (line.Id == market.VenueId) && (line.Counts == "bather=1") && (line.Title == "Dobytci trh"));
+				} finally {
+					File.Delete(path);
+				}
+			}
+			Report("theBathersAreOne", (market != null) && (bathers == 1) && (Residents.RoleCountOf(market) == 3) && (Residents.CountsText(market) == "bather=1"));
+			Report("andTheCountIsExported", exported);
 			Console.WriteLine("VENUE_OPEN_DONE");
 		}
 	}

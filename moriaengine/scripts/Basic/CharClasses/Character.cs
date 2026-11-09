@@ -2540,6 +2540,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
 			HpSight.ShowOnClick(clicker, this); //#927
+			if ((this is NPC asNpc) && (clicker is Character clickingChar) && MonsterSpecialAttacks.TryHealerClick(asNpc, clickingChar)) {
+				return; //#1122 - an AOS client's click (TazUO) comes here, not to On_Click: a ghost clicking a healer was never brought back
+			}
 			int hue = this.ClickedNameHue(clicker, clickerConn);
 			string shownName = Guild.NameWithAbbreviation(this);
 			if ((shownName != this.Name) || NazgulRings.IsNazgul(this)) { //#884 a cliloc name has no room for the [abbreviation]
