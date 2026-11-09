@@ -39,10 +39,8 @@ namespace SteamEngine.CompiledScripts {
 			int cy = self.Y;
 			for (int r = 1; r <= 1000; r++) { //#861 - the spawn moved since V-9: no water within 200 tiles of it any more
 				for (int dx = -r; dx <= r; dx++) {
-					for (int dy = -r; dy <= r; dy++) {
-						if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != r) {
-							continue; //only scan the new outer ring, inner ones already checked
-						}
+					int dyStep = ((dx == -r) || (dx == r)) ? 1 : (2 * r); //only the new outer ring's edge: inner rings are checked
+					for (int dy = -r; dy <= r; dy += dyStep) {
 						int wx = cx + dx;
 						int wy = cy + dy;
 						if (!map.IsValidPos(wx, wy) || !map.IsMapTileWater(wx, wy)) {

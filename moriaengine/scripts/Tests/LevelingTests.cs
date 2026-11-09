@@ -228,7 +228,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("LEVELING_SPEND_SKILL_RESULT: success=" + success +
 				" unspentSkillPoints=" + player.UnspentSkillPoints +
-				" skillValue=" + player.GetRealSkillValue(skill));
+				" skillValue=" + player.GetRealSkillValue(skill) + " end");
 		}
 
 		/// <summary>Real-user-reported: drives Character.ModifySkillValue (a TEMPORARY buff,
