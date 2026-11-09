@@ -1,0 +1,50 @@
+//#1317 - the things of the Shire's stories (ShireStories.cs): only their errand's player can catch or use them, and they go
+//when the errand ends.
+
+[NPCDef c_errand_mushroom_thief]
+TEVENTS = e_character
+NAME = "Zlodej hub"
+model = C_MAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 30
+Dex = 90
+Int = 40
+MaxHits = 30
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = 0x0590
+Equip = random_pants
+EquipColor = 0x0711
+
+[NPCDef c_errand_relative]
+TEVENTS = e_character
+NAME = "Pribuzna z druheho kolena"
+model = C_WOMAN
+Color = colors_skin
+CAN = MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+Str = 30
+Dex = 70
+Int = 60
+MaxHits = 40
+NoAnimate = 1
+AggroMode = Calm
+Equip = random_female_hair
+EquipColor = colors_hair
+Equip = i_dress_plain
+EquipColor = 0x0480
+
+[ItemDef i_errand_spoon]
+NAME = "Stribrna lzicka"
+TYPE = t_normal
+model = 0x09C2
+Color = 0386
+
+[ItemDef i_errand_fireworks]
+NAME = "Ohnostroj"
+TYPE = t_normal
+model = 0x09A9
+WEIGHT = 2
