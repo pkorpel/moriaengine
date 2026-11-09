@@ -13,7 +13,9 @@ namespace SteamEngine.CompiledScripts {
 	/// takes its damage as fire (the target's resists count) and the flame goes out; an after-fire hurts by half and goes out
 	/// too. Rinald himself and GMs aren't hurt. Fixed from Erebor: `f_dragon_fire(35) // give them smaller damage` put the 35
 	/// into the argument the function doesn't read for damage, so it fell back to 50; the damage is RinaldAbilityDef's
-	/// breathDamage (.settings, Rinald's breath), 35.</summary>
+	/// breathDamage (.settings, Rinald's breath), 35. Also assumed intent: the wall starts at Rinald's tile in his facing. On
+	/// Erebor the delayed function ran from an item's @timer, whose src (where f_dragon_fire starts) was most likely the
+	/// server, not Rinald, so the breath may never have shown there.</summary>
 	public static class RinaldBreath {
 		internal const int HalfWidth = 4, Range = 10;
 		internal const double FirstStepSeconds = 0.5, StepSeconds = 0.2, AfterFireMin = 1.5, AfterFireMax = 2.5;

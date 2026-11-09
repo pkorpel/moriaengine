@@ -239,11 +239,11 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#837 - e_q000_dungeon's @DeathCorpse: a body falling in the cave goes back to where its player came in
 		/// from, and the ghost is taken out at once (f_q000_dungeonPort), not on the next minute.</summary>
 		internal static void OnBodyLaid(Player player, Corpse corpse) {
-			if (!player.HasTimer(caveTimerTK)) {
-				return;
+			if (!player.HasTimer(caveTimerTK) || (player.Region != StaticRegion.GetByDefname(CaveRegion))) {
+				return; //left by a recall or a gate: the minute tick only tidies up then
 			}
 			if (player.GetTag(caveReturnTK) is Point4D back) {
-				corpse.P(back.X, back.Y, back.Z, back.M);
+				corpse.P(back);
 			}
 			ExpelFromCave(player);
 		}

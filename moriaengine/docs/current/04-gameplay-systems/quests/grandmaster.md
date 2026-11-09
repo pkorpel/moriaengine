@@ -59,7 +59,8 @@ The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's 
 ## Differences from Erebor
 
 - Rinald's breath does 35, as Erebor's comment meant ("give them smaller damage"): its call put the 35 where the
-  function doesn't read it, so Erebor's breath did 50.
+  function doesn't read it, so Erebor's breath did 50. It starts at Rinald and goes his way, also the evident intent: on
+  Erebor the delayed call's src (where the fire starts) was most likely the server, so the breath may never have shown.
 - The breath hurts players and creatures alike but not GMs or Rinald himself, as Erebor's `@step`. A flame also burns
   whoever already stands where it arrives (as the dragons' fire here).
 - The envoy's own dialog, beyond the promotion, is the q30 quest (#1276).

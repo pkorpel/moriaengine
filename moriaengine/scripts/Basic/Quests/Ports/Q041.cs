@@ -535,7 +535,7 @@ namespace SteamEngine.CompiledScripts {
 				d.SetText("Posila me za tebou nas spolecny pritel. Pry by se ti hodila trocha hmotne vypomoci...");
 				d.Response(false, false, "q041_paserak_send_him");
 			}
-			GrandmasterEnvoyHint.Answer(d, player);
+			GrandmasterEnvoyHint.Answer(d, player); //#837
 			d.Page("Kdo jsi?");
 			d.SetText("Jmenuju se Borek a jsem zemedelec. Mam tady male policko a snazim se nejak uzivit. Nekdy je to ale tezke... sakra tezke.");
 			d.Html();

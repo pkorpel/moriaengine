@@ -545,7 +545,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class GrandmasterEnvoyHint {
 		public const string Button = "q000_go4VM";
 
-		/// <summary>The line on the greeting page.</summary>
+		/// <summary>The hero's line, on the page the NPC's dialog had it (Borek's greeting, Unas's "Kdo jsi?").</summary>
 		internal static void Request(QuestDialogContent d, Player player) {
 			if (GrandmasterQuest.CanBePromoted(player)) {
 				d.SetText("<def_questDialog_colorTextResponse>Omlouvam se za svou troufalost, ale zda se mi, ze na me koukas trochu rospacite. Stalo se neco? Nejsi prvni, kdo se tu na mee takhle diva.");

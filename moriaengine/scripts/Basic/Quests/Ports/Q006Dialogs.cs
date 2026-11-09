@@ -520,7 +520,6 @@ namespace SteamEngine.CompiledScripts {
 			d.Page("Pozdrav");
 			d.SetText("Bud <src.sex(\"zdrav\",\"zdrava\")>!");
 			d.Html();
-			GrandmasterEnvoyHint.Request(d, player); //#837
 			if (q == 13) {
 				d.SetText("*Povedet o Eriolovi, jeho vnukovi a prizracich*");
 				d.Response(false, false, "q006_tellStory", true);
@@ -542,6 +541,7 @@ namespace SteamEngine.CompiledScripts {
 			d.SetText("Jmenuji se Unas. Jsem kouzelnik.");
 			d.Html();
 			Q026.UnasLines(d, player); //#1272 - the tomb curse
+			GrandmasterEnvoyHint.Request(d, player); //#837 - on "Kdo jsi?", after q026's, as d_q023_CarodejUnas
 			d.Page("Mohu pomoci?");
 			d.SetText("Nepotrebuji pomoc.");
 			d.Html();
