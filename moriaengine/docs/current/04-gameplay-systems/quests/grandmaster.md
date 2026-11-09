@@ -20,8 +20,16 @@ Progress is one number per player, `GrandmasterQuest.GetStage` (Erebor's `q000_v
 
 **Rinald's cave** (`a_Slunecni_jeskyne`, plane 5, in the archive as the "vm quest" area) opens only at stage 8, and allows 60
 minutes. Rinald is invulnerable and no way out opens while he lives. His hounds must be dead before he talks. Naming him
-wrongly throws the player out; saying "Rinald" turns him into a daemon 3 seconds later, and he can be killed. A Rinald who
-already turned is replaced when the next hero enters.
+wrongly throws the player out; saying "Rinald" turns him into a daemon 3 seconds later, and he can be killed. Each
+profession weakens him its own way (`e_rinald`, #1140). As he turns he breathes a wall of fire (#837, `RinaldBreath.cs`, Erebor's
+`f_dragon_fire`): 9 flames across his front run 10 tiles, straight on or turning to one side, each leaving a short fire behind; a
+flame burns whoever it reaches (35 by default, `.settings` RinaldBreathDamage) and its fire half that. A hero who dies in the
+cave is taken out at once, and their body is laid where they came in from (Erebor's `@DeathCorpse`). A Rinald who already
+turned is replaced when the next hero enters.
+
+Stage 12 is optional: Unas and farmer Borek tell a hero who saved the sisters (stage 11) that the envoy is looking for them
+(Erebor's `f_q000_shouldBePromoted_*`). The other NPCs who said it on Erebor (q010, q013, q034, Gondor's Borek) have no
+dialogs here.
 
 The dialogs (`GrandmasterQuestDialogs.cs`) are Erebor's texts byte for byte, generated from the archive once and meant to
 be read like normal code. They sit on `QuestDialogDef` and `QuestDialogContent` (`Common/QuestDialog.cs`), the part of Erebor's
@@ -50,16 +58,17 @@ The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's 
 
 ## Differences from Erebor
 
-Tracked in #837:
-
-- Rinald's breath and `e_rinald`'s weakening by profession are not ported, so he is a harder fight.
-- Stage 12 can't happen: it comes from hints in other quests' NPC dialogs, which aren't ported. It's optional.
-- Dying in the cave takes the player out on the next minute tick, and the corpse stays inside.
-- The Zmocnenec only does the promotion; the rest of his dialog is the q30 quest.
+- Rinald's breath does 35, as Erebor's comment meant ("give them smaller damage"): its call put the 35 where the
+  function doesn't read it, so Erebor's breath did 50. It starts at Rinald and goes his way, also the evident intent: on
+  Erebor the delayed call's src (where the fire starts) was most likely the server, so the breath may never have shown.
+- The breath hurts players and creatures alike but not GMs or Rinald himself, as Erebor's `@step`. A flame also burns
+  whoever already stands where it arrives (as the dragons' fire here).
+- The envoy's own dialog, beyond the promotion, is the q30 quest (#1276).
 
 Also: "guarded" means any hostile creature within 10 tiles, where Erebor's guardit system listed spawns by hand.
 
 Rank quest 3 of 3; shared parts in the [quests README](README.md).
 
 Tests: `GrandmasterQuestTests` (protocol: the setup and that its spots are walkable, the whole story in both orders through real
-gumps, an upset Elqira, guards, the closed cave, a wrong name, Rinald's change and death, the reward, the envoy's realm).
+gumps, an upset Elqira, guards, the closed cave, a wrong name, Rinald's change and death, the reward, the envoy's realm; the
+envoy hint on Unas and Borek, the breath, a death in the cave).

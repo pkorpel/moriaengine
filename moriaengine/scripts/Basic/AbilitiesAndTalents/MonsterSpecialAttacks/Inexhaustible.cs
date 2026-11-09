@@ -57,6 +57,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static void OnStepTaken(Character stepping) {
 			CheckHazardTileStep(stepping);
 			CheckDragonTileStep(stepping); //#1022
+			RinaldBreath.CheckStep(stepping); //#837
 			DragonBlood.CheckStep(stepping);
 			CheckFrostStep(stepping); //#1022 e_frosty_wave
 			CheckEggStep(stepping); //#1022 e_drop_egg
