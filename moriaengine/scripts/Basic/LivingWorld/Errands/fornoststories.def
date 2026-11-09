@@ -1,0 +1,27 @@
+//#1317 - the things of Fornost's stories (FornostStories.cs): only their errand's player can kill or use them, and they go when
+//the errand ends.
+
+[NPCDef c_errand_barrow_wight]
+TEVENTS = e_character
+NAME = "Prizrak z mohyly"
+model = c_spectre
+CAN = MT_WALK|MT_RUN
+Str = 90
+Dex = 60
+Int = 60
+MaxHits = 90 110
+Wrestling = 500
+Tactics = 500
+NoAnimate = 1
+AggroMode = Calm
+
+[ItemDef i_errand_barrow_blade]
+NAME = "Stara cepel z mohyly"
+TYPE = t_normal
+model = 0x13B9
+Color = 0482
+
+[ItemDef i_errand_tracks]
+NAME = "Stopy"
+TYPE = t_normal
+model = 0x1E03

@@ -190,6 +190,13 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Narozeninova oslava (the birthday party) | `birthday` | any worker in Hobitin | two invitations, fetch the fireworks from a third resident and bring them, a cake (`i_cake`, cooked), then come in the evening (19-23); 3 hours. The party: the host's fireworks, and every player within 12 tiles and in the host's sight is a guest (150 exp, once in 24 real hours each: a game day is only 24 minutes), the errand's player included |
 | Stribrne lzicky (the silver spoons) | `spoons` | any worker in Hobitin | catch the relative in the streets (she flees), pick up the 3 spoons she drops there, bring them back |
 
+**Fornost** (`FornostStories.cs`, things in `fornoststories.def`):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Probuzena mohyla (the barrow at night) | `barrow` | a barracks, stable or town hall worker in Fornost | come back after dark (22-4), lay the barrow wight on the road out, find the old blade it guarded by the road, bring it back; 2 hours |
+| Hlidka hranicaru (the Rangers' watch) | `rangerwatch` | a barracks or stable worker in Fornost | offered from Tracking 30.0; read the 3 orc tracks on the road out (below it a track stays unread), each saying which way they went, then tell the giver: the right way pays, a wrong one nothing (and no friendship) |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -219,7 +226,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (Fornost's barrow, Edoras's eored and hall
+Not built yet (design 9.3, being added under #1317): the other stories (Edoras's eored and hall
 song, Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
