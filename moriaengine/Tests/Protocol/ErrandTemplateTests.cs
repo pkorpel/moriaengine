@@ -10,7 +10,9 @@ namespace SteamEngine.Tests.Protocol {
 	public class ErrandTemplateTests : LivingWorldTestBase {
 		private static readonly string[] names = { "Dopis", "Vyptavani", "Nakup", "Suroviny", "Ztracena vec", "Dluh", "Doprovod", "Smena",
 			//#1291/#1293 - the templates added since that a tavern's innkeeper can also offer
-			"Hadka", "Tajny ctitel", "Pozvanka", "Milostny dopis", "Pivo pro strazne", "Zakazka", "Kuryr", "Rvacka" };
+			"Hadka", "Tajny ctitel", "Pozvanka", "Milostny dopis", "Pivo pro strazne", "Zakazka", "Kuryr", "Rvacka",
+			//#1317 - and the rest a worker outside the war camp may offer (#1291, #1293b were missing: an innkeeper's random pick failed the test now and then)
+			"Vypujcene knihy", "Znameni", "Scitani", "Slova mrtvych", "Cerny pasazer", "Uteklo", "Lampar", "Krysy ve sklepe", "Zlodej", "Ztracena zasilka" };
 
 		public ErrandTemplateTests(GameServerPairFixture servers)
 			: base(servers, "errandtpltests", "ERRANDTPL") {
