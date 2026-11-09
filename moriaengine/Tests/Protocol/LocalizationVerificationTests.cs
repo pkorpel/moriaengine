@@ -27,7 +27,14 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("LOC_VERIFY:", mark, TimeSpan.FromSeconds(30)));
 				string output = this.fixture.GameOutputSnapshot();
 				string summary = LastLineContaining(output, "LOC_VERIFY:");
-				Assert.Contains("missing=0", summary + "\n\nFull output:\n" + output.Substring(mark));
+				//#1020 - Assert.Contains cuts its message short; list the missing keys themselves
+				System.Text.StringBuilder missing = new System.Text.StringBuilder();
+				foreach (string line in output.Substring(mark).Split('\n')) {
+					if (line.Contains("LOC_VERIFY_MISSING:")) {
+						missing.AppendLine(line.Trim());
+					}
+				}
+				Assert.True(summary.Contains("missing=0"), summary + "\n" + missing);
 			}
 		}
 

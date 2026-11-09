@@ -1576,6 +1576,15 @@
   <data name="FishingLoc_needFishingPole" xml:space="preserve">
     <value>You must be holding a fishing pole to do that.</value>
   </data>
+  <data name="FishingLoc_junkCrate" xml:space="preserve">
+    <value>You haul up a soggy crate of junk.</value>
+  </data>
+  <data name="FishingLoc_junkCrateWithMap" xml:space="preserve">
+    <value>You haul up a soggy crate of junk - and find a tattered map inside!</value>
+  </data>
+  <data name="FishingLoc_nothingHere" xml:space="preserve">
+    <value>The fish don't seem to be biting here.</value>
+  </data>
   <data name="LumberjackingLoc_abort" xml:space="preserve">
     <value>You stop chopping.</value>
   </data>
@@ -1593,6 +1602,9 @@
   </data>
   <data name="LumberjackingLoc_needHatchet" xml:space="preserve">
     <value>You must be holding a hatchet to do that.</value>
+  </data>
+  <data name="LumberjackingLoc_veinExhausted" xml:space="preserve">
+    <value>This tree seems to have no more wood to give.</value>
   </data>
   <data name="MagicReflectionLoc_NextEvilSpellReflects" xml:space="preserve">
     <value>Pristi nepratelske kouzlo se od tebe odrazi</value>
