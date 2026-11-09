@@ -197,6 +197,13 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Probuzena mohyla (the barrow at night) | `barrow` | a barracks, stable or town hall worker in Fornost | come back after dark (22-4), lay the barrow wight on the road out, find the old blade it guarded by the road, bring it back; 2 hours |
 | Hlidka hranicaru (the Rangers' watch) | `rangerwatch` | a barracks or stable worker in Fornost | offered from Tracking 30.0; read the 3 orc tracks on the road out (below it a track stays unread), each saying which way they went, then tell the giver: the right way pays, a wrong one nothing (and no friendship) |
 
+**Edoras** (`EdorasStories.cs`, things in `edorasstories.def`; the horse thieves are step 30's):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Sraz eoredu (the eored's muster) | `eored` | a stable or barracks worker in Edoras | ride to the eored's 3 banners on the road out within 20 minutes, mounted at each (on foot a banner doesn't count), then report |
+| Pisen pro sin (a song for the hall) | `hallsong` | a tavern or town hall worker in Edoras, offered from Musicianship 30.0 | learn the old verse from another resident, then play it at the bard's stool in the giver's venue (an instrument in the pack and Erebor's Musicianship roll, `Bard.Plays`; a poor try can be played again after 3 s), then hear the giver's thanks |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -226,8 +233,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (Edoras's eored and hall
-song, Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
+Not built yet (design 9.3, being added under #1317): the other stories (Minas Tirith's herb and archives, Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
 
