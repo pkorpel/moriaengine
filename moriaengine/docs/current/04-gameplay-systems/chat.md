@@ -42,3 +42,22 @@ A GM's commands are parsed as scripts, so text is quoted: `.goch "text"`. A plai
 - A possessing mystic can't use chat ("Ve svem stavu nemuzes pouzivat masovou komunikaci"), as on Erebor.
 
 Erebor's personal settings panel showed the same switches. Here they're only on `.chat`, and its minipanel button isn't ported.
+
+## Waiting messages (#901)
+
+Erebor's `delayedmessage` and `delayedredMessage` (`funkce.scp`, the dialogs in `various_gumps.scp`). Code:
+`scripts/Basic/Chat/DelayedMessages.cs`; `Player.DelayedMessage` and `DelayedRedMessage` go through it.
+
+- Someone online reads the line at once, in the system message area (red for an important one). Nothing is kept.
+- For someone offline it waits on the character, the important ones apart. At login a list of each opens, important
+  ones first, 25 a page; a click on a message deletes it.
+- `.ms` opens the waiting messages again, `.rms` the important ones; `.clearms 1` empties the important ones, `.clearms`
+  the others.
+- Sent this way: everything Erebor sent so in the towns (bans, suggestions, taxes, citizenship lost, elections, a mayor
+  removed), the realm's blacklist, a Ring of Power leaving its wearer, `.rentalinfo`'s bans, the conquest's and PvP
+  season's rewards, and the auction's outbid and sold notices.
+- Not ported: Erebor's staff exceptions (a few GMs always got the list), the citizens' votes on expelling or admitting
+  someone (not built here), and the stall and field owners' notices (stalls are claimed, not auctioned).
+
+The older SteamEngine message board (`scripts/Basic/mailingsystem`, `.messages`) is no longer used by anything, and `.messages`
+is GM-only now: its buttons threw (`OnResponse` reads its list as an `ArrayList`).

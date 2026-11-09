@@ -139,13 +139,13 @@ namespace SteamEngine.CompiledScripts {
 			TownBan ban = office.FindBan(owner);
 			if (ban != null) {
 				office.bans.Remove(ban);
-				owner.SysMessage("Byl jsi odebran z globalni cerne listiny");
+				DelayedMessages.Send(owner, "Byl jsi odebran z globalni cerne listiny"); //#901
 			} else if (IsImportant(owner)) {
 				player.SysMessage(ImportantPersonMessage);
 			} else {
 				D_TownInput.Ask(player, "Udej duvod pro blacklist:", "", reason => {
 					office.bans.Add(new TownBan { who = owner, name = owner.Name, reason = reason });
-					owner.RedMessage("Byl jsi dan na globalni cernou listinu");
+					DelayedMessages.SendRed(owner, "Byl jsi dan na globalni cernou listinu");
 				});
 			}
 		}
@@ -158,7 +158,7 @@ namespace SteamEngine.CompiledScripts {
 			TownBan ban = town.FindBan(owner);
 			if (ban != null) {
 				town.banned.Remove(ban);
-				owner.SysMessage("Byl jsi odebran z cerne listiny mesta " + town.Name);
+				DelayedMessages.Send(owner, "Byl jsi odebran z cerne listiny mesta " + town.Name);
 			} else if (CanBeTownBanned(owner, town)) {
 				D_TownInput.Ask(player, "Udej duvod pro blacklist:", "", reason => town.Ban(owner, reason));
 			} else {

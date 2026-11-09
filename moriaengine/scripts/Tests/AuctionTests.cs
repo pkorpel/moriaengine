@@ -51,7 +51,7 @@ namespace SteamEngine.CompiledScripts {
 			Report("theNextBidIsFivePercentMore", AuctionHouse.MinBid(ring) == 1050);
 			AuctionHouse.PlaceBid(second, ring, 1050);
 			Report("theOutbidGetTheirGoldBack", (AuctionHouse.Bidder(ring) == second) && (first.Gold == 20000) && (second.Gold == 18950));
-			Report("anOfflineBidderGetsAMessage", MsgsBoard.CountUnread(first) > 0);
+			Report("anOfflineBidderGetsAMessage", DelayedMessages.Count(first, false) > 0);
 			AuctionHouse.Withdraw(player, ring);
 			Report("noWithdrawingAfterABid", AuctionHouse.IsListed(ring));
 			AuctionHouse.EndNow(ring);

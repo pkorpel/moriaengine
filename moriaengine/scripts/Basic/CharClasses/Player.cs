@@ -444,6 +444,7 @@ namespace SteamEngine.CompiledScripts {
 				PowerBadge.PutBackOn(this); //#1037
 				Jail.OnLogin(this); //#1107
 				AfkCheck.OnLogin(this); //#1107 - e_afk_controlled @login
+				DelayedMessages.ShowAtLogin(this); //#901 - redmessage_me, message_me
 				WorldEvents.EnsureRunning(); //#1284 - the world events' clock
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
@@ -562,65 +563,23 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		#region Messaging
+		/// <summary>#901 - Erebor's delayedmessage: at once if online, otherwise it waits for the login (DelayedMessages).</summary>
 		public void DelayedMessage(string text) {
-			this.DelayedMessage(null, text);
+			DelayedMessages.Send(this, text);
 		}
 
-		/// <summary>
-		/// Send a delayed message to the player. Specify the sender of the message (null means 
-		/// that the message comes from the system)
-		/// </summary>
+		/// <summary>A delayed message signed by its sender (null = the system).</summary>
 		public void DelayedMessage(AbstractCharacter sender, string text) {
-			if (sender == null) {
-				//add a new message without the sender
-				MsgsBoard.AddNewMessage(this, new DelayedMsg(text));
-				//send the message also to the client
-				this.SysMessage("System: " + text);
-			} else {
-				//add a new message with the sender
-				MsgsBoard.AddNewMessage(this, new DelayedMsg(sender, text));
-				//send the message also to the client
-				this.SysMessage(sender.Name + ": " + text);
-			}
-			this.InfoMessage("Nova zprava, celkem neprectenych: " + MsgsBoard.CountUnread(this));
+			DelayedMessages.Send(this, (sender == null) ? text : (sender.Name + ": " + text));
 		}
 
-		/// <summary>
-		/// Send a delayed message to the player. Specify the sender of the message (null means 
-		/// that the message comes from the system), we can also specify a message custom color here
-		/// </summary>
-		public void DelayedMessage(AbstractCharacter sender, string text, Hues hue) {
-			if (sender == null) {
-				//add a new message without the sender
-				MsgsBoard.AddNewMessage(this, new DelayedMsg(null, text, hue));
-			} else {
-				//add a new message with the sender
-				MsgsBoard.AddNewMessage(this, new DelayedMsg(sender, text, hue));
-			}
-			//send the message also to the client
-			this.SysMessage(text, (int) hue);
-			this.InfoMessage("Nova zprava, celkem neprectenych: " + MsgsBoard.CountUnread(this));
-		}
-
+		/// <summary>#901 - Erebor's delayedredMessage: an important one, red, listed apart at login.</summary>
 		public void DelayedRedMessage(string text) {
-			this.DelayedRedMessage(null, text);
+			DelayedMessages.SendRed(this, text);
 		}
 
-		/// <summary>
-		/// Send a delayed red message to the player. Specify the sender of the message (null means 
-		/// that the message comes from the system)
-		/// </summary>
 		public void DelayedRedMessage(AbstractCharacter sender, string text) {
-			if (sender == null) {
-				//add a new red message without the sender
-				MsgsBoard.AddNewMessage(this, new DelayedMsg(text, true));
-			} else {
-				//add a new red message with the sender
-				MsgsBoard.AddNewMessage(this, new DelayedMsg(sender, text, true));
-			}
-			//send the message also to the client
-			this.RedMessage(text);
-			this.InfoMessage("Nova vyznamna zprava, celkem neprectenych: " + MsgsBoard.CountUnread(this));
+			DelayedMessages.SendRed(this, (sender == null) ? text : (sender.Name + ": " + text));
 		}
 		#endregion Messaging
 

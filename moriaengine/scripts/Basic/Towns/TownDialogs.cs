@@ -229,7 +229,7 @@ namespace SteamEngine.CompiledScripts {
 							if (town.mayor == null) {
 								player.SysMessage("Mesto nema zadneho starostu");
 							} else {
-								town.mayor.RedMessage("Byl jsi zbaven uradu starosty ve meste " + town.Name);
+								DelayedMessages.SendRed(town.mayor, "Byl jsi zbaven uradu starosty ve meste " + town.Name); //#901
 								town.ClearMayor();
 							}
 						});
@@ -351,8 +351,12 @@ namespace SteamEngine.CompiledScripts {
 			} else if ((mode == ListMode.Expel) && (town.GetRank(player) >= Town.RankGm)) {
 				Character who = citizen.who;
 				D_TownConfirm.Ask(player, "Opravdu chces zbavit " + who.Name + " obcanstvi?", () => {
+					bool wasMayor = (town.mayor == who);
 					town.RemoveCitizen(who);
-					who.RedMessage("Jiz nejsi obcanem mesta " + town.Name + ".");
+					DelayedMessages.SendRed(who, "Byl jsi zbaven obcanskych prav ve meste " + town.Name); //#901 - Erebor's expel line, delayed
+					if (wasMayor) {
+						DelayedMessages.SendRed(who, "Byl jsi zbaven uradu starosty ve meste " + town.Name); //vyhod_starostu
+					}
 				});
 			}
 		}
@@ -466,14 +470,14 @@ namespace SteamEngine.CompiledScripts {
 			TownBan ban = bans[index];
 			bans.RemoveAt(index);
 			if (!suggestions) {
-				ban.who.SysMessage(ban.name + " byl odstranen z cerne listiny ve meste " + town.Name);
+				DelayedMessages.Send(ban.who, ban.name + " byl odstranen z cerne listiny ve meste " + town.Name); //#901
 			} else if (reject) {
 				player.SysMessage("Navrh zamitnut");
 			} else {
 				ban.suggestedBy = null;
 				town.banned.Add(ban);
 				player.SysMessage(ban.name + " uspesne pridan na cernou listinu");
-				ban.who.RedMessage("Byl jsi dan na cernou listinu mesta " + town.Name);
+				DelayedMessages.SendRed(ban.who, "Byl jsi dan na cernou listinu mesta " + town.Name);
 			}
 			Show(town, player, suggestions);
 		}

@@ -298,16 +298,9 @@ namespace SteamEngine.CompiledScripts {
 			Notify(to, message);
 		}
 
-		/// <summary>At once to someone online, otherwise as a message waiting for them (.messages).</summary>
+		/// <summary>At once to someone online, otherwise as a message waiting for their login (.ms).</summary>
 		internal static void Notify(Character to, string text) {
-			if ((to == null) || to.IsDeleted) {
-				return;
-			}
-			if (to.IsOnline) {
-				to.SysMessage(text);
-			} else {
-				MsgsBoard.AddNewMessage(to, new DelayedMsg(text));
-			}
+			DelayedMessages.Send(to, text); //#901
 		}
 
 		private static readonly string[] metals = { null, "copper", "iron", "silver", "gold", "verite", "valorite", "obsidian", "adamantinum", "mithril", "sand" };

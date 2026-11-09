@@ -161,12 +161,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 			int online = OnlineMinutesOn(ring);
 			if ((minutesWorn - online) >= (settings.ringOfflineRatio * online)) {
-				wearer.RedMessage("Prsten te opustil, ma rad vzruseni z akce a tvoje pasivita nebyla pro nej");
+				DelayedMessages.SendRed(wearer, "Prsten te opustil, ma rad vzruseni z akce a tvoje pasivita nebyla pro nej"); //#901
 				return false;
 			}
 			int killWeight = IsLeading(ring) ? settings.firstRingKillWeight : settings.ringKillWeight;
 			if ((settings.ringDeathWeight * DeathsOn(ring)) >= (killWeight * KillsWith(ring, wearer))) {
-				wearer.RedMessage("Prsten te opustil, tve bojove schopnosti neodpovidaji jeho narokum");
+				DelayedMessages.SendRed(wearer, "Prsten te opustil, tve bojove schopnosti neodpovidaji jeho narokum");
 				return false;
 			}
 			return true;

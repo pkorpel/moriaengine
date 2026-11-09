@@ -165,7 +165,6 @@ area's spawn point. Moving a piece in game keeps it there.
 
 ## Not done
 
-- Messages to someone offline are lost: Erebor's `delayedmessage` isn't ported.
 - `.remember`: a convenience that needs Erebor's masks.
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
 - `.nazghulfell`, the First's fell beast, and the mount's uniform color.

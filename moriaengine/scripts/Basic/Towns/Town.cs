@@ -286,13 +286,13 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>blacklist_him</summary>
 		public void Ban(Character who, string reason) {
 			this.banned.Add(new TownBan { who = who, name = who.Name, reason = reason });
-			who.RedMessage("Byl jsi dan na cernou listinu mesta " + this.Name);
+			DelayedMessages.SendRed(who, "Byl jsi dan na cernou listinu mesta " + this.Name); //#901
 		}
 
 		/// <summary>navrhni</summary>
 		public void SuggestBan(Character who, string reason, Character by) {
 			this.suggestedBans.Add(new TownBan { who = who, name = who.Name, reason = reason, suggestedBy = by.Name });
-			who.RedMessage("Byl jsi navrzen na blacklist mesta " + this.Name + ". Ocekavej rozhodnuti starosty.");
+			DelayedMessages.SendRed(who, "Byl jsi navrzen na blacklist mesta " + this.Name + ". Ocekavej rozhodnuti starosty.");
 		}
 
 		/// <summary>Which town's guards a guard is: the city of the area it calls home.</summary>
@@ -382,7 +382,7 @@ namespace SteamEngine.CompiledScripts {
 			this.nextTaxChangeAt = Globals.TimeInSeconds + (TownSettings.instance.taxChangeDays * SecondsInDay);
 			this.tax = amount;
 			foreach (TownCitizen citizen in this.citizens) {
-				citizen.who.RedMessage("Nove dane: " + this.tax);
+				DelayedMessages.SendRed(citizen.who, "Nove dane: " + this.tax);
 			}
 			return true;
 		}
@@ -486,7 +486,7 @@ namespace SteamEngine.CompiledScripts {
 					continue;
 				}
 				if (!citizen.paidTax) {
-					citizen.who.RedMessage("Nezaplatil jsi dane, pro mesto " + this.Name + " jiz nejsi zadoucim obcanem");
+					DelayedMessages.SendRed(citizen.who, "Nezaplatil jsi dane, pro mesto " + this.Name + " jiz nejsi zadoucim obcanem");
 					this.RemoveCitizen(citizen.who);
 					continue;
 				}
@@ -495,9 +495,9 @@ namespace SteamEngine.CompiledScripts {
 				if (citizen.autoPay) {
 					if (GoldUtils.Pay(citizen.who, this.tax, notEnough: "")) {
 						this.MarkPaid(citizen);
-						citizen.who.SysMessage("Dane automaticky zaplaceny - " + this.tax + "gp");
+						DelayedMessages.Send(citizen.who, "Dane automaticky zaplaceny - " + this.tax + "gp");
 					} else {
-						citizen.who.RedMessage("Nedostatek penez na zaplaceni dani, vyres si sve platby!");
+						DelayedMessages.SendRed(citizen.who, "Nedostatek penez na zaplaceni dani, vyres si sve platby!");
 					}
 				}
 			}
@@ -525,7 +525,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private void TellCitizens(string text) {
 			foreach (TownCitizen citizen in this.citizens) {
-				citizen.who.SysMessage(text);
+				DelayedMessages.Send(citizen.who, text); //#901
 			}
 		}
 
@@ -591,10 +591,10 @@ namespace SteamEngine.CompiledScripts {
 			Character sitting = this.mayor;
 			Character winner = best.Exists(candidate => candidate.who == sitting) ? sitting : best[Globals.dice.Next(best.Count)].who;
 			if ((sitting != null) && (sitting != winner)) {
-				sitting.RedMessage("Prisel jsi ve volbach o urad starosty ve meste " + this.Name);
+				DelayedMessages.SendRed(sitting, "Prisel jsi ve volbach o urad starosty ve meste " + this.Name);
 			}
 			this.TellCitizens("Volby ukonceny, starostou byl " + ((winner == sitting) ? "znovu" : "") + "zvolen " + winner.Name + ".");
-			winner.SysMessage(((winner == sitting) ? "Byl jsi znovuzvolen starostou mesta " : "Byl jsi zvolen starostou mesta ") + this.Name);
+			DelayedMessages.Send(winner, ((winner == sitting) ? "Byl jsi znovuzvolen starostou mesta " : "Byl jsi zvolen starostou mesta ") + this.Name);
 			this.SetMayor(winner);
 			this.candidates.Clear();
 			this.voters.Clear();
