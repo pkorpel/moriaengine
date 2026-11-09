@@ -116,7 +116,8 @@ namespace SteamEngine.CompiledScripts {
 			RealmOffice office = RealmOffice.For(Realm.Gondor);
 			AbstractItem cape = self.FindLayer(20);
 			Console.WriteLine("REALM_REPORT: holder=" + Clean(office?.holder?.Name) + " name=" + Clean(self.Name) + " badge=" + (PowerBadge.Find(self) != null) +
-				" uniform=" + Uniform.Has(self) + " uid=" + (uint) self.FlaggedUid + " str=" + self.Str + " vit=" + ((Player) self).Vit + " cape=0x" + ((cape != null) ? cape.Color.ToString("x", CultureInfo.InvariantCulture) : "none") + " end");
+				" uniform=" + Uniform.Has(self) + " uid=" + (uint) self.FlaggedUid + " str=" + self.Str + " vit=" + ((Player) self).Vit + " cape=0x" + ((cape != null) ? cape.Color.ToString("x", CultureInfo.InvariantCulture) : "none") +
+				" horse=" + ((self.Mount != null) ? ("0x" + self.Mount.Color.ToString("x", CultureInfo.InvariantCulture) + "/0x" + self.Mount.MountItem.ToString("x", CultureInfo.InvariantCulture)) : "none") + " end");
 		}
 
 		/// <summary>The General's six pieces, the horse among them.</summary>
@@ -128,6 +129,19 @@ namespace SteamEngine.CompiledScripts {
 			Character horse = (Character) ThingDef.GetByDefname("c_horse_brown_dk").Create(self.P());
 			self.Mount = horse;
 			Console.WriteLine("REALM_DRESSED: done");
+		}
+
+		/// <summary>#908 - the full uniform again, then off the horse: the horse goes back to its own color and look.</summary>
+		[SteamFunction]
+		public static void TestRealmDismountCheck(Character self) {
+			self.TryEquip((Item) ThingDef.GetByDefname("i_leather_gloves").Create(self.Backpack));
+			Uniform.Refresh(self);
+			Character horse = (Character) self.Mount;
+			bool dressed = (horse.Color == 0x481) && (horse.MountItem == Uniform.UniformHorseItem);
+			self.Dismount();
+			Uniform.Refresh(self);
+			Console.WriteLine("REALM_DISMOUNT: dressed=" + dressed + " restored=" + ((horse.Color != 0x481) && (horse.MountItem == horse.TypeDef.MountItem)) +
+				" uniform=" + Uniform.Has(self) + " end");
 		}
 
 		[SteamFunction]

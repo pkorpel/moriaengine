@@ -78,7 +78,9 @@ those names anywhere, unless they're citizens of the guard's own town.
 
 `.honor` gives everyone not of Mordor within 8 tiles +5 Str, Dex, Int and Vit for 240 s, and the General
 waits 300 s to use it again. It needs the uniform: robe, cape, gloves, shoes, hat and a mount. Complete, the
-clothes take the office's colors and looks, and each goes back when the uniform stops being complete. The
+clothes take the office's colors and looks, and each goes back when the uniform stops being complete (the
+mount too, #908: the General's in 0x481, a Nazgul's in 0x690, both looking like `i_mt_horse_tan`; back to its own at a
+dismount). The
 numbers are on `.settings`, category "Realm Offices".
 
 ## Nazguls and the First Nazgul
@@ -173,7 +175,7 @@ area's spawn point. Moving a piece in game keeps it there.
 ## Not done
 
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
-- `.nazghulfell`, the First's fell beast, and the mount's uniform color.
+- `.nazghulfell`, the First's fell beast (`i_mt_drake` in 0x692).
 - The gates of `i_nazgulsonly_gate`: Erebor's GMs placed them, for what isn't recorded.
 
 ## Realm uniform

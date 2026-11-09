@@ -192,7 +192,8 @@ namespace SteamEngine {
 			}
 		}
 
-		public int MountItem {
+		/// <summary>What a rider shows of this mount: its def's, unless scripts change it (#908, a uniform's horse).</summary>
+		public virtual int MountItem {
 			get {
 				return this.TypeDef.MountItem;
 			}

@@ -392,6 +392,7 @@ namespace SteamEngine.CompiledScripts {
 						newMount.mountorrider = this;
 						this.mountorrider.Disconnect();
 						MountPowers.OnMount(this, newMount); //#925 - magic_horse
+						Uniform.RefreshSoon(this); //#908 - the mount is a uniform piece
 					} //else nothing changes
 				}
 			}
@@ -418,6 +419,8 @@ namespace SteamEngine.CompiledScripts {
 					Sanity.IfTrueThrow(this.mountorrider.Flag_Riding, "this.mountorrider.Flag_Riding on Dismount()");
 
 					this.SetTag(lastMountTK, this.mountorrider); //#1116 - Erebor's lastjezdik
+					Uniform.RestoreMount(this, (Character) this.mountorrider); //#908 - off the uniform's colors
+					Uniform.RefreshSoon(this);
 
 					//set it's rider to null
 					this.mountorrider.mountorrider = null;
@@ -431,6 +434,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			Sanity.IfTrueThrow(this.Flag_Riding, "Flag_Riding and this.mountorrider == null");
+		}
+
+		/// <summary>#908 - a uniform's mount shows another look (Erebor's i_mt_horse_tan).</summary>
+		public override int MountItem {
+			get {
+				object uniform = this.GetTag(Uniform.MountItemTK);
+				return (uniform != null) ? Convert.ToInt32(uniform, System.Globalization.CultureInfo.InvariantCulture) : base.MountItem;
+			}
 		}
 
 		public override void On_AfterLoad() {
