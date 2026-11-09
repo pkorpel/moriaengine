@@ -210,6 +210,7 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["Remember"] = PLEVEL_PLAYER; //#905 - for blacklists by name
 			this.commands["Remembered"] = PLEVEL_PLAYER;
 			this.commands["RememberClear"] = PLEVEL_PLAYER;
+			this.commands["HracskeFunkce"] = PLEVEL_PLAYER; //#911 - who holds the realms' offices
 			this.commands["Ms"] = PLEVEL_PLAYER; //#901 - the waiting messages
 			this.commands["Rms"] = PLEVEL_PLAYER;
 			this.commands["ClearMs"] = PLEVEL_PLAYER;
