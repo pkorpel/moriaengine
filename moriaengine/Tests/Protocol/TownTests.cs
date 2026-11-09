@@ -347,6 +347,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("uniform=True", dressed);
 				Assert.Contains("cape=0x481", dressed);
 				Assert.Contains("horse=0x481/0x3e9f", dressed); //#908 - the General's color, i_mt_horse_tan's look
+				Assert.Equal(0x481, ReadMountUpdate(general, 0x3E9F)); //and the General's own client is told
 				general.SendSpeech(".honor");
 				Thread.Sleep(300);
 				string honored = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
@@ -361,6 +362,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.DoesNotContain("cape=0x481", undressed);
 				Assert.DoesNotContain("horse=0x481", undressed);
 				Assert.DoesNotContain("/0x3e9f", undressed);
+				Assert.NotEqual(0x481, ReadMountUpdate(general, -0x3E9F)); //the client is told it's back
 				Assert.Contains("dressed=True restored=True uniform=False", this.Ask(general, ".TestRealmDismountCheck", "REALM_DISMOUNT:")); //#908 - off the horse
 
 				//the General bans for the whole realm, and a guard of any town of it knows
@@ -381,6 +383,19 @@ namespace SteamEngine.Tests.Protocol {
 				string dismissed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
 				Assert.Contains("holder=none name=Town_General badge=False", dismissed);
 			}
+		}
+
+		/// <summary>#908 - the next mount layer update (0x2E, layer 25) showing `model` (or any other than -model); its hue.</summary>
+		private static int ReadMountUpdate(TestGameClient client, int model) {
+			DateTime deadline = DateTime.UtcNow + Wait;
+			while (DateTime.UtcNow < deadline) {
+				byte[] p = client.ReadPacketPayload(0x2e, deadline - DateTime.UtcNow);
+				int shown = (p[4] << 8) | p[5];
+				if ((p[7] == 25) && ((model > 0) ? (shown == model) : (shown != -model))) {
+					return (p[12] << 8) | p[13];
+				}
+			}
+			throw new TimeoutException("no mount update showing " + model);
 		}
 
 		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {

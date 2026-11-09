@@ -190,6 +190,7 @@ namespace SteamEngine.Networking {
 			//private uint flaggedUid;
 			private AbstractCharacter mount;
 			private int mountUid;
+			private int mountItem, mountColor; //#908 - the same mount can change its look or color (a uniform's horse)
 
 			private int model;
 			private int color;
@@ -360,12 +361,16 @@ namespace SteamEngine.Networking {
 					this.mount = this.thing.Mount;
 					if (this.mount != null) {
 						this.mountUid = this.mount.Uid;
+						this.mountItem = this.mount.MountItem;
+						this.mountColor = this.mount.Color;
 					}
 				}
 			}
 
 			private bool GetMountChanged() {
-				bool retVal = (((this.changeFlags & CharSyncFlags.Mount) == CharSyncFlags.Mount) && (this.mount != this.thing.Mount));
+				AbstractCharacter now = this.thing.Mount;
+				bool retVal = (((this.changeFlags & CharSyncFlags.Mount) == CharSyncFlags.Mount) && ((this.mount != now)
+					|| ((now != null) && ((this.mountItem != now.MountItem) || (this.mountColor != now.Color)))));
 				Logger.WriteInfo(Globals.NetSyncingTracingOn && retVal, "GetMountChanged: " + retVal);
 				return retVal;
 			}
