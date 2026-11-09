@@ -19,7 +19,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("anEdorasRoomIsFound", "theRoomIsBounded", "everyTileHasARoof", "theRectanglesCoverExactlyTheTiles", "noRoofNoRoom",
 					"aDraftSaves", "theCityIsFoundByItself", "theIdIsPermanent", "theMarkerIsHidden", "aTileInsideIsTheVenue", "theStreetIsNot",
 					"anUpperFloorIsNot", "aTavernIsOpenInTheEvening", "andClosedAtDawn", "theTypeHasRoles", "twentyFourHoursIsAlways", "theClockHasShifts",
-					"aSecondVenueGetsTheNextId", "theListFindsIt", "edorasHasOtherRooms", "aMarkedRoomIsntProposed");
+					"aSecondVenueGetsTheNextId", "theListFindsIt", "edorasHasOtherRooms", "aMarkedRoomIsntProposed", "edorasHasHouses", "noHouseIsProposed");
 				this.Run(game, ".TestVenueExport", "VENUE_EXPORT_DONE");
 				this.AssertChecks("theVenueIsThere", "oneIsWritten", "deletedIsGone", "setupBringsItBack", "withItsTypeNameAndArea", "hiddenAndFixed",
 					"aSecondRunAddsNothing", "andKeepsTheGmsChange", "aNewIdSkipsTheFilesIds");

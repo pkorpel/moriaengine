@@ -1,7 +1,8 @@
 # moriaengine — working state
 
-## NOW (2026-11-09): #1312 the user's first testing feedback, 8 items, one PR (branch 1312-testing-feedback in ../moria-1286)
+## DONE (2026-11-09): #1312 the user's first testing feedback, 8 items, one PR (branch 1312-testing-feedback in ../moria-1286)
 User tried #1237/#1307 in game: (1) Talathwen's long response invisible (QuestDialog HTML without basefont), (2) new commands missing from .gmmenu, (3) .venues navrh proposes player houses (skip HouseNumber != 0), (4) fetch/collect tasks name the item in brackets, (5) .arrowend cancels the quest arrow, (6) give-up confirm dialog, (7) no errands in enemy-realm towns (not listed either), (8) talking reach 4. Usual rules: tests, red checks, fast tier, related protocol classes, review agent + ## Review.
+Done: review found 2 defects (ReputationTests expected Barad-dur in a Gondor .povest; the .arrowend test passed without the allowlist line, commands check the account's MAX plevel, not PLevel) + CRLF of CommandsAuthorization.cs lost; venue proposals cut rental tiles off (12 left in Edoras otherwise). Gotchas: the protocol class is Q009Tests, not Q009Q018Tests (a filter matching nothing just passes); ThingErrandTests' runaway flaked once (#1313).
 
 ## DONE (2026-11-08): #1237 living world, ALL 7 PHASES autonomously (user away; questions saved for the end)
 User: carry on with all phases of #1237 (plan comment on #1237: phase 1 steps 1-5 foundations, 2 errand engine 6-7, 3 venue life 8-12, 4 Erebor ports 13-20, 5 Mordor 21-22, 6 events 23-25, 7 rest), one issue + PR per step, the usual rules (own test, red check, fast tier, related protocol classes, review agent + ## Review); ask questions only after all 7 phases. Mordor: Barad-dur = orders/rank/rival captains, Harad + Umbar = normal city model. Reputation = design section 15 as is.
