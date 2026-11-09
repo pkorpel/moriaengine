@@ -124,7 +124,10 @@ The war camp gives orders, not these.
 ## Things in the world (#1293)
 
 **A Things step** puts NPCs or items in the world as it begins: in a venue, in the streets a few steps from the city's centre,
-or on a road out of the city, beside the player if no spot is found. The player then catches, kills or uses them:
+or on a road out of the city, beside the player if no spot is found. "The city" is the town the giver works in: a city of several
+towns on the map (Dol Amroth with Pelargir and Linhir, the Shire's, Dale with Esgaroth, the woodland realm with Lorien) centres
+the streets and the road on the smallest of its areas holding the giver's workplace (#1317; before, a Pelargir harbourmaster's
+spies stood in Dol Amroth, 600 tiles away). The player then catches, kills or uses them:
 - **Catch** an NPC with a double click right beside it. Such NPCs can't be hurt, so nobody can strike one down and leave the
   step undoable.
 - **Use** an item with a double click within 2 tiles, on the same floor and in sight.
@@ -211,6 +214,14 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Zapomenuta bylina (the forgotten herb) | `forgottenherb` | the healer or herbalist of the Houses of Healing in Minas Tirith | ask an old resident (an elder if the city has one), who remembers the rhyme (kingsfoil, athelas), gather 3 plants on the road out, bring them |
 | Zahada v archivu (the Steward's archives) | `archives` | a librarian, scholar or scribe in Minas Tirith | search the 3 dusty crates of records in the giver's venue (the last holds a note naming who borrowed the missing page), get the page from that resident (a worker), return it to the giver |
 
+**Dol Amroth, Pelargir and Linhir** (one city on the map; `DolAmrothStories.cs`, things in `dolamrothstories.def`):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Turnaj labutich rytiru (the swan knights' tourney) | `swantourney` | a barracks or armoury worker in Dol Amroth, Pelargir or Linhir | ride at the 3 quintains in the streets, mounted and with a weapon in hand (a tool such as a pickaxe counts, as in combat; otherwise a run doesn't count), then report |
+| Spehove korzaru (corsair spies) | `corsairspies` | a harbour or barracks worker in Dol Amroth | catch the 2 spies in the streets (they run), then bring the giver the letter for Umbar one carried |
+| Majak bez strazce (the lighthouse keeper fell ill) | `lighthouse` | a harbour worker in Dol Amroth | come in the evening (18-23), light the lighthouse fire on the road out, bring 5 ginseng for the keeper; 4 hours |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -240,7 +251,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (Dol Amroth, the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
+Not built yet (design 9.3, being added under #1317): the other stories (the woodland realm, Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
 
