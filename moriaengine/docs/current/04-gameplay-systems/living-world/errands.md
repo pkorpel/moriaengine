@@ -231,6 +231,17 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Beh v sudech (the barrel run) | `barrelrun` | a harbour, tavern or brewery worker | push off the 3 barrels stuck on the road out, within 10 minutes of taking it, then report |
 | Vino z vychodu (wine from the east) | `eastwine` | a tavern worker of the woodland realm | fetch the cask of eastern wine waiting in Rhun's streets (across the realms, about 90 minutes), then tell the giver (a large errand) |
 
+**Erebor, and Dale with Esgaroth** (`EreborStories.cs`, things in `ereborstories.def`; Dale's city key is `Dol`):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Havrani posta (the ravens' post) | `ravenpost` | any worker in Erebor | take the message to the ravens' perch in Dale's streets within 60 minutes, then tell the giver |
+| Sekera predku (the ancestral axe) | `ancestralaxe` | a smithy or market worker in Erebor | kill the orc carrying the axe of the giver's house on the road out, find the axe he hid by the road, bring it home |
+| Vyprava do hlubin (a deep mining expedition) | `deepmining` | a mine or smithy worker in Erebor, offered from Mining 40.0 | strike the 3 deep veins marked in the streets (below Mining 40.0 a vein won't give), then report |
+| Falesny Arcikam (the false Arkenstone) | `falsearkenstone` | a market or tavern worker in Erebor | catch the con man in the streets (he runs), bring the giver his "Arkenstone" (glass) |
+| Rybi kvota (the fish market's quota) | `fishquota` | a harbour or market worker in Dale or Esgaroth | bring 10 raw fish |
+| Paserak na pramu (the smuggling bargeman) | `bargeman` | a harbour or barracks worker in Dale or Esgaroth | catch the bargeman on the road out (he runs), bring the giver his crate without duty |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -260,7 +271,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (Erebor, Esgaroth, Umbar and Harad, Rhun, the wild).
+Not built yet (design 9.3, being added under #1317): the other stories (Umbar and Harad, Rhun, the wild).
 
 ## Limits (`.settings` "Ukoly")
 
