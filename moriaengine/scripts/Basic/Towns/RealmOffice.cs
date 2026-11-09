@@ -233,6 +233,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 			return TargetResult.Done;
 		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			return CorpseCarving.TargetPlayerByHead(self, targetted, "Zameruj lidi, nebo jejich hlavy", "To neni hlava hrace", owner => this.On_TargonChar(self, owner, parameter)); //#906
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("Zameruj lidi.");
+			return TargetResult.Done;
+		}
 	}
 
 	public class Targ_RealmAppoint : CompiledTargetDef {

@@ -293,6 +293,22 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("GUARD_TIME: done");
 		}
 
+		/// <summary>#906 - a severed head at the caller's feet: the character's with this uid, or a fresh Gondor NPC's ("npc").</summary>
+		[SteamFunction]
+		public static void TestTownHead(Character self, ScriptArgs sa) {
+			string arg = sa.Args.Trim().Trim('"');
+			Character owner;
+			if (arg == "npc") {
+				owner = (Character) ThingDef.GetByDefname("c_vguard_gondor_hala_pesak").Create(self.P());
+				owner.Realm = Realm.Gondor;
+			} else {
+				owner = (Character) Thing.UidGetCharacter(uint.Parse(arg, System.Globalization.CultureInfo.InvariantCulture));
+			}
+			Item head = (Item) ((ItemDef) ThingDef.GetByDefname("i_flesh_head")).Create(self.X, self.Y, self.Z, self.M);
+			head.SetTag(CorpseCarving.HeadOfTK, owner);
+			Console.WriteLine("TOWN_HEAD: uid=" + (uint) head.FlaggedUid + " end");
+		}
+
 		[SteamFunction]
 		public static void TestTownReportUid(Character self) {
 			Console.WriteLine("TOWN_UID: uid=" + (uint) self.FlaggedUid + " end");

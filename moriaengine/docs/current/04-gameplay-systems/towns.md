@@ -53,6 +53,10 @@ listed. Everyone sees the list, and the mayor or a GM can take a name off.
 
 A ban is on the character under that name, as on Erebor, so a masked character isn't recognized.
 
+Every blacklist target (the mayor's, `.navrhban`, the General's) also takes a player's severed head and treats it
+as that player, as Erebor's `@targon_item` (#906). A head that isn't a player's, or any other item, is refused and
+ends the target ("To neni hlava hrace", "Zameruj lidi, nebo jejich hlavy").
+
 Guards go by their home's town: a guard attacks a blacklisted player on sight and answers calls about
 them, shouting a warning first at someone still outside the walls. A guard protects a citizen of its own
 town even when criminal, though not a murderer.
@@ -161,7 +165,7 @@ area's spawn point. Moving a piece in game keeps it there.
 ## Not done
 
 - Messages to someone offline are lost: Erebor's `delayedmessage` isn't ported.
-- `.remember` and targeting a severed head to suggest a ban: conveniences that need Erebor's masks and heads.
+- `.remember`: a convenience that needs Erebor's masks.
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
 - `.nazghulfell`, the First's fell beast, and the mount's uniform color.
 - The gates of `i_nazgulsonly_gate`: Erebor's GMs placed them, for what isn't recorded.
