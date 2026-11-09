@@ -134,11 +134,17 @@ some walk has gone 10 steps in a row outside the area (the giver's town; a step 
 centre; a step out through a notch in the area's rectangles and back in doesn't count), and the things lie two tiles apart on
 that stretch past the edge (`Errands.OutsideSpots`). An island's short shore (Cair Andros) takes the ends of other roads out too,
 so the things stand on their own tiles. Before, a fixed walk of 30 steps stayed inside nearly every town (always in Minas Tirith,
-Hobitin, Harad, Umbar, Barad-dur, Dol Amroth and more; about half the time on Edoras's hill). The roads out of the 32 areas of
-the 14 cities are 10-107 steps today (Edoras and Linhir among the shortest, Dol Amroth the longest). A walk of up to 150 steps is
-tried; a town left by fewer than 10 steps in a row by then uses that shorter stretch, a town it can't leave at all gets the old 30 steps. The first walk out of a town takes up to about 0.9 s (Dol Amroth); it is kept
-with up to 7 other roads for the server's run (a recompile starts afresh), so later ones cost nothing; a door or wall changed
-since stays unseen until then.
+Hobitin, Harad, Umbar, Barad-dur, Dol Amroth and more; about half the time on Edoras's hill). The walks out of the 32 areas of
+the 14 cities are 10-107 steps from their centres today (Edoras and Linhir among the shortest, Dol Amroth the longest). A walk of up to 150 steps is
+tried; a town left by fewer than 10 steps in a row by then uses that shorter stretch, a town it can't leave at all gets the old 30 steps.
+
+**The roads are kept with the world** (#1333, `RoadsOutStore`): a walk out of a big town takes up to about 0.9 s on the game
+thread (Dol Amroth), so it's paid once per town for the world's life, not after each restart nor while a player waits for an
+errand. Each town keeps up to 8 roads, only their stretches past the edge (about 50 KB in the save for all towns). `.SetupWorld`
+walks them all (`RoadsOutSetup`: every city's centre and every area of every city, one walk a step; a town already known costs
+nothing). A town not walked yet (a giver whose workplace is elsewhere in a two-part area, as Erebor's deep halls) walks on first
+use and is saved from then. **`.ResetRoadsOut`** (GM, on `.gmmenu` under Mesta) forgets them all, after a town's area or the map
+changed, or a wall now blocks a road: they're walked again by `.SetupWorld` or on use.
 
 The things are then:
 - **Catch** an NPC with a double click right beside it. Such NPCs can't be hurt, so nobody can strike one down and leave the

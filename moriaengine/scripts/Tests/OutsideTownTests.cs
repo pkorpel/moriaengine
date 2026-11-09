@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 				int stretch = Stretch(road, town);
 				bool outside = (placed == tries * 3) && (inside == 0) && (stacked == 0) && (stretch >= Errands.OutsideBeyond);
 				Console.WriteLine("OUTSIDE_CITY: " + city + " town=" + town.Defname + " oldInside=" + oldInside + "/" + OldTries + " placed=" + placed
-					+  " inside=" + inside + " stacked=" + stacked + " stretch=" + stretch + " roadSteps=" + ((road == null) ? -1 : road.Count - 1) + " coldMs=" + coldMs + " warmMsAll=" + watch.ElapsedMilliseconds);
+					+  " inside=" + inside + " stacked=" + stacked + " stretch=" + stretch + " coldMs=" + coldMs + " warmMsAll=" + watch.ElapsedMilliseconds);
 				if (city == "Edoras") {
 					edorasStaysIn = oldInside > 0;
 					edorasOutside = outside;
@@ -109,7 +109,7 @@ namespace SteamEngine.CompiledScripts {
 				bool ok = (spots.Count == 3) && spots.TrueForAll(o => (o.M == area.Mapplane) && !area.ContainsPoint(o.X, o.Y))
 					&& (spots.FindAll(o => (o.X == spots[0].X) && (o.Y == spots[0].Y)).Count == 1) && ((spots[1].X != spots[2].X) || (spots[1].Y != spots[2].Y));
 				everyArea &= ok;
-				Console.WriteLine("OUTSIDE_AREA: " + city + " " + area.Defname + " roads=" + roads.Count + " road=" + ((roads.Count == 0) ? "none" : (roads[0].Count - 1).ToString())
+				Console.WriteLine("OUTSIDE_AREA: " + city + " " + area.Defname + " roads=" + roads.Count
 					+ " stretch=" + stretch + " ok=" + ok + " ms=" + ms);
 			}
 			Console.WriteLine("OUTSIDE_AREAS_DONE " + index + " end");
