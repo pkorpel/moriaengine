@@ -250,6 +250,7 @@ namespace SteamEngine.CompiledScripts {
 				companion.SetTag(FollowingTK, 1);
 				NPCAiTimer.GetFor(companion)?.WakeUp();
 			}
+			ErrandTemplates.Get(errand.key)?.OnStepStart(player, errand); //#1317
 		}
 
 		private static NPC Body(string residentId) {
@@ -278,6 +279,7 @@ namespace SteamEngine.CompiledScripts {
 					thing.Delete(); //#1293 - the step's things go with the errand, done, given up or run out
 				}
 			}
+			ErrandTemplates.Get(errand.key)?.OnEnd(player, errand); //#1317
 		}
 
 		private static void LetGo(NPC companion) {
