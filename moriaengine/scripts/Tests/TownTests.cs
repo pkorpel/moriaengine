@@ -310,6 +310,28 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOWN_HEAD: uid=" + (uint) head.FlaggedUid + " end");
 		}
 
+		/// <summary>#905 - a new name (as a mask gives) and a place far off, or "back": the old name and place.</summary>
+		[SteamFunction]
+		public static void TestTownDisguise(Character self, ScriptArgs sa) {
+			string arg = sa.Args.Trim().Trim('"');
+			if (arg == "back") {
+				self.Name = (string) self.GetTag(TagKey.Acquire("_test_oldName_"));
+				self.P((Point4D) self.GetTag(TagKey.Acquire("_test_oldP_")));
+			} else {
+				self.SetTag(TagKey.Acquire("_test_oldName_"), self.Name);
+				self.SetTag(TagKey.Acquire("_test_oldP_"), new Point4D(self.X, self.Y, self.Z, self.M));
+				self.Name = arg;
+				self.Go(self.X + 120, self.Y);
+			}
+			Console.WriteLine("TOWN_DISGUISE: name=" + self.Name.Replace(' ', '_') + " end");
+		}
+
+		[SteamFunction]
+		public static void TestTownBanNames(Character self) {
+			Town town = Town.ForCity(City);
+			Console.WriteLine("TOWN_BAN_NAMES: " + string.Join("|", town.banned.ConvertAll(b => b.name.Replace(' ', '_'))) + " end");
+		}
+
 		[SteamFunction]
 		public static void TestTownReportUid(Character self) {
 			Console.WriteLine("TOWN_UID: uid=" + (uint) self.FlaggedUid + " end");
