@@ -1,0 +1,18 @@
+//#1317 - the things of Minas Tirith's stories (MinasTirithStories.cs): only their errand's player can use them, and they go when
+//the errand ends.
+
+[ItemDef i_errand_kingsfoil]
+NAME = "Kralovnik"
+TYPE = t_normal
+model = 0x0C9F
+
+[ItemDef i_errand_archive_shelf]
+NAME = "Zaprasena bedna s listinami"
+TYPE = t_normal
+model = 0x09A9
+
+[ItemDef i_errand_archive_page]
+NAME = "Strana z kroniky Spravcu"
+TYPE = t_normal
+model = 0x0E34
+WEIGHT = 0.1
