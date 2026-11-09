@@ -496,10 +496,32 @@ namespace SteamEngine.Tests.Protocol {
 		/// layout up to the color field (flaggedUid(4)/model(2)/type(1)/color(2)) and both carry
 		/// the same 2-byte dynamic-length prefix ahead of that in this harness's stored payload
 		/// convention (see ReadHighlightColor's own note on 0x78 vs 0x77), so one offset covers
-		/// both. Returns the hue (0 = no color/default).</summary>
-		public int ReadNameMessageHue(TimeSpan timeout) {
-			byte[] payload = this.TryReadEither(0xAE, 0xC1, timeout, out byte whichId);
-			return (payload[9] << 8) | payload[10];
+		/// both. Returns the hue (0 = no color/default).
+		/// #948 - a click sends more than the name to a GM (and to anyone with HP sight): the
+		/// "[100%]" HP-sight line in its own colour (green 68 at full health), then the GM status
+		/// lines "[invul]"/"(-)". So this skips other speakers' messages and those bracketed
+		/// lines, and returns the name's own hue.</summary>
+		public int ReadNameMessageHue(uint forUid, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				TimeSpan remaining = deadline - DateTime.UtcNow;
+				if (remaining <= TimeSpan.Zero) {
+					throw new TimeoutException("Did not see the clicked name of uid 0x" + forUid.ToString("x"));
+				}
+				byte[] payload = this.TryReadEither(0xAE, 0xC1, remaining, out byte whichId);
+				uint speaker = (uint) ((payload[2] << 24) | (payload[3] << 16) | (payload[4] << 8) | payload[5]);
+				if (speaker != forUid) {
+					continue;
+				}
+				if (whichId == 0xAE) {
+					const int prefixLen = 2 + 4 + 2 + 1 + 2 + 2 + 4 + 30;
+					string text = Encoding.BigEndianUnicode.GetString(payload, prefixLen, Math.Max(0, payload.Length - prefixLen - 2));
+					if (text.StartsWith("[", StringComparison.Ordinal) || text.StartsWith("(", StringComparison.Ordinal)) {
+						continue;
+					}
+				}
+				return (payload[9] << 8) | payload[10];
+			}
 		}
 
 		/// <summary>Sends RequestAttackInPacket (0x05) - id(1) + uid(4). Mirrors

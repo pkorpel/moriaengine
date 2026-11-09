@@ -109,7 +109,7 @@ namespace SteamEngine.Tests.Protocol {
 				uint gondorUid = ExtractNpcUid(this.fixture.GameOutputSnapshot(), markGondor);
 
 				client.SendSingleClick(gondorUid);
-				int gondorHue = client.ReadNameMessageHue(TimeSpan.FromSeconds(10));
+				int gondorHue = client.ReadNameMessageHue(gondorUid, TimeSpan.FromSeconds(10));
 				Assert.Equal(0x0059, gondorHue);
 
 				int markMordor = this.fixture.GameOutputSnapshot().Length;
@@ -118,7 +118,7 @@ namespace SteamEngine.Tests.Protocol {
 				uint mordorUid = ExtractNpcUid(this.fixture.GameOutputSnapshot(), markMordor);
 
 				client.SendSingleClick(mordorUid);
-				int mordorHue = client.ReadNameMessageHue(TimeSpan.FromSeconds(10));
+				int mordorHue = client.ReadNameMessageHue(mordorUid, TimeSpan.FromSeconds(10));
 				Assert.Equal(0x0022, mordorHue);
 			}
 		}
@@ -139,7 +139,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Equal((byte) 5, highlightByte); // HighlightColor.Enemy
 
 				client.SendSingleClick(monsterUid);
-				int nameHue = client.ReadNameMessageHue(TimeSpan.FromSeconds(10));
+				int nameHue = client.ReadNameMessageHue(monsterUid, TimeSpan.FromSeconds(10));
 				Assert.Equal(0x0090, nameHue);
 			}
 		}
