@@ -499,8 +499,8 @@ namespace SteamEngine.Tests.Protocol {
 		/// both. Returns the hue (0 = no color/default).
 		/// #948 - a click sends more than the name to a GM (and to anyone with HP sight): the
 		/// "[100%]" HP-sight line in its own colour (green 68 at full health), then the GM status
-		/// lines "[invul]"/"(-)". So this skips other speakers' messages and those bracketed
-		/// lines, and returns the name's own hue.</summary>
+		/// lines "[invul]" and "(current skill)". So this skips other speakers' messages and those
+		/// lines, and returns the name's own hue. A character's uid carries no flag bit.</summary>
 		public int ReadNameMessageHue(uint forUid, TimeSpan timeout) {
 			DateTime deadline = DateTime.UtcNow + timeout;
 			while (true) {
@@ -516,7 +516,7 @@ namespace SteamEngine.Tests.Protocol {
 				if (whichId == 0xAE) {
 					const int prefixLen = 2 + 4 + 2 + 1 + 2 + 2 + 4 + 30;
 					string text = Encoding.BigEndianUnicode.GetString(payload, prefixLen, Math.Max(0, payload.Length - prefixLen - 2));
-					if (text.StartsWith("[", StringComparison.Ordinal) || text.StartsWith("(", StringComparison.Ordinal)) {
+					if (text.StartsWith("[", StringComparison.Ordinal) || text.StartsWith("(", StringComparison.Ordinal) || text.Contains("%]")) { //"-5% [95%]" after a hit too
 						continue;
 					}
 				}
