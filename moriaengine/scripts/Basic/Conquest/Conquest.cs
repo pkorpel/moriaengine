@@ -88,6 +88,12 @@ namespace SteamEngine.CompiledScripts {
 			return fort.StartsWith("Mordor", StringComparison.Ordinal) ? -depth : depth;
 		}
 
+		/// <summary>#911 - a keep's captain, null when it has none (or no state yet; nothing is made by asking).</summary>
+		internal static Player CaptainOf(string fort) {
+			KeepState keep = keeps.Find(k => k.fort == fort);
+			return ((keep != null) && (keep.captain != null) && !keep.captain.IsDeleted) ? keep.captain : null;
+		}
+
 		/// <summary>The palantir of a keep, null before one is set up.</summary>
 		internal static FortressPalantir PalantirOf(string fort) {
 			KeepState keep = keeps.Find(k => k.fort == fort);
