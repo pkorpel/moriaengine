@@ -33,7 +33,8 @@ namespace SteamEngine.Tests.Protocol {
 		// one connected character), but a dedicated account for this test eliminates it
 		// entirely, same principle as LevelingTests.cs's own AccountB/AccountC/account-sharing
 		// lessons.
-		private const string AccountB = "protocoltest2";
+		private const string AccountB = "protocoltest2"; //#952 - full: its Facts make exactly 5 characters, a new Fact needs another account
+		private const string AccountC = "protocoltest3"; //#952 - an account holds 5 characters, and AccountB's Facts made 6
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -70,12 +71,22 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void ExpLevelAllowedForOrdinaryNonFirstAccountPlayer() {
 			this.EnsureAutoAccountCreationEnabled();
-			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "OrdinaryLevelChecker")) {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "OrdinaryLevelChecker")) { //#952 - AccountB's 5 characters are taken by the other Facts
 				client.SendSpeech(".explevel");
 				var (gumpUid, layoutText) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 				Assert.True(gumpUid != 0 || layoutText.Length > 0,
 					"Expected a real gump dialog to open for .explevel on an ordinary (non-GM) player.");
 			}
+		}
+
+		/// <summary>One point into the skill: "success=... skillValue=..." of the result.</summary>
+		private string SpendOne(TestGameClient client, string skill) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestSpendSkillPoint " + skill + " 1");
+			Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
+			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
+			int points = line.IndexOf(" unspentSkillPoints=", StringComparison.Ordinal), value = line.IndexOf(" skillValue=", StringComparison.Ordinal);
+			return line.Substring(0, points) + line.Substring(value);
 		}
 
 		private static bool autoAccountCreationEnabled;
@@ -100,10 +111,8 @@ namespace SteamEngine.Tests.Protocol {
 		/// with no profession; attribute spending needs its own explicit check, since there's no
 		/// existing "no profession = cap 0" mechanism for attributes the way there is for
 		/// skills). Once a profession IS assigned, both become spendable (not bounded by a real
-		/// attribute RANGE yet - that's #135, not implemented - just the overall budget). Uses
-		/// the same single Account as ExpLevelDialogOpensWithoutError above - this isolated
-		/// fixture only ever has these two Facts, no account-slot-cap or
-		/// AutoAccountCreation-ordering concerns like LevelingTests.cs's shared fixture has.</summary>
+		/// attribute RANGE yet - that's #135, not implemented - just the overall budget). Its
+		/// character goes on AccountB, which is full now (#952: an account holds 5).</summary>
 		[Fact]
 		public void SpendingPointsRequiresAProfession() {
 			using (var enablerClient = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnablerE")) {
@@ -139,20 +148,24 @@ namespace SteamEngine.Tests.Protocol {
 					LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_PROFESSION_SET:"));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSpendSkillPoint Magery 10");
+				client.SendSpeech(".TestSpendSkillPoint Magery 4");
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
 				string profSkillLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
-				// mage's Magery cap is 1000 (0-1000 scale) - 10 points easily fits. Starts at
+				// mage's Magery cap is 1000 (0-1000 scale) - 4 points fit (#952: a master teaches past 50.0). Starts at
 				// 300, not 0 - ProfessionPlugin.On_Assign (#135) grants mage.def's Magery
 				// minimum (300) immediately on profession assignment above, before any points
 				// are even spent. Magery, not Alchemy (used before #204) - Alchemy is a
 				// crafting skill, excluded from LevelingSystem.SpendableSkills regardless of
 				// profession/cap.
 				Assert.Contains("success=True", profSkillLine);
-				Assert.Contains("unspentSkillPoints=5", profSkillLine); // 15 - 10
-				// 300 (granted) + 10 * LevelingSystem.SkillPointGain (50, i.e. 5.0% per point,
-				// matching Erebor's own rate - #199) = 800.
-				Assert.Contains("skillValue=800", profSkillLine);
+				// #952 - since #882 (Erebor's leveling): 5.0 a raise, 1 point each below 50.0, and a
+				// master must teach past 25.0, 50.0 and 75.0. 300 (granted) + 4 * 50 = 500, 15 - 4 = 11.
+				Assert.Contains("unspentSkillPoints=11", profSkillLine);
+				Assert.Contains("skillValue=500 end", profSkillLine);
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpendSkillPoint Magery 1");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("success=False unspentSkillPoints=11 skillValue=500 end", LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:")); //50.0 needs a master
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestSpendAttributePoint Str 5");
@@ -173,7 +186,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// a modifier of exactly 1000, snapping the displayed value straight to 0%. Warrior's
 		/// own DetectHidden (warrior.def: "DetectingHidden=0, 1000") starts at exactly 0 with a
 		/// 1000 cap - the exact shape that reproduced this live (user's own words: "begging and
-		/// detect hidden... went from 95% to 0%"). 20 one-point spends (20*50=1000 raw) must
+		/// detect hidden... went from 95% to 0%"). (#952, since #882) points up to 25.0, a master's teaching to 80.0, points again up to the 100.0 cap (each raise 50 raw) must
 		/// land on a real, permanent 100.0% - every intermediate value checked along the way,
 		/// not just the final one, since the old bug could in principle have mis-fired earlier
 		/// too. Also covers the OTHER real-user-reported request: once DetectHidden is capped,
@@ -195,14 +208,18 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestSetProfession profession_warrior");
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_PROFESSION_SET:", mark, TimeSpan.FromSeconds(10)));
 
-				for (int i = 1; i <= 20; i++) {
-					mark = this.fixture.GameOutputSnapshot().Length;
-					client.SendSpeech(".TestSpendSkillPoint DetectHidden 1");
-					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
-					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
-					Assert.Contains("success=True", line);
-					Assert.Contains("skillValue=" + (i * 50), line);
+				//#952 - since #882 points raise up to 25.0, a master teaches past it (and past 50.0, 75.0)
+				for (int i = 1; i <= 5; i++) {
+					Assert.Contains("success=True skillValue=" + (i * 50) + " end", this.SpendOne(client, "DetectHidden"));
 				}
+				Assert.Contains("success=False skillValue=250 end", this.SpendOne(client, "DetectHidden")); //kept, not reset
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestMasterTaught DetectHidden 800");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_MASTER_TAUGHT:", mark, TimeSpan.FromSeconds(10)));
+				for (int i = 1; i <= 4; i++) {
+					Assert.Contains("success=True skillValue=" + (800 + (i * 50)) + " end", this.SpendOne(client, "DetectHidden"));
+				}
+				Assert.Contains("success=False skillValue=1000 end", this.SpendOne(client, "DetectHidden")); //at the cap, and it stays
 
 				client.SendSpeech(".explevel");
 				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
