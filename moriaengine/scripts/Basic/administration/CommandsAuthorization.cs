@@ -207,6 +207,9 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["ThrowExplosion"] = PLEVEL_PLAYER;//#927
 			this.commands["ThrowDispel"] = PLEVEL_PLAYER;//#927
 			this.commands["NavrhBan"] = PLEVEL_PLAYER;
+			this.commands["Remember"] = PLEVEL_PLAYER; //#905 - for blacklists by name
+			this.commands["Remembered"] = PLEVEL_PLAYER;
+			this.commands["RememberClear"] = PLEVEL_PLAYER;
 			this.commands["Ms"] = PLEVEL_PLAYER; //#901 - the waiting messages
 			this.commands["Rms"] = PLEVEL_PLAYER;
 			this.commands["ClearMs"] = PLEVEL_PLAYER;

@@ -284,14 +284,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>blacklist_him</summary>
-		public void Ban(Character who, string reason) {
-			this.banned.Add(new TownBan { who = who, name = who.Name, reason = reason });
+		public void Ban(Character who, string reason, string name = null) { //#905 - name: as remembered (.remember), else theirs now
+			this.banned.Add(new TownBan { who = who, name = name ?? who.Name, reason = reason });
 			DelayedMessages.SendRed(who, "Byl jsi dan na cernou listinu mesta " + this.Name); //#901
 		}
 
 		/// <summary>navrhni</summary>
-		public void SuggestBan(Character who, string reason, Character by) {
-			this.suggestedBans.Add(new TownBan { who = who, name = who.Name, reason = reason, suggestedBy = by.Name });
+		public void SuggestBan(Character who, string reason, Character by, string name = null) {
+			this.suggestedBans.Add(new TownBan { who = who, name = name ?? who.Name, reason = reason, suggestedBy = by.Name });
 			DelayedMessages.SendRed(who, "Byl jsi navrzen na blacklist mesta " + this.Name + ". Ocekavej rozhodnuti starosty.");
 		}
 
