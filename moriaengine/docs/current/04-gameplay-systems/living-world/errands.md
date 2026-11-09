@@ -242,6 +242,15 @@ The rest of design 9.3, one region at a time, on the same machinery.
 | Rybi kvota (the fish market's quota) | `fishquota` | a harbour or market worker in Dale or Esgaroth | bring 10 raw fish |
 | Paserak na pramu (the smuggling bargeman) | `bargeman` | a harbour or barracks worker in Dale or Esgaroth | catch the bargeman on the road out (he runs), bring the giver his crate without duty |
 
+**Umbar, Harad and Rhun** (`SouthEastStories.cs`, things in `southeaststories.def`; Harad's caravan and Umbar's contraband are #1282's):
+
+| Template | Key | Who gives it | What |
+|---|---|---|---|
+| Priprava najezdu (preparing a corsair raid) | `corsairraid` | a corsair den or harbour worker in Umbar | call two of the crew to the ship (from the giver's own town, the corsairs' haunts first), bring the captain 30 arrows |
+| Utekle mumaci mlade (the mumak's runaway calf) | `mumakcalf` | a caravanserai, stable or kennels (mumak handlers) worker in Harad | catch the young mumak on the road out (it runs), then report |
+| Karavana s koreninami (the spice caravan) | `spicecaravan` | a caravanserai or market worker in Harad | kill the 2 desert bandits on the road out, pick up the 2 spice crates, bring them |
+| Obchod s konmi (horse trading) | `horsetrade` | a stable or kennels worker in Rhun | catch 2 wild horses on the steppe on the road out (they run), then sell them to the giver |
+
 ## Mordor's stories (#1302)
 
 Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in Barad-dur are orders, under the war camp's rules
@@ -271,7 +280,7 @@ Design 9.4's, in `MordorStories.cs` (things in `mordorstories.def`). The two in 
 
 Not built (design 9.4): the warg pup, Black Speech.
 
-Not built yet (design 9.3, being added under #1317): the other stories (Umbar and Harad, Rhun, the wild).
+Not built yet (design 9.3, being added under #1317): the other stories (the wild).
 
 ## Limits (`.settings` "Ukoly")
 
