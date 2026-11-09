@@ -208,6 +208,29 @@ namespace SteamEngine.Tests.Protocol {
 				}
 				Assert.Contains("Toto neni hlava hrace", refusal);
 
+				//#905 - remembered before the mask: the ban goes under the name they had, from anywhere
+				this.Press(mayor, stone, Blacklist);
+				list = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(list.GumpUid, 100);
+				mayor.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("banned=0", this.Report(other));
+				mayor.SendSpeech(".remember");
+				Thread.Sleep(300);
+				mayor.SendTargetUid(otherUid);
+				Thread.Sleep(300);
+				Assert.Contains("name=Maskovany_Muz", this.Ask(other, ".TestTownDisguise \"Maskovany Muz\"", "TOWN_DISGUISE:"));
+				this.Press(mayor, stone, AddBan);
+				Thread.Sleep(300);
+				mayor.SendSpeech(".remembered");
+				input = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Pod maskou" } });
+				Thread.Sleep(300);
+				Assert.Contains("TOWN_BAN_NAMES: Town_Ban_Tester end", this.Ask(mayor, ".TestTownBanNames", "TOWN_BAN_NAMES:"));
+				this.Ask(other, ".TestTownDisguise \"back\"", "TOWN_DISGUISE:");
+				mayor.SendSpeech(".rememberclear");
+				other.SendSpeech(".remembered"); //a plain player's command too
+				Assert.NotNull(TryReadMessageContaining(other, "Nemas nikoho ulozeneho v pameti", Wait));
+
 				//a criminal is safe from their own town's guards, and only those
 				Assert.Contains("protected=True", this.Ask(mayor, ".TestTownCriminal", "TOWN_CRIMINAL:"));
 			}
@@ -342,6 +365,22 @@ namespace SteamEngine.Tests.Protocol {
 				string dismissed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
 				Assert.Contains("holder=none name=Town_General badge=False", dismissed);
 			}
+		}
+
+		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (DateTime.UtcNow < deadline) {
+				string message;
+				try {
+					message = client.ReadSystemMessage(deadline - DateTime.UtcNow);
+				} catch (TimeoutException) {
+					return null;
+				}
+				if (message.Contains(text, StringComparison.Ordinal)) {
+					return message;
+				}
+			}
+			return null;
 		}
 
 		private void Press(TestGameClient client, uint stone, int button) {

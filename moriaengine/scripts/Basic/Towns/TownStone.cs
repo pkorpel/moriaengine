@@ -96,7 +96,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Obcany mesta nelze pridavat na blacklist");
 			} else {
 				D_TownInput.Ask(self, "Udej duvod blacklistnuti:", "", reason => {
-					town.Ban(targetted, reason);
+					town.Ban(targetted, reason, Remember.NameFor(self, targetted)); //#905 blacklist_him
 					self.SysMessage(targetted.Name + " uspesne pridan na cernou listinu");
 				});
 			}
@@ -129,7 +129,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Nenavrhuj GMka");
 			} else {
 				D_TownInput.Ask(self, "Udej duvod tveho navrhu:", "", reason => {
-					town.SuggestBan(targetted, reason, self);
+					town.SuggestBan(targetted, reason, self, Remember.NameFor(self, targetted)); //#905 navrhni
 					self.SysMessage("Navrhl jsi hrace " + targetted.Name + " na blacklist mesta " + town.Name);
 				});
 			}

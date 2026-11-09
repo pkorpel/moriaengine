@@ -53,6 +53,11 @@ listed. Everyone sees the list, and the mayor or a GM can take a name off.
 
 A ban is on the character under that name, as on Erebor, so a masked character isn't recognized.
 
+As a mask changes the name, `.remember` (#905) keeps a targeted player and the name they have now. `.remembered` answers
+an open cursor with that player from anywhere (Sphere's `last`, as Erebor's), and a ban or suggestion of them then files
+the remembered name: the mayor's, `.navrhban` and the General's. `.rememberclear` forgets them. All three are player
+commands.
+
 Every blacklist target (the mayor's, `.navrhban`, the General's) also takes a player's severed head and treats it
 as that player, as Erebor's `@targon_item` (#906). A head that isn't a player's, or any other item, is refused and
 ends the target with Erebor's lines ("To neni hlava hrace" / "Zameruj lidi, nebo jejich hlavy"; for `.navrhban`
@@ -165,7 +170,6 @@ area's spawn point. Moving a piece in game keeps it there.
 
 ## Not done
 
-- `.remember`: a convenience that needs Erebor's masks.
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
 - `.nazghulfell`, the First's fell beast, and the mount's uniform color.
 - The gates of `i_nazgulsonly_gate`: Erebor's GMs placed them, for what isn't recorded.

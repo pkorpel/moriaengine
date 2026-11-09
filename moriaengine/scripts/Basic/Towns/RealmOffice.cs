@@ -225,7 +225,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(targetted.Name + " uz jednou byl pridan na globalni blacklist");
 			} else {
 				D_TownInput.Ask(self, "Udej duvod pro blacklist:", "", reason => {
-					office.bans.Add(new TownBan { who = targetted, name = targetted.Name, reason = reason });
+					office.bans.Add(new TownBan { who = targetted, name = Remember.NameFor(self, targetted), reason = reason }); //#905 realmban_him
 					self.SysMessage(targetted.Name + " uspesne pridan na globalni cernou listinu");
 					DelayedMessages.SendRed(targetted, "Byl jsi dan na globalni cernou listinu"); //#901
 					D_RealmBans.Show(office, self);
