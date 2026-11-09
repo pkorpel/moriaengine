@@ -351,8 +351,12 @@ namespace SteamEngine.CompiledScripts {
 			} else if ((mode == ListMode.Expel) && (town.GetRank(player) >= Town.RankGm)) {
 				Character who = citizen.who;
 				D_TownConfirm.Ask(player, "Opravdu chces zbavit " + who.Name + " obcanstvi?", () => {
+					bool wasMayor = (town.mayor == who);
 					town.RemoveCitizen(who);
-					who.RedMessage("Jiz nejsi obcanem mesta " + town.Name + ".");
+					DelayedMessages.SendRed(who, "Byl jsi zbaven obcanskych prav ve meste " + town.Name); //#901 - Erebor's expel line, delayed
+					if (wasMayor) {
+						DelayedMessages.SendRed(who, "Byl jsi zbaven uradu starosty ve meste " + town.Name); //vyhod_starostu
+					}
 				});
 			}
 		}

@@ -22,7 +22,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestDelayedReport(Character self, ScriptArgs sa) {
 			Player who = ((sa == null) || (sa.Args.Trim().Trim('"').Length == 0)) ? (Player) self : Of(sa);
-			Console.WriteLine("DELAYED_REPORT: uid=" + (uint) who.FlaggedUid + " online=" + who.IsOnline + " normal=" + DelayedMessages.Count(who, false) +
+			Console.WriteLine("DELAYED_REPORT: uid=" + (uint) who.FlaggedUid + " online=" + DelayedMessages.IsPlaying(who) + " normal=" + DelayedMessages.Count(who, false) +
 				" red=" + DelayedMessages.Count(who, true) + " first=" + string.Join("|", DelayedMessages.Read(who, false)).Replace(' ', '_') + " end");
 		}
 	}

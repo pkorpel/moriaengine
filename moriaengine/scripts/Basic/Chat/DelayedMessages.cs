@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#901 - Erebor's delayedmessage and delayedredMessage (funkce.scp): someone online reads the line at once;
 	/// someone offline finds it waiting, the important (red) ones apart from the rest. At login d_login_redmessages
 	/// and d_login_messages (various_gumps.scp) list them, a click on one deletes it; .rms and .ms open them again,
-	/// .clearms 1 (important) or 0 empties one. Kept as Erebor's tags: a count and one string a message.</summary>
+	/// .clearms 1 (important) or 0 empties one. Kept as Erebor kept them, in tags on the character: a count and one string
+	/// a message (our own tag names).</summary>
 	public static class DelayedMessages {
 		internal const int PageRows = 25;
 
@@ -29,7 +31,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!(to is Player) || to.IsDeleted) {
 				return;
 			}
-			if (to.IsOnline) {
+			if (IsPlaying(to)) {
 				if (red) {
 					to.RedMessage(text);
 				} else {
@@ -37,13 +39,25 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return;
 			}
-			List<string> queue = Read(to, red);
-			queue.Add(text);
-			Write(to, red, queue);
+			int number = Count(to, red) + 1;
+			to.SetTag(MessageTK(red, number), text);
+			to.SetTag(red ? redCountTK : countTK, number);
+		}
+
+		/// <summary>Erebor's isonline: this very character is in the game. IsOnline is the account's, so it is also true
+		/// while the player is on another character of theirs, whose client SysMessage would reach.</summary>
+		internal static bool IsPlaying(Character who) {
+			GameState state = who.GameState;
+			return (state != null) && (state.Character == who);
 		}
 
 		public static int Count(Character who, bool red) {
-			return Convert.ToInt32(who.GetTag(red ? redCountTK : countTK) ?? 0, CultureInfo.InvariantCulture);
+			object count = who.GetTag(red ? redCountTK : countTK);
+			try {
+				return (count == null) ? 0 : Convert.ToInt32(count, CultureInfo.InvariantCulture);
+			} catch (Exception e) when ((e is FormatException) || (e is InvalidCastException) || (e is OverflowException)) {
+				return 0; //a count a GM broke by hand mustn't stop the login
+			}
 		}
 
 		internal static List<string> Read(Character who, bool red) {

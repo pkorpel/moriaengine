@@ -72,6 +72,25 @@ namespace SteamEngine.Tests.Protocol {
 					Thread.Sleep(300);
 					Assert.Contains("normal=0 red=0", this.Report(reader, readerUid));
 				}
+
+				//playing another character of the same account isn't being online: kept for this one, not shown to the other
+				Thread.Sleep(1000);
+				using (var alt = this.Connect("Mail Alt", AccountB, false)) {
+					this.Ask(sender, ".TestDelayedSend " + readerUid, "DELAYED_SENT:");
+					Assert.Contains("online=False normal=2 red=1", this.Report(sender, readerUid));
+				}
+				Thread.Sleep(1000);
+				using (reader = this.Connect("Mail Reader", AccountB, true)) {
+					var red = reader.ReadGumpDialogWithStrings(Wait);
+					Assert.Contains("Dulezita jedna", string.Join(" | ", red.Strings));
+					reader.SendGumpResponse(red.GumpUid, Close);
+					var normal = reader.ReadGumpDialogWithStrings(Wait);
+					Assert.Contains("Nove zpravy: 2", string.Join(" | ", normal.Strings));
+					reader.SendGumpResponse(normal.GumpUid, Close);
+					reader.SendSpeech(".clearms 1"); //only the important ones
+					Thread.Sleep(300);
+					Assert.Contains("normal=2 red=0", this.Report(reader, readerUid));
+				}
 			}
 		}
 
@@ -101,9 +120,9 @@ namespace SteamEngine.Tests.Protocol {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
 					game.SendLogin(account, account);
-					game.ReadCharacterList();
+					string[] names = game.ReadCharacterList();
 					if (existing) {
-						game.SendSelectCharacter(0);
+						game.SendSelectCharacter(Math.Max(0, Array.IndexOf(names, charName)));
 					} else {
 						game.SendCreateCharacter(charName);
 					}
