@@ -1,0 +1,13 @@
+//#1317 - the things of Edoras's stories (EdorasStories.cs): only their errand's player can use them, and they go when the
+//errand ends.
+
+[ItemDef i_errand_eored_banner]
+NAME = "Korouhev eoredu"
+TYPE = t_normal
+model = 0x0426
+Color = 0835
+
+[ItemDef i_errand_hall_stool]
+NAME = "Stolicka pevce"
+TYPE = t_normal
+model = 0x0A2A
