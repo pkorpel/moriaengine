@@ -27,9 +27,15 @@ Read, Edit and Write take absolute paths inside the worktree. Put the output of
 2. **Simplicity first.** The least code that makes the tests pass and meets the
    step. No new abstraction, option or layer the step doesn't need. Match the
    surrounding code's style (tabs, naming, comment density).
-3. **Surgical changes.** Touch only what the step needs. No reformatting, renames or
+3. **Existing patterns first (#1366).** Before using or changing an engine system
+   (plugins, code-made defs, `.ct` fields, tags, triggers, timers), read its page under
+   `moriaengine/docs/current/` and the original code (`git show a27bbf6:<path>`); a
+   missing or wrong page is fixed first. Build with that pattern, not a new one. A bug
+   in the pattern is fixed in the pattern, not worked around; if that's out of the
+   step's scope, stop and return it.
+4. **Surgical changes.** Touch only what the step needs. No reformatting, renames or
    "while I'm here" fixes; note them in your return for a later issue.
-4. **Goal-driven.** Done means the named tests pass and the fast tier still does:
+5. **Goal-driven.** Done means the named tests pass and the fast tier still does:
    `scripts/test-fast.sh` (build + fast tier) and, for full-boot tests,
    `scripts/test-full.sh "FullyQualifiedName~<TestClass>"`. The full-boot tier uses
    fixed ports and a machine-wide lock: never start two runs, never run `dotnet test`
