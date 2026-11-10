@@ -48,15 +48,17 @@ public override void On_DClick(AbstractCharacter from) {
 it, or it was already worn. Equip-failure still short-circuits (nothing to "use" if it
 never made it into the player's hand).
 
-## `OnUse` is data-driven off `AssociatedSkill`, not a new class per tool
+## `OnUse` is data-driven off the def's skill, not a new class per tool
 
-`EquippableDef.AssociatedSkill` (a tag-backed `SkillName`, parsed from a new `.def`
-`associatedskill = <SkillName>` line, same `LoadScriptLine`/`Enum.TryParse` shape as
-`NPCDef.AggroMode`) is the only thing a tool needs to opt into "equip-and-use":
+`EquippableDef.UseSkill` is the only thing a tool needs to opt into "equip-and-use". It is
+the def's `associatedSkill` when a `.def` line sets one (`associatedskill = <SkillName>`),
+else derived (#392): an axe's `WeaponType` gives Lumberjacking, `tooltype = Pickaxe` or
+`FishingPole` gives Mining or Fishing. `associatedSkill` and `toolType` are typed `Def:`
+fields in `Equippable.ct` since #1384 (def tags with hand-written parsing before):
 
 ```csharp
 public virtual void OnUse(AbstractCharacter from) {
-    SkillName skill = this.TypeDef.AssociatedSkill;
+    SkillName skill = this.TypeDef.UseSkill;
     if (skill != SkillName.None) {
         Character clicker = from as Character;
         if (clicker != null) {
@@ -81,23 +83,27 @@ value is almost always `//guessed by Converter` (confirmed looking at `i_dagger_
 guessed types point to (e.g. `t_weapon_fence`) are themselves completely empty stubs
 (`scripts/Basic/BasicTypes/type_by_profession.cs` has ~40 of these). Reusing that field
 for a new purpose would mean the dispatch key is unreliable/shared across many
-non-matching items. `AssociatedSkill` is new, clean, per-instance data instead.
+non-matching items. The def's skill is new, clean, per-def data instead.
 
-## Shipped tools (#370): pickaxe, hatchet, fishing pole
+## Shipped tools (#370, #392): pickaxe, axes, fishing pole
 
-- `i_pickaxe` (new content, `scripts/converted/zbrane/others.def`) - didn't exist in
-  moriaengine before this (only a commented-out loot reference). Dual-purpose per real
-  Erebor source ("OSI insists skill is Fencing with this axe"): a real `WeaponDef`
-  (`WeaponType.OneHandSpike`) *and* `associatedskill = Mining`.
-- `i_hatchet` (existing content) gained `associatedskill = Lumberjacking`.
-- `i_fishing_pole` (existing content) was a plain `ItemDef` with no `layer=` at all -
-  never equippable - fixed to `EquippableDef` + `layer = 1` + `associatedskill = Fishing`.
+#370 added `associatedskill =` lines by hand; since #392 the tools get their skill from
+type-level data and no shipped content has an `associatedskill =` line:
+
+- The pickaxe (`[WeaponDef 0xe85]`, `scripts/converted/item_tinker.def`) - a weapon (the
+  archive's `TYPE = t_weapon_bow_run` makes it compute as a bow) with the converter's
+  `tooltype = Pickaxe`, so Mining.
+- Every axe (`i_hatchet` and the rest) - `WeaponType` `OneHandAxe`/`TwoHandAxe`, so
+  Lumberjacking.
+- The fishing pole (`[EquippableDef 0xdbf]`, `scripts/converted/item_nabytek.def`) - the
+  converter makes `T_FISH_POLE` an equippable `EquippableDef` with
+  `tooltype = FishingPole`, so Fishing.
 
 **Mandatory tool, a moriaengine-only design decision, not ported from Erebor**: Mining/
 Lumberjacking/Fishing's `On_Select` now deny (with a real system message) unless the
 matching tool is equipped in either hand - `Equippable.IsHoldingToolFor(Character,
-SkillName)` checks both `LayerNames.Hand1`/`Hand2` for an `Equippable` whose own
-`AssociatedSkill` matches. Real Erebor's `miningfix.scp` has no such check at all
+SkillName)` checks both `LayerNames.Hand1`/`Hand2` for an `Equippable` whose def's
+`UseSkill` matches. Real Erebor's `miningfix.scp` has no such check at all
 (confirmed via source read) - user explicitly confirmed wanting this gate anyway,
 applied consistently to all three gathering tools rather than just Mining.
 
