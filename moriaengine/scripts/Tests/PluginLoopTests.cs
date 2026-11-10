@@ -132,6 +132,26 @@ namespace SteamEngine.CompiledScripts {
 				Check("tgHolderDeleted" + way, item.IsDeleted && (E_LoopTestFront.heard == 1) && (E_LoopTestBack.heard == 0));
 			}
 			E_LoopTestFront.action = E_LoopTestFront.Action.None;
+
+			//#1394 - a duplicate's groups: the first copied one is found and removed like the others, and added again runs once
+			Item original = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+			Attach(original, E_LoopTestFront.Action.None);
+			Item copy = (Item) original.Dupe();
+			TriggerGroup front = SingletonScript<E_LoopTestFront>.Instance, back = SingletonScript<E_LoopTestBack>.Instance;
+			bool found = copy.HasTriggerGroup(front) && copy.HasTriggerGroup(back);
+			copy.RemoveTriggerGroup(front);
+			E_LoopTestFront.heard = 0;
+			E_LoopTestBack.heard = 0;
+			Fire(copy, "TryTrigger");
+			bool removed = (E_LoopTestFront.heard == 0) && (E_LoopTestBack.heard == 1);
+			copy.AddTriggerGroup(front);
+			E_LoopTestFront.heard = 0;
+			Fire(copy, "TryTrigger");
+			Check("dupeGroupsFound", found);
+			Check("dupeFirstGroupRemoved", removed);
+			Check("dupeReaddedRunsOnce", E_LoopTestFront.heard == 1);
+			original.Delete();
+			copy.Delete();
 			Console.WriteLine("CANCELLABLE_TGLOOP_DONE");
 		}
 	}
