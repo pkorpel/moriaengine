@@ -34,6 +34,20 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TORCH_SETUP: uid=" + torch.Uid + " model=" + torch.Model);
 		}
 
+		/// <summary>#102 - a worn ring that notes its double click (a test trigger group on this one ring).</summary>
+		[SteamFunction]
+		public static void TestEquipNotingRing(Character self) {
+			Equippable ring = self.NewEquip(ThingDef.GetByDefname("i_ring_gold"));
+			ring.AddTriggerGroup(SingletonScript<E_TestNotingRing>.Instance);
+			Console.WriteLine("RING_SETUP: uid=" + ring.Uid + " layer=" + ring.Layer + " end");
+		}
+
+		[SteamFunction]
+		public static void TestReportNotingRing(Character self) {
+			AbstractItem ring = self.FindLayer(LayerNames.Ring);
+			Console.WriteLine("RING_USED: used=" + ((ring != null) && ring.HasTag(E_TestNotingRing.UsedTK)) + " end");
+		}
+
 		[SteamFunction]
 		public static void TestCheckItemModel(Character self, ScriptArgs sa) {
 			int uid = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
@@ -41,6 +55,15 @@ namespace SteamEngine.CompiledScripts {
 			bool equippedOnSelf = (item != null) && (item.Cont == self);
 			Console.WriteLine("ITEM_CHECK: uid=" + uid + " model=" + (item != null ? item.Model : -1) +
 				" equippedOnSelf=" + equippedOnSelf);
+		}
+	}
+
+	/// <summary>#102 - notes that its ring was double clicked.</summary>
+	public class E_TestNotingRing : CompiledTriggerGroup {
+		internal static readonly TagKey UsedTK = TagKey.Acquire("_testRingUsed_");
+
+		public void On_DClick(Item self, Character clicker) {
+			self.SetTag(UsedTK, true);
 		}
 	}
 }
