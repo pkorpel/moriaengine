@@ -158,6 +158,37 @@ namespace SteamEngine.Tests.Protocol {
 			return this.Ask(client, ".TestNazgulReport", "NAZGUL_REPORT:");
 		}
 
+		/// <summary>#912 - the Nazgul-only gate, a GM tool: a GM sets where it leads; only Nazguls and GMs pass.</summary>
+		[Fact]
+		public void OnlyNazgulsPassTheirGate() {
+			using (var gm = this.Connect("Gate Keeper")) {
+				this.Ask(gm, ".TestTownBecomeGm", "TOWN_GM:");
+				this.Ask(gm, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+				this.Ask(gm, ".SetupTowns", "SETUP_DONE:");
+				using var walker = this.Connect("Gate Walker", AccountB);
+				this.Ask(walker, ".TestNazgulPrepare", "NAZGUL_READY:");
+				this.Ask(gm, ".TestNazgulPrepare", "NAZGUL_READY:");
+				this.Ask(gm, ".TestTownBecomeGm", "TOWN_GM:");
+				string made = this.Ask(gm, ".TestNazgulGateMake", "NAZGUL_GATE:");
+				Assert.Contains("leads=none", this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:"));
+
+				gm.SendSpeech(".nazgulgateto");
+				Thread.Sleep(300);
+				gm.SendTargetUid((uint) Number(made, "uid"));
+				Thread.Sleep(300);
+				gm.SendTargetGround((int) Number(made, "x"), (int) Number(made, "y"), (int) Number(made, "z"));
+				Thread.Sleep(300);
+				string to = Field(made, "x=") + "," + Field(made, "y=");
+
+				string refused = this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:");
+				Assert.Contains("leads=" + to + " fixed=True", refused);
+				Assert.DoesNotContain("at=" + to + " ", refused);
+				Assert.NotNull(TryReadMessageContaining(walker, "Jen pro vyvolene!", Wait));
+				this.Ask(walker, ".TestNazgulGiveRing", "NAZGUL_GIVEN:");
+				Assert.Contains("at=" + to + " ", this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:"));
+			}
+		}
+
 		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
 			DateTime deadline = DateTime.UtcNow + timeout;
 			while (DateTime.UtcNow < deadline) {

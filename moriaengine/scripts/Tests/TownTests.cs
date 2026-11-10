@@ -387,6 +387,24 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Barad-dur's ring straight on: the quest has its own test.</summary>
+		private static Item nazgulOnlyGate;
+
+		/// <summary>#912 - a Nazgul-only gate beside me, and a spot 6 tiles off for it to lead to.</summary>
+		[SteamFunction]
+		public static void TestNazgulGateMake(Character self) {
+			nazgulOnlyGate = (Item) ThingDef.GetByDefname(NazgulOnlyGate.Def).Create(self.X + 1, self.Y, self.Z, self.M);
+			Console.WriteLine("NAZGUL_GATE: uid=" + (uint) nazgulOnlyGate.FlaggedUid + " x=" + (self.X + 6) + " y=" + self.Y + " z=" + self.Z + " end");
+		}
+
+		/// <summary>#912 - onto the gate, by a step; where I end up, and where it leads.</summary>
+		[SteamFunction]
+		public static void TestNazgulGateStep(Character self) {
+			self.Go(nazgulOnlyGate.X - 1, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M);
+			self.Go(nazgulOnlyGate.X, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M); //onto it: a Go fires the step triggers, the def's own too
+			Console.WriteLine("NAZGUL_GATE_STEP: at=" + self.X + "," + self.Y + " leads=" + ((nazgulOnlyGate.MoreP == null) ? "none" : (nazgulOnlyGate.MoreP.X + "," + nazgulOnlyGate.MoreP.Y)) +
+				" fixed=" + nazgulOnlyGate.HasAttribute(ItemAttributes.attr_move_never) + " end");
+		}
+
 		[SteamFunction]
 		public static void TestNazgulGiveRing(Character self) {
 			Town town = Town.ForStone(FindShrine(false), TownSetup.MordorCapital);
