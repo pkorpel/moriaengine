@@ -8,12 +8,12 @@ namespace SteamEngine.CompiledScripts {
 	/// see Tests/Protocol/AttrFlagTests.cs.</summary>
 	public static class AttrFlagTests {
 		/// <summary>Confirms a real ".def" "ATTR = attr_static|attr_magic" line (see
-		/// AttrFlagTest.def) parsed correctly into AttributesDefault, and that a freshly
+		/// AttrFlagTest.def) parsed correctly into ItemDef.Attributes, and that a freshly
 		/// created instance's own Attributes got seeded from it at creation time.</summary>
 		[SteamFunction]
 		public static void TestAttrDefParsing(Character self) {
 			ItemDef testDef = (ItemDef) ThingDef.GetByDefname("i_attr_flag_test");
-			ItemAttributes defDefault = testDef.AttributesDefault;
+			ItemAttributes defDefault = testDef.Attributes;
 			Item instance = (Item) testDef.Create(self.P());
 			Console.WriteLine("ATTR_DEF_TEST: defDefault=" + defDefault + " instanceAttributes=" + instance.Attributes +
 				" hasStatic=" + instance.HasAttribute(ItemAttributes.attr_static) +

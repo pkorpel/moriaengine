@@ -61,7 +61,7 @@ This has a direct consequence for where a given piece of data should live:
   every instance unless the instance's own field has been independently set. These fields are
   backed by `FieldValue` (see [persistence-and-saving.md](persistence-and-saving.md)) and are
   what `.def` content lines configure (e.g. `ATTR = attr_static|attr_magic` sets
-  `ItemDef.AttributesDefault`).
+  `ItemDef.Attributes`).
 - **Instance-level data** (`Item`/`Character` fields) is per-object state, independent per
   instance once seeded. A common pattern (used by, e.g., the item ATTR flag system - see
   [item-attr-flags.md](../04-gameplay-systems/item-attr-flags.md)) is: the def holds a
