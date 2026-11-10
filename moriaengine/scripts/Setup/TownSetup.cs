@@ -52,6 +52,7 @@ namespace SteamEngine.CompiledScripts {
 			if (generalSpot != null) {
 				pieces.Item("realm/gondor/stone", GeneralStoneDef, generalSpot, capital.P.M);
 			}
+			PlaceCityRealmStones(pieces, gm, GondorCities, GeneralCity, "gondor", GeneralStoneDef);
 			PlaceShop(pieces, gm, capital, "gondor", Realm.Gondor, "alchemist", AlchemistShop.NpcDef, 5);
 			PlaceShop(pieces, gm, capital, "gondor", Realm.Gondor, "prodejce", ProdejceShop.NpcDef, 6);
 			this.PlaceMordor(pieces, gm);
@@ -81,12 +82,31 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			pieces.Item("realm/mordor/stone", "i_lordnazgulsstone", stoneSpot, capital.P.M);
+			PlaceCityRealmStones(pieces, gm, MordorCities, MordorCapital, "mordor", "i_lordnazgulsstone");
 			pieces.Item("realm/mordor/board", "i_lordnazgulsboard", boardSpot, capital.P.M);
 			//each leads to the spawn point: arriving on the other gate would send someone straight back
 			Item gate = pieces.Item("realm/mordor/gate", "i_lordnazguls_gate", gateSpot, capital.P.M, item => item.MoreP = trial.P);
 			pieces.Item("realm/mordor/gate-out", "i_lordnazguls_gate_out", outSpot, trial.P.M, item => item.MoreP = capital.P);
 			pieces.Item("realm/mordor/leading-shrine", "i_leading_shrine_power", leadingSpot, trial.P.M);
 			((NazgulGate) gate).Refresh();
+		}
+
+		/// <summary>#904 - the user's call: a General's (or lord nazguls') stone in each city of Erebor's guard tables
+		/// (seznam_guards.scp: every town city), each with that city's own king's or Marghul's guards. The capital's
+		/// stone is placed above and keeps the realm's office.</summary>
+		private static void PlaceCityRealmStones(WorldPieces pieces, Character gm, string[] cities, string capital, string realmName, string stoneDef) {
+			foreach (string city in cities) {
+				if (city == capital) {
+					continue;
+				}
+				FlaggedRegion area = CityArea(city);
+				int[] spot = (area != null) ? SpotIn(area, gm, 1) : null;
+				if (spot == null) {
+					gm.SysMessage("No spot for the royal guards' stone of " + city + ".");
+				} else {
+					pieces.Item("realm/" + realmName + "/stone/" + city, stoneDef, spot, area.P.M);
+				}
+			}
 		}
 
 		/// <summary>#1017, #1070 - the user's choice: an alchemist (c_alchymista) and a Prodejce (c_drazitel) in each realm's

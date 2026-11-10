@@ -143,8 +143,11 @@ the Nazgul waits 180 s.
 
 `systems/starostove.scp`, `towns.scp`, `seznam_guards.scp`. A town's mayor or Nazgul hires in "Najimat straze"
 from what `seznam_guards.scp` allows that city, paying the treasury, which anyone can add to there. The General
-and First Nazgul have their own force and funds at the realm stone, the king's and Marghul's guards, up to
-`max_guards_<city>`. A wage buys 7 days and can be extended; an unpaid guard leaves.
+and First Nazgul have their own forces, the king's and Marghul's guards: a realm stone (`i_generalstone`,
+`i_lordnazgulsstone`) stands in every town city (#904, the user's call: the cities of Erebor's guard tables), and
+each has its own guards from `Guard_king_<city>_n`, up to `max_guards_<city>`, and its own funds. The capital's stone
+keeps the realm's office and blacklist; the king's commands order the guards of the city you stand in, else the
+capital's. A wage buys 7 days and can be extended; an unpaid guard leaves.
 
 "Rozmistit straze" gives a hired guard a post: inside the city, at least 6 tiles from another post. A guard who
 dies comes back after 30 minutes.
