@@ -230,9 +230,10 @@ namespace SteamEngine {
 			}
 			Plugin curPlugin = this.firstPlugin;
 			while (curPlugin != null) {
+				Plugin next = curPlugin.nextInList;
 				object scriptedRetVal, compiledRetVal;
 				curPlugin.Run(tk, sa, out scriptedRetVal, out compiledRetVal);
-				curPlugin = curPlugin.nextInList;
+				curPlugin = this.NextPluginAfter(curPlugin, next);
 			}
 		}
 
@@ -244,9 +245,10 @@ namespace SteamEngine {
 			}
 			Plugin curPlugin = this.firstPlugin;
 			while (curPlugin != null) {
+				Plugin next = curPlugin.nextInList;
 				object scriptedRetVal, compiledRetVal;
 				curPlugin.TryRun(tk, sa, out scriptedRetVal, out compiledRetVal);
-				curPlugin = curPlugin.nextInList;
+				curPlugin = this.NextPluginAfter(curPlugin, next);
 			}
 		}
 
@@ -275,12 +277,13 @@ namespace SteamEngine {
 			}
 			Plugin curPlugin = this.firstPlugin;
 			while (curPlugin != null) {
+				Plugin next = curPlugin.nextInList;
 				object scriptedRetVal, compiledRetVal;
 				curPlugin.Run(tk, sa, out scriptedRetVal, out compiledRetVal);
 				if (TagMath.Is1(scriptedRetVal) || TagMath.Is1(compiledRetVal)) {
 					return TriggerResult.Cancel;
 				}
-				curPlugin = curPlugin.nextInList;
+				curPlugin = this.NextPluginAfter(curPlugin, next);
 			}
 			return TriggerResult.Continue;
 		}
@@ -295,15 +298,28 @@ namespace SteamEngine {
 			}
 			Plugin curPlugin = this.firstPlugin;
 			while (curPlugin != null) {
+				Plugin next = curPlugin.nextInList;
 				object scriptedRetVal, compiledRetVal;
 				curPlugin.TryRun(tk, sa, out scriptedRetVal, out compiledRetVal);
 				if (TagMath.Is1(scriptedRetVal) || TagMath.Is1(compiledRetVal)) {
 					return TriggerResult.Cancel;
 				}
-				curPlugin = curPlugin.nextInList;
+				curPlugin = this.NextPluginAfter(curPlugin, next);
 			}
 			return TriggerResult.Continue;
 		}
+
+		/// <summary>#1387 - the plugin a trigger goes on to after running one: the one after it, but a plugin that left
+		/// this holder while it ran has no next any more (RemovePluginImpl), so then the one that was after it before
+		/// it ran, if that one is still here. A plugin that removes itself and the one after it stops the trigger, as
+		/// the rest of the list can't be found from either.</summary>
+		private Plugin NextPluginAfter(Plugin ran, Plugin nextBefore) {
+			if (ran.cont == this) {
+				return ran.nextInList;
+			}
+			return ((nextBefore != null) && (nextBefore.cont == this)) ? nextBefore : null;
+		}
+
 		#endregion Trigger() methods
 
 		#region save/load

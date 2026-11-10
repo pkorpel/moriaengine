@@ -19,6 +19,19 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("rabbit=Continue/Cancel", line);
 			}
 		}
+
+		/// <summary>#1387 - a plugin removing itself mid-trigger no longer stops the trigger for the plugins after it.
+		/// Server side: scripts/Tests/PluginLoopTests.cs.</summary>
+		[Fact]
+		public void APluginRemovingItselfLetsTheOthersHearTheTrigger() {
+			using (TestGameClient game = this.Login("Odchazejici")) {
+				this.Run(game, ".TestPluginLoop", "CANCELLABLE_LOOP_DONE");
+				foreach (string way in new[] { "Trigger", "TryTrigger", "CancellableTrigger", "TryCancellableTrigger" }) {
+					this.AssertChecks("selfRemoved" + way, "otherRemoved" + way);
+				}
+				this.AssertChecks("talentOutlivesDeath", "effectEndsAtDeath");
+			}
+		}
 	}
 
 	[CollectionDefinition(Name)]
