@@ -62,7 +62,6 @@ namespace SteamEngine.Converter {
 			new LineImplTask("aggromode", PassThroughUnlessPlayerDef),
 			new LineImplTask("combatspell", PassThroughUnlessPlayerDef),
 			new LineImplTask("experience", PassThroughUnlessPlayerDef),
-			new LineImplTask("tamingdifficulty", PassThroughUnlessPlayerDef),
 			new LineImplTask("bloodcolor", PassThroughUnlessPlayerDef),
 			new LineImplTask("resources", HandleResources),
 			new LineImplTask("moverate", PassThroughUnlessPlayerDef),
@@ -1118,7 +1117,7 @@ namespace SteamEngine.Converter {
 			return archiveName;
 		}
 
-		//can/aggromode/combatspell/experience/tamingdifficulty are all NPCDef-only fields
+		//can/aggromode/combatspell/experience are all NPCDef-only fields
 		//(confirmed live in NPC.cs/AbstractCharacterDef.cs, #551) - comment them out rather
 		//than emit them on a PlayerDef, where they'd produce an "Invalid data" load warning
 		private static void PassThroughUnlessPlayerDef(ConvertedDef d, PropsLine line) {

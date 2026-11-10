@@ -123,147 +123,6 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class NPCDef {
-		private static readonly TagKey aggroModeTK = TagKey.Acquire("_aggroMode_");
-
-		/// <summary>#265: a save/reload cycle can retype this tag from the real AggroMode enum
-		/// to a plain boxed int (same root-cause class as #168's TamingDifficulty double->int
-		/// retyping) - #168's own fix (AbstractDef.isLoadingFromScript, PR #171) prevents NEW
-		/// corruption from being written going forward, but can't retroactively fix an ALREADY-
-		/// corrupted snapshot already sitting in a long-lived server's saves/ history, which
-		/// then keeps getting faithfully reloaded (save-recovery runs AFTER .def loading, so it
-		/// overwrites the correct freshly-parsed value). Coercing a numerically-valid int back
-		/// into the enum here fixes this regardless of what's sitting in old save data, instead
-		/// of requiring every affected server operator to go hunt down and delete a stale
-		/// snapshot file.</summary>
-		public AggroMode AggroMode {
-			get {
-				object tag = this.GetTag(aggroModeTK);
-				if (tag is AggroMode mode) {
-					return mode;
-				}
-				if ((tag is int intTag) && Enum.IsDefined(typeof(AggroMode), intTag)) {
-					return (AggroMode) intTag;
-				}
-				return AggroMode.Calm;
-			}
-			set {
-				this.SetTag(aggroModeTK, value);
-			}
-		}
-
-		private static readonly TagKey teachesSkillTK = TagKey.Acquire("_npcDefTeachesSkill_");
-
-		/// <summary>#828 - the one skill an Erebor skill teacher (spk_mistr, archive tag.ucimskill) teaches;
-		/// null for everyone else. Same #265 boxed-int coercion as AggroMode/Realm.</summary>
-		public SkillName? TeachesSkill {
-			get {
-				object tag = this.GetTag(teachesSkillTK);
-				if (tag is SkillName skill) {
-					return skill;
-				}
-				if ((tag is int intTag) && Enum.IsDefined(typeof(SkillName), intTag)) {
-					return (SkillName) intTag;
-				}
-				return null;
-			}
-			set {
-				if (value == null) {
-					this.RemoveTag(teachesSkillTK);
-				} else {
-					this.SetTag(teachesSkillTK, value.Value);
-				}
-			}
-		}
-
-		private static readonly TagKey realmTK = TagKey.Acquire("_npcDefRealm_");
-
-		/// <summary>#700 - species-level default Realm for AggroMode.GuardsRealm NPCs (e.g. a
-		/// real archive guard's tag.guard=1/2), seeded onto each new instance's own
-		/// Character.Realm (RealmPlugin-backed, #410) in On_Create below. Same #265 boxed-int
-		/// coercion precedent as AggroMode above, for the same reason (a save/reload cycle can
-		/// retype an enum tag to a plain int).</summary>
-		public Realm Realm {
-			get {
-				object tag = this.GetTag(realmTK);
-				if (tag is Realm realm) {
-					return realm;
-				}
-				if ((tag is int intTag) && Enum.IsDefined(typeof(Realm), intTag)) {
-					return (Realm) intTag;
-				}
-				return Realm.None;
-			}
-			set {
-				this.SetTag(realmTK, value);
-			}
-		}
-
-		private static readonly TagKey tamingDifficultyTK = TagKey.Acquire("_tamingDifficulty_");
-
-		/// <summary>Minimum effective AnimalTaming skill needed to tame this NPC type (see TamingSkillDef), on the classic 0-1000 permille scale matching CheckSuccess's difficulty parameter. Negative (the default) means not tameable at all.
-		/// Also coerces a plain int tag (#265 - same vulnerability as AggroMode above, for the
-		/// exact property #168 originally found this bug on) instead of silently discarding it.</summary>
-		public double TamingDifficulty {
-			get {
-				object tag = this.GetTag(tamingDifficultyTK);
-				if (tag is double difficulty) {
-					return difficulty;
-				}
-				if (tag is int intTag) {
-					return intTag;
-				}
-				return -1;
-			}
-			set {
-				this.SetTag(tamingDifficultyTK, value);
-			}
-		}
-
-		private static readonly TagKey moveRateTK = TagKey.Acquire("_moveRate_");
-
-		/// <summary>Per-species movement speed (#590) - the real archive's `MOVERATE=` field.
-		/// `3.0` is the real baseline/default (matches this engine's pre-existing fixed
-		/// one-tile-per-AI-tick behavior exactly) - higher moves faster, lower moves slower.
-		/// See `NPCAiTimer`'s move-budget accumulator for how this actually drives speed.</summary>
-		public double MoveRate {
-			get {
-				object tag = this.GetTag(moveRateTK);
-				if (tag is double rate) {
-					return rate;
-				}
-				if (tag is int intTag) {
-					return intTag;
-				}
-				return 3.0;
-			}
-			set {
-				this.SetTag(moveRateTK, value);
-			}
-		}
-
-		private static readonly TagKey spellCastRangeTK = TagKey.Acquire("_npcSpellCastRange_");
-
-		/// <summary>#716 - per-monster override for how far this NPC holds its distance while
-		/// casting (NPCAiTimer.Fight/TryCastSpell's own default is a flat constant, the same
-		/// GM-tunable-in-spirit shape as NPCDef.WeaponRange's own bow/crossbow default). Negative
-		/// (the default) means "use the engine's own default spell-cast range" - unaffected,
-		/// same as before this field existed.</summary>
-		public double SpellCastRange {
-			get {
-				object tag = this.GetTag(spellCastRangeTK);
-				if (tag is double range) {
-					return range;
-				}
-				if (tag is int intTag) {
-					return intTag;
-				}
-				return -1;
-			}
-			set {
-				this.SetTag(spellCastRangeTK, value);
-			}
-		}
-
 		private static readonly TagKey combatSpellTK = TagKey.Acquire("_combatSpell_");
 
 		/// <summary>
@@ -1048,128 +907,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly TagKey lootTK = TagKey.Acquire("_npcLoot_");
-		private static readonly TagKey isBossTK = TagKey.Acquire("_npcIsBoss_");
-		private static readonly TagKey noAnimateTK = TagKey.Acquire("_npcNoAnimate_");
-
-		private static readonly TagKey monsterTypeTK = TagKey.Acquire("_npcMonsterType_");
-		private static readonly TagKey monsterType2TK = TagKey.Acquire("_npcMonsterType2_");
-		private static readonly TagKey monsterType3TK = TagKey.Acquire("_npcMonsterType3_");
-		private static readonly TagKey dragonBrainTK = TagKey.Acquire("_npcDragonBrain_");
-
-		/// <summary>#1017 - Erebor's tag.monstertype, monstertype2, monstertype3: "kind[,percent]" for slayers.</summary>
-		public string MonsterType {
-			get { return this.GetTag(monsterTypeTK) as string; }
-			set { this.SetOrRemove(monsterTypeTK, value); }
-		}
-
-		public string MonsterType2 {
-			get { return this.GetTag(monsterType2TK) as string; }
-			set { this.SetOrRemove(monsterType2TK, value); }
-		}
-
-		public string MonsterType3 {
-			get { return this.GetTag(monsterType3TK) as string; }
-			set { this.SetOrRemove(monsterType3TK, value); }
-		}
-
-		private void SetOrRemove(TagKey key, string value) {
-			if (string.IsNullOrEmpty(value)) {
-				this.RemoveTag(key);
-			} else {
-				this.SetTag(key, value);
-			}
-		}
-
-		/// <summary>#1017 - NPC=brain_dragon: a dragonslayer counts in full when no monstertype says dragon.</summary>
-		public bool DragonBrain {
-			get { return this.GetTag(dragonBrainTK) != null; }
-			set {
-				if (value) {
-					this.SetTag(dragonBrainTK, true);
-				} else {
-					this.RemoveTag(dragonBrainTK);
-				}
-			}
-		}
-
-		private static readonly TagKey hypnotizableTK = TagKey.Acquire("_npcHypnotizable_");
-		private static readonly TagKey resistSilenceTK = TagKey.Acquire("_npcResistSilence_");
-		private static readonly TagKey magicHorseTK = TagKey.Acquire("_npcMagicHorse_");
-		private static readonly TagKey serpentFormTK = TagKey.Acquire("_npcSerpentForm_");
-
-		/// <summary>#1022 - Erebor's tag.had: the serpent druid's serpent form, a chardef whose look it takes.</summary>
-		public string SerpentForm {
-			get { return this.GetTag(serpentFormTK) as string; }
-			set {
-				if (!string.IsNullOrEmpty(value)) {
-					this.SetTag(serpentFormTK, value);
-				} else {
-					this.RemoveTag(serpentFormTK);
-				}
-			}
-		}
-
-		/// <summary>#925 - Erebor's tag(magic_horse,name): the mount's powers, MountPowers' table of that name.</summary>
-		public string MagicHorse {
-			get { return this.GetTag(magicHorseTK) as string; }
-			set {
-				if (!string.IsNullOrEmpty(value)) {
-					this.SetTag(magicHorseTK, value);
-				} else {
-					this.RemoveTag(magicHorseTK);
-				}
-			}
-		}
-
-		/// <summary>#1070 - Erebor's tag.resist_silence, permille against Mind Blast's silence; 1000 or more can't be
-		/// silenced at all.</summary>
-		public int ResistSilence {
-			get { return (this.GetTag(resistSilenceTK) is int resist) ? resist : 0; }
-			set {
-				if (value != 0) {
-					this.SetTag(resistSilenceTK, value);
-				} else {
-					this.RemoveTag(resistSilenceTK);
-				}
-			}
-		}
-
-		/// <summary>#1017 - Erebor's tag.hypnotizable, flags_hypno: can be hypnotized, may loot, the talents a
-		/// mystic can steal and their power.</summary>
-		public int Hypnotizable {
-			get { return (this.GetTag(hypnotizableTK) is int flags) ? flags : 0; }
-			set {
-				if (value != 0) {
-					this.SetTag(hypnotizableTK, value);
-				} else {
-					this.RemoveTag(hypnotizableTK);
-				}
-			}
-		}
-
-		/// <summary>#962 - Erebor's tag(noanimate,1): its corpse can't be raised.</summary>
-		public bool NoAnimate {
-			get { return this.GetTag(noAnimateTK) != null; }
-			set {
-				if (value) {
-					this.SetTag(noAnimateTK, true);
-				} else {
-					this.RemoveTag(noAnimateTK);
-				}
-			}
-		}
-
-		/// <summary>#794 - Erebor's tag(isBoss,1): a boss never turns into an elite monster (EliteMonster).</summary>
-		public bool IsBoss {
-			get { return this.GetTag(isBossTK) != null; }
-			set {
-				if (value) {
-					this.SetTag(isBossTK, true);
-				} else {
-					this.RemoveTag(isBossTK);
-				}
-			}
-		}
 
 		/// <summary>#791 - the monster's loot, Erebor's ON=@NPCRestock "ITEM=" lines ("Loot = ..." in
 		/// .def content, see the converter): each "item[,amount]" - an itemdef, a RANDOM_* pick-list
@@ -1256,7 +993,7 @@ namespace SteamEngine.CompiledScripts {
 		public static string[] ShoesPool = { "i_shoes_plain", "i_sandals", "i_boots_calf" };
 		public static string[] SkirtPool = { "i_skirt_long", "i_kilt", "i_skirt_short" };
 
-		private static readonly TagKey instanceStartingAbilitiesTK = TagKey.Acquire("_npcStartingAbilities_");
+		private List<AbilityDef> startingAbilities;
 
 		/// <summary>Stub abilities (#4 of the 2026-10-26 monster-testing batch) granted once at
 		/// creation by NPC.On_Create, one per legacy TEVENTS= name that didn't resolve to a
@@ -1264,10 +1001,26 @@ namespace SteamEngine.CompiledScripts {
 		/// zero-effect PassiveAbilityDef (same shape as the pre-existing unimplementedAbilities.
 		/// scp stubs) so the monster's real intent is now inspectable via .info's Abilities view
 		/// (#651) instead of a silently-dropped load warning - ready for a genuine
-		/// implementation later without touching content again.</summary>
+		/// implementation later without touching content again.
+		/// #1375 - a plain field, not a def value: it's made from the TEVENTS lines when their names resolve, after the scripts
+		/// load, and as a tag every save wrote it as if a GM had set it.</summary>
 		public List<AbilityDef> StartingAbilities {
-			get { return this.GetTag(instanceStartingAbilitiesTK) as List<AbilityDef>; }
-			set { this.SetTag(instanceStartingAbilitiesTK, value); }
+			get { return this.startingAbilities; }
+			set { this.startingAbilities = value; }
+		}
+
+		//#1375 - tags older saves hold on an NPCDef: typed Defs: fields in NPC.ct or plain fields now. An unknown tag line is loaded as a
+		//new untyped tag and written into every save after, so they're dropped (a GM's change to one of these in an old save is lost).
+		private static readonly string[] retiredSavedTags = { "_aggroMode_", "_npcDefRealm_", "_npcDefTeachesSkill_", "_tamingDifficulty_",
+			"_moveRate_", "_npcSpellCastRange_", "_npcIsBoss_", "_npcDragonBrain_", "_npcNoAnimate_", "_npcHypnotizable_",
+			"_npcResistSilence_", "_npcMonsterType_", "_npcMonsterType2_", "_npcMonsterType3_", "_npcMagicHorse_", "_npcSerpentForm_",
+			"_npcStartingAbilities_" };
+
+		public override void LoadFromSaves(PropsSection input) {
+			foreach (string tag in retiredSavedTags) {
+				input.TryPopPropsLine("tag." + tag);
+			}
+			base.LoadFromSaves(input);
 		}
 
 		/// <summary>The naming convention a legacy TEVENTS= name maps to its stub AbilityDef
@@ -1398,18 +1151,6 @@ namespace SteamEngine.CompiledScripts {
 				this.DefaultMovementSettings = ParseMovementCapability(args);
 				return;
 			}
-			if (param == "tamingdifficulty") {
-				this.TamingDifficulty = ConvertTools.ParseDouble(args);
-				return;
-			}
-			if (param == "moverate") {
-				this.MoveRate = ConvertTools.ParseDouble(args);
-				return;
-			}
-			if (param == "spellcastrange") {
-				this.SpellCastRange = ConvertTools.ParseDouble(args);
-				return;
-			}
 			if (param == "combatspell") {
 				SpellDef spell = SpellDef.GetByDefname(args);
 				if (spell == null) {
@@ -1436,33 +1177,6 @@ namespace SteamEngine.CompiledScripts {
 					this.Spells = new List<SpellDef>();
 				}
 				this.Spells.Add(spell);
-				return;
-			}
-			if (param == "aggromode") {
-				AggroMode mode;
-				if (Enum.TryParse(args, true, out mode)) {
-					this.AggroMode = mode;
-				} else {
-					Logger.WriteWarning(filename, line, "aggromode '" + args + "' is not a known AggroMode value.");
-				}
-				return;
-			}
-			if (param == "teachesskill") {
-				SkillName skill;
-				if (Enum.TryParse(args, true, out skill)) {
-					this.TeachesSkill = skill;
-				} else {
-					Logger.WriteWarning(filename, line, "teachesskill '" + args + "' is not a known SkillName.");
-				}
-				return;
-			}
-			if (param == "realm") {
-				Realm realm;
-				if (Enum.TryParse(args, true, out realm)) {
-					this.Realm = realm;
-				} else {
-					Logger.WriteWarning(filename, line, "realm '" + args + "' is not a known Realm value.");
-				}
 				return;
 			}
 			if (param == "experience") {
@@ -1627,45 +1341,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "maxmana") {
 				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
-				return;
-			}
-			if (param == "isboss") {
-				this.IsBoss = ConvertTools.ParseInt32(args.Trim()) != 0;
-				return;
-			}
-			if ((param == "monstertype") || (param == "monstertype2") || (param == "monstertype3")) {
-				string kind = args.Trim().Trim('"');
-				if (param == "monstertype") {
-					this.MonsterType = kind;
-				} else if (param == "monstertype2") {
-					this.MonsterType2 = kind;
-				} else {
-					this.MonsterType3 = kind;
-				}
-				return;
-			}
-			if (param == "dragonbrain") {
-				this.DragonBrain = ConvertTools.ParseInt32(args.Trim()) != 0;
-				return;
-			}
-			if (param == "hypnotizable") {
-				this.Hypnotizable = ConvertTools.ParseInt32(args.Trim());
-				return;
-			}
-			if (param == "magichorse") {
-				this.MagicHorse = args.Trim().Trim('"');
-				return;
-			}
-			if (param == "serpentform") {
-				this.SerpentForm = args.Trim().Trim('"');
-				return;
-			}
-			if (param == "resistsilence") {
-				this.ResistSilence = ConvertTools.ParseInt32(args.Trim());
-				return;
-			}
-			if (param == "noanimate") {
-				this.NoAnimate = ConvertTools.ParseInt32(args.Trim()) != 0;
 				return;
 			}
 			if (param == "loot") {

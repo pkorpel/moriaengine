@@ -6,12 +6,11 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// Regression test for #168: a .def-authored NPCDef tag property (e.g. TamingDifficulty)
-	/// must NOT be written into the save files as if it were a live GM edit - doing so causes
-	/// the NEXT boot to reload it through the generic save-file tag parser
-	/// (AbstractDef.LoadField_Delayed), which silently re-types a double as an int and breaks
-	/// the property's strict `is double` check (see NPCDef.TamingDifficulty and
-	/// AbstractDef.SetTag's isLoadingFromScript flag). Own isolated fixture/collection:
+	/// Regression test for #168: a def value from the scripts must NOT be written into the save
+	/// as if it were a live GM edit, or the next boot reads it back from the save instead (where a
+	/// tag's number can come back as another type). Since #1375 the NPCDef values that were tags are
+	/// typed fields and TamingDifficulty is gone, so the check is general: a fresh world, where
+	/// nobody changed any def, saves no NPCDef section at all. Own isolated fixture/collection:
 	/// deliberately triggers a real Globals.Save(), which other Facts sharing a fixture
 	/// shouldn't have to deal with mid-run.
 	/// </summary>
@@ -48,7 +47,8 @@ namespace SteamEngine.Tests.Protocol {
 					.First();
 				string globalsSav = File.ReadAllText(Path.Combine(latestDir, "globals.sav"));
 
-				Assert.DoesNotContain("tag._tamingDifficulty_", globalsSav, StringComparison.OrdinalIgnoreCase);
+				int at = globalsSav.IndexOf("[NPCDef ", StringComparison.OrdinalIgnoreCase);
+				Assert.True(at < 0, "A fresh world saved an NPCDef section:\n" + ((at < 0) ? "" : globalsSav.Substring(at, Math.Min(1500, globalsSav.Length - at))));
 			}
 		}
 

@@ -142,15 +142,15 @@ namespace SteamEngine.CompiledScripts {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
 			NPCDef def = teacher.Def as NPCDef;
-			SkillName? skill = (def == null) ? null : def.TeachesSkill;
-			if (skill == null) {
+			SkillName skill = (def == null) ? SkillName.None : def.TeachesSkill;
+			if (skill == SkillName.None) {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
 			//one Sphere block: the first matching ON= wins, the greetings come before ANO/YES
 			if (ContainsAny(speech, greetings)) {
-				Offer(teacher, student, skill.Value);
+				Offer(teacher, student, skill);
 			} else if (ContainsAny(speech, yeses)) {
-				Teach(teacher, student, skill.Value);
+				Teach(teacher, student, skill);
 			}
 			return SpeechResult.IgnoredOrActedUpon;
 		}
