@@ -36,6 +36,9 @@ MANAUSE=40
 Requirements=20.0 Magery
 
 on=@start //this = caster, argo = SkillArgs
+	if (!RecallRune.CheckTelePermissionOut(this)) //#1391 - Erebor's e_allplayers refuses it as the cast starts
+		return 1
+	endif
 	if (argo.Target1.Type != t_rune)
 		this.ClilocSysMessage(502357)	// I can not recall from that object.
 		return 1
@@ -127,6 +130,9 @@ Requirements=70.0 Magery
 
 
 on=@start //this = caster, argo = SkillArgs
+	if (!RecallRune.CheckTelePermissionOut(this)) //#1391 - Erebor's e_allplayers refuses it as the cast starts, before the freeze
+		return 1
+	endif
 	if (argo.Target1.Type != t_rune)
 		this.ClilocSysMessage(501030)	// I can not gate travel from that object.
 		return 1
@@ -144,6 +150,7 @@ on=@start //this = caster, argo = SkillArgs
 	if (!ConquestTravel.AllowsGateOut(this))
 		return 1
 	endif
+	CastFreezePlugin.FreezeForGate(this) //#1391 - Erebor's e_allplayers: a gate caster stands still
 
 
 on=@effectItem //this = targetted item i.e. the rune, argo = SpellEffectArgs
