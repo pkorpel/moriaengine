@@ -172,6 +172,9 @@ namespace SteamEngine.CompiledScripts {
 			if (MonsterSpecialAttacks.CopyGuardRefuses(attacker, defender, flags)) { //#1022 e_rozdeleni: nothing hurts it while its copy lives
 				return 0;
 			}
+			if (GuardBoss.Refuses(attacker, defender)) { //#1234 a guard spawn's monster still lives
+				return 0;
+			}
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
 				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists

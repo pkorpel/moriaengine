@@ -103,6 +103,7 @@ file whose job is session continuity, not permanent reference.
 - [Parties](04-gameplay-systems/parties.md) - short-term groups and the `.party` dialog (#916).
 - [Towns](04-gameplay-systems/towns.md) - Erebor's town stones: citizens, tax, treasury, mayors (#892).
 - [Spawning](04-gameplay-systems/spawning.md)
+- [Guard bosses](04-gameplay-systems/guard-boss.md)
 - [Pets & NPC AI](04-gameplay-systems/pets-and-npc-ai.md)
 - [Monster loot](04-gameplay-systems/monster-loot.md) - Erebor's @NPCRestock loot and
   i_monster_create gold, ported (#791); human NPCs' @NPCRestock clothing as newbie gear (#793).
