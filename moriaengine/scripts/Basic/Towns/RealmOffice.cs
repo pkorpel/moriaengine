@@ -225,7 +225,7 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				//#904 - every city has such a stone; the capital's keeps the office (its holder and blacklist are the realm's)
 				bool capital = string.Equals(area.City, (area.Realm == Realm.Gondor) ? TownSetup.GeneralCity : TownSetup.MordorCapital, StringComparison.OrdinalIgnoreCase);
-				RealmOffice office = capital ? RealmOffice.ForStone(this, area.Realm) : (RealmOffice.For(area.Realm) ?? RealmOffice.ForStone(this, area.Realm));
+				RealmOffice office = capital ? RealmOffice.ForStone(this, area.Realm) : (RealmOffice.For(area.Realm) ?? RealmOffice.ForStone(CapitalStone(area.Realm) ?? this, area.Realm));
 				if (area.Realm == Realm.Gondor) {
 					player.SysMessage((office.holder != null) ? ("Generalem je " + office.holder.Name) : "General Gondoru neni urcen");
 				} else {
@@ -233,6 +233,18 @@ namespace SteamEngine.CompiledScripts {
 				}
 				D_RealmBans.Show(office, player, capital ? null : this);
 			}
+		}
+
+		/// <summary>#904 - the realm stone in the realm's capital: the office lives there, not on a city's, whose loss
+		/// would take the office along.</summary>
+		internal static RealmStone CapitalStone(Realm realm) {
+			string capital = (realm == Realm.Gondor) ? TownSetup.GeneralCity : TownSetup.MordorCapital;
+			foreach (Thing thing in Thing.AllThings) {
+				if ((thing is RealmStone stone) && string.Equals(RegionEventSystem.AreaOf(stone.Region)?.City, capital, StringComparison.OrdinalIgnoreCase)) {
+					return stone;
+				}
+			}
+			return null;
 		}
 
 		public override void On_Destroy() {
