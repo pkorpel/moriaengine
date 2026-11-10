@@ -23,8 +23,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#392 - a tool-category tag independent of WeaponType (pickaxe/fishing pole
 	/// aren't safely derivable from WeaponType - OneHandSpike is shared with real Fencing
 	/// weapons like daggers, and a fishing pole isn't even a WeaponDef). Any equippable tool
-	/// just needs one ".def" "tooltype=" line to automatically grant its gathering skill -
-	/// see EquippableDef.AssociatedSkill.</summary>
+	/// just needs one ".def" "tooltype=" line (Equippable.ct's toolType) to automatically grant
+	/// its gathering skill - see EquippableDef.UseSkill.</summary>
 	public enum ToolType {
 		None,
 		Pickaxe,
@@ -33,48 +33,25 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class EquippableDef {
-		private static readonly TagKey associatedSkillTK = TagKey.Acquire("_associatedSkill_");
-		private static readonly TagKey toolTypeTK = TagKey.Acquire("_toolType_");
-
-		/// <summary>#392 - independent of AssociatedSkill's own explicit-override tag; see
-		/// that property's own fallback logic for how this feeds into it.</summary>
-		public ToolType ToolType {
-			get {
-				object tag = this.GetTag(toolTypeTK);
-				if (tag is ToolType toolType) {
-					return toolType;
-				}
-				if ((tag is int intTag) && Enum.IsDefined(typeof(ToolType), intTag)) {
-					return (ToolType) intTag; //#265 - saves before #407 wrote an enum tag as a plain number
-				}
-				return ToolType.None;
-			}
-			set {
-				this.SetTag(toolTypeTK, value);
-			}
-		}
+		/// <summary>#1384 - ToolType and AssociatedSkill were def tags until then; a save
+		/// written before may still carry them in a def section.</summary>
+		private static readonly string[] retiredSavedTags = { "_toolType_", "_associatedSkill_" };
 
 		/// <summary>#370 - the skill a dclick/`.usehand` "use" action on this equippable
-		/// should start (e.g. a pickaxe's Mining, a hatchet's Lumberjacking). SkillName.None
-		/// (the default) means this item has no "use" action - dclicking it only equips,
-		/// matching every plain weapon/armor's existing behavior. Data-driven on purpose, so
-		/// wiring a new tool to its skill is a one-line ".def" change, no new C# class needed -
-		/// see Equippable.OnUse.
+		/// starts (e.g. a pickaxe's Mining, a hatchet's Lumberjacking), and the skill it counts
+		/// as the tool for (IsHoldingToolFor). SkillName.None means this item has no "use"
+		/// action - dclicking it only equips, matching every plain weapon/armor's behavior.
 		///
-		/// #392 - when no explicit "associatedskill=" override tag is set, this is now derived
-		/// automatically from type-level data instead of needing a per-item tag: any weapon
-		/// whose WeaponType is OneHandAxe/TwoHandAxe (an exclusively-axe category, #157) grants
-		/// Lumberjacking, and any item tagged with ToolType.Pickaxe/FishingPole grants Mining/
-		/// Fishing - so a brand-new axe or tool item works automatically, no per-item tagging
-		/// needed (a future quest-reward "golden pickaxe" just needs tooltype=Pickaxe).</summary>
-		public SkillName AssociatedSkill {
+		/// The def's own AssociatedSkill (Equippable.ct, a .def "associatedskill=" line) when
+		/// set; otherwise (#392) derived from type-level data: any weapon whose WeaponType is
+		/// OneHandAxe/TwoHandAxe (an exclusively-axe category, #157) grants Lumberjacking, and
+		/// ToolType Pickaxe/FishingPole (a .def "tooltype=" line) grants Mining/Fishing - so a
+		/// new axe or tool item works with no per-item line beyond its tool type.</summary>
+		public SkillName UseSkill {
 			get {
-				object tag = this.GetTag(associatedSkillTK);
-				if (tag is SkillName skill) {
+				SkillName skill = this.AssociatedSkill;
+				if (skill != SkillName.None) {
 					return skill;
-				}
-				if ((tag is int intTag) && Enum.IsDefined(typeof(SkillName), intTag)) {
-					return (SkillName) intTag; //#265 - saves before #407 wrote an enum tag as a plain number
 				}
 				if (this is WeaponDef weaponDef) {
 					WeaponType wt = weaponDef.WeaponType;
@@ -90,31 +67,13 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return SkillName.None;
 			}
-			set {
-				this.SetTag(associatedSkillTK, value);
-			}
 		}
 
-		protected override void LoadScriptLine(string filename, int line, string param, string args) {
-			if (param == "associatedskill") {
-				SkillName skill;
-				if (Enum.TryParse(args, true, out skill)) {
-					this.AssociatedSkill = skill;
-				} else {
-					Logger.WriteWarning(filename, line, "associatedskill '" + args + "' is not a known SkillName value.");
-				}
-				return;
+		public override void LoadFromSaves(PropsSection input) {
+			foreach (string tag in retiredSavedTags) {
+				input.TryPopPropsLine("tag." + tag);
 			}
-			if (param == "tooltype") {
-				ToolType toolType;
-				if (Enum.TryParse(args, true, out toolType)) {
-					this.ToolType = toolType;
-				} else {
-					Logger.WriteWarning(filename, line, "tooltype '" + args + "' is not a known ToolType value.");
-				}
-				return;
-			}
-			base.LoadScriptLine(filename, line, param, args);
+			base.LoadFromSaves(input);
 		}
 	}
 
@@ -164,12 +123,12 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#370 - the generic "use" hook, called once the item is confirmed equipped
 		/// (whether it just got equipped by this same dclick, or was already on the character).
-		/// Default behavior is data-driven off TypeDef.AssociatedSkill - any equippable tool can
+		/// Default behavior is data-driven off TypeDef.UseSkill - any equippable tool can
 		/// opt into "dclick starts my skill" with one ".def" line, no override needed. Virtual
 		/// so a specific item class can still provide a richer "use" action later (e.g. a real
 		/// chop-tree/cut-cloth target flow) without being forced through the skill-select shape.</summary>
 		public virtual void OnUse(AbstractCharacter from) {
-			SkillName skill = this.TypeDef.AssociatedSkill;
+			SkillName skill = this.TypeDef.UseSkill;
 			if (skill != SkillName.None) {
 				Character clicker = from as Character;
 				if (clicker != null) {
@@ -187,7 +146,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#370 - shared "is the right tool equipped for this skill" check, reused by
 		/// every tool-gated skill (Mining/Lumberjacking/Fishing) so the gate stays data-driven
-		/// off the same AssociatedSkill field the dclick hook above already reads, instead of
+		/// off the same UseSkill the dclick hook above already reads, instead of
 		/// each skill hardcoding its own tool ItemDef/class check.</summary>
 		public static bool IsHoldingToolFor(Character self, SkillName skill) {
 			return IsToolFor(self.FindLayer(LayerNames.Hand1), skill) || IsToolFor(self.FindLayer(LayerNames.Hand2), skill);
@@ -195,7 +154,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static bool IsToolFor(AbstractItem equipped, SkillName skill) {
 			Equippable tool = equipped as Equippable;
-			return (tool != null) && (tool.TypeDef.AssociatedSkill == skill);
+			return (tool != null) && (tool.TypeDef.UseSkill == skill);
 		}
 	}
 }

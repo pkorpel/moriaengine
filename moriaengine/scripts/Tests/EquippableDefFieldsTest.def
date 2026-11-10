@@ -1,0 +1,8 @@
+// #1384 - a test-only tool def setting both Equippable.ct def fields from their .def lines: the explicit skill wins
+// over the one its tool type would give.
+[EquippableDef 0x999a]
+DEFNAME = i_equip_fields_test
+NAME = Equip Fields Test
+LAYER = 1
+ASSOCIATEDSKILL = tailoring
+TOOLTYPE = pickaxe

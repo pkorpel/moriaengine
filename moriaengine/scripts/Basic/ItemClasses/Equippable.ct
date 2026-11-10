@@ -17,4 +17,8 @@
 Def:	//vars on the def
 	int Layer = 30
 	///TODO: [Alias("twohands")] or something like it
-	bool twoHanded = false
+	bool twoHanded = false
+	//#370/#392 - the skill a "use" of this tool starts; None = derived, see EquippableDef.UseSkill
+	SkillName associatedSkill = SkillName.None
+	//#392 - Pickaxe/FishingPole grant Mining/Fishing (EquippableDef.UseSkill)
+	ToolType toolType = ToolType.None
