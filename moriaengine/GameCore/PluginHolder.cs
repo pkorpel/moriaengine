@@ -166,6 +166,7 @@ namespace SteamEngine {
 						listNode.nextNode.prevNode = listNode.prevNode;
 					}
 					this.tags.Remove(tg);
+					listNode.removed = true; //#1389 - a trigger walking the list skips it from now on
 					tg.TryRun(this, TriggerKey.unAssign, null);
 				}
 			}
@@ -190,6 +191,7 @@ namespace SteamEngine {
 			TGListNode curNode = this.firstTGListNode;
 			while (curNode != null) {
 				this.tags.Remove(curNode.storedTG);
+				curNode.removed = true; //#1389
 				curNode = curNode.nextNode;
 			}
 			this.firstTGListNode = null;
@@ -199,6 +201,9 @@ namespace SteamEngine {
 			public readonly TriggerGroup storedTG;
 			internal TGListNode prevNode;
 			internal TGListNode nextNode;
+			/// <summary>#1389 - removed from its holder. A removed node keeps its nextNode, so a trigger walking the list
+			/// goes on past it, but runs neither it nor another removed one.</summary>
+			internal bool removed;
 
 			internal TGListNode(TriggerGroup storedTG) {
 				this.storedTG = storedTG;
@@ -225,7 +230,9 @@ namespace SteamEngine {
 		public virtual void Trigger(TriggerKey tk, ScriptArgs sa) {
 			TGListNode curNode = this.firstTGListNode;
 			while (curNode != null) {
-				curNode.storedTG.Run(this, tk, sa);
+				if (!curNode.removed) {
+					curNode.storedTG.Run(this, tk, sa);
+				}
 				curNode = curNode.nextNode;
 			}
 			Plugin curPlugin = this.firstPlugin;
@@ -240,7 +247,9 @@ namespace SteamEngine {
 		public virtual void TryTrigger(TriggerKey tk, ScriptArgs sa) {
 			TGListNode curNode = this.firstTGListNode;
 			while (curNode != null) {
-				curNode.storedTG.TryRun(this, tk, sa);
+				if (!curNode.removed) {
+					curNode.storedTG.TryRun(this, tk, sa);
+				}
 				curNode = curNode.nextNode;
 			}
 			Plugin curPlugin = this.firstPlugin;
@@ -270,7 +279,7 @@ namespace SteamEngine {
 		public virtual TriggerResult CancellableTrigger(TriggerKey tk, ScriptArgs sa) {
 			TGListNode curNode = this.firstTGListNode;
 			while (curNode != null) {
-				if (TagMath.Is1(curNode.storedTG.Run(this, tk, sa))) {
+				if (!curNode.removed && TagMath.Is1(curNode.storedTG.Run(this, tk, sa))) {
 					return TriggerResult.Cancel;
 				}
 				curNode = curNode.nextNode;
@@ -291,7 +300,7 @@ namespace SteamEngine {
 		public virtual TriggerResult TryCancellableTrigger(TriggerKey tk, ScriptArgs sa) {
 			TGListNode curNode = this.firstTGListNode;
 			while (curNode != null) {
-				if (TagMath.Is1(curNode.storedTG.TryRun(this, tk, sa))) {
+				if (!curNode.removed && TagMath.Is1(curNode.storedTG.TryRun(this, tk, sa))) {
 					return TriggerResult.Cancel;
 				}
 				curNode = curNode.nextNode;

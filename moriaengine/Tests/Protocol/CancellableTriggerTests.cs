@@ -32,6 +32,19 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("talentOutlivesDeath", "effectEndsAtDeath");
 			}
 		}
+
+		/// <summary>#1389 - a trigger group removed during a trigger doesn't run, nor do the groups of a holder deleted
+		/// during it. Server side: TriggerGroupLoopTests in scripts/Tests/PluginLoopTests.cs.</summary>
+		[Fact]
+		public void TriggerGroupsRemovedDuringATriggerDontRun() {
+			using (TestGameClient game = this.Login("Odebirany")) {
+				this.Run(game, ".TestTriggerGroupLoop", "CANCELLABLE_TGLOOP_DONE");
+				foreach (string way in new[] { "Trigger", "TryTrigger", "CancellableTrigger", "TryCancellableTrigger" }) {
+					this.AssertChecks("tgSelfRemoved" + way, "tgBothRemoved" + way);
+				}
+				this.AssertChecks("tgHolderDeletedTryTrigger", "tgHolderDeletedCancellableTrigger", "tgHolderDeletedTryCancellableTrigger");
+			}
+		}
 	}
 
 	[CollectionDefinition(Name)]
