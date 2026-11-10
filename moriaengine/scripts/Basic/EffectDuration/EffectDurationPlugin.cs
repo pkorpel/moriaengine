@@ -169,6 +169,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual void On_Death() {
+			//#1387 - a talent's lasting effect (from an ability, no duration) outlives death: nothing would give it back.
+			//Until #1387 a death ended only the newest effect (the trigger stopped after a plugin removed itself).
+			if ((this.TimerObject == null) && ((this.flags & EffectFlag.FromAbility) == EffectFlag.FromAbility)) {
+				return;
+			}
 			this.Delete();
 		}
 
