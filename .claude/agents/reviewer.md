@@ -40,7 +40,12 @@ Only on code the diff touches:
 - protocol: packet layouts and lengths, client-version differences, encryption;
 - security: commands or GM functions reachable by a normal player, unchecked
   client input (sizes, indexes, serials);
-- fit: names, structure and comment density like the surrounding code; no dead code.
+- fit: names, structure and comment density like the surrounding code; no dead code;
+- engine patterns (#1366): a second way of doing what the engine already does (plugins,
+  code-made defs, `.ct` def fields, tags, triggers) is blocking unless the PR says why the
+  existing one can't serve; so is a workaround of a bug in an existing pattern instead of a
+  fix in it. Compare with the original code (`git show a27bbf6:<path>`) and the pattern's
+  page under `moriaengine/docs/current/`.
 
 Don't report style nits or taste.
 
