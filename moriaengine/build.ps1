@@ -224,7 +224,7 @@ if ($Clean) {
 	# Scoped to known project dirs only - the top-level bin/ holds checked-in
 	# legacy vendor binaries (see .gitignore's */bin/ pattern), not build
 	# output, and must never be touched here.
-	foreach ($proj in @($StandaloneProjects + 'Generated/SteamEngine.Generated.csproj' + 'scripts/SteamEngine.Scripts.csproj')) {
+	foreach ($proj in @($StandaloneProjects + 'Generated/SteamEngine.Generated.csproj' + 'scripts/SteamEngine.Scripts.csproj' + 'RemoteConsole/SteamEngine.RemoteConsole.csproj')) {
 		$projDir = Split-Path $proj -Parent
 		Remove-Item "$projDir/bin", "$projDir/obj" -Recurse -Force -ErrorAction SilentlyContinue
 	}

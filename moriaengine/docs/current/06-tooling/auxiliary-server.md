@@ -56,5 +56,4 @@ starter code.
 This is the piece of the stack a real deployed shard actually runs continuously
 alongside `GameCore` - not a one-time tool like
 [SphereShardConverter](sphere-shard-converter.md), and (unlike
-[RemoteConsole](remote-console.md)) fully part of the current .NET 8 build and the
-protocol-test suite's own two-hop login flow.
+[RemoteConsole](remote-console.md)) part of the protocol-test suite's own two-hop login flow.

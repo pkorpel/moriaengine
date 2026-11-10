@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using SteamEngine.Common;
@@ -43,9 +44,11 @@ namespace SteamEngine.RemoteConsole {
 			string exe, args;
 			if (Settings.GetCommandLineForExt(ext, out exe, out args)) {
 				args = string.Format(args, filename, line);
-				Process.Start(exe, args);
+				// #29: .NET 8 starts processes without the shell by default; the shell also finds programs registered without a path (App Paths).
+				Process.Start(new ProcessStartInfo(exe, args) { UseShellExecute = true });
 			} else {
-				Process.Start(filename);
+				// and only the shell opens a file with its program.
+				Process.Start(new ProcessStartInfo(filename) { UseShellExecute = true });
 			}
 		}
 
@@ -151,6 +154,20 @@ namespace SteamEngine.RemoteConsole {
 			}
 		}
 
+		// #29: the .NET 8 port took System.Drawing out of Common, so LogStyleInfo only says bold/italic; the fonts are made here, as Common made them before.
+		private static readonly Font[] styleFonts = new Font[4];
+
+		private static Font FontOf(LogStyleInfo style) {
+			int index = (style.Bold ? 1 : 0) | (style.Italic ? 2 : 0);
+			Font font = styleFonts[index];
+			if (font == null) {
+				FontStyle fontStyle = (style.Bold ? FontStyle.Bold : FontStyle.Regular) | (style.Italic ? FontStyle.Italic : FontStyle.Regular);
+				font = new Font(FontFamily.GenericSansSerif, 8.25f, fontStyle);
+				styleFonts[index] = font;
+			}
+			return font;
+		}
+
 		public void Write(string data, LogStyleInfo style) {
 			int dataLen = data.Length;
 			if (dataLen > 0) {
@@ -158,8 +175,8 @@ namespace SteamEngine.RemoteConsole {
 				//    this.txtBox.Text = this.txtBox.Text.Substring(this.txtBox.Text.IndexOf(Environment.NewLine) + Environment.NewLine.Length);
 				//}
 
-				this.txtBox.SelectionFont = style.Font;
-				this.txtBox.SelectionColor = style.TextColor;
+				this.txtBox.SelectionFont = FontOf(style);
+				this.txtBox.SelectionColor = Color.FromArgb(style.TextColor.R, style.TextColor.G, style.TextColor.B);
 
 				if (style.IsLink) {
 #if MSWIN

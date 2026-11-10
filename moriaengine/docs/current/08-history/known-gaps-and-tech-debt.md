@@ -89,9 +89,9 @@ deliberate scope choice (not a bug) or a genuine gap worth picking up.
   `Player.Race`) was worked around by renaming the colliding *command*, not by changing
   LScript's own member-resolution order. The next collision will hit the same silent
   no-op symptom.
-- **RemoteConsole hasn't been ported to .NET 8** - still builds only against the old
-  .NET Framework toolchain, not part of the current cross-platform build graph or any
-  automated test. See [RemoteConsole](../06-tooling/remote-console.md).
+- **RemoteConsole has no automated test** - it is on .NET 8 and in the solution since #29,
+  so it compiles everywhere, but it's a WinForms app that only runs on Windows and nothing
+  drives it headless. See [RemoteConsole](../06-tooling/remote-console.md).
 - **`FieldValue`'s `isChangedManually` tracking has a narrow but real engine-level
   persistence bug class** (#168) - a custom tag-backed Def property loaded from a
   baseline `.def` file gets marked "changed" even when it wasn't, causing it to be
