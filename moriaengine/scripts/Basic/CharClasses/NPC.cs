@@ -123,39 +123,6 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class NPCDef {
-		private static readonly TagKey combatSpellTK = TagKey.Acquire("_combatSpell_");
-
-		/// <summary>
-		/// The spell this NPC casts at its combat target instead of swinging a weapon, when it has
-		/// one configured and enough mana (see NPCAiTimer.TryCastSpell, enhancements #57). Null
-		/// (the default) means this NPC fights purely with weapons/unarmed combat, same as before.
-		/// </summary>
-		public SpellDef CombatSpell {
-			get {
-				return this.GetTag(combatSpellTK) as SpellDef;
-			}
-			set {
-				this.SetTag(combatSpellTK, value);
-			}
-		}
-
-		private static readonly TagKey mountCharDefTK = TagKey.Acquire("_npcMountCharDef_");
-
-		/// <summary>#700 - the mount creature species (e.g. c_horse_brown_dk) this NPC should
-		/// spawn and already be riding when created (tag.mount in the real archive). Null (the
-		/// default) means this NPC isn't pre-mounted - unaffected, same as before this field
-		/// existed. The spawned mount's own MountItem/Color (the latter overridable per-NPCDef
-		/// via MountColor below) drive what actually gets rendered - this field only says WHICH
-		/// creature to spawn, see NPC.On_Create.</summary>
-		public NPCDef MountCharDef {
-			get {
-				return this.GetTag(mountCharDefTK) as NPCDef;
-			}
-			set {
-				this.SetTag(mountCharDefTK, value);
-			}
-		}
-
 		private static readonly TagKey instanceSpellsTK = TagKey.Acquire("_npcSpells_");
 
 		/// <summary>#564 - the full set of spells this NPC species can cast (addspell= in the real
@@ -526,7 +493,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly string[] retiredSavedTags = { "_aggroMode_", "_npcDefRealm_", "_npcDefTeachesSkill_", "_tamingDifficulty_",
 			"_moveRate_", "_npcSpellCastRange_", "_npcIsBoss_", "_npcDragonBrain_", "_npcNoAnimate_", "_npcHypnotizable_",
 			"_npcResistSilence_", "_npcMonsterType_", "_npcMonsterType2_", "_npcMonsterType3_", "_npcMagicHorse_", "_npcSerpentForm_",
-			"_npcStartingAbilities_",
+			"_npcStartingAbilities_", "_combatSpell_", "_npcMountCharDef_",
 			"_experienceWorth_",
 			"_strRange_",
 			"_dexRange_",
@@ -821,20 +788,8 @@ namespace SteamEngine.CompiledScripts {
 				this.DefaultMovementSettings = ParseMovementCapability(args);
 				return;
 			}
-			if (param == "combatspell") {
-				SpellDef spell = SpellDef.GetByDefname(args);
-				if (spell == null) {
-					Logger.WriteWarning(filename, line, "combatspell '" + args + "' is not a known SpellDef.");
-				}
-				this.CombatSpell = spell;
-				return;
-			}
-			if (param == "mountnpc") {
-				NPCDef mountDef = ThingDef.GetByDefname(args) as NPCDef;
-				if (mountDef == null) {
-					Logger.WriteWarning(filename, line, "mountnpc '" + args + "' is not a known NPCDef.");
-				}
-				this.MountCharDef = mountDef;
+			if (param == "mountnpc") { //#1379 - the keyword of the mountCharDef field
+				base.LoadScriptLine(filename, line, "mountchardef", args);
 				return;
 			}
 			if (param == "addspell") {
