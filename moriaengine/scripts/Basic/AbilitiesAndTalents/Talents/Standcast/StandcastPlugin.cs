@@ -26,7 +26,7 @@ namespace SteamEngine.CompiledScripts {
 	/// three area spells); raising the energy shield switches it off.</summary>
 	[ViewableClass]
 	public partial class StandcastPlugin {
-		private const int spellExplosion = 43, spellChainLightning = 49, spellMeteorSwarm = 55;
+		private const int spellExplosion = 43, spellChainLightning = 49, spellMeteorSwarm = 55, spellGateTravel = 52;
 
 		/// <summary>#860 - dospellcustom_donesrc: what Standcast adds to the multiplier of a spell on a monster. By level,
 		/// up to 200, and half for the spells that hit several targets.</summary>
@@ -50,7 +50,9 @@ namespace SteamEngine.CompiledScripts {
 			this.boost = 0;
 			if ((target != null) && self.CanSeeLOS(target).Allow) {
 				this.boost = IsAreaSpell(spell.Id) ? 2 : 1;
-				CastFreezePlugin.FreezeFor(self, spell.CastTime);
+				if (spell.Id != spellGateTravel) { //#1391 - the gate froze its caster already (FreezeForGate), for this same cast
+					CastFreezePlugin.FreezeFor(self, spell.CastTime);
+				}
 			}
 		}
 
@@ -102,6 +104,29 @@ namespace SteamEngine.CompiledScripts {
 				freeze.Timer = castSeconds;
 			} else {
 				freeze.Timer = castSeconds + 1.0;
+			}
+		}
+
+		/// <summary>#1391 - Erebor's e_allplayers @spellcast for Gate Travel: every player casting a gate stands still for
+		/// the gate's cast time less a second (time to run into the gate). Already frozen: under the gate's time left =
+		/// its time and a second (a penalty for breaking concentration early), else its time less a second. Called at the
+		/// end of the gate's @start, so a cast refused there (no rune, unmarked, no way out or in) isn't frozen; Erebor
+		/// froze first and refused some of those only later, keeping the freeze. Standcast adds nothing to a gate's
+		/// freeze: on Erebor e_standcast ran after it and, through its bare-name bug, left it at the gate's time (9 s);
+		/// its intended recast rule would have made it 10 s, a second past the gate opening; the gate's own 8 s
+		/// is kept.</summary>
+		public static void FreezeForGate(Character caster) {
+			if (!(caster is Player)) {
+				return;
+			}
+			double castSeconds = SpellDef.GetByDefname("s_gate_travel").CastTime;
+			CastFreezePlugin freeze = caster.GetPlugin(key) as CastFreezePlugin;
+			if (freeze == null) {
+				freeze = (CastFreezePlugin) CastFreezePluginDef.instance.Create();
+				caster.AddPlugin(key, freeze);
+				freeze.Timer = castSeconds - 1.0;
+			} else {
+				freeze.Timer = (freeze.Timer < castSeconds) ? (castSeconds + 1.0) : (castSeconds - 1.0);
 			}
 		}
 
