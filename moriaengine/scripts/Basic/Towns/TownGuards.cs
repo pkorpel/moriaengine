@@ -90,6 +90,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public Thing keepStone;
 
+		/// <summary>#904 - a city's king's or Marghul's force: the realm stone in that city, which carries its check timer.</summary>
+		[SaveableData]
+		public Thing kingsStone;
+
 		public bool IsKeep {
 			get { return this.keepFort != null; }
 		}
@@ -389,12 +393,14 @@ namespace SteamEngine.CompiledScripts {
 			return town.Force;
 		}
 
+		/// <summary>The king's or Marghul's guards of the city someone stands in (#904: each city has its own), else the capital's.</summary>
 		public static GuardForce RealmForce(Player player) {
 			RealmOffice office = RealmOffice.For(player.Realm);
 			if ((office == null) || !office.CanEdit(player)) {
 				return null;
 			}
-			return office.Force;
+			FlaggedRegion area = RegionEventSystem.AreaOf(player.Region);
+			return office.CityForceIfAny(area?.City) ?? office.Force;
 		}
 
 		public static void Order(Character self, bool realm, GuardOrder order) {

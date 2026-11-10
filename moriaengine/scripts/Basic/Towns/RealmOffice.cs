@@ -31,6 +31,42 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public GuardForce force;
 
+		/// <summary>#904 - the king's or Marghul's guards of the realm's other cities, one force each with its own stone,
+		/// table (Guard_king_&lt;city&gt;_n) and limit (max_guards_&lt;city&gt;), as Erebor's stones in each city.</summary>
+		[SaveableData]
+		public List<GuardForce> cityForces = new List<GuardForce>();
+
+		private string CapitalCity {
+			get { return (this.realm == Realm.Gondor) ? TownSetup.GeneralCity : TownSetup.MordorCapital; }
+		}
+
+		/// <summary>#904 - the force of the city this realm stone stands in (the capital's is Force).</summary>
+		public GuardForce ForceOf(string city, Item cityStone) {
+			if (string.IsNullOrEmpty(city) || string.Equals(city, this.CapitalCity, StringComparison.OrdinalIgnoreCase) || (cityStone == null)) {
+				return this.Force;
+			}
+			GuardForce found = this.CityForceIfAny(city);
+			if (found == null) {
+				found = new GuardForce { city = city, isKings = true };
+				this.cityForces.Add(found);
+			}
+			found.kingsStone = cityStone;
+			found.EnsureCheckTimer(cityStone);
+			return found;
+		}
+
+		/// <summary>#904 - a city's force if its stone was ever used, else null.</summary>
+		public GuardForce CityForceIfAny(string city) {
+			if (string.IsNullOrEmpty(city) || string.Equals(city, this.CapitalCity, StringComparison.OrdinalIgnoreCase)) {
+				return null;
+			}
+			GuardForce found = this.cityForces.Find(f => string.Equals(f.city, city, StringComparison.OrdinalIgnoreCase));
+			if ((found != null) && (found.kingsStone != null) && !found.kingsStone.IsDeleted) {
+				found.EnsureCheckTimer(found.kingsStone);
+			}
+			return found;
+		}
+
 		/// <summary>The king's or Marghul's guards, of the capital.</summary>
 		public GuardForce Force {
 			get {
@@ -187,13 +223,15 @@ namespace SteamEngine.CompiledScripts {
 			} else if (RegionEventSystem.AreaOf(player.Region) != area) {
 				player.SysMessage("Musis byt v prostoru mesta!");
 			} else {
-				RealmOffice office = RealmOffice.ForStone(this, area.Realm);
+				//#904 - every city has such a stone; the capital's keeps the office (its holder and blacklist are the realm's)
+				bool capital = string.Equals(area.City, (area.Realm == Realm.Gondor) ? TownSetup.GeneralCity : TownSetup.MordorCapital, StringComparison.OrdinalIgnoreCase);
+				RealmOffice office = capital ? RealmOffice.ForStone(this, area.Realm) : (RealmOffice.For(area.Realm) ?? RealmOffice.ForStone(this, area.Realm));
 				if (area.Realm == Realm.Gondor) {
 					player.SysMessage((office.holder != null) ? ("Generalem je " + office.holder.Name) : "General Gondoru neni urcen");
 				} else {
 					player.SysMessage((office.holder != null) ? ("Nositelem prstenu je " + office.holder.Name) : "Funkce prvniho nazgula neni obsazena");
 				}
-				D_RealmBans.Show(office, player);
+				D_RealmBans.Show(office, player, capital ? null : this);
 			}
 		}
 
@@ -258,8 +296,17 @@ namespace SteamEngine.CompiledScripts {
 		private const int Width = 550, PageRows = 10, RowHeight = 20, FirstRow = 40, FirstRowButton = 100, AddBanButton = 3, OfficeButton = 4, TextHue = 2301,
 			CaptainButton = 5, PostsButton = 6, RecruiterButton = 7;
 
-		internal static void Show(RealmOffice office, Player player) {
-			player.Dialog(player, SingletonScript<D_RealmBans>.Instance, new DialogArgs(office));
+		/// <summary>`cityStone`: #904 - the realm stone of another city than the capital, whose guards its buttons command.</summary>
+		internal static void Show(RealmOffice office, Player player, Item cityStone = null) {
+			player.Dialog(player, SingletonScript<D_RealmBans>.Instance, new DialogArgs(office, cityStone));
+		}
+
+		private static GuardForce ForceFor(RealmOffice office, DialogArgs args) {
+			Item cityStone = args[1] as Item;
+			if ((cityStone == null) || cityStone.IsDeleted) {
+				return office.Force;
+			}
+			return office.ForceOf(RegionEventSystem.AreaOf(cityStone.Region)?.City, cityStone);
 		}
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
@@ -314,11 +361,11 @@ namespace SteamEngine.CompiledScripts {
 			Player player = (Player) gi.Cont;
 			int button = gr.PressedButton;
 			if ((button == CaptainButton) && office.CanEdit(player)) {
-				D_GuardCaptain.Show(office.Force, player);
+				D_GuardCaptain.Show(ForceFor(office, args), player);
 			} else if ((button == PostsButton) && office.CanEdit(player)) {
-				D_GuardPosts.Show(office.Force, player);
+				D_GuardPosts.Show(ForceFor(office, args), player);
 			} else if ((button == RecruiterButton) && office.CanEdit(player)) {
-				D_GuardRecruiter.Show(office.Force, player);
+				D_GuardRecruiter.Show(ForceFor(office, args), player);
 			} else if ((button == AddBanButton) && office.CanEdit(player)) {
 				player.SysMessage("Koho chces pridat na blacklist?");
 				player.Target(SingletonScript<Targ_RealmBan>.Instance, office);
@@ -334,7 +381,7 @@ namespace SteamEngine.CompiledScripts {
 				TownBan ban = office.bans[button - FirstRowButton];
 				office.bans.RemoveAt(button - FirstRowButton);
 				DelayedMessages.Send(ban.who, ban.name + " byl odstranen z globalni cerne listiny"); //#901
-				Show(office, player);
+				Show(office, player, args[1] as Item);
 			}
 		}
 	}
