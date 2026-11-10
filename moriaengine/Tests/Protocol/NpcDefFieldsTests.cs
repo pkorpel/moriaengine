@@ -17,7 +17,8 @@ namespace SteamEngine.Tests.Protocol {
 					"hypnotizable", "resistSilence", "monsterType", "monsterType2", "magicHorse", "serpentForm", "defaultAggro", "defaultRealm",
 					"defaultTeaches", "defaultMoveRate", "defaultSpellCastRange", "defaultFlags", "defaultNumbers", "defaultStrings", "noOldTags",
 					"everyDefReads", "readAllQuickly", "savedRetiredDropped", "savedTyped",
-					"rangeTwo", "rangeSingle", "rangeExperience", "rangeMaxHits", "rangeTable", "rangeByName", "rangeDefault");
+					"rangeTwo", "rangeSingle", "rangeExperience", "rangeMaxHits", "rangeTable", "rangeByName", "rangeDefault",
+					"combatSpell", "mountCharDef", "defRefDefaults");
 			}
 		}
 	}

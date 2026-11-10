@@ -56,6 +56,10 @@ Defs:
 	string magicHorse = null
 	//#1022 - Erebor's tag.had: the serpent druid's serpent form, a chardef whose look it takes
 	string serpentForm = null
+	//enhancements #57 - the spell it casts at its target instead of swinging, null for weapons only
+	SpellDef combatSpell = null
+	//#700 - the mount species it spawns riding (Erebor's tag.mount), keyword mountnpc; null for none
+	NPCDef mountCharDef = null
 	//#1377 - {min,max} ranges, rolled per NPC or per use; a script line gives "min max" or one value for both
 	Int32[] experienceWorth = null
 	Int32[] strRange = null

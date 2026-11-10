@@ -53,10 +53,15 @@ namespace SteamEngine.CompiledScripts {
 			Check("rangeByName", Same(Def("c_drak_hnedy").AbilityTuning("fireDragonChance"), 800, 800));
 			Check("rangeDefault", (plain.StrRange == null) && (plain.StunChance == null) && (plain.AbilityTuning("fireDragonChance") == null));
 
+			//#1379 - the two def references
+			Check("combatSpell", Def("npc_test_single_combat_spell").CombatSpell == SpellDef.GetByDefname("s_magic_arrow"));
+			Check("mountCharDef", Def("c_ocs_guard_selmat").MountCharDef == Def("c_horse_brown_dk"));
+			Check("defRefDefaults", (plain.CombatSpell == null) && (plain.MountCharDef == null));
+
 			bool noTags = true;
 			foreach (string old in new[] { "_aggroMode_", "_npcDefRealm_", "_npcDefTeachesSkill_", "_tamingDifficulty_", "_moveRate_",
 					"_npcSpellCastRange_", "_npcIsBoss_", "_npcDragonBrain_", "_npcNoAnimate_", "_npcHypnotizable_", "_npcResistSilence_",
-					"_npcMonsterType_", "_npcMagicHorse_", "_npcSerpentForm_", "_experienceWorth_", "_strRange_", "_npcStunChance_", "_npcFireDragonChance_" }) {
+					"_npcMonsterType_", "_npcMagicHorse_", "_npcSerpentForm_", "_experienceWorth_", "_strRange_", "_npcStunChance_", "_npcFireDragonChance_", "_combatSpell_", "_npcMountCharDef_" }) {
 				foreach (NPCDef def in new[] { guard, Def("c_ratman"), Def("mistr_anatomy"), Def("c_vetesnik"), Def("c_drak_hnedy"), Def("c_man_gm") }) {
 					noTags &= (def.GetTag(TagKey.Acquire(old)) == null);
 				}
@@ -73,6 +78,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				defs++;
 				try {
+					object[] defRefs = { def.CombatSpell, def.MountCharDef }; //read only for the throw: a name that isn't a def fails here
 					object[] values = { def.AggroMode, def.Realm, def.TeachesSkill, def.MoveRate, def.SpellCastRange, def.IsBoss, def.DragonBrain,
 						def.NoAnimate, def.Hypnotizable, def.ResistSilence, def.MonsterType, def.MonsterType2, def.MonsterType3, def.MagicHorse, def.SerpentForm };
 					if (values.Length != 15) {
