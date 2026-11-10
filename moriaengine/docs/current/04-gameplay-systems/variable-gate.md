@@ -41,7 +41,7 @@ In this order. Anything that stops the walker stops it before anything is taken 
 | Pridej Strazce menu | Spawn gems, picked with a target. Erebor typed their uids. |
 | Plugin: Time Seal | See below. |
 
-Functions from Erebor that work here: `f_vg_bookDeny`, `f_vg_mountDeny`, `vg_pvp_denyMagic` (no identified magic item
+Functions from Erebor that work here: `f_vg_bookDeny`, `f_vg_mountDeny`, `f_vg_nazgulOnly` (#912: only Nazguls and GMs pass, as Erebor's `i_nazgulsonly_gate`; tick "Funkce muze zamezit vstupu"), `vg_pvp_denyMagic` (no identified magic item
 carried or worn, the bank aside; crafted ones and mounts may; each one is named, "Nesmis projit s predmetem ...!"), and
 the PvP event kit's `f_varGate_pvp_equip(<metal>)` and `f_varGate_pvp_clearequip` (see [PvP](pvp.md#pvp-event-kit)).
 
