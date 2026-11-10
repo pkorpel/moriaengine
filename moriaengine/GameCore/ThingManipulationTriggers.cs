@@ -155,10 +155,17 @@ namespace SteamEngine {
 		internal override void MakeLimbo() {
 			if (!this.IsLimbo) {
 				OpenedContainers.SetContainerClosed(this);
-				this.RemoveFromView();
-				ItemSyncQueue.AboutToChange(this);
-
 				Thing cont = this.Cont;
+				//#1364 - deleted with its container: the container left everyone's view first (InternalDelete), taking its contents
+				//with it on the client, so no item needs its own reach check per viewer and delete packet (20,000 items in an
+				//open chest held the world 467 ms) nor a resend. A container on a layer of 25 or more (a bank box) is seen by
+				//nobody, so its own delete reaches no one: deleting one alone while it's open would leave its gump on the client;
+				//nothing does that (it goes with its character, which everyone near sees go)
+				if (!(this.IsBeingDeleted && (cont != null) && cont.IsBeingDeleted)) {
+					this.RemoveFromView();
+					ItemSyncQueue.AboutToChange(this);
+				}
+
 				if (cont == null) {
 					this.Trigger_LeaveGround();
 				} else {

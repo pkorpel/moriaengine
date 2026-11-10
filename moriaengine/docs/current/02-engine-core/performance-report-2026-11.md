@@ -363,6 +363,20 @@ still missed; the rest are improvements.
    - It's the likeliest cause of that window's 260 ms late timer.
    - Bank boxes and house chests hold far more than 150 items. Deleting a big container (decay, eviction, a GM
      `.remove`) in slices, or measuring one with thousands of items, would show whether it matters.
+   - **Measured and fixed (#1364, 2026-11-10, Debug, `BigContainerDeleteTests`).**
+
+     | Contents of one container, before #1364 | 20,000 items | Per item |
+     |---|---|---|
+     | Plain items, flat or in bags of 100 | 19-25 ms | about 1 µs |
+     | Each item with a decay timer and a tag | 39-43 ms | about 2 µs |
+     | **Open to one viewer** | **266-467 ms** | 13-23 µs |
+
+     - The open case was the slow one: every content item checked each viewer's reach and sent its own delete packet. That was wasted work, because the container's own delete, sent first, takes its contents with it on the client.
+     - Since #1364 an item deleted together with its container skips its own view removal and resend (`AbstractItem.MakeLimbo`). TazUO/ClassicUO drop a deleted container's children and close its gump. The engine's own `OpenedContainers` already relies on that for closing; 3.0.6m hasn't been tried.
+     - After the fix, 20,000 items take 15 ms open, 21 ms timed and 12-17 ms plain. A client with the container open gets the container's delete and none for its contents; it got one per item before, 50 for a 50-item chest.
+     - A 150-item container takes 4 ms or less, most of it the first call's JIT.
+     - The 68 ms above was likely the profiler's overhead, or contents or viewers like the open case (run 2's longest was 11 ms).
+     - No slicing: one delete stays well inside the limits. The test keeps bounds on it: 500 ms for 20,000 timed items, 100 ms for 20,000 open.
 8. **Awake NPC thinks cost 56–78 µs on average,** mostly fights and their path searches.
    - They are now the largest holder in P4 and P5 (3.0% and 5.5% of the game thread).
    - A* inside fights is a third of the timer thread's busy time, nearly all in `Map.CheckMovement` (section 4).
