@@ -38,6 +38,7 @@ if(<tag.spawnedCount> < <tag.spawnInfo.Amount> )
 endif
 
 [function spawn] //argv(0) - chardef which to create
+tag.remove(_spawnEditGem_) //#1234 - a new spawn, not the last edited gem (a dialog closed without an answer left it)
 if (argvcount==0)
  if(!tag.exists(_spawndialog_data_))
   tag._spawndialog_data_ = SpawnInfo(3,c_a_jackrabbit,1,2,1)
@@ -99,6 +100,18 @@ endif
 dlg.AddTable(GUTATable(1,ButtonMetrics.D_BUTTON_WIDTH,0))
 dlg.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(2).Build())
 dlg.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Add monster").Build())
+dlg.MakeLastTableTransparent()
+
+//#1234 - "Guarded by": other spawns whose living monsters keep this one's from being hurt; a link needs the gem, so only
+//when editing a placed spawn
+arg editGem = src.tag._spawnEditGem_
+dlg.AddTable(GUTATable(1,ButtonMetrics.D_BUTTON_WIDTH,0))
+if (editGem != null)
+ dlg.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(3).Build())
+ dlg.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Guarded by (<GuardBoss.GuardsOf(editGem).Count>)").Build())
+else
+ dlg.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Guarded by: place the spawn first").Build())
+endif
 dlg.MakeLastTableTransparent()
 
 //last row with the confirm button
@@ -169,6 +182,15 @@ endfor
 spawnData.Entries.Add(SpawnEntry(null,1))
 src.tag._spawndialog_data_ = spawnData
 dialog(d_spawn,spawnData)
+return 0
+
+ON=3
+//#1234 - "Guarded by": the links have their own dialog; unsaved edits here are dropped
+arg editGem = src.tag._spawnEditGem_
+src.tag.remove(_spawnEditGem_)
+if (editGem != null)
+  GuardBoss.ShowDialog(src, editGem)
+endif
 return 0
 
 ON=300 399
