@@ -188,8 +188,9 @@ Two related but deliberately different-scoped checks:
   starting. #1019, the user's call: a `Flag_Guarded` region bars nothing, as on Erebor, where
   the guards punish the attacker instead. No-PvP used to bar fighting monsters too, so nobody
   could fight in the goblin labyrinths (32 no-PvP areas). On the archive map no region is
-  guarded without also being safe (the jail, the cage, the labour camp).
-- `IsExemptFromExperienceLoss(self)` (line 219) - a **narrower** set of flags
+  guarded without also being safe (the jail, the cage, the labour camp). It covers only a
+  player's attack request: monsters, pets and harmful spells aren't checked against regions.
+- `IsExemptFromExperienceLoss(self)` - a **narrower** set of flags
   (`Flag_Safe`/`Flag_Arena` only, deliberately excluding `Flag_Guarded`/`Flag_NoPvp`) used by
   the Leveling system's death-experience-loss mechanic (see
   [leveling-experience.md](leveling-experience.md)/#128). The user's own stated design: a

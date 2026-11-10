@@ -295,22 +295,22 @@ namespace SteamEngine.Regions {
 			return false;
 		}
 
-		/// <summary>No PvP damage allowed at all, regardless of notoriety (e.g. a newbie starting area).</summary>
+		/// <summary>Nobody may start an attack here, on anyone (Notoriety.IsAttackBlockedByRegion; e.g. the jail).</summary>
 		public bool Flag_Safe {
 			get { return this.HasInheritedFlag(RegionFlags.Safe); }
 		}
 
-		/// <summary>Town/city guards patrol here - attacking another player (unless already criminal/murderer) is forbidden.</summary>
+		/// <summary>Town/city guards patrol here. #1019 - attacks aren't barred: the guards punish the attacker, as on Erebor.</summary>
 		public bool Flag_Guarded {
 			get { return this.HasInheritedFlag(RegionFlags.Guarded); }
 		}
 
-		/// <summary>Player-vs-player combat disallowed, independent of guards (e.g. a roleplay-safe zone).</summary>
+		/// <summary>A player may not start an attack on a player here (Sphere's NO_PVP); monsters can be fought (#1019).</summary>
 		public bool Flag_NoPvp {
 			get { return this.HasInheritedFlag(RegionFlags.NoPvp); }
 		}
 
-		/// <summary>Explicitly overrides Safe/Guarded/NoPvp to allow consensual PvP (e.g. a dueling pit).</summary>
+		/// <summary>Explicitly overrides Safe/NoPvp to allow consensual PvP (e.g. a dueling pit).</summary>
 		public bool Flag_Arena {
 			get { return this.HasInheritedFlag(RegionFlags.Arena); }
 		}

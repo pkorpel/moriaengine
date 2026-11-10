@@ -65,6 +65,10 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestRegionAttackRestore(Character self) {
+			if (self.GetTag(monsterTK) is NPC rabbit) {
+				rabbit.Delete();
+				self.RemoveTag(monsterTK);
+			}
 			if (self.GetTag(flagsTK) is FlaggedRegion region) {
 				region.Flags &= ~RegionFlags.Guarded;
 				self.RemoveTag(flagsTK);

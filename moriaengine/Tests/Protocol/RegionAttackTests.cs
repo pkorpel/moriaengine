@@ -29,6 +29,7 @@ namespace SteamEngine.Tests.Protocol {
 					this.Check(a, b, "a_Goblin_Labyrint_1", "nopvp=True arena=False", true, false);
 					this.Check(a, b, "a_Arena_Lamy", "safe=True nopvp=False arena=False", false, false); //safe only, despite its name
 					this.Check(a, b, "a_Arena_Gondor", "arena=True", true, true);
+					this.Ask(a, ".TestRegionAttackRestore", "REGION_RESTORED:");
 				}
 			}
 		}
