@@ -126,6 +126,9 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("trial=False", this.Nazgul(other));
 
 				this.Ask(nazgul, ".TestNazgulDismiss", "NAZGUL_DISMISSED:");
+				string laid = this.Nazgul(nazgul); //#910 - the leading ring lies at the First's shrine in Fela Nazgul, its fire harmless
+				Assert.True(Field(laid, "leadingLying=").EndsWith("/4/fixed", StringComparison.Ordinal), laid);
+				Assert.True(Field(laid, "lying=").EndsWith("/4/fixed", StringComparison.Ordinal), laid); //the city ring left at the swap
 				string dismissed = this.Nazgul(nazgul);
 				Assert.Contains("nazgul=False first=False name=Town_First_Bearer ruler=none office=none", dismissed);
 				Assert.Contains("gate=0x692", dismissed);

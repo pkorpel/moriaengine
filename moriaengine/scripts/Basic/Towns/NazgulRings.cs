@@ -12,8 +12,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#892 - the Rings of Power of systems/player_functions.scp. A ring makes its wearer a Nazgul,
 	/// who rules the ring's city (Town.mayor), or, the leading ring, the First Nazgul. It stays only while
-	/// its wearer earns it: mayhavering. Erebor left a lost ring lying at the shrine, and here the shrine
-	/// makes a new one, since the ring's state starts over anyway.</summary>
+	/// its wearer earns it: mayhavering. A lost ring lies at its shrine until a new one is given out there, the shrine
+	/// making that new one since the ring's state starts over anyway (#910, LostRings).</summary>
 	public static class NazgulRings {
 		public const string RingDef = "i_ring_power", LeadingRingDef = "i_leading_ring_power", FirstTitle = "Prvni Nazgul ";
 		private const int RingLayer = 8;
@@ -96,7 +96,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static PowerBadge Give(Character ch, Town town) {
-			LostRings.TakeUp((town != null) ? town.stone : RealmOffice.For(Realm.Mordor)?.stone); //#910 - the one lying at the shrine
+			LostRings.TakeUp((town != null) ? town.stone : LostRings.LeadingShrine()); //#910 - the one lying at the shrine
 			PowerBadge ring = PowerBadge.GiveTo(ch, (town != null) ? RingDef : LeadingRingDef);
 			RealmSettings settings = RealmSettings.instance;
 			double now = Globals.TimeInSeconds;
@@ -295,7 +295,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The ring to its shrine's tile with its fire; false when there's no shrine (the ring is deleted then).</summary>
 		internal static bool LayAtShrine(PowerBadge ring) {
-			Item shrine = NazgulRings.IsLeading(ring) ? RealmOffice.For(Realm.Mordor)?.stone : Town.ForCity(NazgulRings.CityOf(ring))?.stone;
+			Item shrine = NazgulRings.IsLeading(ring) ? LeadingShrine() : Town.ForCity(NazgulRings.CityOf(ring))?.stone;
 			if ((shrine == null) || shrine.IsDeleted) {
 				return false;
 			}
@@ -306,12 +306,29 @@ namespace SteamEngine.CompiledScripts {
 			ring.SetTag(shrineTK, shrine);
 			shrine.SetTag(lyingTK, ring);
 			for (int i = 0; i < columnAt.Length; i++) {
-				Item column = (Item) ThingDef.GetByDefname("i_fire_column").Create(shrine.X + columnAt[i][0], shrine.Y + columnAt[i][1], shrine.Z, shrine.M);
+				Item column = (Item) ThingDef.GetByDefname("i_column_ring").Create(shrine.X + columnAt[i][0], shrine.Y + columnAt[i][1], shrine.Z, shrine.M); //t_script: a sight, no burning
 				column.Color = 1;
 				column.SetAttribute(ItemAttributes.attr_move_never, true);
 				ring.SetTag(ColumnTK(i), column);
 			}
 			return true;
+		}
+
+		private static NazgulShrine leadingShrine;
+
+		/// <summary>i_leading_shrine_power in Fela Nazgul (not the realm office's stone, i_lordnazgulsstone in Barad-dur).</summary>
+		public static NazgulShrine LeadingShrine() {
+			if ((leadingShrine == null) || leadingShrine.IsDeleted) {
+				leadingShrine = null;
+				ThingDef def = ThingDef.GetByDefname("i_leading_shrine_power");
+				foreach (Thing thing in Thing.AllThings) {
+					if ((thing is NazgulShrine shrine) && (shrine.Def == def)) {
+						leadingShrine = shrine;
+						break;
+					}
+				}
+			}
+			return leadingShrine;
 		}
 
 		/// <summary>The ring lying at this shrine, or null.</summary>
@@ -436,6 +453,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void On_Destroy() {
+			LostRings.TakeUp(this); //#910 - its lying ring and fire with it
 			Town town = Town.OfStone(this);
 			if (town != null) {
 				town.Remove();

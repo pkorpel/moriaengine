@@ -204,12 +204,12 @@ namespace SteamEngine.CompiledScripts {
 				" deaths=" + ((ring != null) ? NazgulRings.DeathsOn(ring) : -1) + " str=" + self.Str + " vit=" + ((Player) self).Vit + " uniform=" + Uniform.Has(self) +
 				" at=" + self.P().ToString().Replace(' ', '_') + " area=" + RegionEventSystem.AreaOf(self.Region).Defname + " moreP=" + gate.MoreP.ToString().Replace(' ', '_') +
 				" trial=" + (RegionEventSystem.AreaOf(self.Region).Defname == "a_Fela_Nazgul") + " gate=0x" + gate.Color.ToString("x", CultureInfo.InvariantCulture) +
-				" lying=" + LyingReport(town) + " end");
+				" lying=" + LyingReport(town?.stone) + " leadingLying=" + LyingReport(LostRings.LeadingShrine()) + " end");
 		}
 
 		//#910 - the ring lying at the capital's shrine: its uid and fire columns, or none
-		private static string LyingReport(Town town) {
-			PowerBadge lying = LostRings.LyingAt(town?.stone);
+		private static string LyingReport(Item shrine) {
+			PowerBadge lying = LostRings.LyingAt(shrine);
 			return (lying == null) ? "none" : (((uint) lying.FlaggedUid).ToString(CultureInfo.InvariantCulture) + "/" + LostRings.ColumnsOf(lying) +
 				(lying.HasAttribute(ItemAttributes.attr_move_never) ? "/fixed" : "/loose"));
 		}
@@ -259,6 +259,14 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestNazgulDismiss(Character self) {
+			//#910 - as a live server would be: someone has used the lord nazguls' stone in Barad-dur, which makes it the office's stone
+			ThingDef lordStone = ThingDef.GetByDefname("i_lordnazgulsstone");
+			foreach (Thing thing in Thing.AllThings) {
+				if ((thing is Item stone) && (stone.Def == lordStone)) {
+					RealmOffice.ForStone(stone, Realm.Mordor);
+					break;
+				}
+			}
 			RealmOffice.For(Realm.Mordor).Dismiss();
 			Console.WriteLine("NAZGUL_DISMISSED: done");
 		}
