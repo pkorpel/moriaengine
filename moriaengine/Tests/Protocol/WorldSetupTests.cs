@@ -11,7 +11,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const string Account = "worldsetupplayer";
 		private const string AdminAccount = "worldsetupadmin"; //the server's first account: a GM, can turn on auto-creation
 		private const int ExpertPieces = 16, MasterPieces = 5, GrandmasterPieces = 17, EntrancePieces = 2;
-		private const int TownPieces = 24, HouseSigns = 281, TravelStones = 30, StallAndFieldSigns = 99;
+		private const int TownPieces = 36, HouseSigns = 281, TravelStones = 30, StallAndFieldSigns = 99;
 		private const int CampGuard = 1; //#1107
 		private const int ArenaPieces = 6; //#1116 - two agents, two guards, two exit gates
 		private const int ConquestPieces = 16; //#1116 - the two war declarators, the two war lieutenants, four palantirs, their cash boxes and captain stones

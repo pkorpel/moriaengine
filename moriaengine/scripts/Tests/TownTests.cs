@@ -353,6 +353,22 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOWN_HEAD: uid=" + (uint) head.FlaggedUid + " end");
 		}
 
+		/// <summary>#904 - beside the realm stone of another city: its uid, and the names of that city's king's guards and the
+		/// capital's, from Erebor's tables.</summary>
+		[SteamFunction]
+		public static void TestRealmCityStone(Character self, ScriptArgs sa) {
+			string city = sa.Args.Trim().Trim('"');
+			Item found = null;
+			foreach (Thing thing in Thing.AllThings) {
+				if ((thing is RealmStone stone) && (RegionEventSystem.AreaOf(stone.Region)?.City == city)) {
+					found = stone;
+				}
+			}
+			self.Go(found.X + 1, found.Y, found.Z, found.M);
+			string Guard(string c) => ((ThingDef) Constant.GetByName("Guard_king_" + c + "_1").Value).Name.Replace(' ', '_');
+			Console.WriteLine("REALM_CITY_STONE: uid=" + (uint) found.FlaggedUid + " cityGuard=" + Guard(city) + " capitalGuard=" + Guard(TownSetup.GeneralCity) + " end");
+		}
+
 		/// <summary>#905 - a new name (as a mask gives) and a place far off, or "back": the old name and place.</summary>
 		[SteamFunction]
 		public static void TestTownDisguise(Character self, ScriptArgs sa) {

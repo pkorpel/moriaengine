@@ -10,7 +10,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class TownTests {
 		private const string Account = "towntests";
 		private const string AccountB = "towntestsb";
-		private const int TownPieces = 24; //#1017, #1070 - with the two alchemists and two Prodejce
+		private const int TownPieces = 36; //#1017, #1070 - with the two alchemists and two Prodejce; #904 + 12 realm stones in the other cities
 		private const int RealmAddBan = 3, RealmOffice = 4;
 		private const int Election = 3, Stand = 5, Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
@@ -376,6 +376,22 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.NotEqual(0x481, ReadMountUpdate(general, -0x3E9F)); //the client is told it's back
 				Assert.Contains("dressed=True restored=True uniform=False", this.Ask(general, ".TestRealmDismountCheck", "REALM_DISMOUNT:")); //#908 - off the horse
 
+				//#904 - another city's realm stone hires that city's own king's guards
+				string cityStone = this.Ask(general, ".TestRealmCityStone \"Edoras\"", "REALM_CITY_STONE:");
+				Assert.NotEqual(Field(cityStone, "cityGuard="), Field(cityStone, "capitalGuard="));
+				Thread.Sleep(1000); //the client learns of the stone after the long way there
+				general.SendDoubleClick((uint) Number(cityStone, "uid"));
+				var cityMenu = general.ReadGumpDialogWithStrings(Wait);
+				Assert.Matches(@"4005\s+4007\s+1\s+0\s+7\b", cityMenu.LayoutText);
+				general.SendGumpResponse(cityMenu.GumpUid, 7);
+				var recruiter = general.ReadGumpDialogWithStrings(Wait);
+				string hireable = string.Join(" | ", recruiter.Strings).Replace(' ', '_');
+				Assert.Contains(Field(cityStone, "cityGuard="), hireable);
+				Assert.DoesNotContain(Field(cityStone, "capitalGuard="), hireable);
+				general.SendGumpResponse(recruiter.GumpUid, 0);
+				this.Ask(general, ".TestRealmCityStone \"Minas_Tirith\"", "REALM_CITY_STONE:"); //back to the capital's stone
+				Thread.Sleep(1000);
+
 				//the General bans for the whole realm, and a guard of any town of it knows
 				this.Ask(gm, ".TestTownPrepare 0", "TOWN_READY:");
 				uint gmUid = (uint) Number(this.Ask(gm, ".TestRealmReport", "REALM_REPORT:"), "uid");
@@ -407,6 +423,12 @@ namespace SteamEngine.Tests.Protocol {
 				}
 			}
 			throw new TimeoutException("no mount update showing " + model);
+		}
+
+		private static string Field(string line, string key) {
+			int start = line.IndexOf(key, StringComparison.Ordinal) + key.Length;
+			int end = line.IndexOf(' ', start);
+			return (end < 0) ? line.Substring(start) : line.Substring(start, end - start);
 		}
 
 		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
