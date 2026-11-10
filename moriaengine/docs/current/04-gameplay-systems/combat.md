@@ -182,7 +182,9 @@ from Evaluate Intelligence, Spirit Speak and Int by the weapon's `MindPower`; a 
 plain Evaluate Intelligence. Player mind defense is `(Resist/10 + armor's * armorMindDefense) *
 mindDefenseGlobal`, a monster's `Resist/10`. Vs monsters, field spells add
 `fieldSpellPowerPerLevel` (0.02) per fourth of the level, at most 50, and under Standcast other
-spells add it per level up to 200, half for explosion, chain lightning and meteor swarm. Damage is `low + (high - low) * power / 1000`, growing past 1000. Spells with
+spells add it per level up to 200: to the first monster target of a cast at a target in sight, half
+to every target of explosion, chain lightning and meteor swarm (`StandcastPlugin`, through the
+caster's `@monsterSpellPower`, #1386). Standcast also freezes the caster for the cast time. Damage is `low + (high - low) * power / 1000`, growing past 1000. Spells with
 `ArmorPiercing` go through armor like a swing (`CalculateSpellArmorEffect`, always `damagecust`,
 even from a monster); the others ignore armor. A monster's spell on a monster does at least 5.
 
