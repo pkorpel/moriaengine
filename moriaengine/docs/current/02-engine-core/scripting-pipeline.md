@@ -67,10 +67,10 @@ A thing reads a value from its def in one of three ways, all in the original eng
 
 Pick by whether a later change to the def should reach things already in the world (first
 and third) or not (second). `Item`'s Sphere `ATTR` flags (#215/#217) are the second kind: a
-`Def:` field and a `Vars:` field, the instance's copied in `Item.On_Create`. Their def field
-is called `attributesDefault` with a hand-written `"attr"` alias in
-`AbstractItemDef.LoadScriptLine`; renaming it to `attributes` is part of the dev-feedback
-batch (see `CLAUDE.md`).
+`Def:` field and a `Vars:` field, both called `attributes`, the instance's copied in
+`Item.On_Create`. Sphere's own `ATTR` keyword reaches the def field through a hand-written
+`"attr"` alias in `AbstractItemDef.LoadScriptLine`. (The def field was `attributesDefault`
+until #1382.)
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 

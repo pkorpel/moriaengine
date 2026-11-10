@@ -19,20 +19,20 @@ Sphere defines `attr_identified` at that bit and doesn't define `attr_stolen` as
 bit at all. Fixed by repurposing `0x01` to `attr_identified` - zero real content used
 either value at the time, so nothing broke.
 
-## Def default + per-instance override
+## The def's value + per-instance override
 
 Same split as every other config-backed field in this engine (see
 [The Thing model](../02-engine-core/thing-model.md) and
 [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md)):
-`ItemDef.AttributesDefault` is the template-level default (`FieldValue`-backed), and
-`Item.Attributes` (`Item.cs:73-80`) is the per-instance value, independently overridable
-after creation. `Item.On_Create` (`Item.cs:263-276`) seeds the instance from the def's
-default - the same "copy a Def-level default into the instance once at creation"
-pattern `NPC.On_Create` already uses for `DefaultMovementSettings`.
+`ItemDef.Attributes` is the def's value (`FieldValue`-backed), and
+`Item.Attributes` (`Item.cs:90`) is the per-instance value, independently overridable
+after creation. `Item.On_Create` (`Item.cs:331`) copies the def's value into the instance
+once, at creation - the same pattern `NPC.On_Create` already uses for
+`DefaultMovementSettings`.
 
-`.def` content sets the default via an `ATTR = attr_x|attr_y` line. This needed **zero
+`.def` content sets the def's value via an `ATTR = attr_x|attr_y` line. This needed **zero
 new parser code**: `AbstractItemDef.LoadScriptLine` aliases the literal string `"attr"`
-to `"attributesdefault"`, and the existing generic `FieldValue`/`ConvertTools.ConvertTo`
+to `"attributes"`, and the existing generic `FieldValue`/`ConvertTools.ConvertTo`
 pipe-separated-`[Flags]`-enum pipeline (see
 [Persistence & saving](../02-engine-core/persistence-and-saving.md)) does the rest - that
 pipeline already replaces `|` with `,` before `Enum.Parse`, so pipe-separated flag lists
@@ -40,8 +40,8 @@ were already supported for every other `[Flags]` `.def` field in this engine.
 
 ## Programmatic API
 
-`HasAttribute(ItemAttributes flag)` (`Item.cs:82-84`) is a plain bitwise-AND check.
-`SetAttribute(ItemAttributes flag, bool value)` (`Item.cs:101-116`) is the single place
+`HasAttribute(ItemAttributes flag)` (`Item.cs:99`) is a plain bitwise-AND check.
+`SetAttribute(ItemAttributes flag, bool value)` (`Item.cs:118`) is the single place
 every flag's side effect gets wired in - it's worth reading in full, since it's the
 real index of "what happens when this flag changes":
 

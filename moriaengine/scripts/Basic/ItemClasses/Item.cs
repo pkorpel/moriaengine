@@ -74,7 +74,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Sphere-style ATTR bitflags (#215/#217), per-instance and independently
-		/// overridable from the ItemDef's own AttributesDefault once seeded (see On_Create).
+		/// overridable from the ItemDef's own Attributes once seeded (see On_Create).
 		///
 		/// [NoShow] (#387): the generic reflection-based .info field list would otherwise
 		/// auto-surface this as a SECOND, independently-editable raw text field alongside the
@@ -325,12 +325,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Seeds this instance's own Attributes (Item.ct's "attributes" Vars field,
-		/// per-instance and independently overridable afterwards) from its ItemDef's configured
-		/// default (#217) - same "copy a Def-level default into the instance once at creation"
-		/// pattern NPC.On_Create already uses for DefaultMovementSettings.</summary>
+		/// per-instance and independently overridable afterwards) from its ItemDef's Attributes
+		/// (#217) - the def's value copied into the instance once, at creation, the pattern
+		/// NPC.On_Create already uses for DefaultMovementSettings.</summary>
 		public override void On_Create() {
 			base.On_Create();
-			this.attributes = this.TypeDef.AttributesDefault;
+			this.attributes = this.TypeDef.Attributes;
 			//#219 - re-evaluate now that attributes are seeded. On_EnterRegion (fired earlier,
 			//during ThingDef.Create's own PutOnGround step, BEFORE Trigger_Create/On_Create
 			//runs) already tried once and found nothing eligible yet, since this.attributes

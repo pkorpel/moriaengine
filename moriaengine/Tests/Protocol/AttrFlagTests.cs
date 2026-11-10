@@ -23,7 +23,7 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>Real ".def" "ATTR = attr_static|attr_magic" line (AttrFlagTest.def) parses
-		/// correctly into ItemDef.AttributesDefault, and a freshly created instance's own
+		/// correctly into ItemDef.Attributes, and a freshly created instance's own
 		/// Attributes gets seeded from it at creation time (Item.On_Create).</summary>
 		[Fact]
 		public void DefAttrLineParsesAndSeedsNewInstances() {
