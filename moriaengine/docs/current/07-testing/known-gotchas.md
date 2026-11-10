@@ -4,29 +4,17 @@ Sharp edges found while building protocol tests against this engine, accumulated
 many features. Several of these have independently cost real debugging time more than
 once - read this before writing a new test in an unfamiliar area of the codebase.
 
-## CanReach runs after the deny-trigger chain
+## Test a refusal next to an allowed case
 
-A correctly-**allowed** action and one correctly-**denied** for an unrelated reason (too
-far away, line of sight blocked, container not open) produce the **identical** "nothing
-happened" observable symptom from outside. `AbstractCharacter.CanPickup` (and the
-equivalent checks for other actions) runs `CanReach` strictly *after* the full
-deny-trigger chain already passed - see
-[Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md). A test character
-that never actually stands at the right place, or never opens the right container
-first, can silently validate the *wrong* thing while still reporting "denied" as if the
-feature under test did its job.
-
-Two concrete, independently-discovered instances of this:
-1. Every fresh test character spawns at its own far-away default position - reuse
-   `MovementSpeedTests.TestTeleportToOpenGround` to actually stand at the relevant
-   location before testing a pickup/interaction denial.
-2. Taking an item *out* of a container (even one the picker legitimately has access to)
-   requires that connection to have already explicitly double-clicked/opened the
-   container first (`OpenedContainers.HasContainerOpenFromAt`) - a void deny-hook that
-   doesn't itself set `args.Result` doesn't short-circuit this check for an **allowed**
-   picker, only for an actually-denied one. See
-   [House lockdown & security](../04-gameplay-systems/house-lockdown.md) for where this
-   was hit.
+An action refused by a rule and one refused because the character is out of reach, or hasn't
+opened the container, look the same from a client: nothing moves. `CanReach` comes after the
+deny chain (see [Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md)). So a
+test of a refusal also does the same action, from the same spot, as a character the rule
+allows, and asserts it works. Practical points:
+1. A fresh test character spawns at its own default position: move it next to the thing
+   first (`MovementSpeedTests.TestTeleportToOpenGround`, or `P()`).
+2. Taking an item out of a container needs the client to have opened it (double click)
+   first, as in the real client.
 
 ## AssertSeen vs AssertSeenSince
 

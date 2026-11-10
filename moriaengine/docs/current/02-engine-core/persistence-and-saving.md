@@ -1,76 +1,74 @@
 # Persistence & saving
 
-## `FieldValue`: the generic typed-field mechanism
+## Def values: scripts give the default, a save keeps live changes
 
-Every def-level field declared in a `.ct` file's `Def:` section (see
-[scripting-pipeline.md](scripting-pipeline.md)) is backed by a `FieldValue`
-(`GameCore/FieldValue.cs`), created via `InitTypedField(name, defaultValue, type)` in the
-generated def constructor. A `FieldValue` tracks two things at once: a `DefaultValue` (what
-the `.def`/code-declared baseline is) and a `CurrentValue` (what it's actually set to right
-now) - these start out equal and only diverge once something actually changes the value
-away from the baseline.
+A def (an `ItemDef`, `NPCDef`, `SkillDef`, a plugin def...) gets its values from two places,
+and they mean different things:
 
-`CurrentValue`'s setter (`FieldValue.cs:410`) always marks the field `isChangedManually =
-true` as a side effect of being set through that path. This flag feeds `ShouldBeSaved()`
-(`FieldValue.cs:359`): a field whose current value still equals its default is never written
-out on save (nothing to persist - the `.def` baseline already supplies it on the next boot),
-but **any** field marked `isChangedManually`, even if it happens to currently equal its
-default again, gets saved anyway. This is the crux of the real bug described below.
+- **Script files** (`.def`, `.scp`) say what a def is. They are read at every boot, and again
+  at a script reload, so editing them changes the game.
+- **A save** (`globals.sav`'s def sections) holds only what was changed while the server ran,
+  typically a GM editing a def through `.info`. It is loaded after the scripts.
 
-### `ConvertTools.ConvertTo` and the pipe-separated-enum trick
+So a def's value at runtime is the script's value unless someone changed it live, and a
+live change survives a restart without blocking later script edits to other values.
 
-`Common/ConvertTools.cs`'s enum-conversion branch (`ConvertTools.cs:132`) is what makes
-Sphere-style `.def` lines like `ATTR = attr_static|attr_magic` parse into a C# `[Flags]`
-enum with **zero custom parsing code**, for any `Def:` field of that shape. The mechanism:
-it first tries treating the string as a raw number (`Enum.ToObject`), and when that throws
-(a genuinely symbolic value like `"attr_static|attr_magic"` or `"Czech"`), it falls back to
-`Enum.Parse(type, asString.Replace('|', ','), true)` - swapping Sphere's pipe-separated
-syntax for C#'s comma-separated `Enum.Parse` syntax before parsing. This was confirmed
-directly while building the item ATTR flag system (#217) - no new parsing path needed to be
-written at all, the existing generic conversion pipeline already handled it because
-`ATTR = attr_x|attr_y` is structurally identical to any other pipe-separated `[Flags]`
-`.def` value this engine already supported.
+### `FieldValue`
 
-## The real #168 bug: why `isLoadingFromScript` exists
+Each def value is a `FieldValue` (`GameCore/FieldValue.cs`), holding a `DefaultValue` and
+a `CurrentValue`:
 
-`AbstractDef` (`GameCore/AbstractDef.cs`) has a private `isLoadingFromScript` flag
-(`AbstractDef.cs:45`), set to `true` around `LoadScriptLines`/`LoadPostponedScriptLines` -
-the two entry points that apply a def's own `.def` content at boot - and `false` again once
-that's done.
+| Where the value comes from | Call | Default | Current | Saved? |
+|---|---|---|---|---|
+| a script line `name = value` | `SetFromScripts` | the script's value | the same, unless changed live | no |
+| a live change (GM, code at runtime) | `CurrentValue` setter | unchanged | the new value | if it differs from the default |
+| a save, after the scripts | `CurrentValue` setter (`LoadField_Delayed`) | the script's value | the saved value | again at the next save, while it differs |
+| a script reload after a live change | `SetFromScripts` | the new script value | kept (the live change wins) | while it differs |
 
-Before this flag existed, a real, previously-undiscovered engine bug (tracked as #168)
-corrupted tag-backed def properties like `NPCDef.TamingDifficulty` across a save/reload
-cycle:
+(A value a def class parses itself and stores with `SetTag` while loading, below, is an
+exception: `SetFromCode` refuses a field already changed live, so on a reload after a live
+change that line is skipped with a warning and its default isn't updated.)
 
-1. Loading `.def` content at boot calls `SetTag`, which went through the *same*
-   `FieldValue.CurrentValue` setter a live GM edit would use - unconditionally marking the
-   field `isChangedManually`, even though nothing was actually "changed," it was just the
-   baseline being applied for the first time.
-2. Every server save therefore wrote that baseline value out as if it were real state (e.g.
-   `tag._tamingDifficulty_=0` into `globals.sav`), purely because of step 1's spurious flag.
-3. On the *next* boot, the save-path manager loads the most recent save folder instead of the
-   committed `.def` baseline, and that saved `tag._tamingDifficulty_` line gets re-parsed
-   through the **generic** `"tag."`-prefix path in `AbstractDef`'s script-line loader (not
-   the def's own typed `"tamingdifficulty"` branch, since the saved key is a different
-   string) - which resolves a plain `"0"` via a number parser that prefers `int` over
-   `double`. The property's getter did a strict `tag is double` check, silently failed
-   against the now-`int` value, and fell back to its "unconfigured" sentinel.
-4. This is self-perpetuating: once a tag has been mis-typed once, every later save
-   re-persists the wrong type, so it never self-corrects.
+`ShouldBeSaved()` (`FieldValue.cs:359`) is "current differs from default", so a field never
+changed live, or changed back, isn't written. A script value is first stored as text and
+resolved on first use (`ResolveTemporaryState`), so a value can name a def defined later.
 
-**The fix**: `SetTag` (`AbstractDef.cs:712`) now checks `isLoadingFromScript` and, while true,
-routes through `FieldValue.SetFromCode` (`FieldValue.cs:338`, made `internal` for this)
-instead of the normal `CurrentValue` path - `SetFromCode` sets *both* current and default to
-the same value without ever touching `isChangedManually`. Outside of loading (a genuine
-runtime/GM edit), `SetTag` is unchanged. Net effect: `ShouldBeSaved()` now correctly sees
-baseline `.def` content as unchanged-from-default and skips persisting it, so the corrupting
-write this bug depended on never happens.
+### Typed fields and tags
 
-This class of bug is also *why* a long-lived local dev sandbox can accumulate stale
-`saves/<date>/` snapshots whose presence silently changes test behavior (a different, later
-symptom of the same underlying "what counts as save-worthy" question) - see
-[../07-testing/known-gotchas.md](../07-testing/known-gotchas.md) for the operational side of
-that.
+A def has two kinds of values:
+
+- **Typed fields**: declared in a `.ct` file's `Def:` section (or with `InitTypedField` in a
+  hand-written def's constructor, as `ActivableAbilityDef`'s `pluginDef` and `pluginKey`).
+  The field has a C# type, and both script text and saved text are converted to it
+  (`ConvertTools.ConvertTo`). A `double` field is a `double` whatever the text looks like.
+  This is the normal place for a def's own properties.
+- **Tags**: `tag.name = value` lines, and `GetTag`/`SetTag` in code. A tag has no type: the
+  value is whatever the parser makes of the text. A number is an `int` when it looks like
+  one and a `double` otherwise (`ConvertTools.TryParseAnyNumber`), and a saved `double` of
+  `1.0` is written as `1` (text starting with `0`, such as `010`, is read as Sphere hex). So code reading a numeric tag must not test for one exact type:
+  `ConvertTools.ToDouble(tag)` / `ToInt32(tag)` take any number. (Enums are saved with their
+  type's name, #407, so they come back as the enum.)
+
+A value the code itself defines and reads (taming difficulty, aggro mode, move rate) belongs
+in a typed field, not a tag. Several `NPCDef` values were written as tag-backed properties
+instead; moving them to typed fields is part of the dev-feedback batch (see `CLAUDE.md`).
+
+### Code that sets a def value while scripts load
+
+Some def classes parse a script keyword themselves (`NPCDef.LoadScriptLine`'s `"can"`,
+`"tamingdifficulty"`). Such a value is the script's, so it must become the default, not a
+live change. For tags this is `AbstractDef.SetTag` checking `isLoadingFromScript` (set
+around `LoadScriptLines` and `LoadPostponedScriptLines`) and using `FieldValue.SetFromCode`,
+which sets default and current together. Without it every such value was written into each
+save and read back from there as an untyped number (#168).
+
+### Pipe-separated enums
+
+A script line for a typed enum field, such as Sphere's `ATTR = attr_static|attr_magic`, is
+parsed by `FieldValue.ResolveStringWithoutLScript` (`FieldValue.cs:236-243`): `|` and `+`
+become `,`, a `TypeName.` prefix is dropped, and `Enum.Parse` reads it; a number is tried
+after that. `ConvertTools.ConvertTo` (`Common/ConvertTools.cs:132-148`) does the reverse
+order for other values (saved ones, code): a number first, then the names.
 
 ## Generic instance Save/Load
 
