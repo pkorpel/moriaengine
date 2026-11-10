@@ -78,7 +78,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				defs++;
 				try {
-					object[] defRefs = { def.CombatSpell, def.MountCharDef };
+					object[] defRefs = { def.CombatSpell, def.MountCharDef }; //read only for the throw: a name that isn't a def fails here
 					object[] values = { def.AggroMode, def.Realm, def.TeachesSkill, def.MoveRate, def.SpellCastRange, def.IsBoss, def.DragonBrain,
 						def.NoAnimate, def.Hypnotizable, def.ResistSilence, def.MonsterType, def.MonsterType2, def.MonsterType3, def.MagicHorse, def.SerpentForm };
 					if (values.Length != 15) {
