@@ -92,22 +92,40 @@ A saved plugin writes its def as a name (`def=#p_paralyze`), and so does a saved
 `Plugin.LoadingFinished` logs `No PluginDef reference loaded ... Deleting.` and the plugin is dropped together with its
 effect.
 
-Defs from `.def`/`.scp` files are registered by `ScriptLoader.Load`, before the world loads. A def made in code is a
-static field, `instance = (XDef) new XDef("p_x", "C# scripts", -1).Register()`. A static field initializer runs only when
-the field is first read, and loading a save doesn't read it. Until #1163, 11 such defs weren't there when a save loaded:
-the combat queue and tracker, paralyze, discordance, warcry, magic charge, ignition, poisoned item, crafting, snooping and
-party. Two of them never called `.Register()` at all.
+Defs from `.def`/`.scp` files are registered by `ScriptLoader.Load`, before the world loads. A def made in code must
+exist by then too. The engine's pattern is a static field of the def's own class:
 
-`ClassManager.InitStaticDefs` (#1163) closes this in one place:
-- **When:** right after the scripts load and before the world does, on a boot and on a recompile.
-- **What:** it runs the static initializers of every scripts class deriving from `AbstractDef` or `Plugin` that holds a def
-  in a static field.
-- **The check:** it then logs an ERROR for any def made in code (header line −1) that isn't registered under its own name.
-  BootLogTests fails on that ERROR, so a new def built without `.Register()` is caught at once.
+```csharp
+public partial class CraftingProcessPluginDef {
+	public static CraftingProcessPluginDef instance = (CraftingProcessPluginDef)
+		new CraftingProcessPluginDef("p_craftingProcess", "C# scripts", -1).Register();
+}
+```
 
-**Rule for a new plugin or role def made in code:** keep it in a static field of its def or plugin class and call
-`.Register()` on it. No `Bootstrap()` is needed for it any more. `BootLogTests` saves a world holding one of every such
-plugin and checks they all come back. Add a new one there.
+The def class has a `Bootstrap()`, which `ClassManager.InitClasses` calls right after the scripts compile, before
+anything loads. A `.ct`-generated plugin def gets one with `RegisterPluginDef`; a hand-written plugin def writes the same
+(`TimerPluginDef`, `MagicChargePluginDef`); any other def class with such a field has an empty one, "to ensure calling the
+static initialiser" (`PartyDef`, `GuildDef`). The original code assumed a class's static field initializers had run by
+that call; .NET 8 (checked with a small program) runs them only when a field is first read, unless the class has a static
+constructor of its own. #1163 found 11 code-made defs missing when a save loaded (combat queue and tracker, paralyze,
+discordance, warcry, magic charge, ignition, poisoned item, crafting, snooping, party): some on their def classes, missing
+for that reason, some on plugin classes, which nothing reads early on any runtime. #1163 ran every such class's static
+initializer before the load; since #1369 every one is on its def class and `InitClasses` runs the def class's static
+constructor before its `Bootstrap()`.
+
+A def made this way exists before its compiled `On_x` triggers are attached: those are registered when the Generated
+assembly loads, after the scripts', and attached by `PluginDef.Init()` after the world has loaded, as in the original
+engine. So a plugin's compiled trigger doesn't run during the load or `@afterLoad`.
+
+The engine's other pattern, for a class that makes several defs, is a static constructor of its own plus an empty
+`Bootstrap()` "to ensure calling the static initialiser" (`StatModSpellsUtils`, five stat spell plugin defs).
+
+A def made in code anywhere else, such as a plugin class's static field, exists only once that field is first read.
+`ClassManager.CheckCodeMadeDefs`, run after the world loads (reading a field makes its def, so earlier it would hide one
+made too late), looks at the static fields of def and plugin classes (not of other classes) and logs an ERROR for such a
+def, for a plugin def whose class has no `Bootstrap()` (a role def's class needs one
+too, which the engine can't check: roles live in the scripts), and for one not registered under its name. `BootLogTests` fails on any ERROR
+and saves a world holding one of every plugin made this way, checking they all come back. Add a new one there.
 
 ## When the world is saved
 

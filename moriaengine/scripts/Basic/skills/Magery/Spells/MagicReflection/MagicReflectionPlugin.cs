@@ -20,16 +20,6 @@ using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
 
-	[ViewableClass]
-	/// <summary>#927 - the def registers when its class is first touched, so on a cold boot the spell,
-	/// which asks for it by name, threw until something else had touched it.</summary>
-	public static class MagicReflectionPluginBootstrap {
-		public static void Bootstrap() {
-			MagicReflectionPluginDef ensured = MagicReflectionPluginDef.instance;
-			Sanity.IfTrueThrow(ensured == null, "No p_magic_reflection.");
-		}
-	}
-
 	public partial class MagicReflectionPlugin {
 
 		public void On_Assign() {

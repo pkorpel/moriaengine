@@ -31,9 +31,6 @@ namespace SteamEngine.CompiledScripts {
 	public partial class RaceNationPlugin {
 		internal static PluginKey raceNationKey = PluginKey.Acquire("_racenation_");
 
-		public static readonly RaceNationPluginDef defInstance = (RaceNationPluginDef)
-			new RaceNationPluginDef("p_racenation", "C# scripts", -1).Register();
-
 		public Race Race {
 			get {
 				return this.race;
@@ -59,7 +56,7 @@ namespace SteamEngine.CompiledScripts {
 		public static RaceNationPlugin GetOrInstallPlugin(Player player) {
 			RaceNationPlugin plugin = GetInstalledPlugin(player);
 			if (plugin == null) {
-				plugin = (RaceNationPlugin) defInstance.Create();
+				plugin = (RaceNationPlugin) RaceNationPluginDef.instance.Create();
 				player.AddPlugin(raceNationKey, plugin);
 			}
 			return plugin;
@@ -68,21 +65,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class RaceNationPluginDef {
-		/// <summary>#434 - forces RaceNationPlugin's own static cctor (which registers
-		/// "p_racenation" via defInstance.Register()) to run as part of ClassManager.
-		/// InitClasses's early Bootstrap-method scan (every [ViewableClass]'s own generated
-		/// Bootstrap() - see RaceNationPlugin.Generated.cs - gets invoked there, which triggers
-		/// THIS static cctor first, since Bootstrap() is a static method on this very class),
-		/// not lazily on whatever random later moment something first calls GetOrInstallPlugin.
-		/// Without this, "p_racenation" is still unregistered at the point WorldSaver.Load()
-		/// needs to resolve an existing RaceNationPlugin's "def=#p_racenation" reference on a
-		/// cold boot - confirmed directly via the real failure log ("The AbstractScript
-		/// 'p_racenation' is not known" / "No PluginDef reference loaded for this
-		/// RaceNationPlugin. Deleting.") - which silently deletes the "orphaned" plugin, the
-		/// exact bug reported in #434 (Race/Nation reset to None after a real restart, despite
-		/// a correct save file and a correct live same-session read/write path).</summary>
-		static RaceNationPluginDef() {
-			System.GC.KeepAlive(RaceNationPlugin.defInstance);
-		}
+		public static readonly RaceNationPluginDef instance = (RaceNationPluginDef)
+			new RaceNationPluginDef("p_racenation", "C# scripts", -1).Register();
 	}
 }

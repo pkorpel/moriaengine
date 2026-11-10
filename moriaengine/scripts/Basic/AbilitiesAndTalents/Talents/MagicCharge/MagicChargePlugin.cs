@@ -53,6 +53,10 @@ namespace SteamEngine.CompiledScripts {
 		protected override Plugin CreateImpl() {
 			return new MagicChargePlugin();
 		}
+
+		public new static void Bootstrap() {
+			RegisterPluginDef(typeof(MagicChargePluginDef), typeof(MagicChargePlugin));
+		}
 	}
 
 	[DeepCopyableClass]

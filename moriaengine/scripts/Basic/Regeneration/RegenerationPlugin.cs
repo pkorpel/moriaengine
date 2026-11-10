@@ -26,11 +26,6 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	[ViewableClass]
 	public partial class RegenerationPlugin {
-		//this is to initialize (create the instance) of the Regen.Plug.Def. it must be here as bellow or 
-		//somewhere in the LScript as simple [RegenerationPluginDef p_regenerations]
-		//if the instance is not pre-created in either way it will crash during attempt to assign this plugin...
-		public static readonly RegenerationPluginDef defInstance = (RegenerationPluginDef)
-			new RegenerationPluginDef("p_regenerations", "C# scripts", -1).Register();
 		internal static PluginKey regenerationsPluginKey = PluginKey.Acquire("_regenerations_");
 
 		internal const double MIN_TIMER = 1.0d; //minimal timer usable
@@ -176,16 +171,10 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class RegenerationPluginDef {
-		/// <summary>#436 - same fix/reasoning as RaceNationPluginDef's own static cctor (#434):
-		/// forces RegenerationPlugin's static cctor (defInstance.Register(), which registers
-		/// "p_regenerations") to run during ClassManager.InitClasses's early Bootstrap-method
-		/// scan, not lazily on first TryInstallPlugin call - otherwise "p_regenerations" is
-		/// still unregistered when WorldSaver.Load() needs to resolve an existing
-		/// RegenerationPlugin's "def=#p_regenerations" reference on a cold boot (a player
-		/// logging out while still damaged keeps this plugin installed, so this is a real,
-		/// common scenario, not a rare edge case).</summary>
-		static RegenerationPluginDef() {
-			System.GC.KeepAlive(RegenerationPlugin.defInstance);
-		}
+		//this is to initialize (create the instance) of the Regen.Plug.Def. it must be here as bellow or
+		//somewhere in the LScript as simple [RegenerationPluginDef p_regenerations]
+		//if the instance is not pre-created in either way it will crash during attempt to assign this plugin...
+		public static readonly RegenerationPluginDef instance = (RegenerationPluginDef)
+			new RegenerationPluginDef("p_regenerations", "C# scripts", -1).Register();
 	}
 }

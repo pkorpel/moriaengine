@@ -186,9 +186,8 @@ namespace SteamEngine {
 
 				TileData.GenerateMissingDefs();
 				CharData.GenerateMissingDefs();
-				ClassManager.InitStaticDefs(); //#1163 - before the world, so saved plugins find their defs
-
 				WorldSaver.Load();
+				ClassManager.CheckCodeMadeDefs(); //#1163, #1369 - after the world, so it can't be what made them exist in time
 				//}
 
 				//Server.Init();
@@ -365,9 +364,8 @@ namespace SteamEngine {
 			//if (!Globals.fastStartUp) {
 			ScriptLoader.Load();
 			TriggerGroup.ReAddGlobals();
-			ClassManager.InitStaticDefs(); //#1163
-
 			WorldSaver.Load();
+			ClassManager.CheckCodeMadeDefs(); //#1163, #1369
 			//}
 			GameServer.ReLinkCharacters();
 			Map.Init();

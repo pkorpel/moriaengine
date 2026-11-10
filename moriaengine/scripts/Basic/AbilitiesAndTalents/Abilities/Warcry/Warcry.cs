@@ -41,7 +41,7 @@ namespace SteamEngine.CompiledScripts {
 					continue; //dont do selfwarcry ;)
 				}
 
-				WarcryEffectPlugin warcryEffect = (WarcryEffectPlugin) WarcryEffectPlugin.defInstance.Create();
+				WarcryEffectPlugin warcryEffect = (WarcryEffectPlugin) WarcryEffectPluginDef.instance.Create();
 				warcryEffect.Init(chr, EffectFlag.FromAbility | EffectFlag.HarmfulEffect, power, duration, this);
 				target.AddPlugin(WarcryEffectPlugin.warcyEffectPluginKey, warcryEffect);
 			}
@@ -66,11 +66,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	public partial class WarcryEffectPluginDef {
+		public static readonly WarcryEffectPluginDef instance =
+			(WarcryEffectPluginDef) new WarcryEffectPluginDef("p_warcryEffect", "C# scripts", -1).Register();
+	}
+
 	[ViewableClass]
 	public partial class WarcryEffectPlugin {
 
-		public static readonly WarcryEffectPluginDef defInstance =
-			(WarcryEffectPluginDef) new WarcryEffectPluginDef("p_warcryEffect", "C# scripts", -1).Register();
 		internal static PluginKey warcyEffectPluginKey = PluginKey.Acquire("_warcryEffect_");
 
 		public TriggerResult On_SkillSelect(SkillSequenceArgs ssa) {

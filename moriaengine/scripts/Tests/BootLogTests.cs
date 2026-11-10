@@ -53,12 +53,12 @@ namespace SteamEngine.CompiledScripts {
 				ParalyzeEffectPluginDef.Paralyze(self, paralyzeKey, TimeSpan.FromHours(2));
 
 				sheep.SetTag(preStatsTK, Stats(sheep));
-				DiscordanceEffectPlugin discord = (DiscordanceEffectPlugin) DiscordanceEffectPlugin.defInstance.Create();
+				DiscordanceEffectPlugin discord = (DiscordanceEffectPlugin) DiscordanceEffectPluginDef.instance.Create();
 				discord.discordEffectPower = 1000;
 				sheep.AddPluginAsSimple(DiscordanceSkillDef.effectPluginKey, discord);
 				discord.Timer = 7200;
 
-				WarcryEffectPlugin warcry = (WarcryEffectPlugin) WarcryEffectPlugin.defInstance.Create();
+				WarcryEffectPlugin warcry = (WarcryEffectPlugin) WarcryEffectPluginDef.instance.Create();
 				warcry.Init(sheep, EffectFlag.FromAbility | EffectFlag.HarmfulEffect, 1, TimeSpan.FromHours(2));
 				self.AddPlugin(WarcryEffectPlugin.warcyEffectPluginKey, warcry);
 
@@ -77,7 +77,7 @@ namespace SteamEngine.CompiledScripts {
 
 				PoisonedItemPlugin.Bind(dagger, PoisonKind.AbsoluteDamage, "boot test poison", 10, 5);
 				self.AddNewPlugin(craftingKey, CraftingProcessPluginDef.instance);
-				SnoopingPlugin snoop = (SnoopingPlugin) self.AddNewPlugin(SnoopingPlugin.snoopedPluginKey, SnoopingPlugin.defInstance);
+				SnoopingPlugin snoop = (SnoopingPlugin) self.AddNewPlugin(SnoopingPlugin.snoopedPluginKey, SnoopingPluginDef.instance);
 				snoop.Timer = 7200;
 
 				Console.WriteLine("BOOT_STATES: setup sheepBefore=" + sheep.GetTag(preStatsTK) + " sheepDiscorded=" + Stats(sheep) +

@@ -255,6 +255,19 @@ namespace SteamEngine.CompiledScripts {
 			for (int i = 0; i < types.Length; i++) {
 				MethodInfo m = types[i].GetMethod("Bootstrap", BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
 				if (m != null) {
+					//#1369 - a def made in code as a static field of its def class (`public static XDef instance = new XDef("p_x",
+					//"C# scripts", -1).Register()`) has to exist before the world loads, and the original code assumed its
+					//initializer had run by the time Bootstrap() was called. .NET 8 runs it only when a field is first read, unless
+					//the class has a static constructor of its own, so it's run here.
+					try {
+						System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(types[i].TypeHandle);
+					} catch (TypeInitializationException e) when (e.InnerException is FatalException) {
+						throw e.InnerException;
+					} catch (Exception e) {
+						Logger.WriteError(assemblyName, Tools.TypeToString(types[i]), e);
+						success = false;
+						continue;
+					}
 					m.Invoke(null, null);
 				}
 			}
@@ -359,15 +372,15 @@ namespace SteamEngine.CompiledScripts {
 			*/
 		}
 
-		/// <summary>#1163 - a def made in code, as a static field like `instance = new XDef("p_x", "C# scripts", -1).Register()`,
-		/// only exists once that field is first read, and loading a save doesn't read it: a saved plugin or role naming such a def
-		/// lost it ("No PluginDef reference loaded ... Deleting.") along with its effect. Called after the scripts are loaded, so an
-		/// initializer that looks another def up by name still finds it, and before the world is. Runs the static initializers of
-		/// every def and plugin class holding a def in a static field, then checks that each def made in code is registered under its
-		/// own name (one built without .Register() never is). Only def and plugin classes are looked at: a def made in code belongs in a
-		/// static field of its own def or plugin class (a helper class making one, as StatModSpellsUtils does, needs a Bootstrap()).</summary>
+		/// <summary>#1163, #1369 - a def made in code must exist before the world loads, or a saved plugin or role naming it is
+		/// deleted ("No PluginDef reference loaded ... Deleting.") with its effect. It does when it's a static field of its own def
+		/// class, whose initializers InitClasses runs before Bootstrap(), or made in the static constructor of a class with a
+		/// Bootstrap() (StatModSpellsUtils). Called after the world loads (reading a field makes its def, so earlier it would hide a
+		/// def that wasn't made in time), this reports a def made in code that is held by another class (a plugin class's field is
+		/// first read only when the plugin is first made), a plugin def whose class has no Bootstrap() (so nothing ran its
+		/// initializer), or one not registered under its name.</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		internal static void InitStaticDefs() {
+		internal static void CheckCodeMadeDefs() {
 			foreach (Type type in ScriptsAssembly.GetTypes()) {
 				if (type.ContainsGenericParameters ||
 						!(typeof(AbstractDef).IsAssignableFrom(type) || typeof(Plugin).IsAssignableFrom(type))) {
@@ -382,15 +395,24 @@ namespace SteamEngine.CompiledScripts {
 				if (defFields.Count == 0) {
 					continue;
 				}
-				try {
-					System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
-				} catch (Exception e) {
-					Logger.WriteError("Static initializer of " + Tools.TypeToString(type) + " failed", e);
-					continue;
-				}
 				foreach (FieldInfo field in defFields) {
-					AbstractDef def = field.GetValue(null) as AbstractDef;
-					if ((def != null) && (def.HeaderLine < 0) && (AbstractScript.GetByDefname(def.Defname) != def)) {
+					AbstractDef def;
+					try {
+						def = field.GetValue(null) as AbstractDef;
+					} catch (Exception e) {
+						Logger.WriteError("Static initializer of " + Tools.TypeToString(type) + " failed", e);
+						break;
+					}
+					if ((def == null) || (def.HeaderLine >= 0)) {
+						continue;
+					}
+					if (def.GetType() != type) {
+						Logger.WriteError(Tools.TypeToString(type) + "." + field.Name + " makes the def '" + def.Defname +
+							"', which then exists only once that field is first read: make it a static field of its own class " + Tools.TypeToString(def.GetType()) + ".");
+					} else if ((def is PluginDef) && (type.GetMethod("Bootstrap", BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly) == null)) { //a saved plugin names its def
+						Logger.WriteError(Tools.TypeToString(type) + "." + field.Name + " makes the def '" + def.Defname +
+							"', but " + Tools.TypeToString(type) + " has no Bootstrap(), so it exists only once that field is first read: give the class one.");
+					} else if (AbstractScript.GetByDefname(def.Defname) != def) {
 						Logger.WriteError(Tools.TypeToString(type) + "." + field.Name + " holds the def '" + def.Defname +
 							"', which isn't registered under that name: a saved plugin or role using it can't load. Register() it.");
 					}

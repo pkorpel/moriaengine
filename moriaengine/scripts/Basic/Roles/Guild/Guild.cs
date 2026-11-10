@@ -409,9 +409,7 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly GuildDef instance = (GuildDef)
 			new GuildDef("r_guild", "C# scripts", -1).Register();
 
-		/// <summary>The save names r_guild before anything else would touch this class.</summary>
-		public new static void Bootstrap() {
-			System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(GuildDef).TypeHandle);
+		public new static void Bootstrap() { //ensure calling the static initialiser (#1369: ClassManager runs it before this)
 		}
 
 		public GuildDef(string defname, string filename, int headerLine)

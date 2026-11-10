@@ -139,7 +139,7 @@ namespace SteamEngine.CompiledScripts {
 			this.target.DeletePlugin(DiscordanceSkillDef.effectPluginKey);
 			if (this.works) {
 				self.SysMessage(texts.Weakened, Bandaging.ClassMessageColor);
-				DiscordanceEffectPlugin plugin = (DiscordanceEffectPlugin) DiscordanceEffectPlugin.defInstance.Create();
+				DiscordanceEffectPlugin plugin = (DiscordanceEffectPlugin) DiscordanceEffectPluginDef.instance.Create();
 				plugin.discordEffectPower = self.GetSkill(SkillName.Discordance);
 				this.target.AddPluginAsSimple(DiscordanceSkillDef.effectPluginKey, plugin);
 				FightMemory.Record(this.target, self);
@@ -149,11 +149,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	public partial class DiscordanceEffectPluginDef {
+		public static readonly DiscordanceEffectPluginDef instance = (DiscordanceEffectPluginDef)
+			new DiscordanceEffectPluginDef("p_discordanceEffect_", "C#scripts", -1).Register(); //#1163 - never was
+	}
+
 	[ViewableClass]
 	public partial class DiscordanceEffectPlugin {
 		private const int LeastSeconds = 10, SkillForASecond = 20, Permille = 1000;
-
-		public static readonly DiscordanceEffectPluginDef defInstance = (DiscordanceEffectPluginDef) new DiscordanceEffectPluginDef("p_discordanceEffect_", "C#scripts", -1).Register(); //#1163 - never was
 
 		public void On_Assign() {
 			Character cont = (Character) this.Cont;
