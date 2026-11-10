@@ -418,6 +418,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey MountItemTK = TagKey.Acquire("_uniMountItem_");
 		private const int LayerMount = 25;
 		internal const int UniformHorseItem = 0x3E9F; //#908 - i_mt_horse_tan, the look of every office's horse
+		internal const int FellBeastItem = 0x3F0E, FellBeastColor = 0x692; //#909 - .nazghulfell: i_mt_drake
 
 		private sealed class Piece {
 			internal int layer, color;
@@ -478,11 +479,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//Erebor's layer 25 uni_layer: the horse in the office's color, looking like i_mt_horse_tan
-		private static void DressMount(Character rider, Character mount, int color) {
+		private static void DressMount(Character rider, Character mount, int color, int look) {
 			CharSyncQueue.AboutToChangeMount(rider);
 			mount.SetTag(storedMountColorTK, mount.Color);
 			mount.Color = color;
-			mount.SetTag(MountItemTK, UniformHorseItem);
+			mount.SetTag(MountItemTK, look);
 		}
 
 		private static bool IsWorn(Character ch, Piece piece) {
@@ -539,7 +540,8 @@ namespace SteamEngine.CompiledScripts {
 				if ((piece.layer == LayerMount) && (ch.Mount is Character mount)) {
 					RestoreMount(ch, mount);
 					if (complete) {
-						DressMount(ch, mount, piece.color);
+						bool fell = NazgulFell.IsOn(badge); //#909 - the First's fell beast
+						DressMount(ch, mount, fell ? FellBeastColor : piece.color, fell ? FellBeastItem : UniformHorseItem);
 					}
 					continue;
 				}

@@ -125,6 +125,25 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(other, ".TestNazgulStep gate", "NAZGUL_STEPPED:");
 				Assert.Contains("trial=False", this.Nazgul(other));
 
+				//#909 - .nazghulfell: Lord or Lady only, the horse becomes a fell beast and back no sooner than 5 minutes; a death undoes it
+				other.SendSpeech(".nazghulfell"); //a plain player's command
+				Assert.NotNull(TryReadMessageContaining(other, "Nejsi Prvni Nazhgul", Wait));
+				this.Ask(nazgul, ".TestNazgulDress", "NAZGUL_DRESSED:");
+				Thread.Sleep(400);
+				Assert.Contains("horse=0x690/0x3e9f", this.Nazgul(nazgul));
+				this.Ask(nazgul, ".TestNazgulFell \"100\"", "NAZGUL_FELL:");
+				nazgul.SendSpeech(".nazghulfell");
+				Assert.NotNull(TryReadMessageContaining(nazgul, "muzes privolat Fella", Wait));
+				this.Ask(nazgul, ".TestNazgulFell \"10000\"", "NAZGUL_FELL:");
+				nazgul.SendSpeech(".nazghulfell");
+				Assert.NotNull(TryReadMessageContaining(nazgul, "Privolavam Fella", Wait));
+				Assert.Contains("horse=0x692/0x3f0e", this.Nazgul(nazgul));
+				nazgul.SendSpeech(".nazghulfell");
+				Assert.NotNull(TryReadMessageContaining(nazgul, "jeste nemuzes pouzit", Wait));
+				this.Ask(nazgul, ".TestNazgulFell \"death\"", "NAZGUL_FELL:");
+				Thread.Sleep(400);
+				Assert.Contains("horse=0x690/0x3e9f", this.Nazgul(nazgul));
+
 				this.Ask(nazgul, ".TestNazgulDismiss", "NAZGUL_DISMISSED:");
 				string laid = this.Nazgul(nazgul); //#910 - the leading ring lies at the First's shrine in Fela Nazgul, its fire harmless
 				Assert.True(Field(laid, "leadingLying=").EndsWith("/4/fixed", StringComparison.Ordinal), laid);
@@ -137,6 +156,22 @@ namespace SteamEngine.Tests.Protocol {
 
 		private string Nazgul(TestGameClient client) {
 			return this.Ask(client, ".TestNazgulReport", "NAZGUL_REPORT:");
+		}
+
+		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (DateTime.UtcNow < deadline) {
+				string message;
+				try {
+					message = client.ReadSystemMessage(deadline - DateTime.UtcNow);
+				} catch (TimeoutException) {
+					return null;
+				}
+				if (message.Contains(text, StringComparison.Ordinal)) {
+					return message;
+				}
+			}
+			return null;
 		}
 
 		/// <summary>The overhead name as a client gets it, 0xAE's text after the 30 byte name field.</summary>

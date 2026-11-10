@@ -246,6 +246,9 @@ namespace SteamEngine.CompiledScripts {
 					ring.SetTag(deathsTK, DeathsOn(ring) + 1);
 				}
 				Check(ring, victim);
+				if (!ring.IsDeleted && (ring.Cont == victim)) {
+					NazgulFell.Reset(ring, victim); //f_nazghul_default_mount: a death brings the horse back
+				}
 			}
 		}
 
@@ -277,6 +280,50 @@ namespace SteamEngine.CompiledScripts {
 			}
 			player.SysMessage((kills == 0) ? "Aby jsi mohl ziskat prsten, musis nejprve prokazat oddanost bojem proti gondoru." : "Musis se vic snazit");
 			return false;
+		}
+	}
+
+	/// <summary>#909 - Erebor's nazghulfell (player_functions.scp): the First Nazgul, of fame over 9900, switches the
+	/// uniform's horse to a fell beast (i_mt_drake's look in 0x692) and back, once in 5 minutes; a death brings the horse
+	/// back. The user's call: the same horse changes its look, as the uniform does (#908); the numbers are on .settings.</summary>
+	public static class NazgulFell {
+		private static readonly TagKey fellTK = TagKey.Acquire("_nazghulFell_");
+		private static readonly TagKey nextSwitchTK = TagKey.Acquire("_nextFellSwitch_");
+
+		public static bool IsOn(PowerBadge ring) {
+			return (ring != null) && NazgulRings.IsLeading(ring) && (ring.GetTag(fellTK) != null);
+		}
+
+		internal static void Reset(PowerBadge ring, Character wearer) {
+			if (ring.GetTag(fellTK) != null) {
+				ring.RemoveTag(fellTK);
+				Uniform.RefreshSoon(wearer);
+			}
+		}
+
+		[SteamFunction]
+		public static void NazghulFell(Character self) {
+			if (!self.IsPlayer) {
+				return;
+			}
+			PowerBadge ring = NazgulRings.RingOf(self);
+			if ((ring == null) || !NazgulRings.IsLeading(ring)) {
+				self.RedMessage("Nejsi Prvni Nazhgul! Nemas pravo privolat Fella.");
+			} else if (self.Fame <= RealmSettings.instance.fellFame) {
+				self.RedMessage("Pouze jako " + (self.IsFemale ? "Lady" : "Lord") + " muzes privolat Fella.");
+			} else if ((ring.GetTag(nextSwitchTK) != null) && (Globals.TimeInSeconds < Convert.ToDouble(ring.GetTag(nextSwitchTK), CultureInfo.InvariantCulture))) { //a whole number loads as an int
+				self.RedMessage("Tento prikaz jeste nemuzes pouzit.");
+			} else {
+				if (ring.GetTag(fellTK) == null) {
+					self.RedMessage("Privolavam Fella.");
+					ring.SetTag(fellTK, true);
+				} else {
+					self.RedMessage("Odvolavam Fella.");
+					ring.RemoveTag(fellTK);
+				}
+				ring.SetTag(nextSwitchTK, Globals.TimeInSeconds + (RealmSettings.instance.fellCooldownMinutes * 60));
+				Uniform.Refresh(self);
+			}
 		}
 	}
 

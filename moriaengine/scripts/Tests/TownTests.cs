@@ -204,7 +204,8 @@ namespace SteamEngine.CompiledScripts {
 				" deaths=" + ((ring != null) ? NazgulRings.DeathsOn(ring) : -1) + " str=" + self.Str + " vit=" + ((Player) self).Vit + " uniform=" + Uniform.Has(self) +
 				" at=" + self.P().ToString().Replace(' ', '_') + " area=" + RegionEventSystem.AreaOf(self.Region).Defname + " moreP=" + gate.MoreP.ToString().Replace(' ', '_') +
 				" trial=" + (RegionEventSystem.AreaOf(self.Region).Defname == "a_Fela_Nazgul") + " gate=0x" + gate.Color.ToString("x", CultureInfo.InvariantCulture) +
-				" lying=" + LyingReport(town?.stone) + " leadingLying=" + LyingReport(LostRings.LeadingShrine()) + " end");
+				" lying=" + LyingReport(town?.stone) + " leadingLying=" + LyingReport(LostRings.LeadingShrine()) +
+				" horse=" + ((self.Mount != null) ? ("0x" + self.Mount.Color.ToString("x", CultureInfo.InvariantCulture) + "/0x" + self.Mount.MountItem.ToString("x", CultureInfo.InvariantCulture)) : "none") + " end");
 		}
 
 		//#910 - the ring lying at the capital's shrine: its uid and fire columns, or none
@@ -212,6 +213,18 @@ namespace SteamEngine.CompiledScripts {
 			PowerBadge lying = LostRings.LyingAt(shrine);
 			return (lying == null) ? "none" : (((uint) lying.FlaggedUid).ToString(CultureInfo.InvariantCulture) + "/" + LostRings.ColumnsOf(lying) +
 				(lying.HasAttribute(ItemAttributes.attr_move_never) ? "/fixed" : "/loose"));
+		}
+
+		/// <summary>#909 - fame for .nazghulfell; "death" instead: a death of mine with no killer (the First keeps the ring).</summary>
+		[SteamFunction]
+		public static void TestNazgulFell(Character self, ScriptArgs sa) {
+			string arg = sa.Args.Trim().Trim('"');
+			if (arg == "death") {
+				NazgulRings.OnDeath((Player) self, null);
+			} else {
+				self.Fame = short.Parse(arg, CultureInfo.InvariantCulture);
+			}
+			Console.WriteLine("NAZGUL_FELL: fame=" + self.Fame + " end");
 		}
 
 		/// <summary>I die `count` times by the Nazgul under test.</summary>

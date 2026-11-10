@@ -53,6 +53,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int fearDelaySeconds = 180;
 
+		/// <summary>#909 - .nazghulfell: the First Nazgul needs more fame than this (Erebor's Lord/Lady, 9900).</summary>
+		[SaveableData]
+		public int fellFame = 9900;
+
+		/// <summary>#909 - .nazghulfell: minutes before the First may switch again (Erebor's nextFellSwitch, 5).</summary>
+		[SaveableData]
+		public double fellCooldownMinutes = 5;
+
 		/// <summary>A ring's wearer needs this level, and so do the victims of the quest.</summary>
 		[SaveableData]
 		public int ringMinLevel = 30;
