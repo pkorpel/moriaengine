@@ -98,11 +98,10 @@ namespace SteamEngine.CompiledScripts.ClassTemplates {
 			string fileName = GetGeneratedFileName(scriptFile.FullName);
 			string outFileName = Path.Combine(dirName, fileName);
 
-			using (StreamWriter outFile = new StreamWriter(outFileName)) {
-				CodeDomProvider provider = new CSharpCodeProvider();
-				provider.GenerateCodeFromCompileUnit(ccu, outFile, options);
-			}
-
+			var text = new StringWriter();
+			CodeDomProvider provider = new CSharpCodeProvider();
+			provider.GenerateCodeFromCompileUnit(ccu, text, options);
+			MsBuildLauncher.WriteSourceIfChanged(outFileName, text.ToString()); // #1358: same text, same write time, no recompile
 		}
 
 		private static IEnumerable<ClassTemplateSection> ParseFile(ScriptFile scriptFile) {

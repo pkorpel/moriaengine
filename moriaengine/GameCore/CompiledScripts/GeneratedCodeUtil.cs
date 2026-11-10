@@ -20,6 +20,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Microsoft.CSharp;
@@ -87,10 +88,12 @@ namespace SteamEngine.CompiledScripts {
 
 				string sourceFileName = Path.Combine("Generated", generator.FileName);
 				Tools.EnsureDirectory(Path.GetDirectoryName(sourceFileName));
-				StreamWriter outFile = new StreamWriter(sourceFileName, false);
-				provider.GenerateCodeFromCompileUnit(codeCompileUnit, outFile, options);
-				outFile.Close();
+				var text = new StringWriter();
+				provider.GenerateCodeFromCompileUnit(codeCompileUnit, text, options);
+				MsBuildLauncher.WriteSourceIfChanged(sourceFileName, text.ToString());
 			}
+			// #1358: build.ps1's "generation is current" marker; the sources above keep their write time when unchanged
+			File.WriteAllText(Path.Combine("Generated", "generated-at.txt"), DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture));
 
 			if (!CompileScriptsUsingMsBuild(compilationNumber)) {
 				return false;
@@ -104,9 +107,16 @@ namespace SteamEngine.CompiledScripts {
 
 		private static bool CompileScriptsUsingMsBuild(int compilationNumber) {
 			try {
-				var file = MsBuildLauncher.Compile(".", Build.Type, "Generated/SteamEngine.Generated.csproj", compilationNumber);
-				generatedAssembly = Assembly.LoadFile(file); ;
-				Console.WriteLine("Done compiling Generated C# scripts.");
+				// the generated code is made from the scripts assembly: its MVID stands for it
+				string fingerprint = BuildFingerprint.TryOf("Generated", Build.Type.ToString(), compilationNumber.ToString(CultureInfo.InvariantCulture),
+					CompilerInvoker.compiledScripts.assembly.ManifestModule.ModuleVersionId.ToString());
+				// the scripts assembly it references is the one just loaded, built or reused: building the reference again
+				// could rewrite that loaded file (a reused one may predate a solution build's changes to scripts/obj)
+				var file = MsBuildLauncher.Compile(".", Build.Type, "Generated/SteamEngine.Generated.csproj", compilationNumber, fingerprint,
+					buildProjectReferences: false);
+				generatedAssembly = Assembly.LoadFile(file);
+				Console.WriteLine(MsBuildLauncher.LastCompileReused ? "Reused compiled Generated C# scripts, no generated code changed."
+					: "Done compiling Generated C# scripts.");
 				return true;
 			} catch (Exception e) {
 				Logger.WriteError(e);
