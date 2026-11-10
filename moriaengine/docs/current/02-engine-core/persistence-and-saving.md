@@ -49,14 +49,17 @@ A def has two kinds of values:
   `ConvertTools.ToDouble(tag)` / `ToInt32(tag)` take any number. (Enums are saved with their
   type's name, #407, so they come back as the enum.)
 
-A value the code itself defines and reads (taming difficulty, aggro mode, move rate) belongs
-in a typed field, not a tag. Several `NPCDef` values were written as tag-backed properties
-instead; moving them to typed fields is part of the dev-feedback batch (see `CLAUDE.md`).
+A value the code itself defines and reads (aggro mode, move rate, a realm) belongs in a typed
+field, not a tag. `NPCDef`'s single values (aggro mode, realm, the taught skill, move rate,
+spell cast range, boss, dragon brain, no-animate, hypnotizable, silence resist, monster types,
+magic horse, serpent form) are `Defs:` fields in `NPC.ct` since #1375; its ranges and lists are
+still tags behind hand-written properties, filled by `NPCDef.LoadScriptLine`, until they move
+too (see `CLAUDE.md`).
 
 ### Code that sets a def value while scripts load
 
 Some def classes parse a script keyword themselves (`NPCDef.LoadScriptLine`'s `"can"`,
-`"tamingdifficulty"`). Such a value is the script's, so it must become the default, not a
+`"experience"`, `"str"`). Such a value is the script's, so it must become the default, not a
 live change. For tags this is `AbstractDef.SetTag` checking `isLoadingFromScript` (set
 around `LoadScriptLines` and `LoadPostponedScriptLines`) and using `FieldValue.SetFromCode`,
 which sets default and current together. Without it every such value was written into each

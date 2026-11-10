@@ -45,7 +45,7 @@ namespace SteamEngine.CompiledScripts {
 					return toolType;
 				}
 				if ((tag is int intTag) && Enum.IsDefined(typeof(ToolType), intTag)) {
-					return (ToolType) intTag; //defensive coercion - same save/reload retyping class as AggroMode/TamingDifficulty (#168/#265)
+					return (ToolType) intTag; //#265 - saves before #407 wrote an enum tag as a plain number
 				}
 				return ToolType.None;
 			}
@@ -74,7 +74,7 @@ namespace SteamEngine.CompiledScripts {
 					return skill;
 				}
 				if ((tag is int intTag) && Enum.IsDefined(typeof(SkillName), intTag)) {
-					return (SkillName) intTag; //defensive coercion - same save/reload retyping class as AggroMode/TamingDifficulty (#168/#265)
+					return (SkillName) intTag; //#265 - saves before #407 wrote an enum tag as a plain number
 				}
 				if (this is WeaponDef weaponDef) {
 					WeaponType wt = weaponDef.WeaponType;

@@ -6,12 +6,11 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// Regression test for #168: a .def-authored NPCDef tag property (e.g. TamingDifficulty)
-	/// must NOT be written into the save files as if it were a live GM edit - doing so causes
-	/// the NEXT boot to reload it through the generic save-file tag parser
-	/// (AbstractDef.LoadField_Delayed), which silently re-types a double as an int and breaks
-	/// the property's strict `is double` check (see NPCDef.TamingDifficulty and
-	/// AbstractDef.SetTag's isLoadingFromScript flag). Own isolated fixture/collection:
+	/// Regression test for #168: a def value from the scripts must NOT be written into the save
+	/// as if it were a live GM edit, or the next boot reads it back from the save instead (where a
+	/// tag's number can come back as another type). Since #1375 the NPCDef values that were tags are
+	/// typed fields and TamingDifficulty is gone, so the check is general: a fresh world, where
+	/// nobody changed any def, saves no def section at all. Own isolated fixture/collection:
 	/// deliberately triggers a real Globals.Save(), which other Facts sharing a fixture
 	/// shouldn't have to deal with mid-run.
 	/// </summary>
@@ -48,7 +47,13 @@ namespace SteamEngine.Tests.Protocol {
 					.First();
 				string globalsSav = File.ReadAllText(Path.Combine(latestDir, "globals.sav"));
 
-				Assert.DoesNotContain("tag._tamingDifficulty_", globalsSav, StringComparison.OrdinalIgnoreCase);
+				//AbstractDef.SaveAll writes "//Defs", then a section for each def with a value changed live
+				int defs = globalsSav.IndexOf("//Defs", StringComparison.Ordinal);
+				Assert.True(defs >= 0, "No //Defs part in globals.sav");
+				int next = globalsSav.IndexOf("\n//", defs + 6, StringComparison.Ordinal);
+				string defPart = globalsSav.Substring(defs, ((next < 0) ? globalsSav.Length : next) - defs).Replace("[EOF]", ""); //the file's end marker
+				int at = defPart.IndexOf("\n[", StringComparison.Ordinal);
+				Assert.True(at < 0, "A fresh world saved a def section:\n" + ((at < 0) ? "" : defPart.Substring(at, Math.Min(1500, defPart.Length - at))));
 			}
 		}
 

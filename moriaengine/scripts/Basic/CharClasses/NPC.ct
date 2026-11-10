@@ -27,6 +27,35 @@ Defs:
 	double mindPower = 1
 	int bloodColor = -1
 	int mountColor = -1
+	//#1375 - these were tags behind hand-written properties until then
+	//AggroMode: Calm (fights back), Hostile (wild monsters), GuardsRealm (town guards)
+	AggroMode aggroMode = AggroMode.Calm
+	//#700 - the realm a GuardsRealm NPC protects, seeded onto each new one (Erebor's tag.guard)
+	Realm realm = Realm.None
+	//#828 - the one skill an Erebor skill teacher (spk_mistr, tag.ucimskill) teaches, None for everyone else
+	SkillName teachesSkill = SkillName.None
+	//#590 - Erebor's MOVERATE, 3 is the baseline of one tile per AI tick, higher is faster
+	double moveRate = 3.0
+	//#716 - how far it keeps while casting, negative means the AI's own default
+	double spellCastRange = -1
+	//#794 - Erebor's tag(isBoss,1): never becomes an elite monster
+	bool isBoss = false
+	//#1017 - Erebor's NPC=brain_dragon: a dragonslayer counts in full when no monstertype says dragon
+	bool dragonBrain = false
+	//#962 - Erebor's tag(noanimate,1): its corpse can't be raised
+	bool noAnimate = false
+	//#1017 - Erebor's tag.hypnotizable, flags_hypno: can be hypnotized, may loot, the talents a mystic can steal
+	int hypnotizable = 0
+	//#1070 - Erebor's tag.resist_silence, permille against Mind Blast's silence, 1000 or more can't be silenced
+	int resistSilence = 0
+	//#1017 - Erebor's tag.monstertype, monstertype2, monstertype3: kind[,percent] for slayers
+	string monsterType = null
+	string monsterType2 = null
+	string monsterType3 = null
+	//#925 - Erebor's tag(magic_horse,name): the mount's powers, MountPowers' table of that name
+	string magicHorse = null
+	//#1022 - Erebor's tag.had: the serpent druid's serpent form, a chardef whose look it takes
+	string serpentForm = null
 
 Vars:	//vars defined in the class, so they basically do what tags do, but better
 	private IMovementSettings movementSettings = null 

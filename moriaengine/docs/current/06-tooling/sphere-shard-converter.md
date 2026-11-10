@@ -58,8 +58,8 @@ conversion run silently commented out the vast majority of every chardef's real 
 them, `armor`/`can` on 79.7%, `attack` on 75.6%, `icon` on 72.3%). #555 closed most of
 that gap:
 
-- **`icon`/`can`/`aggromode`/`combatspell`/`experience`/`tamingdifficulty`** - plain
-  pass-through. `can`/`aggromode`/`combatspell`/`experience`/`tamingdifficulty` are
+- **`icon`/`can`/`aggromode`/`combatspell`/`experience`** - plain
+  pass-through. `can`/`aggromode`/`combatspell`/`experience` are
   NPCDef-only fields (confirmed live in `NPC.cs`/`AbstractCharacterDef.cs`) - emitting
   them on a PlayerDef (`c_man`/`c_woman`) would produce an "Invalid data" load warning, so
   `ConvertedCharDef` comments them out instead whenever `PrettyDefname` resolves to one of
