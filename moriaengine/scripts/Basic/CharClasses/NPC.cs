@@ -1016,6 +1016,11 @@ namespace SteamEngine.CompiledScripts {
 			"_npcResistSilence_", "_npcMonsterType_", "_npcMonsterType2_", "_npcMonsterType3_", "_npcMagicHorse_", "_npcSerpentForm_",
 			"_npcStartingAbilities_" };
 
+		public override void Unload() {
+			this.startingAbilities = null; //made again from the TEVENTS lines when the scripts are read again
+			base.Unload();
+		}
+
 		public override void LoadFromSaves(PropsSection input) {
 			foreach (string tag in retiredSavedTags) {
 				input.TryPopPropsLine("tag." + tag);
@@ -1504,7 +1509,7 @@ namespace SteamEngine.CompiledScripts {
 					return mode;
 				}
 				if ((tag is int intTag) && Enum.IsDefined(typeof(AggroMode), intTag)) {
-					return (AggroMode) intTag; //defensive coercion, see NPCDef.AggroMode's own doc comment (#265)
+					return (AggroMode) intTag; //#265 - saves before #407 wrote an enum tag as a plain number
 				}
 				return AggroMode.Calm;
 			}

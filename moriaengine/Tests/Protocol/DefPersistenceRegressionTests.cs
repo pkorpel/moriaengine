@@ -10,7 +10,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// as if it were a live GM edit, or the next boot reads it back from the save instead (where a
 	/// tag's number can come back as another type). Since #1375 the NPCDef values that were tags are
 	/// typed fields and TamingDifficulty is gone, so the check is general: a fresh world, where
-	/// nobody changed any def, saves no NPCDef section at all. Own isolated fixture/collection:
+	/// nobody changed any def, saves no def section at all. Own isolated fixture/collection:
 	/// deliberately triggers a real Globals.Save(), which other Facts sharing a fixture
 	/// shouldn't have to deal with mid-run.
 	/// </summary>
@@ -47,8 +47,13 @@ namespace SteamEngine.Tests.Protocol {
 					.First();
 				string globalsSav = File.ReadAllText(Path.Combine(latestDir, "globals.sav"));
 
-				int at = globalsSav.IndexOf("[NPCDef ", StringComparison.OrdinalIgnoreCase);
-				Assert.True(at < 0, "A fresh world saved an NPCDef section:\n" + ((at < 0) ? "" : globalsSav.Substring(at, Math.Min(1500, globalsSav.Length - at))));
+				//AbstractDef.SaveAll writes "//Defs", then a section for each def with a value changed live
+				int defs = globalsSav.IndexOf("//Defs", StringComparison.Ordinal);
+				Assert.True(defs >= 0, "No //Defs part in globals.sav");
+				int next = globalsSav.IndexOf("\n//", defs + 6, StringComparison.Ordinal);
+				string defPart = globalsSav.Substring(defs, ((next < 0) ? globalsSav.Length : next) - defs).Replace("[EOF]", ""); //the file's end marker
+				int at = defPart.IndexOf("\n[", StringComparison.Ordinal);
+				Assert.True(at < 0, "A fresh world saved a def section:\n" + ((at < 0) ? "" : defPart.Substring(at, Math.Min(1500, defPart.Length - at))));
 			}
 		}
 
