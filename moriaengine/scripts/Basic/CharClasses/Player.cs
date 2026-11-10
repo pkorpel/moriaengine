@@ -258,6 +258,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#102 - Erebor's usering (funkce.scp): a double click on the worn ring, the same way as UseHand.</summary>
+		public void UseRing() {
+			AbstractItem ring = this.FindLayer(LayerNames.Ring);
+			if (ring != null) {
+				ring.Trigger_DClick(this);
+			}
+		}
+
 		#region Profession
 		public ProfessionPlugin ProfessionPlugin {
 			get {

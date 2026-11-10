@@ -46,6 +46,27 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#102 - Erebor's usering: a double click on the worn ring.</summary>
+		[Fact]
+		public void UseRingDoubleClicksTheWornRing() {
+			using (var client = this.ConnectLoginAndCreateCharacter("RingUser")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestEquipNotingRing");
+				Assert.True(this.fixture.WaitForGameOutputSince("RING_SETUP:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("layer=8", LastLineContaining(this.fixture.GameOutputSnapshot(), "RING_SETUP:"));
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNotingRing");
+				Assert.True(this.fixture.WaitForGameOutputSince("RING_USED:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("used=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "RING_USED:"));
+				client.SendSpeech(".UseRing");
+				Thread.Sleep(300);
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNotingRing");
+				Assert.True(this.fixture.WaitForGameOutputSince("RING_USED:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("used=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "RING_USED:"));
+			}
+		}
+
 		private static uint ExtractUidAfter(string output, int since, string marker) {
 			int idx = output.IndexOf(marker, since, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' after position " + since + " in:\n" + output);
