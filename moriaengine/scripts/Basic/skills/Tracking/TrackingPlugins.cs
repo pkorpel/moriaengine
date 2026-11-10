@@ -26,15 +26,6 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class PlayerTrackingPlugin {
-		//#444 - .Register() was missing entirely (not just lazily-timed) - "p_tracking" was
-		//never inserted into the byDefname registry under ANY circumstances, confirmed via
-		//grep (no other reference to "p_tracking" anywhere). Harmless while this plugin never
-		//survives to a real save (it's normally transient - deleted on skill restart/step
-		//mismatch/death), but an abrupt disconnect mid-track right as an autosave fires would
-		//hit the exact same "def=#p_tracking won't resolve, plugin silently deleted on load"
-		//symptom as #434.
-		public static readonly PlayerTrackingPluginDef defInstance = (PlayerTrackingPluginDef)
-			new PlayerTrackingPluginDef("p_tracking", "C#scripts", -1).Register();
 		private static readonly PluginKey trackingPluginKey = PluginKey.Acquire("_tracking_");
 
 		public const int refreshTimeout = 5; //number of seconds after which all displayed footsteps will be refreshed (if necessary)
@@ -44,7 +35,7 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static void InstallOnChar(Character trackingChar, Character trackedChar, ImmutableRectangle playerRect, TimeSpan maxAge, int safeSteps) {
 			trackingChar.DeletePlugin(trackingPluginKey);
-			PlayerTrackingPlugin tpl = (PlayerTrackingPlugin) defInstance.Create();
+			PlayerTrackingPlugin tpl = (PlayerTrackingPlugin) PlayerTrackingPluginDef.instance.Create();
 			tpl.Init(trackedChar, playerRect, maxAge, safeSteps);
 			trackingChar.AddPlugin(trackingPluginKey, tpl);
 		}
@@ -307,19 +298,12 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class PlayerTrackingPluginDef {
-		//#436/#444 - forces PlayerTrackingPlugin's static cctor (defInstance.Register(), which
-		//registers "p_tracking") to run during ClassManager.InitClasses's early Bootstrap scan,
-		//not lazily on first use - same fix as RaceNationPluginDef's own static cctor (#434).
-		static PlayerTrackingPluginDef() {
-			System.GC.KeepAlive(PlayerTrackingPlugin.defInstance);
-		}
+		public static readonly PlayerTrackingPluginDef instance = (PlayerTrackingPluginDef)
+			new PlayerTrackingPluginDef("p_tracking", "C#scripts", -1).Register();
 	}
 
 	[ViewableClass]
 	public partial class NPCTrackingPlugin {
-		//#444 - same missing-.Register() fix as PlayerTrackingPlugin above.
-		public static readonly NPCTrackingPluginDef defInstance = (NPCTrackingPluginDef)
-			new NPCTrackingPluginDef("p_NPCtracking", "C#scripts", -1).Register();
 		internal static PluginKey npcTrackingPluginKey = PluginKey.Acquire("_NPCtracking_");
 		internal static int refreshTimeout = 10; //number of seconds after which all displayed footsteps will be refreshed (if necessary)
 
@@ -376,10 +360,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class NPCTrackingPluginDef {
-		//#436/#444 - same early-touch fix as PlayerTrackingPluginDef above, for
-		//NPCTrackingPlugin's own "p_NPCtracking".
-		static NPCTrackingPluginDef() {
-			System.GC.KeepAlive(NPCTrackingPlugin.defInstance);
-		}
+		public static readonly NPCTrackingPluginDef instance = (NPCTrackingPluginDef)
+			new NPCTrackingPluginDef("p_NPCtracking", "C#scripts", -1).Register();
 	}
 }

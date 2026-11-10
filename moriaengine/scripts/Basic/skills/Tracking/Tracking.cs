@@ -160,7 +160,7 @@ namespace SteamEngine.CompiledScripts {
 					case TrackingEnums.Phase_Character_Track: //we will try to display the chars path
 						Character charToTrack = (Character) skillSeqArgs.Target1;
 
-						NPCTrackingPlugin npctpl = (NPCTrackingPlugin) NPCTrackingPlugin.defInstance.Create();
+						NPCTrackingPlugin npctpl = (NPCTrackingPlugin) NPCTrackingPluginDef.instance.Create();
 						npctpl.maxAllowedDist = this.GetNPCMaxRange(self); //maximal distance before the tracked character disappears...						
 						npctpl.safeSteps = this.GetMaxSafeSteps(self); //number of safe steps
 						npctpl.whoToTrack = charToTrack;

@@ -25,6 +25,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public static readonly RoleKey rkParty = RoleKey.Acquire("_party_");
 
+		public new static void Bootstrap() { //ensure calling the static initialiser (#1369: ClassManager runs it before this)
+		}
+
 
 		public PartyDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {

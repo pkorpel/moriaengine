@@ -79,7 +79,7 @@ namespace SteamEngine.CompiledScripts {
 			cnt.OpenTo(self);
 			SnoopingPlugin sb = self.GetPlugin(snoopedPluginKey) as SnoopingPlugin;
 			if (sb == null) {
-				sb = (SnoopingPlugin) self.AddNewPlugin(snoopedPluginKey, SnoopingPlugin.defInstance);
+				sb = (SnoopingPlugin) self.AddNewPlugin(snoopedPluginKey, SnoopingPluginDef.instance);
 			}
 			sb.Add(cnt);
 			sb.Timer = SnoopingPlugin.duration;
@@ -149,7 +149,6 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class SnoopingPlugin {
 
-		public static readonly SnoopingPluginDef defInstance = (SnoopingPluginDef) new SnoopingPluginDef("p_snoopedBackpacks", "C#scripts", -1).Register(); //#1163 - never was
 		internal static PluginKey snoopedPluginKey = PluginKey.Acquire("_snoopedBackpacks_");
 		public static int duration = 180;
 
@@ -204,5 +203,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class SnoopingPluginDef {
+		public static readonly SnoopingPluginDef instance = (SnoopingPluginDef)
+			new SnoopingPluginDef("p_snoopedBackpacks", "C#scripts", -1).Register(); //#1163 - never was
 	}
 }
