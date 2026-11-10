@@ -737,7 +737,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//#1377 - ranges as typed Defs: fields in NPC.ct; an ability reads its tuning by the field's name (DragonEvents' Tuned)
+		//#1377 - ranges as typed Defs: fields in NPC.ct; the dragon, boss, Halda Molle and HCN abilities read their tuning by the
+		//field's name (DragonEvents' Tuned). Every public int[] property counts as a range here and as a script keyword below, so an
+		//int[] property that isn't a range field doesn't belong on NPCDef.
 		private static readonly Dictionary<string, System.Reflection.PropertyInfo> rangeProperties = MakeRangeProperties();
 
 		private static Dictionary<string, System.Reflection.PropertyInfo> MakeRangeProperties() {
@@ -768,12 +770,16 @@ namespace SteamEngine.CompiledScripts {
 		};
 
 		//#1377 - a range is written "min max" or a single value (both ends) in the scripts; FieldValue reads an array as a comma list
-		private static string RangeText(string args) {
+		private static string RangeText(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
 				return parts[0] + "," + parts[0];
 			}
-			return string.Join(",", parts);
+			if (parts.Length == 2) {
+				return parts[0] + "," + parts[1];
+			}
+			Logger.WriteWarning(filename, line, param + " '" + args + "' must be either a single value or 'min max'.");
+			return null;
 		}
 
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
@@ -844,11 +850,17 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (rangeKeywords.TryGetValue(param, out string rangeField)) {
-				base.LoadScriptLine(filename, line, rangeField.ToLowerInvariant(), RangeText(args));
+				string text = RangeText(filename, line, param, args);
+				if (text != null) {
+					base.LoadScriptLine(filename, line, rangeField.ToLowerInvariant(), text);
+				}
 				return;
 			}
 			if (rangeProperties.ContainsKey(param)) {
-				base.LoadScriptLine(filename, line, param, RangeText(args));
+				string text = RangeText(filename, line, param, args);
+				if (text != null) {
+					base.LoadScriptLine(filename, line, param, text);
+				}
 				return;
 			}
 			if (param == "addbattlesummon") {
@@ -961,9 +973,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			//a .def field name matching a real Character ResistX property (case-insensitive)
 			//is a starting resist {min max} range, e.g. "ResistParalyse = 700 800" or the
-			//single-value "ResistBlunt = 150" shape - same ParseStatRange helper and "never
-			//forward to base.LoadScriptLine" precedent as str/dex/int/fame/karma/maxhits
-			//above, so the NPCDef's own (otherwise redundant) base Resist* scalar never needs
+			//single-value "ResistBlunt = 150" shape - ParseStatRange, never forwarded to
+			//base.LoadScriptLine, so the NPCDef's own (otherwise redundant) base Resist* scalar never needs
 			//to be kept in sync - only the per-instance rolled value, set directly on the live
 			//Character by NPC.On_Create, actually matters.
 			if (knownResistFieldNames.Contains(param)) {

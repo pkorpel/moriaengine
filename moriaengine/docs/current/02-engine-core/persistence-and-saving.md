@@ -56,8 +56,9 @@ magic horse, serpent form) are `Defs:` fields in `NPC.ct` since #1375, and its {
 ranges (`int[]` fields, about 108: stats, experience, every monster ability's numbers) since
 #1377. `NPCDef.LoadScriptLine` only turns a range's script form (`min max`, or one value for
 both) into the comma list FieldValue reads an array from, and maps the keywords that differ
-from their field (`str` to `strRange`, `experience` to `experienceWorth`...). An ability reads
-its numbers by field name through `NPCDef.AbilityTuning`. Its lists are still tags until they
+from their field (`str` to `strRange`, `experience` to `experienceWorth`...); a value of another
+shape is warned about and left unset. The dragon, boss, Halda Molle and HCN tomb abilities read
+their numbers by field name through `NPCDef.AbilityTuning`; the rest read the properties. Its lists are still tags until they
 move too (see `CLAUDE.md`).
 
 ### Code that sets a def value while scripts load
