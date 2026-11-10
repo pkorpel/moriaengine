@@ -27,82 +27,86 @@ namespace SteamEngine.RemoteConsole {
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
-			this.menuConsole = new System.Windows.Forms.MenuItem();
-			this.menuConnect = new System.Windows.Forms.MenuItem();
-			this.menuDisconnect = new System.Windows.Forms.MenuItem();
-			this.menuItem2 = new System.Windows.Forms.MenuItem();
-			this.menuExit = new System.Windows.Forms.MenuItem();
-			this.menuRemoteServer = new System.Windows.Forms.MenuItem();
-			this.menuStartGameServer = new System.Windows.Forms.MenuItem();
-			this.menuRestartAuxServer = new System.Windows.Forms.MenuItem();
+			this.mainMenu = new System.Windows.Forms.MenuStrip();
+			this.menuConsole = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuConnect = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuDisconnect = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuExit = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuRemoteServer = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuStartGameServer = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuRestartAuxServer = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl = new System.Windows.Forms.TabControl();
 			this.systemTab = new System.Windows.Forms.TabPage();
 			this.systemTabPage = new SteamEngine.RemoteConsole.LogStrDisplay();
 			this.reconnectingTimer = new System.Windows.Forms.Timer(this.components);
 			this.packetHandlingTimer = new System.Windows.Forms.Timer(this.components);
+			this.mainMenu.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.systemTab.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mainMenu
 			// 
-			this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuConsole,
             this.menuRemoteServer});
+			this.mainMenu.Location = new System.Drawing.Point(0, 0);
+			this.mainMenu.Name = "mainMenu";
+			this.mainMenu.Size = new System.Drawing.Size(632, 24);
+			this.mainMenu.TabIndex = 1;
 			// 
 			// menuConsole
 			// 
-			this.menuConsole.Index = 0;
-			this.menuConsole.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.menuConsole.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuConnect,
             this.menuDisconnect,
             this.menuItem2,
             this.menuExit});
+			this.menuConsole.Name = "menuConsole";
 			this.menuConsole.Text = "&Console";
 			// 
 			// menuConnect
 			// 
-			this.menuConnect.Index = 0;
+			this.menuConnect.Name = "menuConnect";
 			this.menuConnect.Text = "&Connect";
 			this.menuConnect.Click += new System.EventHandler(this.menuConnect_Click);
 			// 
 			// menuDisconnect
 			// 
 			this.menuDisconnect.Enabled = false;
-			this.menuDisconnect.Index = 1;
+			this.menuDisconnect.Name = "menuDisconnect";
 			this.menuDisconnect.Text = "&Disconnect";
 			this.menuDisconnect.Click += new System.EventHandler(this.menuDisconnect_Click);
 			// 
 			// menuItem2
 			// 
-			this.menuItem2.Index = 2;
-			this.menuItem2.Text = "-";
+			this.menuItem2.Name = "menuItem2";
 			// 
 			// menuExit
 			// 
-			this.menuExit.Index = 3;
+			this.menuExit.Name = "menuExit";
 			this.menuExit.Text = "&Exit";
 			this.menuExit.Click += new System.EventHandler(this.menuExit_Click);
 			// 
 			// menuRemoteServer
 			// 
 			this.menuRemoteServer.Enabled = false;
-			this.menuRemoteServer.Index = 1;
-			this.menuRemoteServer.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.menuRemoteServer.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuStartGameServer,
             this.menuRestartAuxServer});
+			this.menuRemoteServer.Name = "menuRemoteServer";
 			this.menuRemoteServer.Text = "Remote Server";
 			// 
 			// menuStartGameServer
 			// 
-			this.menuStartGameServer.Index = 0;
+			this.menuStartGameServer.Name = "menuStartGameServer";
 			this.menuStartGameServer.Text = "Start GameServer";
 			this.menuStartGameServer.Click += new System.EventHandler(this.menuStartGameServer_Click);
 			// 
 			// menuRestartAuxServer
 			// 
-			this.menuRestartAuxServer.Index = 1;
+			this.menuRestartAuxServer.Name = "menuRestartAuxServer";
 			this.menuRestartAuxServer.Text = "Restart AuxServer";
 			this.menuRestartAuxServer.Click += new System.EventHandler(this.menuRestartAuxServer_Click);
 			// 
@@ -152,32 +156,36 @@ namespace SteamEngine.RemoteConsole {
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(632, 433);
+			this.ClientSize = new System.Drawing.Size(632, 457);
 			this.Controls.Add(this.tabControl);
-			this.Menu = this.mainMenu;
+			this.Controls.Add(this.mainMenu);
+			this.MainMenuStrip = this.mainMenu;
 			this.Name = "MainForm";
 			this.Text = "SteamEngine remote console";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.mainMenu.ResumeLayout(false);
+			this.mainMenu.PerformLayout();
 			this.tabControl.ResumeLayout(false);
 			this.systemTab.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
 		#endregion
 
-		private MainMenu mainMenu;
-		private MenuItem menuConsole;
-		private MenuItem menuExit;
+		private MenuStrip mainMenu;
+		private ToolStripMenuItem menuConsole;
+		private ToolStripMenuItem menuExit;
 		private TabControl tabControl;
 		private TabPage systemTab;
 		private LogStrDisplay systemTabPage;
-		private MenuItem menuItem2;
-		private MenuItem menuDisconnect;
-		private MenuItem menuConnect;
-		private MenuItem menuRemoteServer;
-		private MenuItem menuStartGameServer;
-		private MenuItem menuRestartAuxServer;
+		private ToolStripSeparator menuItem2;
+		private ToolStripMenuItem menuDisconnect;
+		private ToolStripMenuItem menuConnect;
+		private ToolStripMenuItem menuRemoteServer;
+		private ToolStripMenuItem menuStartGameServer;
+		private ToolStripMenuItem menuRestartAuxServer;
 		private Timer reconnectingTimer;
 		private Timer packetHandlingTimer;
 	}

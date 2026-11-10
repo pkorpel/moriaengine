@@ -1,4 +1,6 @@
 using System;
+using System.Drawing;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -22,10 +24,12 @@ namespace SteamEngine.RemoteConsole {
 				Console.Title = "SE Remote Console - " + Assembly.GetExecutingAssembly().Location;
 			} catch { }
 
-			Tools.ExitBinDirectory();
+			EnterHomeDirectory();
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			// #29: .NET 8 made Segoe UI 9 the default; the forms were laid out for the .NET Framework font.
+			Application.SetDefaultFont(new Font("Microsoft Sans Serif", 8.25f));
 
 			mainForm = new MainForm();
 
@@ -43,6 +47,21 @@ namespace SteamEngine.RemoteConsole {
 
 			//    Thread.Sleep(5);
 			//}
+		}
+
+		// #29: Tools.ExitBinDirectory() only knew the old ..\build\Debug output. The console works from the folder holding
+		// steamrc.example.ini (moriaengine/): steamrc.ini is read there and the log's relative file links resolve against it.
+		private static void EnterHomeDirectory() {
+			if (File.Exists("steamrc.example.ini")) {
+				return;
+			}
+			for (DirectoryInfo dir = new DirectoryInfo(AppContext.BaseDirectory); dir != null; dir = dir.Parent) {
+				if (File.Exists(Path.Combine(dir.FullName, "steamrc.example.ini"))) {
+					Directory.SetCurrentDirectory(dir.FullName);
+					Console.WriteLine($"Changed current directory to '{dir.FullName}'.");
+					return;
+				}
+			}
 		}
 
 		static void Application_ThreadException(object sender, ThreadExceptionEventArgs e) {

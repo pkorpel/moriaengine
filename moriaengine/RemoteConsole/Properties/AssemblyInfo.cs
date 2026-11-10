@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -17,6 +18,9 @@ using System.Runtime.InteropServices;
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
+
+// #29: WinForms is Windows-only; GenerateAssemblyInfo is off, so the SDK doesn't add this itself.
+[assembly: SupportedOSPlatform("windows")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("00e256a3-51fc-4106-b51f-abba76485820")]
