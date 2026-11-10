@@ -4,7 +4,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class NazgulOnlyGate {
 		[SteamFunction]
 		public static void NazgulGateTo(Character self) {
-			self.SysMessage("Branu jen pro vyvolene udelej z i_varGate: v jeho menu zapni funkce, pridej funkci f_vg_nazgulOnly (jen Nazgulove a GM projdou) a nastav, kam vede.");
+			self.SysMessage("Branu jen pro vyvolene udelej z i_varGate (.add i_varGate, dvojklik): zapni funkce, pridej funkci f_vg_nazgulOnly se zaskrtnutym 'Funkce muze zamezit vstupu' (jen Nazgulove a GM projdou) a nastav, kam vede.");
 		}
 	}
 }

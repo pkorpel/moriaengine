@@ -409,6 +409,16 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("NAZGUL_GATE: uid=" + (uint) nazgulOnlyGate.FlaggedUid + " x=" + (self.X + 6) + " y=" + self.Y + " z=" + self.Z + " end");
 		}
 
+		/// <summary>#912 - a second var gate where the first leads, leading back onto the first: no endless round trip.</summary>
+		[SteamFunction]
+		public static void TestNazgulGateLoop(Character self) {
+			Point4D to = nazgulOnlyGate.MoreP;
+			VarGate back = (VarGate) ThingDef.GetByDefname("i_varGate").Create(to.X, to.Y, to.Z, to.M);
+			back.MoreP = new Point4D(nazgulOnlyGate.X, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M);
+			back.GoHome = false;
+			Console.WriteLine("NAZGUL_GATE_LOOP: done");
+		}
+
 		/// <summary>#912 - onto the gate, by a step; where I end up, and where it leads.</summary>
 		[SteamFunction]
 		public static void TestNazgulGateStep(Character self) {

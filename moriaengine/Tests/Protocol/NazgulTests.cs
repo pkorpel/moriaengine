@@ -180,6 +180,10 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.NotNull(TryReadMessageContaining(walker, "Jen pro vyvolene!", Wait));
 				this.Ask(walker, ".TestNazgulGiveRing", "NAZGUL_GIVEN:");
 				Assert.Contains("at=" + to + " ", this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:"));
+
+				//a gate where it leads, leading back: the walker lands there and stays (it used to recurse until the server died)
+				this.Ask(gm, ".TestNazgulGateLoop", "NAZGUL_GATE_LOOP:");
+				Assert.Contains("at=" + to + " ", this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:"));
 			}
 		}
 

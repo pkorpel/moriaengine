@@ -124,7 +124,8 @@ back. The same horse changes its look, as the uniform does (the user's call). `.
 `fellCooldownMinutes`.
 
 Erebor's `i_nazgulsonly_gate` (#912), a gate only Nazguls and GMs pass ("Jen pro vyvolene!" for the rest), is a rule
-of the var gate here, the user's call: a GM turns on an `i_varGate`'s functions, adds `f_vg_nazgulOnly` and sets where it
+of the var gate here, the user's call: a GM turns on an `i_varGate`'s functions, adds `f_vg_nazgulOnly` with "Funkce
+muze zamezit vstupu" ticked (unticked it only runs after the walker passed) and sets where it
 leads (see [the variable gate](variable-gate.md)). `.nazgulgateto` only says so. Erebor's GMs placed theirs by hand too.
 
 **The First Nazgul.** A GM appoints a Nazgul on `i_lordnazgulsstone`, or a Nazgul takes it: with no First,
