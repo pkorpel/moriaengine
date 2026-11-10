@@ -147,7 +147,8 @@ Every save logs where its time went (#1203), one line, `Save timings: pause=... 
 file as `name open format write ms size`. The same numbers are in `WorldSaver.LastTimings` (`SaveTimings`).
 
 Since #1209 a save formats each file into memory (`SaveBuffer`, pooled 1 MB chunks, UTF-8 already) while the world is held,
-then writes the bytes:
+then writes the bytes. Since #1360 a load fills that pool up front, to the size of the files it read plus an eighth
+(`SaveBuffer.Reserve`), so the first save after a restart doesn't allocate its buffers while the world waits:
 - **`Globals.Save` / `TrySave`** (`.save`, the shutdown save, the save before a recompile, tests) write before they return,
   as before.
 - **`Globals.SaveInBackground`** (the autosave, `scripts/Basic/PeriodicSave.scp`) returns after the formatting: the world

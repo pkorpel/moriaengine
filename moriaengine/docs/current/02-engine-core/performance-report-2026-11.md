@@ -314,6 +314,18 @@ still missed; the rest are improvements.
    - A world loaded from a save may do the same, which would make the first autosave after every restart the longest.
    - Measure a loaded world's first save. If it is long, a warm-up save into memory at boot, or the cheap formatting
      wins (item 4), would address it.
+   - **#1360 (2026-11-10), Release, the design world:**
+
+     | Save | Before | After |
+     |---|---|---|
+     | First save after a load: pause | 957 ms | 878 ms |
+     | First save after a load: total | 1117 ms | 1047 ms |
+     | Second save after a load: pause | 626 ms | 570 ms |
+     | First save after building (total) | 1588 ms | 1626 ms (noise) |
+
+     - A loaded world's first autosave now pauses under 1 s. Changes: the load reserves the save buffers, enum save names are cached, chunks are allocated uninitialized, and `globals.sav` takes one snapshot of the defs.
+     - About 300 ms of the first save's formatting is still one-time cost (878 vs 570 ms). The buffers weren't most of it; JIT and first-use costs are the likely rest.
+     - A warm-up save at boot was not done: save triggers run script code, and a save into memory would run them for nothing.
 2. **Background gen2 pauses of 33–101 ms**, about one a minute under load, over section 1's 50 ms limit.
    - Eight samples so far (section 3, [Repeat runs](#repeat-runs)):
      - the crowd (P3) was 76–101 ms at 673–686 MB;

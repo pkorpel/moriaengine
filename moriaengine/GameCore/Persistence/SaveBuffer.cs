@@ -116,7 +116,31 @@ namespace SteamEngine.Persistence {
 					return pool.Pop();
 				}
 			}
-			return new byte[ChunkSize];
+			return NewChunk();
+		}
+
+		//#1360 - a chunk is always written before it's read (CopyBytesTo stops at usedInLast), so no zeroing
+		private static byte[] NewChunk() {
+			return GC.AllocateUninitializedArray<byte>(ChunkSize);
+		}
+
+		/// <summary>#1360 - fills the pool up to what a save of `bytes` needs, so the first save doesn't allocate its buffers
+		/// (about 95 MB of fresh large arrays at the design world, a third of that save's extra time). Called after a load.</summary>
+		public static void Reserve(long bytes) {
+			long wanted = Math.Min(MaxPooledChunks, (bytes + ChunkSize - 1) / ChunkSize);
+			lock (pool) {
+				while (pool.Count < wanted) {
+					pool.Push(NewChunk());
+				}
+			}
+		}
+
+		internal static int PooledChunks {
+			get {
+				lock (pool) {
+					return pool.Count;
+				}
+			}
 		}
 
 		public override void Flush() {
