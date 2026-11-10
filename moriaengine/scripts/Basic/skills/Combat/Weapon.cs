@@ -50,7 +50,7 @@ namespace SteamEngine.CompiledScripts {
 					return;
 				}
 			}
-			if ((player != null) && (this.TypeDef.AssociatedSkill == SkillName.None) &&
+			if ((player != null) && (this.TypeDef.UseSkill == SkillName.None) &&
 					CraftingSkillDef.IsOfType(this, "t_weapon_sword", "t_weapon_axe", "t_weapon_mace_sharp")) { //#1070 - f_weapon_sharp_targon_item
 				player.Target(SingletonScript<Targ_Blade>.Instance, this);
 				return;

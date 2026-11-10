@@ -311,7 +311,7 @@ namespace SteamEngine.Converter {
 				case "t_fish_pole":
 					//the archive's fishing pole falls through to a plain, non-equippable
 					//ItemDef without this - T_FISH_POLE has no other handling anywhere in
-					//this switch. tooltype=FishingPole (EquippableDef.AssociatedSkill,
+					//this switch. tooltype=FishingPole (EquippableDef.ToolType -> UseSkill,
 					//#392) is what makes dclicking it actually start the Fishing skill.
 					def.headerType = "EquippableDef";
 					def.isEquippable = true;
@@ -750,7 +750,7 @@ namespace SteamEngine.Converter {
 		//gathering tool), confirmed case by case. i_pickaxe carries TYPE=t_weapon_bow_run
 		//in the raw source (the same type real bow "run" variants use - a pre-existing
 		//archive-authoring quirk, not a converter bug), which makes it compute as a
-		//WeaponDef with WeaponType.Bow - tooltype=Pickaxe (EquippableDef.AssociatedSkill,
+		//WeaponDef with WeaponType.Bow - tooltype=Pickaxe (EquippableDef.ToolType -> UseSkill,
 		//#392) is what actually makes dclicking it start the Mining skill, independent of
 		//whatever WeaponType it happens to compute as. Add a defname here ONLY after
 		//confirming its own TYPE= doesn't already map to a real tool category above.
