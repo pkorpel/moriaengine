@@ -259,6 +259,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 			//#941 - proti vykradani zamcenych truhel: reaching in without the right is a thief's attempt
 			Character taker = args.PickingChar as Character;
+			if ((taker != null) && (this.TopObj() is Corpse body)) {
+				string refusal = CorpseLooting.Refusal(taker, body); //#1023 - t_item_in_corpse
+				if (refusal != null) {
+					args.Result = new DenyResult_StringSysMessage(refusal);
+					return;
+				}
+			}
 			if ((taker != null) && this.IsLockedAgainst(taker)) {
 				SteamEngine.Common.Logger.WriteWarning("ZLODEJ !!! " + taker + " tried to take " + args.ManipulatedItem + " from locked " + this);
 				args.Result = new DenyResult_StringSysMessage("Nemas na to pravo.");

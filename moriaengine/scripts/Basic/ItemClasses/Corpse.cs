@@ -95,6 +95,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1023 - exactly, for the looting wait.</summary>
+		public double SecondsDeadExactly {
+			get {
+				return (this.GetTag(diedAtTK) is double diedAt) ? (Globals.TimeInSeconds - diedAt) : 0;
+			}
+		}
+
 		public int SecondsDead {
 			get {
 				return (this.GetTag(diedAtTK) is double diedAt) ? (int) (Globals.TimeInSeconds - diedAt) : 0;

@@ -64,5 +64,18 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The same for Mordor, off: Mordor shows red and has no use for a criminal flag.</summary>
 		[SaveableData]
 		public bool mordorLootingIsACrime = false;
+
+		/// <summary>#1023 - nothing can be taken from a player's body for this long after the death (Erebor's
+		/// nastaveni_body_looting_timer, 897 of a 900 s body).</summary>
+		[SaveableData]
+		public double lootWaitSeconds = 3;
+
+		/// <summary>#1023 - one item from a player's body per this long ("Ne tak rychle!", Erebor's nextloot +8 tenths).</summary>
+		[SaveableData]
+		public double lootRateSeconds = 0.8;
+
+		/// <summary>#1023 - each pick from a player's body holds the looter still this long, added up (i_looter_immobilizer).</summary>
+		[SaveableData]
+		public double lootHoldSeconds = 0.5;
 	}
 }
