@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-10): the user's decisions, in order; #1234 DONE (PR #1346). #1019 DONE (PR #1348; no-PvP had blocked monster fights; follow-up #1347 safe zones vs spells/pets/NPCs). NOW: #1023 body-looting limits (branch 1023-loot-limits)
+## NOW (2026-11-10): the user's decisions, in order; #1234 DONE (PR #1346). #1019 DONE (PR #1348; no-PvP had blocked monster fights; follow-up #1347 safe zones vs spells/pets/NPCs). #1023 DONE (PR #1349). NOW: #910 lost ring at its shrine (branch 910-ring-at-shrine)
 User picked #1234 first after answering 16 questions (2026-11-09; answers on each issue and in memory project_moriaengine_decisions_2026_11_09): then #1019 guards punish, #1023 loot limits, #910 ring at shrine, #909 .nazghulfell look, #912 Nazgul gate GM tool, #904 royal guards per Erebor table city, #393 two-handed by Erebor (converter), #102 UseRing/UseHand, #29 port RemoteConsole, #1228 picks 5, 1+4, 9, 7. Kept open: #474, #26, #1022. Usual rules.
 Done before (the no-decision batch): #1020 PR #1337, #948 #1338, #906 #1339, #901 #1340 (review: per-character online), #837 #1341, #861+#952 #1342, #905 #1343 (review: .remembered only blacklist cursors), #908 #1344 (review: engine mount sync), #911 #1345. #393 checked: needed a decision.
 

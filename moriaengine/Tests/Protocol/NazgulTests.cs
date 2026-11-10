@@ -77,6 +77,20 @@ namespace SteamEngine.Tests.Protocol {
 				string gone = this.Nazgul(nazgul);
 				Assert.Contains("nazgul=False", gone);
 				Assert.Contains("ruler=none", gone);
+
+				//#910 - the ring lies at its shrine in four fire columns, fixed; its double click is the shrine's quest
+				string lying = Field(gone, "lying=");
+				Assert.True(lying.EndsWith("/4/fixed", StringComparison.Ordinal), gone);
+				uint ring = uint.Parse(lying.Substring(0, lying.IndexOf('/')), CultureInfo.InvariantCulture);
+				nazgul.SendDoubleClick(ring);
+				Thread.Sleep(300);
+				Assert.Contains("nazgul=False", this.Nazgul(nazgul)); //the kills first again
+				this.Ask(enemy, ".TestNazgulDie 5", "NAZGUL_DIED:");
+				nazgul.SendDoubleClick(ring);
+				Thread.Sleep(300);
+				string again = this.Nazgul(nazgul);
+				Assert.Contains("nazgul=True", again);
+				Assert.Contains("lying=none", again);
 			}
 		}
 
@@ -145,6 +159,12 @@ namespace SteamEngine.Tests.Protocol {
 			int index = output.LastIndexOf(marker, StringComparison.Ordinal);
 			int end = output.IndexOf('\n', index);
 			return (end < 0) ? output.Substring(index) : output.Substring(index, end - index);
+		}
+
+		private static string Field(string line, string key) {
+			int start = line.IndexOf(key, StringComparison.Ordinal) + key.Length;
+			int end = line.IndexOf(' ', start);
+			return (end < 0) ? line.Substring(start) : line.Substring(start, end - start);
 		}
 
 		private static double Number(string line, string key) {

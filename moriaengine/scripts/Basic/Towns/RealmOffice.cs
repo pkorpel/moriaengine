@@ -358,6 +358,15 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
+		/// <summary>#910 - a lost ring lying at its shrine: a double click is the shrine's.</summary>
+		public override void On_DClick(AbstractCharacter from) {
+			if (LostRings.ShrineOf(this) is NazgulShrine shrine) {
+				shrine.On_DClick(from);
+				return;
+			}
+			base.On_DClick(from);
+		}
+
 		public static PowerBadge GiveTo(Character ch, string defname) {
 			PowerBadge badge = (PowerBadge) ThingDef.GetByDefname(defname).Create(ch);
 			badge.SetAttribute(ItemAttributes.attr_move_never, true);

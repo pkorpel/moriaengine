@@ -203,7 +203,15 @@ namespace SteamEngine.CompiledScripts {
 				" ruler=" + Clean(town?.mayor?.Name) + " office=" + Clean(office?.holder?.Name) + " kills=" + ((ring != null) ? NazgulRings.KillsWith(ring, self) : -1) +
 				" deaths=" + ((ring != null) ? NazgulRings.DeathsOn(ring) : -1) + " str=" + self.Str + " vit=" + ((Player) self).Vit + " uniform=" + Uniform.Has(self) +
 				" at=" + self.P().ToString().Replace(' ', '_') + " area=" + RegionEventSystem.AreaOf(self.Region).Defname + " moreP=" + gate.MoreP.ToString().Replace(' ', '_') +
-				" trial=" + (RegionEventSystem.AreaOf(self.Region).Defname == "a_Fela_Nazgul") + " gate=0x" + gate.Color.ToString("x", CultureInfo.InvariantCulture) + " end");
+				" trial=" + (RegionEventSystem.AreaOf(self.Region).Defname == "a_Fela_Nazgul") + " gate=0x" + gate.Color.ToString("x", CultureInfo.InvariantCulture) +
+				" lying=" + LyingReport(town) + " end");
+		}
+
+		//#910 - the ring lying at the capital's shrine: its uid and fire columns, or none
+		private static string LyingReport(Town town) {
+			PowerBadge lying = LostRings.LyingAt(town?.stone);
+			return (lying == null) ? "none" : (((uint) lying.FlaggedUid).ToString(CultureInfo.InvariantCulture) + "/" + LostRings.ColumnsOf(lying) +
+				(lying.HasAttribute(ItemAttributes.attr_move_never) ? "/fixed" : "/loose"));
 		}
 
 		/// <summary>I die `count` times by the Nazgul under test.</summary>

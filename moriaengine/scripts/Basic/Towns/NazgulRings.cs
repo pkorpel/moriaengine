@@ -33,6 +33,7 @@ namespace SteamEngine.CompiledScripts {
 			TagKey.Acquire("_ringVictim0_"), TagKey.Acquire("_ringVictim1_"), TagKey.Acquire("_ringVictim2_")
 		};
 		private static readonly TimerKey ringTimerTK = TimerKey.Acquire("_ringOfPower_");
+		internal static TimerKey RingTimerTK => ringTimerTK;
 
 		public static PowerBadge RingOf(Character ch) {
 			PowerBadge badge = PowerBadge.Find(ch);
@@ -95,6 +96,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static PowerBadge Give(Character ch, Town town) {
+			LostRings.TakeUp((town != null) ? town.stone : RealmOffice.For(Realm.Mordor)?.stone); //#910 - the one lying at the shrine
 			PowerBadge ring = PowerBadge.GiveTo(ch, (town != null) ? RingDef : LeadingRingDef);
 			RealmSettings settings = RealmSettings.instance;
 			double now = Globals.TimeInSeconds;
@@ -144,7 +146,9 @@ namespace SteamEngine.CompiledScripts {
 					town.ClearMayor();
 				}
 			}
-			ring.Delete();
+			if (!LostRings.LayAtShrine(ring)) {
+				ring.Delete();
+			}
 			NazgulGate.RefreshAll();
 		}
 
@@ -273,6 +277,79 @@ namespace SteamEngine.CompiledScripts {
 			}
 			player.SysMessage((kills == 0) ? "Aby jsi mohl ziskat prsten, musis nejprve prokazat oddanost bojem proti gondoru." : "Musis se vic snazit");
 			return false;
+		}
+	}
+
+	/// <summary>#910 - the user's call (2026-11-09): a ring that leaves its wearer lies at its shrine in four fire columns,
+	/// as Erebor's @dropon_ground (f_ring_column, i_column_ring: i_fire_column in colour 1, 2 tiles each way), so everyone
+	/// sees the ring is free. It can't be picked up; a double click on it is the shrine's (its kill quest first, then the
+	/// ring); a new ring given out takes it and its fire away. The leading ring lies at the First's shrine.</summary>
+	public static class LostRings {
+		private static readonly TagKey lyingTK = TagKey.Acquire("_lyingRing_");
+		private static readonly TagKey shrineTK = TagKey.Acquire("_ringShrine_");
+		private static readonly int[][] columnAt = { new[] { 2, 0 }, new[] { 0, 2 }, new[] { -2, 0 }, new[] { 0, -2 } };
+
+		private static TagKey ColumnTK(int i) {
+			return TagKey.Acquire("_ringColumn_" + i.ToString(CultureInfo.InvariantCulture) + "_");
+		}
+
+		/// <summary>The ring to its shrine's tile with its fire; false when there's no shrine (the ring is deleted then).</summary>
+		internal static bool LayAtShrine(PowerBadge ring) {
+			Item shrine = NazgulRings.IsLeading(ring) ? RealmOffice.For(Realm.Mordor)?.stone : Town.ForCity(NazgulRings.CityOf(ring))?.stone;
+			if ((shrine == null) || shrine.IsDeleted) {
+				return false;
+			}
+			TakeUp(shrine); //an older one there
+			ring.DeleteTimer(NazgulRings.RingTimerTK);
+			ring.P(shrine.X, shrine.Y, shrine.Z, shrine.M);
+			ring.SetAttribute(ItemAttributes.attr_move_never, true); //on the ground now: no picking up, no decay
+			ring.SetTag(shrineTK, shrine);
+			shrine.SetTag(lyingTK, ring);
+			for (int i = 0; i < columnAt.Length; i++) {
+				Item column = (Item) ThingDef.GetByDefname("i_fire_column").Create(shrine.X + columnAt[i][0], shrine.Y + columnAt[i][1], shrine.Z, shrine.M);
+				column.Color = 1;
+				column.SetAttribute(ItemAttributes.attr_move_never, true);
+				ring.SetTag(ColumnTK(i), column);
+			}
+			return true;
+		}
+
+		/// <summary>The ring lying at this shrine, or null.</summary>
+		public static PowerBadge LyingAt(Item shrine) {
+			PowerBadge ring = shrine?.GetTag(lyingTK) as PowerBadge;
+			return ((ring == null) || ring.IsDeleted || (ring.Cont != null)) ? null : ring;
+		}
+
+		/// <summary>The shrine a lying ring belongs to, or null (not lying).</summary>
+		internal static Item ShrineOf(PowerBadge ring) {
+			return (ring.Cont == null) ? (ring.GetTag(shrineTK) as Item) : null;
+		}
+
+		public static int ColumnsOf(PowerBadge ring) {
+			int count = 0;
+			for (int i = 0; i < columnAt.Length; i++) {
+				if ((ring.GetTag(ColumnTK(i)) is Item column) && !column.IsDeleted) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		/// <summary>The lying ring and its fire gone.</summary>
+		internal static void TakeUp(Item shrine) {
+			PowerBadge ring = LyingAt(shrine);
+			if (shrine != null) {
+				shrine.RemoveTag(lyingTK);
+			}
+			if (ring == null) {
+				return;
+			}
+			for (int i = 0; i < columnAt.Length; i++) {
+				if (ring.GetTag(ColumnTK(i)) is Item column) {
+					column.Delete();
+				}
+			}
+			ring.Delete();
 		}
 	}
 
