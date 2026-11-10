@@ -1,0 +1,4 @@
+//#1370 - CancellableTriggerTests: a trigger group that cancels the test trigger.
+[triggergroup e_test_cancellable]
+on=@testcancellable
+return 1

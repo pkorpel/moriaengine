@@ -533,7 +533,7 @@ namespace SteamEngine {
 					return TriggerResult.Cancel;
 				}
 			}
-			if (TriggerResult.Cancel == this.CancellableTrigger(tk, sa)) {
+			if (TriggerResult.Cancel == base.CancellableTrigger(tk, sa)) { //#1370 - was this., which called itself forever
 				return TriggerResult.Cancel;
 			}
 			return this.def.CancellableTrigger(this, tk, sa);
