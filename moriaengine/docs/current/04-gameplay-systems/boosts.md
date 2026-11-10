@@ -39,5 +39,5 @@ Spell icons come from the spell's id, an ability's from `Icon =` in its def.
 Erebor listed 50 things by hand, twice, and didn't tell good from bad or say what most of them did, so it needed a
 legend. Its other panels depend on systems that aren't ported, and plug into the Stav section when they are:
 
-- Food: players have no hunger here at all, so no fizzing from it either.
+- Food: player hunger exists since #924 (`HungerPlugin`, #1396), its level shown in the Stav section; Erebor's food panel isn't ported.
 - The equip list, HP sight.

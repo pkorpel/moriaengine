@@ -196,6 +196,25 @@ whichever way it's made.
 A plain `BoundTimer` (see [tags-and-timers.md](tags-and-timers.md)) is enough for a delayed
 action with no reaction to triggers.
 
+Two examples moved onto this pattern (the original developer's feedback, 2026-11):
+
+- **Standcast** (#1386): `StandcastPlugin` answers the caster's `@spellCast`,
+  `@monsterSpellPower` and `@activateAbility` instead of being looked up by the spell formula
+  and switched off by Magery; its freeze is `CastFreezePlugin`, refusing `@denyMove`.
+- **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
+  every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
+  player's success fails), `@spellCast` and `@hitTry` (starving hurts), as Erebor's player
+  event `e_allplayers` did. `@hitTry` is raised by `WeaponSkillDef` on a player (not a GM) as a
+  swing is drawn. Before, those were calls from `Character.On_SkillSuccess`, `Magery.On_Start`
+  and `WeaponSkillDef`, the food a tag and the tick a separate timer; and a landed blow hurt a
+  second time from `DamageManager.ProcessSwing`, a leftover since #995. A custom spell scroll's
+  cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`), and a cast whose caster
+  dies of it at `@spellCast` ends there. The skills whose own Erebor scripts ask about hunger
+  (lockpicking, crafting, gathering, taming, the bard skills, healing, the shaman's pacts, the
+  custom scrolls' casting rule) still call `PlayerHunger`, which reads the plugin. One
+  difference from Erebor: a cast refused by the casting rules doesn't hurt, as `@spellCast`
+  comes after them; Erebor's hungryhurts was its `@spellcast`'s first line.
+
 ## Related
 
 - [scripting-pipeline.md](scripting-pipeline.md): `.ct` templates and `Generated/`.

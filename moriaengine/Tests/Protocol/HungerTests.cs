@@ -63,7 +63,13 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(1500);
 			Assert.True(Number(this.Ask(client, ".TestHungerHits", "HUNGER_HITS:"), "hits") > hurt);
 
-			Assert.Contains("lost=10", this.Ask(client, ".TestHungerSwing", "HUNGER_SWING:"));
+			string swing = this.Ask(client, ".TestHungerSwing", "HUNGER_SWING:");
+			Assert.Contains("lost=10 ", swing); //drawing the blow
+			Assert.Contains("landedLost=0", swing); //#1396 - not again when it lands
+			//#1396 - a plugin on the player, and a starving cast hurts through its @spellCast
+			string plugin = this.Ask(client, ".TestHungerPlugin", "HUNGER_PLUGIN:");
+			Assert.Contains("onPlugin=True", plugin);
+			Assert.Contains("castLost=10", plugin);
 
 			//the clock, and what it says under 40%
 			this.Ask(client, ".TestHungerFood \"6\"", "HUNGER_FOOD:");

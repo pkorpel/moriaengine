@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using SteamEngine.Common;
-using SteamEngine.Persistence;
-using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#924 - Sphere's food stat on players and Erebor's use of it: ishungry, ishungrymsg, hungryhurts.
-	/// Someone who never ate holds no tag and counts as full, so old saves and new characters start at 15.</summary>
+	/// #1396 - the food and its tick are HungerPlugin's, which also answers e_allplayers' triggers; this is what the
+	/// skills that ask about hunger themselves call. A character without the plugin (not logged in yet) counts as full.</summary>
 	public static class PlayerHunger {
 		public const int MaxFood = 15; //c_man's FOODTYPE=15 t_food, t_fruit
 
 		private const int LevelsOfMessage = 8, HungryBelowPercent = 40, HungryRollOf = 10, HungryMargin = 2;
-		private static readonly TagKey foodTK = TagKey.Acquire("_food_");
 		private static readonly int[] eatSounds = { 0x3a, 0x3b, 0x3c };
 
 		private sealed class Source : IActiveEffectSource {
@@ -29,12 +27,15 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static int FoodOf(Character ch) {
-			object food = ch.GetTag(foodTK);
-			return (food == null) ? MaxFood : (int) food;
+			HungerPlugin hunger = HungerPlugin.Of(ch);
+			return (hunger == null) ? MaxFood : hunger.Food;
 		}
 
 		public static void SetFood(Character ch, int food) {
-			ch.SetTag(foodTK, food);
+			if (!(ch is Player player)) {
+				return;
+			}
+			HungerPlugin.Install(player).Food = food;
 			ch.HitsRegenSpeed = ch.HitsRegenSpeed; //starving held it, it may have to start again
 		}
 
@@ -100,15 +101,6 @@ namespace SteamEngine.CompiledScripts {
 			eater.SysMessage(feelings[System.Math.Min((now * 6) / MaxFood, feelings.Length - 1)]);
 		}
 
-		internal static void StartTicking(Player player) {
-			if (player.GetTimer(PlayerHungerTimer.Key) == null) {
-				double seconds = HungerSettings.instance.secondsPerFoodPoint;
-				PlayerHungerTimer timer = new PlayerHungerTimer();
-				player.AddTimer(PlayerHungerTimer.Key, timer).DueInSeconds = seconds;
-				timer.PeriodInSeconds = seconds;
-			}
-		}
-
 		/// <summary>Sphere's OnTickFood. It goes up from nothing, so 0 and 1 take turns while starving.</summary>
 		internal static void Tick(Player player) {
 			int food = FoodOf(player);
@@ -117,23 +109,6 @@ namespace SteamEngine.CompiledScripts {
 			if (((food * 100) / MaxFood) < HungryBelowPercent) {
 				player.SysMessage(string.Format(Loc<HungerLoc>.Get(player.Language).YouAre, LevelText(player)));
 			}
-		}
-	}
-
-	[SaveableClass, DeepCopyableClass]
-	public class PlayerHungerTimer : BoundTimer {
-		public static readonly TimerKey Key = TimerKey.Acquire("_player_hunger_");
-
-		[LoadingInitializer, DeepCopyImplementation]
-		public PlayerHungerTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			Player player = (Player) cont;
-			if (player.GameState != null) { //as Sphere, only in the world
-				PlayerHunger.Tick(player);
-			}
-			this.PeriodInSeconds = HungerSettings.instance.secondsPerFoodPoint;
 		}
 	}
 
