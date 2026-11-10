@@ -82,6 +82,26 @@ into anything yet. Boot N+1 compiles again, this time against the just-rewritten
 files, producing a consistent, fully-aware assembly. A single boot leaves you one step behind
 whatever you just added.
 
+## Reusing the last build
+
+Since #1358 a boot doesn't compile what hasn't changed. Two parts:
+
+- **Generated sources are written only when their text changes.**
+  - Both generators write through `MsBuildLauncher.WriteSourceIfChanged`: `ClassTemplateParser`'s `X.Generated.cs` in `scripts/`, and `GeneratedCodeUtil`'s files in `Generated/`.
+  - Before, every boot rewrote them with the same text. The new write times made MSBuild recompile both projects every time: about 12.5 s for the scripts and 10.7 s for Generated.
+- **A fingerprint of each project's inputs.**
+  - `BuildFingerprint.Of` hashes the content of every `.cs`, `.resx`, `.csproj`, `.props` and `.targets` file below the project. The top-level `bin/` and `obj/` folders and hidden folders are left out, as the SDK's default globs do.
+  - It also hashes any `Directory.Build.*` files above the project, the `SteamEngine.*.dll` files the running GameCore was started from, the build type and the assembly number.
+  - Generated's fingerprint also covers the scripts assembly's MVID.
+  - `MsBuildLauncher.Compile` keeps it in `obj/<Configuration>/moria-build-stamp.<number>.txt`, next to the output's path, length and write time. While the stamp still matches, the output is loaded and `dotnet` doesn't run. That saves about 3 s per project even when MSBuild would find the project up to date.
+  - A failed build deletes the stamp. An output rebuilt by anything else (an IDE, a plain `dotnet build`) no longer matches the stamp. A stamp pointing outside its project (a tree copied with its `obj/`) doesn't count. An in-game recompile has a new assembly number, so it always builds.
+  - An input that can't be read, or a stamp that can't be written, only means a normal build.
+  - Generated builds with `-p:BuildProjectReferences=false`. The scripts assembly it references is the one just loaded, and building that reference again could rewrite the loaded file.
+  - Since the generated sources keep their write times, `build.ps1`'s "is generation current" check reads `Generated/generated-at.txt` instead, which `GeneratedCodeUtil` touches every time it generates.
+  - The boot log says which happened: "Reused compiled C# scripts, no source changed." or "Done compiling C# scripts.", and the same for Generated.
+
+Measured on the test servers: a boot with nothing changed reached ready in 11 s. A boot that compiled both projects took 27 s. With only the first part (MSBuild finding both projects up to date), it took 15 s.
+
 ## The manual regeneration workflow
 
 `build.ps1`'s `Invoke-ScriptGeneration` step automates this, but no `pwsh` exists in a

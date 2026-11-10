@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using SteamEngine.Common;
@@ -64,13 +65,16 @@ namespace SteamEngine.CompiledScripts {
 
 		private static bool CompileScriptsUsingMsBuild() {
 			try {
-				var file = MsBuildLauncher.Compile(".", Build.Type, "scripts/SteamEngine.Scripts.csproj", compilationNumber);
+				string fingerprint = BuildFingerprint.TryOf(Globals.ScriptsPath, Build.Type.ToString(), compilationNumber.ToString(CultureInfo.InvariantCulture));
+				var file = MsBuildLauncher.Compile(".", Build.Type, "scripts/SteamEngine.Scripts.csproj", compilationNumber, fingerprint);
+				bool reused = MsBuildLauncher.LastCompileReused;
 				var fileCollection = new CompiledScriptFileCollection(Globals.ScriptsPath, ".cs") {
 					assembly = Assembly.LoadFile(file)
 				};
 				fileCollection.GetAllFiles();
 				compiledScripts = fileCollection;
-				Console.WriteLine($"Done compiling C# scripts. ({Path.GetFileName(file)})");
+				Console.WriteLine(reused ? $"Reused compiled C# scripts, no source changed. ({Path.GetFileName(file)})"
+					: $"Done compiling C# scripts. ({Path.GetFileName(file)})");
 				return true;
 			} catch (Exception e) {
 				Logger.WriteError(e);

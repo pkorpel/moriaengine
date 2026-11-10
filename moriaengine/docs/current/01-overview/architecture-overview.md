@@ -89,8 +89,10 @@ simply load a prebuilt `SteamEngine.CompiledScripts.dll`. The relevant code is
 order:
 
 1. Invokes MSBuild against `scripts/SteamEngine.Scripts.csproj` (`CompilerInvoker.
-   CompileScriptsUsingMsBuild`, logged as "Compiling scripts...") - a fresh, real compile
-   of every `.cs` file under `scripts/`, every time.
+   CompileScriptsUsingMsBuild`, logged as "Compiling scripts...") - a real compile of every
+   `.cs` file under `scripts/` when anything changed. Since #1358 a boot with nothing
+   changed reuses the last build without running `dotnet` at all ("Reused compiled C#
+   scripts"; see [scripting-pipeline.md](../02-engine-core/scripting-pipeline.md#reusing-the-last-build)).
 2. Registers the resulting assembly's classes (`ClassManager.InitClasses`).
 3. Runs the **central** code generator (`GeneratedCodeUtil.WriteOutAndCompile`), which
    writes a handful of files directly into the repo-root `Generated/` folder - one per
