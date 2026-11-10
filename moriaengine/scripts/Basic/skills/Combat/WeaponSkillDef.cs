@@ -60,6 +60,9 @@ namespace SteamEngine.CompiledScripts {
 		// print on every single hit instead of once per engagement.
 		static TagKey lastAttackedTargetTK = TagKey.Acquire("_combatMessagesLastTarget_");
 
+		/// <summary>#1396 - Erebor's @hittry on a player starting a swing (not GMs), as the swing is drawn.</summary>
+		private static readonly TriggerKey tkHitTry = TriggerKey.Acquire("hitTry");
+
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
@@ -183,7 +186,7 @@ namespace SteamEngine.CompiledScripts {
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
 					if ((self is Player) && !self.IsGM) { //#976 - Erebor's @hittry
-						PlayerHunger.HurtIfStarving(self);
+						self.TryTrigger(tkHitTry, skillSeqArgs.scriptArgs); //#1396 - hunger answers it (HungerPlugin.On_HitTry)
 						if (!WorkLight.CheckWithMessage(self)) {
 							skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
 							skillSeqArgs.DelayStroke();

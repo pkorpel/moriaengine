@@ -434,7 +434,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override TriggerResult On_LogIn() {
-			PlayerHunger.StartTicking(this); //#924
+			HungerPlugin.Install(this); //#924, #1396
 			this.DeleteTimer(charLingeringTimerTK); //cancel any pending logout-delay removal - reconnecting resumes this body in place
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {

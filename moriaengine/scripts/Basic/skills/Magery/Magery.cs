@@ -115,7 +115,6 @@ namespace SteamEngine.CompiledScripts {
 		//checking and consuming resources
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			PlayerHunger.HurtIfStarving(self); //#924 - @spellcast
 			if (self.CanInteractWithMessage(skillSeqArgs.Target1)) {
 				SpellDef spell = (SpellDef) skillSeqArgs.Param1;
 
@@ -153,6 +152,9 @@ namespace SteamEngine.CompiledScripts {
 						return TriggerResult.Cancel;
 					}
 					self.TryTrigger(tkSpellCast, skillSeqArgs.scriptArgs); //#1386 - Sphere's @spellCast, the cast is under way
+					if (self.Flag_Dead) {
+						return TriggerResult.Cancel; //#1396 - starved to death by it
+					}
 
 					SpellCastRules.DropManaShield(self, spell, skillSeqArgs.Target1);
 					AnimCalculator.PerformAnim(self, GenericAnim.Cast);
