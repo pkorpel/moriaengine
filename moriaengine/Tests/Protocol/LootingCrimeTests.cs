@@ -104,6 +104,27 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1023 - Erebor's limits on a player's body: none of it in the first seconds (a real pickup refused),
+		/// then one item per 0.8 s with a short hold, and nobody just dead below Grandmaster takes from others.</summary>
+		[Fact]
+		public void ErebosLimitsOnAPlayersBody() {
+			using (var a = this.Connect("Loot Gamma", AccountA, false)) {
+				this.Ask(a, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+				var b = this.Connect("Loot Delta", AccountB, false);
+				try {
+					this.Ask(b, ".TestLootOwner", "LOOT_OWNER:");
+					this.pack = Number(this.Ask(a, ".TestLootLooter", "LOOT_LOOTER:"), "pack=");
+					this.Realms(a, "GM"); //no crime to muddle it
+					Assert.Contains("took=False", this.Loot(a, "W", false)); //this moment dead: nothing yet
+					Assert.Contains("took=True", this.Loot(a));
+					Assert.Contains("wait=True first=True held=True tooFast=True freshDead=True grandmaster=True monsterFree=True",
+						this.Ask(a, ".TestLootLimits", "LOOT_LIMITS:"));
+				} finally {
+					b.Dispose();
+				}
+			}
+		}
+
 		private static uint Number(string line, string key) {
 			int start = line.IndexOf(key, StringComparison.Ordinal) + key.Length;
 			return uint.Parse(line.Substring(start, line.IndexOf(' ', start) - start), CultureInfo.InvariantCulture);

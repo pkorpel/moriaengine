@@ -75,11 +75,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Notoriety.ClearCriminal(self);
 			Notoriety.ClearCriminal(owner);
+			self.RemoveTag(TagKey.Acquire("_nextLoot_")); //#1023 - the rate and the hold start afresh
+			self.RemoveTag(TagKey.Acquire("_lootHoldUntil_"));
 			Console.WriteLine("LOOT_CLEAN: done");
 		}
 
 		/// <summary>A corpse beside me with something in it. C = its owner is a criminal, F = the thing
-		/// can't be picked up, N = a monster's corpse.</summary>
+		/// can't be picked up, N = a monster's corpse, W = a body this moment dead (#1023: the others died 10 s ago,
+		/// past Erebor's first seconds when a body can't be looted).</summary>
 		[SteamFunction]
 		public static void TestLootStage(Character self, ScriptArgs sa) {
 			string kind = sa.Args.Trim().Trim('"');
@@ -93,11 +96,49 @@ namespace SteamEngine.CompiledScripts {
 				owner.CauseDeath(null);
 			}
 			Corpse corpse = Corpses(owner)[0];
+			if (kind != "W") {
+				corpse.SetTag(TagKey.Acquire("_diedAt_"), Globals.TimeInSeconds - 10);
+			}
 			loot = (Item) ThingDef.GetByDefname("i_dagger").Create(corpse);
 			if (kind == "F") {
 				loot.Flag_NonMovable = true;
 			}
 			Console.WriteLine("LOOT_STAGE: corpse=" + (uint) corpse.FlaggedUid + " item=" + (uint) loot.FlaggedUid + " ownerOfCorpse=" + (corpse.Owner != null) + " end");
+		}
+
+		/// <summary>#1023 - Erebor's limits on a player's body, through CorpseLooting itself.</summary>
+		[SteamFunction]
+		public static void TestLootLimits(Character self) {
+			Player looter = (Player) self;
+			TestLootStage(self, new ScriptArgs("W"));
+			Corpse corpse = Corpses(owner)[0];
+			bool wait = CorpseLooting.Refusal(looter, corpse) == "Z tohoto tela jeste nemuzes nic brat.";
+			corpse.SetTag(TagKey.Acquire("_diedAt_"), Globals.TimeInSeconds - 10);
+			bool first = CorpseLooting.Refusal(looter, corpse) == null;
+			bool held = !CorpseLooting.CheckCanMove(looter);
+			bool tooFast = CorpseLooting.Refusal(looter, corpse) == "Ne tak rychle!";
+			looter.SetTag(TagKey.Acquire("_levelingLastDeathTime_"), Globals.TimeAsSpan); //just died himself
+			looter.RemoveTag(TagKey.Acquire("_nextLoot_"));
+			SkillRank rank = looter.SkillRank;
+			looter.SkillRank = SkillRank.Master;
+			bool freshDead = CorpseLooting.Refusal(looter, corpse) == "Jeste nemuzes obirat cizi mrtvoly.";
+			looter.SkillRank = SkillRank.Grandmaster;
+			looter.RemoveTag(TagKey.Acquire("_nextLoot_"));
+			bool grandmaster = CorpseLooting.Refusal(looter, corpse) == null;
+			looter.SkillRank = rank;
+			looter.RemoveTag(TagKey.Acquire("_levelingLastDeathTime_"));
+			Corpse rabbit = null;
+			NPC hare = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(owner.P());
+			hare.CauseDeath(null);
+			foreach (Thing t in owner.GetMap().GetThingsInRectangle(new ImmutableRectangle(owner.X - 1, owner.Y - 1, owner.X + 1, owner.Y + 1))) {
+				if ((t is Corpse c) && (c.Owner == null)) {
+					rabbit = c;
+				}
+			}
+			bool monsterFree = (rabbit != null) && (CorpseLooting.Refusal(looter, rabbit) == null) && (CorpseLooting.Refusal(looter, rabbit) == null);
+			TestLootClean(self);
+			Console.WriteLine("LOOT_LIMITS: wait=" + wait + " first=" + first + " held=" + held + " tooFast=" + tooFast + " freshDead=" + freshDead +
+				" grandmaster=" + grandmaster + " monsterFree=" + monsterFree + " end");
 		}
 
 		[SteamFunction]

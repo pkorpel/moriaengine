@@ -39,8 +39,18 @@ criminal/murderer (killing a criminal isn't a murder). Same player-only scope re
 
 ## Looting
 
-Anyone can take from any corpse, nothing refuses it. Taking from a player's corpse (#918) also flags the looter
-criminal when all of this holds:
+A player's body has Erebor's limits (#1023, `t_item_in_corpse`, `CorpseLooting.cs`; numbers on `.settings`
+Notoriety):
+
+- nothing can be taken in the first 3 s after the death ("Z tohoto tela jeste nemuzes nic brat.");
+- one item per 0.8 s ("Ne tak rychle!"; a refused pick starts the wait again);
+- each pick holds the looter still for 0.5 s, picks adding up (`i_looter_immobilizer`; walking only, not acting);
+- below Grandmaster, someone who died in the last 5 minutes (`i_checkstats_timer`, the same window that spares them
+  experience) may not take from another's body ("Jeste nemuzes obirat cizi mrtvoly.").
+
+GMs and monsters' bodies are free. Erebor's crime rule there (outside your guild, unless the owner is a murderer) isn't
+ported: the user kept #918's below. Taking from a player's corpse (#918) flags the looter criminal when all of this
+holds:
 
 - the owner and the looter are of the same realm, and that realm's `.settings` switch is on:
   `gondorLootingIsACrime` (on) or `mordorLootingIsACrime` (off);
