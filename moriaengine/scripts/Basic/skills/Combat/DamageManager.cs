@@ -287,7 +287,6 @@ namespace SteamEngine.CompiledScripts {
 			if (Camp.ProtectsFrom(attacker, defender)) {
 				return; //#1107 - e_lagr_nodmg's @BeforeSwing
 			}
-			PlayerHunger.HurtIfStarving(attacker); //#924 - @hittry
 			HidingSkillDef.Reveal(attacker); //#962
 			WeaponSwingArgs swingArgs = GetWeaponSwingArgs(attacker, defender);
 			SoundCalculator.PlayAttackSound(attacker);
