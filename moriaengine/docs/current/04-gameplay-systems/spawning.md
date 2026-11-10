@@ -99,3 +99,5 @@ defined at the Def level, unaffected by this ordering. Fixed by swapping the ord
 ## See also
 
 [Pets & NPC AI](pets-and-npc-ai.md) for what happens to an NPC once it's spawned.
+
+A spawn can be guarded by other spawns: see [guard bosses](guard-boss.md) (#1234).

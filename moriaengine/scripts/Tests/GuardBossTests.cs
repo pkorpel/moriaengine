@@ -95,6 +95,10 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestGuardBossKill(Character self, ScriptArgs sa) {
 			int i = "abc".IndexOf(sa.Args.Trim().Trim('"'), StringComparison.Ordinal);
 			NPC npc = MonsterOf(Gems(self)[i]);
+			if (npc == null) {
+				Console.WriteLine("GUARD_BOSS_KILL: none");
+				return;
+			}
 			self.AddTimer(DeferredSpawnedNpcKillTimer.TimerKey, new DeferredSpawnedNpcKillTimer(npc)).DueInSeconds = 0;
 			Console.WriteLine("GUARD_BOSS_KILL: done");
 		}

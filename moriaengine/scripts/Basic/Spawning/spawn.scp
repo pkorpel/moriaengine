@@ -38,6 +38,7 @@ if(<tag.spawnedCount> < <tag.spawnInfo.Amount> )
 endif
 
 [function spawn] //argv(0) - chardef which to create
+tag.remove(_spawnEditGem_) //#1234 - a new spawn, not the last edited gem (a dialog closed without an answer left it)
 if (argvcount==0)
  if(!tag.exists(_spawndialog_data_))
   tag._spawndialog_data_ = SpawnInfo(3,c_a_jackrabbit,1,2,1)

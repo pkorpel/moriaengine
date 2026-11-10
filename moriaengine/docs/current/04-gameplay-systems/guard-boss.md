@@ -4,8 +4,9 @@ Erebor's guard boss system (`systems/guardBossSystem.scp`, `.guardBoss`). Code: 
 the button in `spawn.scp`'s `d_spawn`.
 
 A spawn can be guarded by other spawns. While a monster of any of its guard spawns lives, the guarded spawn's monsters
-take no damage: swings, spells, poison and bleeding, fields and abilities all go through one check in
-`DamageManager.CauseDamage`. They can still be attacked, and on 1 hit in 5 they say one of Erebor's lines ("Muj strazce
+take no damage: swings, spells, poison and bleeding, fields and the abilities that deal damage go through one check in
+`DamageManager.CauseDamage` (a few effects that set hit points directly, such as a shaman's voodoo, still work, as they
+did on Erebor). They can still be attacked, and on 1 hit in 5 they say one of Erebor's lines ("Muj strazce
 je na zivu!", "Nemuzes mne zranit!", "Kouzla ani zbrane mi neublizi!", "Muhaha!"). Once every guard's monsters are dead,
 they're hurt as usual, until a guard respawns: tune the guards' respawn times.
 

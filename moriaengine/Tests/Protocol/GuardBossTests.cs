@@ -61,8 +61,9 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(Number(hit, "b=") > 0, hit);
 
 				//B's monster dies: A can be hurt
-				this.Ask(gm, ".TestGuardBossKill \"b\"", "GUARD_BOSS_KILL:");
-				Thread.Sleep(1000);
+				int killed = this.fixture.GameOutputSnapshot().Length;
+				Assert.Contains("GUARD_BOSS_KILL: done", this.Ask(gm, ".TestGuardBossKill \"b\"", "GUARD_BOSS_KILL:"));
+				Assert.True(this.fixture.WaitForGameOutputSince("SPAWN_KILL_TEST: killed", killed, Wait));
 				hit = this.Ask(gm, ".TestGuardBossHit", "GUARD_BOSS_HIT:");
 				Assert.Contains(" b=dead ", hit);
 				Assert.True(Number(hit, "a=") > 0, hit);

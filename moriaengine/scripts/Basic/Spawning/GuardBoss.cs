@@ -61,7 +61,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>f_guardBossSystem_hasGuard: a guard gem of this NPC's own gem still has a monster alive.</summary>
 		public static bool IsGuarded(Character ch) {
-			if (!(ch is NPC) || !(ch.GetTag(spawnGemTK) is Item bossGem) || (bossGem.GetTag(countTK) == null)) {
+			if (!(ch is NPC) || ch.IsDeleted || !(ch.GetTag(spawnGemTK) is Item bossGem) || (bossGem.GetTag(countTK) == null)) {
 				return false;
 			}
 			foreach (Item guard in GuardsOf(bossGem)) {
@@ -72,10 +72,14 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>DamageManager.CauseDamage: true loses the damage.</summary>
-		internal static bool Refuses(Character defender) {
+		/// <summary>DamageManager.CauseDamage: true loses the damage. The effect and a line only for someone's hit, not for
+		/// a bleeding tick (Erebor's came from @beforegetswing and @beforegeteffect).</summary>
+		internal static bool Refuses(Character attacker, Character defender) {
 			if (!IsGuarded(defender)) {
 				return false;
+			}
+			if (attacker == null) {
+				return true;
 			}
 			EffectFactory.StationaryEffect(defender, 0x37B9, 10, 5);
 			if (Globals.dice.Next(5) == 0) {
@@ -216,6 +220,9 @@ namespace SteamEngine.CompiledScripts {
 
 	public class Targ_GuardBoss : CompiledTargetDef {
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			if (!self.IsGM || !GuardBoss.IsGem((Item) parameter)) {
+				return TargetResult.Done;
+			}
 			string refusal = GuardBoss.Link((Item) parameter, targetted);
 			if (refusal != null) {
 				self.RedMessage(refusal);
