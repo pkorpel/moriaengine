@@ -285,10 +285,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>The stone carries the force's clock, so a save keeps it.</summary>
+		//#904 - a city's king's force its own key: a stone may also carry the capital's (an office bound there for a while)
+		private TimerKey CheckKey {
+			get { return (this.kingsStone != null) ? TimerKey.Acquire("_guardForceCheck_" + this.city + "_") : checkTK; }
+		}
+
 		public void EnsureCheckTimer(TagHolder stone) {
-			if (stone.GetTimer(checkTK) == null) {
+			TimerKey key = this.CheckKey;
+			if (stone.GetTimer(key) == null) {
 				GuardForceTimer timer = new GuardForceTimer { force = this };
-				stone.AddTimer(checkTK, timer);
+				stone.AddTimer(key, timer);
 				timer.DueInSeconds = 60;
 				timer.PeriodInSeconds = 60;
 			}

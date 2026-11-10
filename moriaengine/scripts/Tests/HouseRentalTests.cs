@@ -71,7 +71,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestRentalOffice(Character self) {
 			foreach (Thing thing in Thing.AllThings) {
 				RealmStone stone = thing as RealmStone;
-				if ((stone != null) && (RealmOffice.For(Realm.Gondor) == null)) {
+				if ((stone != null) && (stone == RealmStone.CapitalStone(Realm.Gondor)) && (RealmOffice.For(Realm.Gondor) == null)) { //#904 - Minas Tirith's
 					RealmOffice.ForStone(stone, Realm.Gondor);
 				}
 			}

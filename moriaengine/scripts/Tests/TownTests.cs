@@ -98,7 +98,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestRealmStone(Character self) {
 			foreach (Thing thing in Thing.AllThings) {
-				if (thing is RealmStone stone) {
+				if ((thing is RealmStone stone) && (stone == RealmStone.CapitalStone(Realm.Gondor))) { //#904 - every city has one now
 					self.P(stone.P());
 					Console.WriteLine("REALM_STONE: uid=" + (uint) stone.FlaggedUid + " end");
 					return;
@@ -273,13 +273,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestNazgulDismiss(Character self) {
 			//#910 - as a live server would be: someone has used the lord nazguls' stone in Barad-dur, which makes it the office's stone
-			ThingDef lordStone = ThingDef.GetByDefname("i_lordnazgulsstone");
-			foreach (Thing thing in Thing.AllThings) {
-				if ((thing is Item stone) && (stone.Def == lordStone)) {
-					RealmOffice.ForStone(stone, Realm.Mordor);
-					break;
-				}
-			}
+			RealmOffice.ForStone(RealmStone.CapitalStone(Realm.Mordor), Realm.Mordor); //#904 - Barad-dur's, of the five
 			RealmOffice.For(Realm.Mordor).Dismiss();
 			Console.WriteLine("NAZGUL_DISMISSED: done");
 		}
