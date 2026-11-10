@@ -158,7 +158,6 @@ namespace SteamEngine.Tests.Protocol {
 			return this.Ask(client, ".TestNazgulReport", "NAZGUL_REPORT:");
 		}
 
-		/// <summary>The overhead name as a client gets it, 0xAE's text after the 30 byte name field.</summary>
 		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
 			DateTime deadline = DateTime.UtcNow + timeout;
 			while (DateTime.UtcNow < deadline) {
@@ -175,6 +174,7 @@ namespace SteamEngine.Tests.Protocol {
 			return null;
 		}
 
+		/// <summary>The overhead name as a client gets it, 0xAE's text after the 30 byte name field.</summary>
 		private static void AssertNameSent(TestGameClient client, string name) {
 			const int TextOffset = 47;
 			DateTime deadline = DateTime.UtcNow + Wait;

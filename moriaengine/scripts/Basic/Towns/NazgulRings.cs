@@ -311,7 +311,7 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Nejsi Prvni Nazhgul! Nemas pravo privolat Fella.");
 			} else if (self.Fame <= RealmSettings.instance.fellFame) {
 				self.RedMessage("Pouze jako " + (self.IsFemale ? "Lady" : "Lord") + " muzes privolat Fella.");
-			} else if ((ring.GetTag(nextSwitchTK) is double next) && (Globals.TimeInSeconds < next)) {
+			} else if ((ring.GetTag(nextSwitchTK) != null) && (Globals.TimeInSeconds < Convert.ToDouble(ring.GetTag(nextSwitchTK), CultureInfo.InvariantCulture))) { //a whole number loads as an int
 				self.RedMessage("Tento prikaz jeste nemuzes pouzit.");
 			} else {
 				if (ring.GetTag(fellTK) == null) {
