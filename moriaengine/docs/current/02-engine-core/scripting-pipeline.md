@@ -1,9 +1,8 @@
 # Scripting & code generation pipeline
 
 moriaengine content is split across three genuinely different file roles, plus two
-*different* code-generation mechanisms that turn parts of it into real C#. Confusing one
-for the other is a common source of wasted time (confirmed repeatedly across this project's
-own session history) - this page exists to make the distinction unambiguous.
+*different* code-generation mechanisms that turn parts of it into real C#. Both run at
+every boot.
 
 ## The three content file types
 
@@ -21,38 +20,62 @@ compiled - see [lscript.md](lscript.md).
 ## Mechanism 1: `.ct` → per-class generated C# (`ClassTemplateParser`)
 
 `GameCore/CompiledScripts/ClassTemplates/ClassTemplateParser.cs` reads every `.ct` file under
-`scripts/` at boot and, for each `[ThingTemplate ClassName : BaseClassName]` section, writes
-a **co-located** `<ClassName>.Generated.cs` file - sitting right next to the `.ct` file it
-came from (e.g. `Item.ct` → `Item.Generated.cs`, in the same `scripts/Basic/ItemClasses/`
-directory). This is a completely different output location from the central `Generated/`
-folder at the repo root - see mechanism 2 below.
+`scripts/` at boot and writes one `<file name>.Generated.cs` per `.ct` file, right next to
+it, holding every `[ThingTemplate ...]` and `[PluginTemplate ...]` section of that file (e.g.
+`Item.ct` → `Item.Generated.cs`; `skills/Combat/Plugins.ct` → `Plugins.Generated.cs` with two
+plugins). This is a different place from the central `moriaengine/Generated/` folder - see
+mechanism 2 below.
 
 A `.ct` file has two sections:
 
 ```
 [ThingTemplate Item : AbstractItem]
-Def:    // def-level fields - become FieldValue-backed properties on ItemDef,
-        // settable from .def content, shared by every instance unless overridden
-    public ItemAttributes attributesDefault = ItemAttributes.none
-Vars:   // instance-level fields - become plain fields on Item itself,
-        // with auto-generated Save/Load code
-    private ItemAttributes attributes = ItemAttributes.none
+Def:	//vars on the def
+	public ResourcesList resources = null
+	...
+	public ResourcesList skillMake = null
+	//how hard it is to craft this item (value compared against the skill (1000=100.0)
+	public int difficulty = 1000
+	public LightType light = (LightType) 0
+Vars:	//vars defined in the class, so they basically do what tags do, but better
 ```
 
-(real example, trimmed - see `scripts/Basic/ItemClasses/Item.ct`). For each `Def:` field,
-the generated code calls `this.InitTypedField(name, defaultValue, type)` in the def's
-constructor and generates a get/set property wrapping a `FieldValue` (see
-[persistence-and-saving.md](persistence-and-saving.md)) - this is what lets a `.def` line
-like `ATTR = attr_static|attr_magic` set `ItemDef.AttributesDefault` with zero custom parsing
-code (the generic `FieldValue`/`ConvertTools.ConvertTo` pipeline already handles pipe-
-separated `[Flags]` enum values for *any* `Def:` field of that shape). For each `Vars:`
-field, the generated code emits the plain field declaration plus generated Save/Load/
-DeepCopy support.
+(`scripts/Basic/ItemClasses/Item.ct` as the original engine had it). For each `Def:` field
+the generated def constructor calls `this.InitTypedField(name, defaultValue, type)` and the
+def gets a property wrapping that `FieldValue` (see
+[persistence-and-saving.md](persistence-and-saving.md)), so a `.def` line `DIFFICULTY = 500`
+sets `ItemDef.Difficulty` with no parsing code. The field is named for what it is: every def
+value is the default for things made from that def, so a `Def:` field's name never says
+"default". For each `Vars:` field the generated code declares the field on the thing's class
+with its save, load and deep-copy code.
+
+### A def value and a thing's own value
+
+A thing reads a value from its def in one of three ways, all in the original engine:
+
+- **The def's value only.** The thing has no field of its own and always asks the def:
+  an item's weight is its def's weight per piece times its amount (`Item.Weight`,
+  `scripts/Basic/ItemClasses/Item.cs`).
+- **Copied when the thing is made.** The thing has its own field, filled from the def at
+  creation and changed freely after; a later change to the def doesn't touch things already
+  made. `Thing`'s `model` and `color` (`this.model = myDef.Model`, `GameCore/Thing.cs`); the
+  model is saved only when it differs from the def's, the colour whenever it isn't 0.
+- **Falls back to the def while unset.** The thing's field stays `null` until something sets
+  it, and the getter returns the def's value meanwhile: an item's `name` (`AbstractItem.Name`
+  returns the def's name, or its plural for a stack, while `name` is null; saved only when it
+  differs from the def's).
+
+Pick by whether a later change to the def should reach things already in the world (first
+and third) or not (second). `Item`'s Sphere `ATTR` flags (#215/#217) are the second kind: a
+`Def:` field and a `Vars:` field, the instance's copied in `Item.On_Create`. Their def field
+is called `attributesDefault` with a hand-written `"attr"` alias in
+`AbstractItemDef.LoadScriptLine`; renaming it to `attributes` is part of the dev-feedback
+batch (see `CLAUDE.md`).
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 
-A second, unrelated generation pass produces six files directly under the repo-root
-`Generated/` folder:
+A second, unrelated generation pass produces six files directly under the
+`moriaengine/Generated/` folder:
 
 - `CompiledScriptHolders.Generated.cs` - one generated dispatch class per `[SteamFunction]`
   method, so a chat command like `.Reveal` resolves to the right method.
@@ -74,13 +97,19 @@ actually does that reflection - after the scripts assembly is compiled, it walks
 `assembly.GetTypes()` and, for example, calls `CompiledScriptHolderGenerator.AddCompiledSHType`
 for every method carrying `[SteamFunctionAttribute]`.
 
-**This is why two boots are needed to pick up a new `[SteamFunction]` or `[ViewableClass]`
-member**: boot N compiles whatever scripts source exists, and *then* (only after that
-compile) reflects over the result to refresh each generator's data and rewrite the six
-`Generated/*.Generated.cs` files - but those freshly-rewritten files haven't been compiled
-into anything yet. Boot N+1 compiles again, this time against the just-rewritten generated
-files, producing a consistent, fully-aware assembly. A single boot leaves you one step behind
-whatever you just added.
+### One boot does both
+
+A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
+
+1. `ClassTemplateParser.Init()` writes every `.ct`'s `X.Generated.cs` into `scripts/`;
+2. the scripts project is compiled and loaded, and `ClassManager` reflects over it, feeding
+   each generator;
+3. `GeneratedCodeUtil.WriteOutAndCompile` writes the six `Generated/*.Generated.cs` files and
+   compiles the Generated project against the scripts assembly just loaded, then loads it.
+
+So a new `[SteamFunction]`, `[ViewableClass]` member or `.ct` field is picked up by the next
+boot, once. Checked 2026-11-10: with all six `Generated/*.Generated.cs` files deleted, one
+boot came up, passed `BootLogTests` and wrote them again.
 
 ## Reusing the last build
 
@@ -102,27 +131,12 @@ Since #1358 a boot doesn't compile what hasn't changed. Two parts:
 
 Measured on the test servers: a boot with nothing changed reached ready in 11 s. A boot that compiled both projects took 27 s. With only the first part (MSBuild finding both projects up to date), it took 15 s.
 
-## The manual regeneration workflow
+## Building outside a boot
 
-`build.ps1`'s `Invoke-ScriptGeneration` step automates this, but no `pwsh` exists in a
-typical Linux dev sandbox, so the equivalent manual sequence (used throughout this project's
-own session history) is:
-
-1. Delete all six `Generated/*.Generated.cs` files.
-2. Run `dotnet GameCore/bin/Debug/net8.0/SteamEngine.GameCore.dll`, wait for `"Init done."` /
-   `"Getting started"` in its stdout, then stop it.
-3. Run it again, same wait condition.
-4. `dotnet build SteamEngine.sln -c Debug`.
-
-**When this is actually needed**: adding or renaming a `[SteamFunction]` method, adding a new
-public property to a `[ViewableClass]` type (so it shows up in `.info`), or anything else
-that changes what the attribute-scanning pass in mechanism 2 would discover. A plain
-`dotnet build` is *not* sufficient for these - the stale generated files will either fail to
-reference the new member (a `CS0117`/`CS1061` compile error) or, worse, silently not expose
-it at runtime while still compiling fine against old metadata.
-
-**When a plain `dotnet build` is enough**: any change to a `.ct` file (that regenerates
-automatically the next time `GameCore.dll` boots, via mechanism 1, independent of mechanism
-2's two-boot requirement - though in practice, since both run during the same boot, the
-"delete + boot twice" sequence above regenerates both mechanisms' output together), or any
-ordinary code change that doesn't add new attribute-discoverable members.
+A plain `dotnet build` of the solution (an IDE, the test scripts, the pre-push hook) compiles
+the scripts and Generated projects from the generated files already on disk. On a fresh
+checkout there are none, so `build.ps1`'s `Invoke-ScriptGeneration` boots GameCore first (twice
+when the first boot has to write `steamengine.ini` and exits), and again whenever a `.ct` or
+`.cs` source is newer than `Generated/generated-at.txt`. After a change that removes or renames something a generated file refers to (a
+`[SteamFunction]` method, a `.ct` field), the old generated file can fail such a build until
+the next boot rewrites it.

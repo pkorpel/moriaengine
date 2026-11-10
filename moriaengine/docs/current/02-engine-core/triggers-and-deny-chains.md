@@ -1,19 +1,19 @@
 # Triggers & deny chains
 
-Most state-changing actions in this engine - picking something up, dropping it, equipping
-it, opening a door, starting a trade - go through the same two-layer dispatch shape:
+Most actions a character takes on a thing - picking it up, dropping it, equipping it,
+starting a trade - first ask whether it's allowed, through a chain of deny triggers. Each
+step of the chain is the same two-layer dispatch:
 
-1. **`TryCancellableTrigger`** checks whether a script (a `.scp`/`.def` trigger group
-   attached to the object, or dynamically via `AddTriggerGroup`) wants to intercept the
-   action. Scripts can return `TriggerResult.Cancel` to stop everything that follows.
-2. **A virtual `On_XxxYyy` C# method** is the compiled-script override point for the same
-   event - the thing most of this session's own work (the item ATTR flag system, #217-#225)
-   actually overrides, since none of that logic needs to be script-reachable.
+1. **`TryCancellableTrigger`** runs the thing's trigger groups and plugins, in the order
+   given in [plugins.md](plugins.md#how-triggers-reach-a-plugin) (registered groups, the
+   thing's `EVENTS`, its plugins, its def's `on=@x` lines and `TEVENTS`, an item's `TYPE`).
+   Returning `1` (`TriggerResult.Cancel`) ends the chain.
+2. **A virtual `On_XxxYyy` C# method** on the thing's class, the compiled override point for
+   the same event.
 
-For actions that can be *denied* rather than just observed, both layers share one more
-piece: a `DenyResult` object threaded through as `args.Result`, which the whole chain
-contributes to and which the caller inspects at the end - not the `TriggerResult` returned by
-any individual step.
+The steps share one `args` object carrying a `DenyResult` (`args.Result`, allowed to begin
+with). A step denies by setting `args.Result`, and usually cancels as well; the caller reads
+`args.Result` at the end.
 
 ## DenyResult
 
@@ -39,72 +39,53 @@ entirely. The item ATTR flag work (#217-#225) gave both their first real callers
 messages - worth checking this table for an existing fit before adding a new `DenyResult`
 instance.
 
-## Three worked examples
+## Two worked examples
 
-**Pickup** (`AbstractCharacter.CanPickup` → `Trigger_DenyPickupItem`,
-`GameCore/ThingManipulationTriggers.cs:1038,1048`): checks, in order, the picking
-character's own `@denyPickupItem` trigger/`On_DenyPickupItem`, then the item's own
-`@denyPickup` trigger/`Item.On_DenyPickup` (`scripts/Basic/ItemClasses/Item.cs:158`) - this is
-where `Flag_NonMovable`, `attr_lockeddown`/`attr_secure`, and `attr_owned` all deny a pickup
-- and finally, *only if the item is inside a container*, the container's own
-`On_DenyPickupItemFrom` (`GameCore/ThingManipulationTriggers.cs:702`, overridden at
-`scripts/Basic/ItemClasses/Item.cs:198` for `attr_secure`'s access restriction).
+**Pickup** (`AbstractCharacter.CanPickup` -> `Trigger_DenyPickupItem`,
+`GameCore/ThingManipulationTriggers.cs:1055,1065`), in order: the picking character
+(`@denyPickupItem`, `On_DenyPickupItem`), the item (`@denyPickup`, `Item.On_DenyPickup`: a
+house lock, `Flag_NonMovable`, the `attr_` flags), then where the item is: its container
+(`@denyPickupItemFrom`, `Item.On_DenyPickupItemFrom`: `attr_secure`'s access, a trade box's
+owner, corpse looting rules, a container locked against the taker), the character holding
+it (`@denyPickupItemFrom`, `On_DenyPickupItemFrom`), or, on the ground, its region.
 
-**Ground placement** (`Character.TryPutItemOnGround` → `On_DenyPutOnGround`,
-`GameCore/ThingManipulationTriggers.cs`): the same shape, one layer shallower - the dropping
-character's trigger, then the item's own `On_DenyPutOnGround`
-(`scripts/Basic/ItemClasses/Item.cs:184`, where `attr_nodroptrade` denies the drop).
+**Ground placement** (`AbstractCharacter.TryPutItemOnGround`,
+`ThingManipulationTriggers.cs:1287`): the dropping character, the item
+(`Item.On_DenyPutOnGround`, where `attr_nodroptrade` denies), then the region
+(`Region.Trigger_DenyPutItemOn`); the default reach check there is `CanReachCoordinates`.
 
-**Doors** (`Door.Trigger_Open`/`Trigger_Close`, `scripts/Basic/ItemClasses/Door.cs:65,92`):
-the opening/closing character's `@denyOpenDoor`/`On_DenyOpenDoor`, then the door's own
-`@denyOpen`/`On_DenyOpen` (`Door.cs:119`) or `@denyClose`/`On_DenyClose` (`Door.cs:122`).
-*(Note: `Door.cs` has legacy non-UTF-8 byte sequences in its string literals - a plain
-`grep -r` across this file silently drops matches; use `grep --binary-files=text` when
-searching it, a gotcha this codebase hits repeatedly - see [Known gotchas](
-../07-testing/known-gotchas.md).)*
-
-## The gotcha: a correct allow and a denial for an unrelated reason look identical
-
-`AbstractCharacter.CanPickup` (`GameCore/ThingManipulationTriggers.cs:1038`):
+## Permission first, then reach
 
 ```csharp
 public DenyResult CanPickup(AbstractItem item) {
-    TriggerResult triggerResult;
-    DenyResult denyResult = this.Trigger_DenyPickupItem(item, out triggerResult);
-    if (triggerResult != TriggerResult.Cancel && (denyResult.Allow)) {
-        return this.CanReach(item);
-    }
-    return denyResult;
+	TriggerResult triggerResult;
+	DenyResult denyResult = this.Trigger_DenyPickupItem(item, out triggerResult);
+	//default implementation, can be skipped by returning true (cancelling)
+	if (triggerResult != TriggerResult.Cancel && (denyResult.Allow)) {
+		return this.CanReach(item);
+	}
+	return denyResult;
 }
 ```
 
-`CanReach` - the distance/line-of-sight/container-open check (`GameCore/
-CanSeeImplementation.cs:172`, delegating to `OpenedContainers.HasContainerOpenFromAt` for
-anything inside a container) - only runs **after** the entire deny-trigger chain has already
-allowed the action. This means:
+The deny chain decides whether this character may take this item at all: the rules of
+ownership, locks, flags and scripts. `CanReach` (`GameCore/CanSeeImplementation.cs`) then
+decides whether they can from where they are: whether they can see it, distance, line of
+sight, and, for an item in a container, that they have that container open (`OpenedContainers.HasContainerOpenFromAt`), as
+a client can only take from a container it has opened.
 
-- A test character standing too far from an item, or trying to take something out of a
-  container it never explicitly double-clicked open, gets denied for a reason that has
-  nothing to do with whatever deny-trigger logic is actually under test. The observable
-  symptom - the item just doesn't move - is identical either way.
-- **A `void`-returning deny method doesn't short-circuit anything by itself.**
-  `On_DenyPickupItemFrom` returns `void`, not `TriggerResult` - looking at `Trigger_
-  DenyPickupItem`'s own dispatch (`GameCore/ThingManipulationTriggers.cs:1048`), the
-  `TriggerResult` that actually gets checked next comes only from the *trigger* call
-  (`contItem.TryCancellableTrigger(TriggerKey.denyPickupItemFrom, args)`) immediately before
-  it - the `On_DenyPickupItemFrom(args)` call itself can only influence anything by mutating
-  `args.Result` directly. It works because `Trigger_DenyPickupItem` always returns
-  `args.Result` at the end regardless of what any intermediate `TriggerResult` said, and
-  `CanPickup` only calls `CanReach` if `denyResult.Allow` - so setting `args.Result` to a deny
-  instance *does* correctly skip `CanReach`, it just does it through the `Result` value, not
-  through `TriggerResult.Cancel`.
+The reach check is the default, which the chain can replace, as the original comment says:
+a step that cancels while leaving `args.Result` allowed lets the action through without
+`CanReach`, and without the later steps of the chain (a `@denyPickupItem` that cancels skips
+the item's locks and the container's rules too). The steps whose cancel counts are the
+character's `@denyPickupItem`/`On_DenyPickupItem`, the item's `@denyPickup`/`On_DenyPickup`
+and the container's or holder's `@denyPickupItemFrom` trigger; `On_DenyPickupItemFrom` and
+the region's step can only deny, through `args.Result`. A step that denies is answered with
+its own message, wherever the character stands.
 
-This combination bit two different pieces of #221/#223/#224 test-writing directly: a GM
-character couldn't even *target* their own un-revealed invisible item (`HandleTarget`,
-`GameCore/Networking/GameState.cs`, checks `self.CanSeeForUpdate(thing)` - which bottoms out
-in the same `CanSeeVisibility` check - before invoking any target handler at all), and a
-friend with real house access to a secure container still needed to explicitly open it first
-before taking an item out, even though the access check itself correctly allowed it.
+A test of a deny rule therefore checks both sides from the same spot: the action refused for
+the character the rule refuses, and allowed for one it allows. The allowed case proves the
+character is in reach with the container open, so the refusal is the rule's.
 
 ## The one documented exception: SecureTrade bypasses the chain entirely
 
@@ -120,7 +101,6 @@ nothing here. (Taking items OUT of a trade box does go through the chain:
 `Item.On_DenyPickupItemFrom` lets only the box's owner do it, #810.)
 
 ## Related
-- [Known gotchas](../07-testing/known-gotchas.md) - the test-writing consequences of the
-  CanReach-after-deny-chain ordering, in more detail.
+- [Known gotchas](../07-testing/known-gotchas.md) - testing a refusal next to an allowed case.
 - [Item ATTR flags](../04-gameplay-systems/item-attr-flags.md) - the system that gave several
   of these `DenyResultMessages` entries their first real callers.
