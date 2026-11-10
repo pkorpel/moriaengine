@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1386 - Standcast as Erebor's lasting toggle doing its work in its plugin: real casts (PhaseSelect with the
@@ -204,6 +205,97 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestStandcastAfterMage(Character self) {
 			Check("plainCommandOn", Standcast.IsActive(self));
 			Console.WriteLine("STANDCAST_DONE");
+		}
+	}
+
+	/// <summary>#1391 - Erebor's e_allplayers: a gate caster stands still. Protocol side: Tests/Protocol/StandcastTests.cs.</summary>
+	public static class GateFreezeTests {
+		private static void Check(string name, bool ok) {
+			Console.WriteLine("STANDCAST_CHECK: " + name + "=" + ok);
+		}
+
+		private static bool Near(double a, double b) {
+			return Math.Abs(a - b) < 0.25;
+		}
+
+		private static void CastGate(Character self, Item rune) {
+			SpellBook book = self.Backpack.FindByClass(typeof(SpellBook)) as SpellBook;
+			if (book == null) {
+				book = (SpellBook) ThingDef.GetByDefname("i_spellbook_3").Create(self.Backpack);
+				foreach (SpellDef spell in SpellDef.AllSpellDefs) {
+					book.AddSpell(spell);
+				}
+			}
+			self.Mana = self.MaxMana;
+			SkillSequenceArgs.Acquire(self, SkillName.Magery, rune, null, book, SpellDef.GetById(52), null).PhaseSelect();
+		}
+
+		[SteamFunction]
+		public static void TestGateFreeze(Character self) {
+			self.Account.PLevel = 1;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ThingDef.GetByDefname("i_sconce_lit").Create(self.X, self.Y, self.Z, self.M);
+			self.SetRealSkillValue((int) SkillName.Magery, 1000);
+			self.MaxMana = 1000;
+			foreach (AbstractScript script in AbstractScript.AllScripts) {
+				if ((script is ItemDef def) && def.PrettyDefname.StartsWith("i_reag_", StringComparison.OrdinalIgnoreCase)) {
+					((Item) def.Create(self.Backpack)).Amount = 50;
+				}
+			}
+			double gateSeconds = SpellDef.GetById(52).CastTime;
+
+			//on the ground beside the caster: the test client never opened the pack, so a rune in it is out of reach
+			Item unmarked = (Item) ThingDef.GetByDefname("i_rune_base").Create(self.X, self.Y + 1, self.Z, self.M);
+			SkillSequenceArgs unmarkedCast = SkillSequenceArgs.Acquire(self, SkillName.Magery, unmarked, null, null, SpellDef.GetById(52), null);
+			bool startRefuses = SpellDef.GetById(52).Trigger_Start(unmarkedCast) == TriggerResult.Cancel; //"Target is not marked."
+			CastGate(self, unmarked);
+			Check("refusedNoFreeze", startRefuses && (self.GetPlugin(CastFreezePlugin.key) == null));
+			self.AbortSkill();
+
+			Item rune = (Item) ThingDef.GetByDefname("i_rune_base").Create(self.X, self.Y - 1, self.Z, self.M);
+			rune.MoreP = new Point4D(self.X + 10, self.Y, self.Z, self.M);
+			CastGate(self, rune);
+			CastFreezePlugin freeze = self.GetPlugin(CastFreezePlugin.key) as CastFreezePlugin;
+			Check("gateFreezes", (freeze != null) && Near(freeze.Timer, gateSeconds - 1.0) && !self.CheckCanMove(false));
+			if (freeze != null) {
+				freeze.Timer = 1.0;
+				CastFreezePlugin.FreezeForGate(self);
+				Check("gateEarlyRecast", Near(freeze.Timer, gateSeconds + 1.0));
+				freeze.Timer = gateSeconds + 0.5;
+				CastFreezePlugin.FreezeForGate(self);
+				Check("gateLongLeft", Near(freeze.Timer, gateSeconds - 1.0));
+			}
+			self.AbortSkill();
+			self.DeletePlugin(CastFreezePlugin.key);
+
+			//a mage with Standcast on: the gate's own time, Standcast's recast rule doesn't stack on it
+			((Player) self).Profession = Professions.Mage;
+			StandcastAbilityDef standcast = (StandcastAbilityDef) AbilityDef.GetByDefname("a_standcast");
+			standcast.Toggle(self);
+			CastGate(self, rune);
+			freeze = self.GetPlugin(CastFreezePlugin.key) as CastFreezePlugin;
+			Check("gateWithStandcast", standcast.IsActive(self) && (freeze != null) && Near(freeze.Timer, gateSeconds - 1.0));
+			self.AbortSkill();
+			self.DeletePlugin(CastFreezePlugin.key);
+			standcast.Toggle(self);
+
+			//from a place nobody may teleport out of: refused at the start, no freeze
+			FlaggedRegion region = (FlaggedRegion) self.Region;
+			RegionFlags flags = region.Flags;
+			region.Flags = flags | RegionFlags.NoTeleportingOut;
+			CastGate(self, rune);
+			Check("denyOutNoFreeze", (self.GetPlugin(CastFreezePlugin.key) == null) && (self.CurrentSkillName != SkillName.Magery));
+			region.Flags = flags;
+			self.AbortSkill();
+
+			NPC npc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_sheep_woolly")).Create(self.X + 2, self.Y, self.Z, self.M);
+			CastFreezePlugin.FreezeForGate(npc);
+			Check("npcNotFrozen", npc.GetPlugin(CastFreezePlugin.key) == null);
+			npc.Delete();
+			unmarked.Delete();
+			rune.Delete();
+			Console.WriteLine("STANDCAST_GATE_DONE");
 		}
 	}
 

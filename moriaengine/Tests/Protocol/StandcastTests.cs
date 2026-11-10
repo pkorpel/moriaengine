@@ -43,6 +43,16 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1391 - casting Gate Travel freezes a player as Erebor's e_allplayers. Server side: GateFreezeTests in
+		/// scripts/Tests/StandcastTests.cs.</summary>
+		[Fact]
+		public void CastingAGateFreezesThePlayer() {
+			using (TestGameClient game = this.Login("Brankar")) {
+				this.Run(game, ".TestGateFreeze", "STANDCAST_GATE_DONE");
+				this.AssertChecks("refusedNoFreeze", "gateFreezes", "gateEarlyRecast", "gateLongLeft", "gateWithStandcast", "denyOutNoFreeze", "npcNotFrozen");
+			}
+		}
+
 		/// <summary>The explosion landed (cast again by the server after a fizzle) and its freeze is over.</summary>
 		private void WaitForExplosion(TestGameClient game) {
 			for (int i = 0; i < 40; i++) {
