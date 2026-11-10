@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using SteamEngine.Persistence;
@@ -74,6 +75,27 @@ namespace SteamEngine.Tests {
 				Assert.Equal(new byte[] { 42 }, copy.ToArray()); //a pooled chunk, only what was written into it
 			}
 			second.Release();
+		}
+
+		[Fact]
+		public void AReserveFillsThePoolAndTheBuffersTakeFromIt() { //#1360
+			SaveBuffer.Reserve(3 * (1 << 20) + 1);
+			int reserved = SaveBuffer.PooledChunks;
+			Assert.True(reserved >= 4, "pooled " + reserved);
+			SaveBuffer.Reserve(1); //never shrinks
+			Assert.Equal(reserved, SaveBuffer.PooledChunks);
+
+			SaveBuffer buffer = new SaveBuffer();
+			byte[] data = new byte[3 * (1 << 20)];
+			new Random(1360).NextBytes(data);
+			buffer.Write(data, 0, data.Length);
+			Assert.Equal(reserved - 3, SaveBuffer.PooledChunks); //taken from the pool, nothing new allocated
+			using (MemoryStream copy = new MemoryStream()) {
+				buffer.CopyBytesTo(copy);
+				Assert.Equal(data, copy.ToArray());
+			}
+			buffer.Release();
+			Assert.Equal(reserved, SaveBuffer.PooledChunks);
 		}
 	}
 }

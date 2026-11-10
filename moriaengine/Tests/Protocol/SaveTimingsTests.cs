@@ -12,6 +12,10 @@ namespace SteamEngine.Tests.Protocol {
 		public void ASaveReportsItsTimingsFileByFile() {
 			using (var fixture = new GameServerPairFixture())
 			using (var client = CommandPermissionTests.Connect(Account, "Save Timer")) {
+				//#1360 - before any save: the boot's load reserved the buffers for the first one
+				string pool = CommandPermissionTests.Ask(fixture, client, ".TestSavePool", "SAVE_POOL:");
+				Assert.True(pool.Contains("loaded=True reserved=True", StringComparison.Ordinal), pool);
+
 				CommandPermissionTests.Ask(fixture, client, ".TestSaveTimings", "SAVE_TIMINGS_FAIL:"); //the last line it prints
 				string output = fixture.GameOutputSnapshot();
 				string check = output.Substring(output.IndexOf("SAVE_TIMINGS_CHECK:", StringComparison.Ordinal));
