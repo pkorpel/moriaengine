@@ -123,10 +123,9 @@ horse into a fell beast (`i_mt_drake`'s look, 0x692) and back, no sooner than 5 
 back. The same horse changes its look, as the uniform does (the user's call). `.settings` Realm Offices: `fellFame`,
 `fellCooldownMinutes`.
 
-`i_nazgulsonly_gate` (#912, the user's call: a GM tool): only Nazguls and GMs pass ("Jen pro vyvolene!" for the
-rest) to where it leads. A GM places it (`.add i_nazgulsonly_gate`) and sets the way with `.nazgulgateto`: target the
-gate, then the spot; that also fixes it in place. Nothing places one by itself; Erebor's archive left only a
-placeholder.
+Erebor's `i_nazgulsonly_gate` (#912), a gate only Nazguls and GMs pass ("Jen pro vyvolene!" for the rest), is a rule
+of the var gate here, the user's call: a GM turns on an `i_varGate`'s functions, adds `f_vg_nazgulOnly` and sets where it
+leads (see [the variable gate](variable-gate.md)). `.nazgulgateto` only says so. Erebor's GMs placed theirs by hand too.
 
 **The First Nazgul.** A GM appoints a Nazgul on `i_lordnazgulsstone`, or a Nazgul takes it: with no First,
 `i_lordnazguls_gate` in Barad-dur lets a Nazgul open the way to Fela Nazgul, 3 of Mordor pass, and there's

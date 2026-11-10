@@ -158,7 +158,7 @@ namespace SteamEngine.Tests.Protocol {
 			return this.Ask(client, ".TestNazgulReport", "NAZGUL_REPORT:");
 		}
 
-		/// <summary>#912 - the Nazgul-only gate, a GM tool: a GM sets where it leads; only Nazguls and GMs pass.</summary>
+		/// <summary>#912 - the Nazgul-only gate is a var gate with f_vg_nazgulOnly (the user's call); .nazgulgateto says so.</summary>
 		[Fact]
 		public void OnlyNazgulsPassTheirGate() {
 			using (var gm = this.Connect("Gate Keeper")) {
@@ -169,23 +169,13 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(walker, ".TestNazgulPrepare", "NAZGUL_READY:");
 				this.Ask(gm, ".TestNazgulPrepare", "NAZGUL_READY:");
 				this.Ask(gm, ".TestTownBecomeGm", "TOWN_GM:");
-				string made = this.Ask(gm, ".TestNazgulGateMake", "NAZGUL_GATE:");
-				Assert.Contains("leads=none", this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:"));
-				Assert.NotNull(TryReadMessageContaining(walker, "Jen pro vyvolene!", Wait));
-
-				//a way back into the gate itself is refused (it would loop); the cursor stays for another spot
 				gm.SendSpeech(".nazgulgateto");
-				Thread.Sleep(300);
-				gm.SendTargetUid((uint) Number(made, "uid"));
-				Thread.Sleep(300);
-				gm.SendTargetGround((int) Number(made, "x") - 5, (int) Number(made, "y"), (int) Number(made, "z"));
-				Assert.NotNull(TryReadMessageContaining(gm, "vyber jine misto", Wait));
-				gm.SendTargetGround((int) Number(made, "x"), (int) Number(made, "y"), (int) Number(made, "z"));
-				Thread.Sleep(300);
-				string to = Field(made, "x=") + "," + Field(made, "y=");
+				Assert.NotNull(TryReadMessageContaining(gm, "f_vg_nazgulOnly", Wait));
 
+				string made = this.Ask(gm, ".TestNazgulGateMake", "NAZGUL_GATE:");
+				string to = Field(made, "x=") + "," + Field(made, "y=");
 				string refused = this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:");
-				Assert.Contains("leads=" + to + " fixed=True", refused);
+				Assert.Contains("leads=" + to, refused);
 				Assert.DoesNotContain("at=" + to + " ", refused);
 				Assert.NotNull(TryReadMessageContaining(walker, "Jen pro vyvolene!", Wait));
 				this.Ask(walker, ".TestNazgulGiveRing", "NAZGUL_GIVEN:");

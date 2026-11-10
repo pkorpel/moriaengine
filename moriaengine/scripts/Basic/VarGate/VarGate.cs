@@ -680,6 +680,17 @@ namespace SteamEngine.CompiledScripts {
 			return any;
 		}
 
+		/// <summary>#912 - Erebor's i_nazgulsonly_gate, the user's call (2026-11-10): not a gate of its own but a rule any var
+		/// gate can carry. Only Nazguls (a Ring of Power worn) and GMs pass.</summary>
+		[SteamFunction]
+		public static bool f_vg_nazgulOnly(Character self) {
+			if (self.IsGM || NazgulRings.IsNazgul(self)) {
+				return false;
+			}
+			self.SysMessage("Jen pro vyvolene!");
+			return true;
+		}
+
 		[SteamFunction]
 		public static bool f_vg_mountDeny(Character self) {
 			if ((self.Mount != null) && !self.IsGM) {
