@@ -171,11 +171,15 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(gm, ".TestTownBecomeGm", "TOWN_GM:");
 				string made = this.Ask(gm, ".TestNazgulGateMake", "NAZGUL_GATE:");
 				Assert.Contains("leads=none", this.Ask(walker, ".TestNazgulGateStep", "NAZGUL_GATE_STEP:"));
+				Assert.NotNull(TryReadMessageContaining(walker, "Jen pro vyvolene!", Wait));
 
+				//a way back into the gate itself is refused (it would loop); the cursor stays for another spot
 				gm.SendSpeech(".nazgulgateto");
 				Thread.Sleep(300);
 				gm.SendTargetUid((uint) Number(made, "uid"));
 				Thread.Sleep(300);
+				gm.SendTargetGround((int) Number(made, "x") - 5, (int) Number(made, "y"), (int) Number(made, "z"));
+				Assert.NotNull(TryReadMessageContaining(gm, "vyber jine misto", Wait));
 				gm.SendTargetGround((int) Number(made, "x"), (int) Number(made, "y"), (int) Number(made, "z"));
 				Thread.Sleep(300);
 				string to = Field(made, "x=") + "," + Field(made, "y=");

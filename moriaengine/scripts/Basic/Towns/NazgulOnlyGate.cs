@@ -1,3 +1,5 @@
+using System;
+using SteamEngine.Regions;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -7,6 +9,9 @@ namespace SteamEngine.CompiledScripts {
 	/// the placeholder 1001,1001.</summary>
 	public static class NazgulOnlyGate {
 		public const string Def = "i_nazgulsonly_gate";
+
+		[ThreadStatic]
+		private static bool jumping; //a Go fires the step triggers of where it lands: never from inside a gate's own jump
 
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
@@ -19,13 +24,32 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			Point4D to = gate.MoreP;
+			if (jumping) {
+				return;
+			}
 			if (to == null) {
 				if (stepping.IsGM) {
 					stepping.SysMessage("Brana nikam nevede: nastav ji .nazgulgateto");
 				}
 				return;
 			}
-			stepping.Go(to.X, to.Y, to.Z, to.M);
+			jumping = true;
+			try {
+				stepping.Go(to.X, to.Y, to.Z, to.M);
+			} finally {
+				jumping = false;
+			}
+		}
+
+		/// <summary>Such a gate stands on the spot: a way there would lead straight back into a gate.</summary>
+		internal static bool IsGateAt(int x, int y, byte m) {
+			ThingDef def = ThingDef.GetByDefname(Def);
+			foreach (AbstractItem item in Map.GetMap(m).GetItemsInRange(x, y, 0)) {
+				if ((item.X == x) && (item.Y == y) && (item.Def == def)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>A GM's: target the gate, then where it leads.</summary>
@@ -62,8 +86,16 @@ namespace SteamEngine.CompiledScripts {
 			if (gate.IsDeleted) {
 				return TargetResult.Done;
 			}
+			if (targetted is Thing thing) {
+				targetted = thing.TopObj(); //not a container's own coordinates
+			}
 			IPoint4D at = targetted as IPoint4D;
-			gate.MoreP = new Point4D(targetted.X, targetted.Y, targetted.Z, (at != null) ? at.M : self.M);
+			byte m = (at != null) ? at.M : self.M;
+			if (NazgulOnlyGate.IsGateAt(targetted.X, targetted.Y, m)) {
+				self.SysMessage("Tam vede jina brana jen pro vyvolene, vyber jine misto.");
+				return TargetResult.RestartTargetting;
+			}
+			gate.MoreP = new Point4D(targetted.X, targetted.Y, targetted.Z, m);
 			gate.SetAttribute(ItemAttributes.attr_move_never, true); //Erebor's @create made it move-never (and so no decay)
 			self.SysMessage("Brana vede na " + gate.MoreP + ".");
 			return TargetResult.Done;

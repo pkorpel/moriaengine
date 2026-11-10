@@ -386,7 +386,6 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOWN_CRIMINAL_NOW: done");
 		}
 
-		/// <summary>Barad-dur's ring straight on: the quest has its own test.</summary>
 		private static Item nazgulOnlyGate;
 
 		/// <summary>#912 - a Nazgul-only gate beside me, and a spot 6 tiles off for it to lead to.</summary>
@@ -405,6 +404,7 @@ namespace SteamEngine.CompiledScripts {
 				" fixed=" + nazgulOnlyGate.HasAttribute(ItemAttributes.attr_move_never) + " end");
 		}
 
+		/// <summary>Barad-dur's ring straight on: the quest has its own test.</summary>
 		[SteamFunction]
 		public static void TestNazgulGiveRing(Character self) {
 			Town town = Town.ForStone(FindShrine(false), TownSetup.MordorCapital);
