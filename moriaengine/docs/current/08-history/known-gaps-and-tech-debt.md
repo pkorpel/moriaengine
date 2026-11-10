@@ -71,10 +71,9 @@ deliberate scope choice (not a bug) or a genuine gap worth picking up.
 - **Necromancer's entire spell identity is unimplemented** - Animate Dead, Bone Armor,
   Summon Undead, Mana Drain/Vampire, Energy Vortex, Summon Creature, Reveal, Fire Bolt
   all absent; the profession exists with no spells of its own.
-- **Region-level attack-blocking enforcement (`Notoriety.IsAttackBlockedByRegion`)
-  deliberately deferred** - needs real static-region test data or a safe ad-hoc-region
-  test helper; constructing one at runtime risked corrupting shared region state for
-  other concurrently-running tests.
+- **Region attack rules cover only a player's attack request** (`Notoriety.IsAttackBlockedByRegion`,
+  tested since #1019 by `RegionAttackTests`): monsters, pets, harmful spells and a fight started
+  outside aren't checked against safe or no-PvP areas.
 - **House "GM release" checklist item has no test coverage** - deed placement,
   overlap rejection, and co-owner/stranger access are all covered; the GM-release path
   specifically isn't.
