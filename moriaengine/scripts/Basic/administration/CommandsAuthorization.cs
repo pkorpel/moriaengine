@@ -212,7 +212,7 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["RememberClear"] = PLEVEL_PLAYER;
 			this.commands["HracskeFunkce"] = PLEVEL_PLAYER; //#911 - who holds the realms' offices
 			this.commands["NazghulFell"] = PLEVEL_PLAYER; //#909 - the First's fell beast
-			this.commands["UseRing"] = PLEVEL_PLAYER; //#102 - Erebor's usering, beside UseHand (#105)
+			this.commands["UseRing"] = PLEVEL_PLAYER; //#102 - Erebor's usering (UseHand is up with #105's commands)
 			this.commands["Ms"] = PLEVEL_PLAYER; //#901 - the waiting messages
 			this.commands["Rms"] = PLEVEL_PLAYER;
 			this.commands["ClearMs"] = PLEVEL_PLAYER;
