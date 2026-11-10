@@ -651,9 +651,19 @@ namespace SteamEngine.CompiledScripts {
 			if ((player != null) && ((this.Id == spellFireField) || (this.Id == spellPoisonField) || (this.Id == spellParalyzeField))) {
 				vsMonster += System.Math.Min(player.Level / 4, 50) * settings.fieldSpellPowerPerLevel;
 			} else {
-				vsMonster += StandcastHelper.GetLevelBonus(caster, this.Id);
+				vsMonster += this.MonsterLevelBonus(caster, target);
 			}
 			return multiplier * vsMonster;
+		}
+
+		private static readonly TriggerKey tkMonsterSpellPower = TriggerKey.Acquire("monsterSpellPower");
+
+		/// <summary>#1386 - asks the caster (its plugins: Standcast) what to add to the multiplier of this spell on a
+		/// monster, at the point Erebor's magie.scp adds tag.standcast's level bonus.</summary>
+		internal double MonsterLevelBonus(Character caster, Character target) {
+			MonsterSpellPowerArgs args = new MonsterSpellPowerArgs(caster, this, target);
+			caster.TryTrigger(tkMonsterSpellPower, new ScriptArgs(args));
+			return args.LevelBonus;
 		}
 
 		//#962 - evil without spellflag_SM: this roll of the power has to reach the target's defense
@@ -681,7 +691,7 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				spellPower = caster.GetSkill(SkillName.Magery);
 				if (!currentTarget.IsPlayerForCombat) {
-					spellPower = (int) System.Math.Round(spellPower * (1.0 + StandcastHelper.GetLevelBonus(caster, this.Id)));
+					spellPower = (int) System.Math.Round(spellPower * (1.0 + this.MonsterLevelBonus(caster, currentTarget)));
 				}
 			}
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower, currentTarget);
@@ -923,6 +933,21 @@ namespace SteamEngine.CompiledScripts {
 
 		//TODO:  versions for item and ground
 		#endregion Methods for usage outside normal magery sequence
+	}
+
+	/// <summary>#1386 - the caster's @monsterSpellPower: a handler adds to LevelBonus, what multiplies the spell's power on
+	/// a monster (1.0 + LevelBonus, or added to the mind power multiplier).</summary>
+	public class MonsterSpellPowerArgs {
+		public readonly Character Caster;
+		public readonly SpellDef Spell;
+		public readonly Character Target;
+		public double LevelBonus;
+
+		public MonsterSpellPowerArgs(Character caster, SpellDef spell, Character target) {
+			this.Caster = caster;
+			this.Spell = spell;
+			this.Target = target;
+		}
 	}
 
 	public class SpellEffectArgs {

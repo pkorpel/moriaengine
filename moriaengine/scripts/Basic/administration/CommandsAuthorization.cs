@@ -62,7 +62,8 @@ namespace SteamEngine.CompiledScripts {
 					"Sniper", "Knockback", "LongRange", "SplitShot", "CrushingArrow", "Resurrection", "Vigour", "Ripper", "Backstab", "Podriznuti", "UderStitem", "Mask", "Darkpower", "Concentration", "Throw", "Strike",
 					"VoodooInt", "VoodooVit", "VoodooRovnovaha", "VoodooObet", "OslabeniVoodoo", "VoodooShield", "CancelVoodooShield",
 					"BloodPact", "ManaPact", "StaminaPact", "CancelPact", "CancelBloodPact", "CancelManaPact", "CancelStaminaPact", "Pact", "LifePact",
-					"ControlNpc", "Catch", "CatchField", "BuffSteal", "Hypnotize", "VendorAdd" }) {
+					"ControlNpc", "Catch", "CatchField", "BuffSteal", "Hypnotize", "VendorAdd",
+					"Standcast", "CancelStandcast", "EnergyShield", "CancelEnergyShield" }) { //#1386
 				this.commands[ability] = PLEVEL_PLAYER;
 			}
 			this.commands["WhoAmI"] = PLEVEL_PLAYER; //#1011: Erebor's

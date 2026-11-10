@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 				return false; //#1022 - e_prokleti_balroga
 			}
 			MageryRulesLoc texts = Loc<MageryRulesLoc>.Get(self.Language);
-			if (spell.IsCustom) { //customspellcast knows nothing of @spellcast
+			if (spell.IsCustom) { //customspellcast knows nothing of e_allplayers' @spellcast rules (it still raises our @spellCast, #1386)
 				fizzle = false;
 				if (Is(spell, "s_mana_shield") && (target != self)) {
 					self.SysMessage(texts.OnlyAtYourself);

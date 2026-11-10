@@ -23,8 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	/// boosts the Electric bit, Mind school boosts any spell flagged UseMindPower (Harm's own
 	/// casting already uses mind power, which is exactly why Harm is this session's mind-charge
 	/// trigger - not an arbitrary choice). A caster with no MagicChargePlugin (the overwhelming
-	/// majority - every pre-existing Phase 0-6 test included) is a guaranteed no-op, same
-	/// regression-safety shape as StandcastHelper.</summary>
+	/// majority - every pre-existing Phase 0-6 test included) is a guaranteed no-op.</summary>
 	internal static class MagicChargeHelper {
 		/// <summary>#1017 - f_magicCharge_formula. No target, as for a spell on the ground, counts as a monster.</summary>
 		internal static int ApplyBonus(Character caster, SpellDef spell, int spellPower, Character target = null) {

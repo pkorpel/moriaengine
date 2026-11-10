@@ -24,8 +24,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// Test infrastructure for Mage Phase 7 (#491) - the 5 special abilities (Energy Shield,
 	/// Silence, Concentration, Standcast, Magic Charge). Where a mechanic is pure calculation
-	/// (Standcast's multiplier, Magic Charge's bonus, Concentration's discount), these helpers
-	/// call the production helper classes directly (StandcastHelper/MagicChargeHelper are
+	/// (Magic Charge's bonus, Concentration's discount; Standcast's is StandcastTests since #1386), these helpers
+	/// call the production helper classes directly (MagicChargeHelper is
 	/// `internal`, same assembly, same as Magery.ApplyConcentrationDiscount) rather than paying
 	/// for a real timed cast - same reasoning as RangerCombatTests's own GetWeaponSwingArgs-based
 	/// sampling (no real swing needed to prove the math).
@@ -152,14 +152,6 @@ namespace SteamEngine.CompiledScripts {
 			int manaUse = Convert.ToInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
 			int discounted = MagerySkillDef.ApplyConcentrationDiscount(self, manaUse);
 			Console.WriteLine("MAGEABILITY_TEST: manaUse=" + manaUse + " discounted=" + discounted);
-		}
-
-		/// <summary>#491 - Standcast: multiplier computed via the production helper directly.</summary>
-		[SteamFunction]
-		public static void TestReportStandcastMultiplier(Character self, ScriptArgs sa) {
-			int basePower = Convert.ToInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
-			int boosted = (int) Math.Round(basePower * (1.0 + StandcastHelper.GetLevelBonus(self, 18)));
-			Console.WriteLine("MAGEABILITY_TEST: basePower=" + basePower + " boosted=" + boosted);
 		}
 
 		/// <summary>#491 - Magic Charge: bonus computed via the production helper directly,

@@ -27,6 +27,8 @@ namespace SteamEngine.CompiledScripts {
 		//skillParam1: SpellDef instance
 		//skillParam2: spell param (summoned creature def?)
 
+		private static readonly TriggerKey tkSpellCast = TriggerKey.Acquire("spellCast");
+
 		public static void TryCastSpellFromBook(Character ch, int spellid) {
 			SpellDef sd = SpellDef.GetById(spellid);
 			if (sd != null) {
@@ -150,6 +152,7 @@ namespace SteamEngine.CompiledScripts {
 					if (TriggerResult.Cancel == spell.Trigger_Start(skillSeqArgs)) {
 						return TriggerResult.Cancel;
 					}
+					self.TryTrigger(tkSpellCast, skillSeqArgs.scriptArgs); //#1386 - Sphere's @spellCast, the cast is under way
 
 					SpellCastRules.DropManaShield(self, spell, skillSeqArgs.Target1);
 					AnimCalculator.PerformAnim(self, GenericAnim.Cast);
@@ -250,12 +253,6 @@ namespace SteamEngine.CompiledScripts {
 			if ((spell.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
 				CombatWear.OnHarmfulCast(self); //#865
 			}
-			// #483/#491 - consume Standcast's toggle (if active) only AFTER Trigger_Success has
-			// resolved - that's where SpellDef.GetSpellPowerAgainstChar/AgainstNonChar reads the
-			// boosted spellPower for every target of this cast (possibly more than one, for an
-			// area spell); consuming any earlier would silently drop the boost for later targets
-			// of the same cast.
-			StandcastHelper.ConsumeIfActive(self);
 			if (self is Player caster) {
 				MagicChargePlugin.AfterCast(caster, spell, skillSeqArgs.Target1 as Character); //#1017
 				NecroAbilities.SpellDone(caster, spell, skillSeqArgs.Tool is SpellScroll);

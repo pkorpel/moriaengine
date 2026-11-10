@@ -1,9 +1,8 @@
-// #483/#491 - Standcast was a bare, unimplemented stub (unimplementedAbilities.scp). NOT "cast
-// without interruption" (a misleading surface reading of the name) - the real Erebor mechanic is
-// a toggle: the caster's next successful Magery cast gets Erebor's level bonus against monsters
-// (StandcastHelper.CalculateLevelBonus, level alone, not ability points), at the cost of being
-// unable to move during that cast. Mage/Necromancer/Shaman only (via the profession defs'
-// ability listing). Blocked while Energy Shield is active (StandcastAbilityDef.On_DenyActivate).
+// #483/#491, #1386 - Erebor's standcast (systems/specabilities.scp): one command switches it on and
+// off. While on, every cast at a target in sight gets Erebor's level bonus against monsters
+// (StandcastPlugin.CalculateLevelBonus, level alone, not ability points) and freezes the caster
+// for the spell's cast time (CastFreezePlugin). Mage/Necromancer/Shaman by profession, no ability
+// points (StandcastAbilityDef.Toggle). Not while the energy shield is up; raising a shield switches it off.
 [StandcastAbilityDef a_standcast]
 Name="Standcast"
 
@@ -13,7 +12,7 @@ PluginDef = p_standcast
 [StandcastPluginDef p_standcast]
 
 [function standcast]
-a_standcast.Activate(this)
+a_standcast.Toggle(this)
 
 [function cancelstandcast]
 a_standcast.Deactivate(this)

@@ -95,41 +95,8 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		/// <summary>#491 - Standcast: genuinely missing before this phase, and the SHARED
-		/// GetSpellPowerAgainstChar/AgainstNonChar path it modifies is exercised by every single
-		/// offensive spell across Phases 0-6 - this test proves (a) it's a clean no-op for any
-		/// caster who hasn't activated it (the critical regression-safety property for every
-		/// pre-existing test) and (b) it actually boosts spell power once active.</summary>
-		[Fact]
-		public void StandcastIsNoOpUntilActivatedThenBoostsSpellPower() {
-			using (var client = this.ConnectLoginAndCreateCharacter("MageStandcastChecker")) {
-				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportStandcastMultiplier 1000");
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: basePower=1000", mark, TimeSpan.FromSeconds(10)));
-				string lineInactive = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: basePower=1000");
-				Assert.Equal(1000, ExtractInt(lineInactive, "boosted"));
-
-				this.SetAbilityPoints(client, "a_standcast", 10);
-				this.SetLevel(client, 100);
-				this.ActivateAbility(client, "a_standcast");
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportStandcastMultiplier 1000");
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: basePower=1000", mark, TimeSpan.FromSeconds(10)));
-				string lineActive = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: basePower=1000");
-				// #860 - by level alone, level 100 * 0.02 = +2, ability points don't matter
-				Assert.Equal(3000, ExtractInt(lineActive, "boosted"));
-			}
-		}
-
-		// #491 - "Standcast is blocked while Energy Shield is active" (StandcastAbilityDef.
-		// On_DenyActivate) is real, shipped code, verified correct by direct code review (checks
-		// EnergyShieldDef.IsActive(args.abiliter), denies if true, matches source) - but an
-		// automated Fact for this specific real-Activate()-then-real-Activate() cross-ability
-		// interaction proved unreliable in this sandbox (failed at a DIFFERENT assertion on each
-		// of several reruns with no code change and no exception ever thrown - environmental
-		// flakiness, not a logic bug) within this phase's time budget. Deferred rather than
-		// shipped flaky, same treatment as other time-boxed items this session.
+		// #1386 - Standcast (its toggle, freeze, bonus, and the energy shield ending it) is tested by
+		// StandcastTests with real casts.
 
 		/// <summary>#491 - Magic Charge: genuinely missing before this phase. Casting Fire Ball
 		/// stacks a Fire charge; that charge then boosts a later Fire-school spell's power
@@ -208,12 +175,6 @@ namespace SteamEngine.Tests.Protocol {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestGrantEnergyShieldResources");
 			Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: granted energy shield resources", mark, TimeSpan.FromSeconds(10)));
-		}
-
-		private void SetLevel(TestGameClient client, int level) {
-			int mark = this.fixture.GameOutputSnapshot().Length;
-			client.SendSpeech(".TestSetLevel " + level);
-			Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: level set to", mark, TimeSpan.FromSeconds(10)));
 		}
 
 		private void ActivateAbility(TestGameClient client, string defname, bool elevated = true) {
