@@ -57,7 +57,7 @@ namespace SteamEngine.RemoteConsole {
 		public ExtendedRichTextBox() {
 
 			this.myToolTip = new ToolTip();
-			this.ContextMenu = new ContextMenu();
+			this.ContextMenuStrip = new ContextMenuStrip();
 
 			// Initialize default text and background colors
 			this.textColor = RtfColor.Black;

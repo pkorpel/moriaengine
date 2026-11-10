@@ -13,9 +13,11 @@ The server consists of two processes:
 
 There's also a third, optional tool:
 
-  - RemoteConsole: a GUI remote-console client. Not yet ported to .NET 8 -
-    it still only builds against the old .NET Framework toolchain
-    (RemoteConsole/SteamEngine.RemoteConsole.csproj).
+  - RemoteConsole: a GUI remote-console client (WinForms, .NET 8). It builds
+    with the rest of the solution everywhere but runs only on Windows:
+    RemoteConsole/bin/Debug/net8.0-windows/SteamEngine.RemoteConsole.exe
+    (a Windows build; a Linux/macOS build gives only the .dll, start it on
+    Windows with `dotnet SteamEngine.RemoteConsole.dll`).
 
 
 Building

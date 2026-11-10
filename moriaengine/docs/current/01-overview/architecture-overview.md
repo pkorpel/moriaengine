@@ -28,10 +28,9 @@ flow for every protocol test that needs a real character in the world. See
 level detail.
 
 There's also a third, optional tool, **RemoteConsole** (`RemoteConsole/`) - a GUI client for
-the remote-console protocol on port 2594. As of this writing it hasn't been ported to .NET
-8 and still only builds against the old .NET Framework toolchain
-(`RemoteConsole/SteamEngine.RemoteConsole.csproj`), so it's not part of the normal
-Debug/Release build graph the other projects share.
+the remote-console protocol on port 2594. It targets `net8.0-windows` (WinForms) and is in
+`SteamEngine.sln` since #29, so it compiles in every build, Linux and CI included, but it
+only runs on Windows.
 
 ## Top-level projects and what they're for
 
