@@ -43,6 +43,7 @@ namespace SteamEngine.Tests.Protocol {
 					this.AssertChecks("tgSelfRemoved" + way, "tgBothRemoved" + way);
 				}
 				this.AssertChecks("tgHolderDeletedTryTrigger", "tgHolderDeletedCancellableTrigger", "tgHolderDeletedTryCancellableTrigger");
+				this.AssertChecks("dupeGroupsFound", "dupeFirstGroupRemoved", "dupeReaddedRunsOnce"); //#1394
 			}
 		}
 	}

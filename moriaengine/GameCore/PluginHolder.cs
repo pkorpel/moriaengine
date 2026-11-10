@@ -74,6 +74,7 @@ namespace SteamEngine {
 				//copy triggergroups
 				TGListNode curNode = new TGListNode(copyFrom.firstTGListNode.storedTG);
 				this.firstTGListNode = curNode;
+				this.tags[curNode.storedTG] = curNode; //#1394 - the first one too, or it can't be found or removed
 				TGListNode copiedNode = copyFrom.firstTGListNode.nextNode;
 				while (copiedNode != null) {
 					curNode.nextNode = new TGListNode(copiedNode.storedTG);
