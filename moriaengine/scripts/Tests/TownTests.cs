@@ -396,22 +396,35 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOWN_CRIMINAL_NOW: done");
 		}
 
-		private static Item nazgulOnlyGate;
+		private static VarGate nazgulOnlyGate;
 
-		/// <summary>#912 - a Nazgul-only gate beside me, and a spot 6 tiles off for it to lead to.</summary>
+		/// <summary>#912 - a var gate beside me with the Nazgul-only rule (f_vg_nazgulOnly), leading 6 tiles off.</summary>
 		[SteamFunction]
 		public static void TestNazgulGateMake(Character self) {
-			nazgulOnlyGate = (Item) ThingDef.GetByDefname(NazgulOnlyGate.Def).Create(self.X + 1, self.Y, self.Z, self.M);
+			nazgulOnlyGate = (VarGate) ThingDef.GetByDefname("i_varGate").Create(self.X + 1, self.Y, self.Z, self.M);
+			nazgulOnlyGate.MoreP = new Point4D(self.X + 6, self.Y, self.Z, self.M);
+			nazgulOnlyGate.GoHome = false;
+			nazgulOnlyGate.Flags |= VarGateFlags.RunFunctions;
+			nazgulOnlyGate.Functions.Add(new VarGateEntry { name = "f_vg_nazgulOnly", checkOnly = true });
 			Console.WriteLine("NAZGUL_GATE: uid=" + (uint) nazgulOnlyGate.FlaggedUid + " x=" + (self.X + 6) + " y=" + self.Y + " z=" + self.Z + " end");
+		}
+
+		/// <summary>#912 - a second var gate where the first leads, leading back onto the first: no endless round trip.</summary>
+		[SteamFunction]
+		public static void TestNazgulGateLoop(Character self) {
+			Point4D to = nazgulOnlyGate.MoreP;
+			VarGate back = (VarGate) ThingDef.GetByDefname("i_varGate").Create(to.X, to.Y, to.Z, to.M);
+			back.MoreP = new Point4D(nazgulOnlyGate.X, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M);
+			back.GoHome = false;
+			Console.WriteLine("NAZGUL_GATE_LOOP: done");
 		}
 
 		/// <summary>#912 - onto the gate, by a step; where I end up, and where it leads.</summary>
 		[SteamFunction]
 		public static void TestNazgulGateStep(Character self) {
 			self.Go(nazgulOnlyGate.X - 1, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M);
-			self.Go(nazgulOnlyGate.X, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M); //onto it: a Go fires the step triggers, the def's own too
-			Console.WriteLine("NAZGUL_GATE_STEP: at=" + self.X + "," + self.Y + " leads=" + ((nazgulOnlyGate.MoreP == null) ? "none" : (nazgulOnlyGate.MoreP.X + "," + nazgulOnlyGate.MoreP.Y)) +
-				" fixed=" + nazgulOnlyGate.HasAttribute(ItemAttributes.attr_move_never) + " end");
+			self.Go(nazgulOnlyGate.X, nazgulOnlyGate.Y, nazgulOnlyGate.Z, nazgulOnlyGate.M); //onto it: a Go fires the step triggers
+			Console.WriteLine("NAZGUL_GATE_STEP: at=" + self.X + "," + self.Y + " leads=" + nazgulOnlyGate.MoreP.X + "," + nazgulOnlyGate.MoreP.Y + " end");
 		}
 
 		/// <summary>Barad-dur's ring straight on: the quest has its own test.</summary>

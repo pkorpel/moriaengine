@@ -76,7 +76,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("housepad", "dlazdice pred dvermi (kurzor)"),
 				new Entry("housemove", "presunout cedulku domu (kurzor)"),
 				new Entry("portzonepoint", "sem posilat mrtve z PvP areny"),
-				new Entry("nazgulgateto", "kam vede brana jen pro vyvolene (2 kurzory)")),
+				new Entry("nazgulgateto", "brana jen pro vyvolene: jak na ni (i_varGate)")),
 			new Group("Mesta", //#1312 - the living world's (#1237)
 				new Entry("venue", "oznacit / upravit misto, kde stojis"),
 				new Entry("venues", "mista ve meste; vse, navrh, obsadit, export", Arg.Text),

@@ -160,21 +160,31 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		//#912 - a Go fires the step triggers where it lands: a gate leading onto itself or onto another gate leading back
+		//recursed until the stack overflowed. A gate's own moves never set off a gate.
+		[ThreadStatic]
+		private static bool moving;
+
 		public override void On_Step(AbstractCharacter stepping, bool repeated, MovementType movementType) {
 			base.On_Step(stepping, repeated, movementType);
 			Character ch = stepping as Character;
-			if ((ch == null) || repeated) {
+			if ((ch == null) || repeated || moving) {
 				return;
 			}
-			if (ch.IsGM) {
-				this.PassGM(ch);
-			} else if (!this.goHome && !this.Has(VarGateFlags.RecallPort) && !this.HasTarget) {
-				Logger.WriteWarning("VarGate " + this.FlaggedUid + " at " + this.P() + " has no target.");
-				ch.SysMessage(Word(ch, "Zhoupl", "Zhoupla") + " jsi se v magickem viru, ale nic se nestalo");
-			} else if (this.CanPass(ch)) {
-				this.TakeFrom(ch);
-				this.GiveTo(ch);
-				this.Send(ch);
+			moving = true;
+			try {
+				if (ch.IsGM) {
+					this.PassGM(ch);
+				} else if (!this.goHome && !this.Has(VarGateFlags.RecallPort) && !this.HasTarget) {
+					Logger.WriteWarning("VarGate " + this.FlaggedUid + " at " + this.P() + " has no target.");
+					ch.SysMessage(Word(ch, "Zhoupl", "Zhoupla") + " jsi se v magickem viru, ale nic se nestalo");
+				} else if (this.CanPass(ch)) {
+					this.TakeFrom(ch);
+					this.GiveTo(ch);
+					this.Send(ch);
+				}
+			} finally {
+				moving = false;
 			}
 		}
 
@@ -678,6 +688,17 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("S magickymi predmety nesmis vstoupit!");
 			}
 			return any;
+		}
+
+		/// <summary>#912 - Erebor's i_nazgulsonly_gate, the user's call (2026-11-10): not a gate of its own but a rule any var
+		/// gate can carry. Only Nazguls (a Ring of Power worn) and GMs pass.</summary>
+		[SteamFunction]
+		public static bool f_vg_nazgulOnly(Character self) {
+			if (self.IsGM || NazgulRings.IsNazgul(self)) {
+				return false;
+			}
+			self.SysMessage("Jen pro vyvolene!");
+			return true;
 		}
 
 		[SteamFunction]
