@@ -107,7 +107,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// <summary>#1023 - Erebor's limits on a player's body: none of it in the first seconds (a real pickup refused),
 		/// then one item per 0.8 s with a short hold, and nobody just dead below Grandmaster takes from others.</summary>
 		[Fact]
-		public void ErebosLimitsOnAPlayersBody() {
+		public void EreborsLimitsOnAPlayersBody() {
 			using (var a = this.Connect("Loot Gamma", AccountA, false)) {
 				this.Ask(a, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
 				var b = this.Connect("Loot Delta", AccountB, false);
@@ -202,9 +202,9 @@ namespace SteamEngine.Tests.Protocol {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
 					game.SendLogin(account, account);
-					game.ReadCharacterList();
+					string[] names = game.ReadCharacterList();
 					if (existing) {
-						game.SendSelectCharacter(0);
+						game.SendSelectCharacter(Math.Max(0, Array.IndexOf(names, charName))); //#1023 - the account holds more than one
 					} else {
 						game.SendCreateCharacter(charName);
 					}

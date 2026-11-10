@@ -17,7 +17,7 @@ namespace SteamEngine.CompiledScripts {
 				return null;
 			}
 			NotorietySettings settings = NotorietySettings.instance;
-			if (body.SecondsDead < settings.lootWaitSeconds) {
+			if (body.SecondsDeadExactly < settings.lootWaitSeconds) {
 				return "Z tohoto tela jeste nemuzes nic brat.";
 			}
 			double now = Globals.TimeInSeconds;

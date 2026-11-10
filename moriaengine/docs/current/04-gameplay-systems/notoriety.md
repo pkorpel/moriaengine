@@ -48,7 +48,8 @@ Notoriety):
 - below Grandmaster, someone who died in the last 5 minutes (`i_checkstats_timer`, the same window that spares them
   experience) may not take from another's body ("Jeste nemuzes obirat cizi mrtvoly.").
 
-GMs and monsters' bodies are free. Erebor's crime rule there (outside your guild, unless the owner is a murderer) isn't
+GMs and monsters' bodies are free. Stricter than Erebor's, which marked only what was on the body at the death and
+let a thing go after its first pick: here anything under a player's body counts. Erebor's crime rule there (outside your guild, unless the owner is a murderer) isn't
 ported: the user kept #918's below. Taking from a player's corpse (#918) flags the looter criminal when all of this
 holds:
 
