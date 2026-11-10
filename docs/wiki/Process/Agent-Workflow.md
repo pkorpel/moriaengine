@@ -54,6 +54,15 @@ Running `/task-run` or `/task-ship` is the go-ahead to push and merge for that i
 - Agents don't see the conversation: the orchestrator passes worktree path, issue,
   plan and step in each prompt and checks the branch each agent reports.
 
+## Existing patterns first (#1366)
+
+Before work uses or changes an engine system or pattern (plugins, code-made defs, `.ct`
+fields, tags, triggers, timers), its current form and use are written down from the
+existing code, with examples, in its page under `moriaengine/docs/current/` (the original
+engine is commit `a27bbf6`). New code then follows that pattern. A bug found in a pattern is
+fixed in the pattern, not worked around with a new mechanism. The developer agent follows
+this; the reviewer agent blocks a second way of doing what the engine already does.
+
 ## Stop rule (`/task-run`)
 
 On any stop: comment on the issue what happened and what's needed, set
