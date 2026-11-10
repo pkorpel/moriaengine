@@ -5,13 +5,11 @@ The NPC "brain" tick (#18) and the taming/pet-ownership mechanic built on top of
 ## `NPCAiTimer` - the think loop
 
 `NPCAiTimer` (`scripts/Basic/AI/NPCAiTimer.cs`) is attached once per NPC
-(`EnsureInstalled`, called from `NPC.On_Create`) as a plain recurring `BoundTimer` - the
-same proven mechanism used elsewhere in this codebase (`CriminalExpiryTimer`), chosen
-deliberately over the separate Plugin/`TimerPluginDef` machinery
-(`RegenerationPlugin`-style) because that relies on a hand-paired `*.Generated.cs` file
-whose generation pipeline isn't exercised for `scripts/Basic`'s dynamic boot-compile
-step - a plain `[SaveableClass] BoundTimer` has no such dependency. See
-[Tags & timers](../02-engine-core/tags-and-timers.md) for `BoundTimer` in general.
+(`EnsureInstalled`, called from `NPC.On_Create`) as a recurring `BoundTimer`. See
+[Tags & timers](../02-engine-core/tags-and-timers.md) for `BoundTimer` in general. Whether the
+AI would be better as a plugin (see [Plugins](../02-engine-core/plugins.md): it would hear the
+NPC's triggers directly) hasn't been weighed yet; it's on the dev-feedback batch's list of
+plugin candidates.
 
 Each tick (`ThinkIntervalSeconds = 1.5`): if the NPC has, or finds, a living target,
 either fight it (walk into weapon range, then let the existing

@@ -44,14 +44,16 @@ file whose job is session continuity, not permanent reference.
 - [LScript](02-engine-core/lscript.md) - the embedded scripting language used by `.scp`/`.def`
   content and raw-LScript dialogs: triggers, the `{a,b}` random-range operator, known parser
   quirks.
-- [Persistence & saving](02-engine-core/persistence-and-saving.md) - `FieldValue`,
-  `ConvertTools.ConvertTo`, the generic save/load pipeline, `isLoadingFromScript`, and the
-  real bug it was added to fix (#168).
+- [Persistence & saving](02-engine-core/persistence-and-saving.md) - how a def's values come
+  from scripts and a save (`FieldValue`'s default and current value), typed fields vs tags,
+  and the generic save/load pipeline.
 - [Tags & timers](02-engine-core/tags-and-timers.md) - `TagKey`/`TagHolder`, `Timer`/
   `BoundTimer`, why timers are "just tags" and what that buys you for persistence.
 - [Triggers & deny chains](02-engine-core/triggers-and-deny-chains.md) - the
   `TryCancellableTrigger`/`On_Deny*`/`args.Result` pattern used everywhere an action can be
-  blocked (pickup, drop, trade, equip, door open/close).
+  blocked (pickup, drop, trade, equip), and why reach is checked after it.
+- [Plugins](02-engine-core/plugins.md) - objects attached to a thing that hear its triggers,
+  keep data and a timer, and save with it: how to declare, install and use one.
 - [ViewableClasses & the `.info` dialog](02-engine-core/viewable-classes-and-info-dialog.md) -
   reflection-based property discovery, `[ViewDescriptor]`/`[Button]` injection, and when to
   use that instead of a dedicated dialog.
