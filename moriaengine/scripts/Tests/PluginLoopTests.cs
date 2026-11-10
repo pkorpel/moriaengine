@@ -76,6 +76,96 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#1389 - trigger groups removed during a trigger don't run, the ones after a removed one still do.
+	/// Protocol side: Tests/Protocol/CancellableTriggerTests.cs.</summary>
+	public static class TriggerGroupLoopTests {
+		private static readonly TriggerKey tkLoopTest = TriggerKey.Acquire("loopTest");
+
+		private static void Check(string name, bool ok) {
+			Console.WriteLine("CANCELLABLE_CHECK: " + name + "=" + ok);
+		}
+
+		private static void Fire(PluginHolder holder, string way) {
+			ScriptArgs sa = new ScriptArgs();
+			switch (way) {
+				case "Trigger":
+					holder.Trigger(tkLoopTest, sa);
+					break;
+				case "TryTrigger":
+					holder.TryTrigger(tkLoopTest, sa);
+					break;
+				case "CancellableTrigger":
+					holder.CancellableTrigger(tkLoopTest, sa);
+					break;
+				default:
+					holder.TryCancellableTrigger(tkLoopTest, sa);
+					break;
+			}
+		}
+
+		/// <summary>The front group runs first (the newest); what it does when it hears the trigger is set per case.</summary>
+		private static void Attach(PluginHolder holder, E_LoopTestFront.Action action) {
+			E_LoopTestFront.action = action;
+			E_LoopTestFront.heard = 0;
+			E_LoopTestBack.heard = 0;
+			holder.AddTriggerGroup(SingletonScript<E_LoopTestBack>.Instance);
+			holder.AddTriggerGroup(SingletonScript<E_LoopTestFront>.Instance);
+		}
+
+		[SteamFunction]
+		public static void TestTriggerGroupLoop(Character self) {
+			foreach (string way in new[] { "Trigger", "TryTrigger", "CancellableTrigger", "TryCancellableTrigger" }) {
+				Attach(self, E_LoopTestFront.Action.RemoveSelf);
+				Fire(self, way);
+				Check("tgSelfRemoved" + way, (E_LoopTestFront.heard == 1) && (E_LoopTestBack.heard == 1));
+				self.RemoveTriggerGroup(SingletonScript<E_LoopTestBack>.Instance);
+
+				Attach(self, E_LoopTestFront.Action.RemoveBoth);
+				Fire(self, way);
+				Check("tgBothRemoved" + way, (E_LoopTestFront.heard == 1) && (E_LoopTestBack.heard == 0));
+			}
+			//an item: its Trigger goes to TryTrigger (#1372), the other three reach their own loop
+			foreach (string way in new[] { "TryTrigger", "CancellableTrigger", "TryCancellableTrigger" }) {
+				Item item = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+				Attach(item, E_LoopTestFront.Action.DeleteHolder);
+				Fire(item, way);
+				Check("tgHolderDeleted" + way, item.IsDeleted && (E_LoopTestFront.heard == 1) && (E_LoopTestBack.heard == 0));
+			}
+			E_LoopTestFront.action = E_LoopTestFront.Action.None;
+			Console.WriteLine("CANCELLABLE_TGLOOP_DONE");
+		}
+	}
+
+	public class E_LoopTestFront : CompiledTriggerGroup {
+		internal enum Action { None, RemoveSelf, RemoveBoth, DeleteHolder }
+		internal static Action action;
+		internal static int heard;
+
+		public void On_LoopTest(PluginHolder self) {
+			heard++;
+			switch (action) {
+				case Action.RemoveSelf:
+					self.RemoveTriggerGroup(this);
+					break;
+				case Action.RemoveBoth:
+					self.RemoveTriggerGroup(this);
+					self.RemoveTriggerGroup(SingletonScript<E_LoopTestBack>.Instance);
+					break;
+				case Action.DeleteHolder:
+					((Thing) self).Delete();
+					break;
+			}
+		}
+	}
+
+	public class E_LoopTestBack : CompiledTriggerGroup {
+		internal static int heard;
+
+		public void On_LoopTest(PluginHolder self) {
+			heard++;
+		}
+	}
+
 	public class LoopTestPluginDef : PluginDef {
 		public static readonly LoopTestPluginDef instance =
 			(LoopTestPluginDef) new LoopTestPluginDef("p_loop_test", "C# scripts", -1).Register();
