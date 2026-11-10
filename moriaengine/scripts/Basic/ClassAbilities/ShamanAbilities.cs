@@ -237,10 +237,7 @@ namespace SteamEngine.CompiledScripts {
 				self.Sound(0x212);
 				self.SysMessage("Vztycil jsi voodoo stit!", ClassAbilities.ClassMessageHue);
 				self.Mana = (short) (self.Mana - 29);
-				if (StandcastHelper.StandcastDef.IsActive(self)) {
-					StandcastHelper.ConsumeIfActive(self);
-					self.SysMessage("Jsi zpatky v normalnim stavu.", ClassAbilities.ClassMessageHue);
-				}
+				StandcastAbilityDef.SwitchOff(self, "Jsi zpatky v normalnim stavu.");
 			}
 		}
 

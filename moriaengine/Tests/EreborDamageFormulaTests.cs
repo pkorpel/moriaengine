@@ -89,7 +89,7 @@ namespace SteamEngine.Tests {
 		[InlineData(200, 49, 2.0)]  //chain lightning
 		[InlineData(200, 55, 2.0)]  //meteor swarm
 		public void StandcastBonusGrowsWithLevelUpTo200(int level, int spellId, double expected) {
-			Assert.Equal(expected, StandcastHelper.CalculateLevelBonus(level, spellId, 0.02), 6);
+			Assert.Equal(expected, StandcastPlugin.CalculateLevelBonus(level, spellId, 0.02), 6);
 		}
 
 		[Theory]

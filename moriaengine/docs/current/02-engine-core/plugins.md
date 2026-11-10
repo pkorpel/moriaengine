@@ -60,7 +60,16 @@ So a plugin on a character hears whatever the character hears without anyone cal
 `@skillSelect`, `@skillStart`, `@skillStroke`, `@skillSuccess` and `@skillFail` (raised on the
 character by `SkillDef`'s `Trigger_Select`, `Trigger_Start`, `Trigger_Stroke`,
 `Trigger_Success` and `Trigger_Fail` before the skill's own code, `SkillDef.cs:233-321`),
-`@beforeSwing`, `@death`, `@logout`, the deny triggers, and so on.
+`@beforeSwing`, `@death`, `@logout`, the deny triggers, and so on. Magery adds two of its own
+(#1386): `@spellCast` once a player's cast is under way (`MagerySkillDef.On_Start`, after mana,
+reagents, the casting rules and the spell's own `@start`; custom spell scrolls raise it too, NPC
+casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
+spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `MonsterSpellPowerArgs`
+whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. A character's
+`@denyMove` (`Character.CheckCanMove`, #1386) asks whether it may move at all, before the step
+is worked out: a plugin returning Cancel holds it still (`CastFreezePlugin`, the paralysis
+plugin). Refusing in `@step` instead comes too late: #767's collision with other characters
+(a shove, its stamina) runs before `@step`.
 
 ## Declaring a plugin
 

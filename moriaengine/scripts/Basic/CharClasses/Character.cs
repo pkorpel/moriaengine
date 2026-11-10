@@ -2248,8 +2248,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
+		private static readonly TriggerKey tkDenyMove = TriggerKey.Acquire("denyMove");
+
+		/// <summary>#1386 - @denyMove: whatever holds a character still (a plugin returning Cancel: a cast's freeze,
+		/// paralysis) refuses here, before any step is worked out - as Sphere's immobile flags, so a refused step doesn't
+		/// shove anyone first (#767's collision comes after this and before @step).</summary>
 		public override bool CheckCanMove(bool running) {
-			return GmTools.CheckCanMove(this) && MonsterSpecialAttacks.CheckEntangledCanMove(this) && MysticMind.CheckCanMove(this) && MovementStamina.CheckCanMove(this) && CorpseLooting.CheckCanMove(this); //#1107 - .freeze, #1023 a looter's hold
+			return GmTools.CheckCanMove(this) && (this.TryCancellableTrigger(tkDenyMove, new ScriptArgs(running)) != TriggerResult.Cancel)
+				&& MonsterSpecialAttacks.CheckEntangledCanMove(this) && MysticMind.CheckCanMove(this) && MovementStamina.CheckCanMove(this) && CorpseLooting.CheckCanMove(this); //#1107 - .freeze, #1023 a looter's hold
 		}
 
 		//#779 walking stamina drain

@@ -15,6 +15,10 @@ The steps share one `args` object carrying a `DenyResult` (`args.Result`, allowe
 with). A step denies by setting `args.Result`, and usually cancels as well; the caller reads
 `args.Result` at the end.
 
+A character's `@denyMove` (#1386, `Character.CheckCanMove`) is a plain cancellable trigger, not
+such a chain: it has no `DenyResult`, whatever returns Cancel holds the character still and
+sends its own message, if any (see [movement-and-collision.md](../04-gameplay-systems/movement-and-collision.md)).
+
 ## DenyResult
 
 `DenyResult` (`GameCore/DenyResult.cs`) is an abstract base with an `Allow` bool and a
