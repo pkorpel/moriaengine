@@ -116,7 +116,7 @@ save that holds such a plugin loads. There are two ways to make one:
    defs this way: `EffectDurationPluginDef` alone backs `p_kick`, `p_silence_effect`,
    `p_protection_bonus` and others.
 
-2. **A static instance in C#**, registered under its defname:
+2. **A static field `instance` of the def's own class**, registered under its defname:
 
    ```csharp
    public static CraftingProcessPluginDef instance = (CraftingProcessPluginDef)
@@ -127,9 +127,15 @@ save that holds such a plugin loads. There are two ways to make one:
    The original `RegenerationPlugin.cs` comment names both ways: "it must be here as below or
    somewhere in the LScript as simple `[RegenerationPluginDef p_regenerations]`".
 
-Code-made defs and when their static fields are created are being sorted out under the
-dev-feedback batch (see `CLAUDE.md`); this section will name the one pattern once that's
-settled.
+   It exists before the world loads because `ClassManager.InitClasses` runs the def class's
+   static constructor before calling its `Bootstrap()`. A `.ct` def class gets its `Bootstrap()`
+   generated; a hand-written one declares `public new static void Bootstrap()` itself, calling
+   `RegisterPluginDef` (`TimerPluginDef`, `MagicChargePluginDef`) (#1369, see
+   [persistence-and-saving.md](persistence-and-saving.md#defs-made-in-code-and-what-a-save-refers-to-by-name)).
+   Use it as `CraftingProcessPluginDef.instance`. A def made in a static field of any other
+   class, such as the plugin class, would exist only once that field is first read, after a
+   save holding such a plugin has already failed to load; the boot logs an error for one held
+   by a def or plugin class.
 
 ### Installing it
 

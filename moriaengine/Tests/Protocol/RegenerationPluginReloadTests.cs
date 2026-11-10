@@ -4,7 +4,7 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// Regression test for #436: RegenerationPlugin.defInstance was declared on the Plugin
+	/// Regression test for #436 (#1369: the def is now RegenerationPluginDef.instance): it was declared on the Plugin
 	/// class (not the Def class with the generated Bootstrap() method), the same vulnerable
 	/// shape RaceNationPlugin/RealmPlugin had in #434 - "p_regenerations" was only registered
 	/// lazily, on first TryInstallPlugin call, so a cold boot couldn't resolve an existing

@@ -25,11 +25,8 @@ namespace SteamEngine.CompiledScripts {
 	/// randomness to account for, unlike c_titan_mage's real 3-spell mix. Verification is done
 	/// client-side (Tests/Protocol/NpcBeneficialSpellTests.cs) by reading NPCAiTimer.
 	/// TryCastSpell's own debug log line directly ("casts Magic Reflect at <name>") rather than
-	/// the resulting MagicReflectionPlugin installation - a SEPARATE, pre-existing bug (filed
-	/// separately, not fixed here) means MagicReflectionPluginDef.EffectPluginDef's own lazy
-	/// "p_magic_reflection" defname resolution throws on a cold boot regardless of who the spell
-	/// targets, so asserting on the installed plugin would conflate that unrelated defect with
-	/// the actual targeting fix this test is for.</summary>
+	/// the resulting MagicReflectionPlugin installation (when this was written, "p_magic_reflection" didn't
+	/// exist on a cold boot; fixed by #927 and #1369), so the test stays about the targeting.</summary>
 	public static class NpcBeneficialSpellTests {
 		[SteamFunction]
 		public static void TestBeneficialSpellCastsOnSelf(Character self) {
