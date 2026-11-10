@@ -126,7 +126,9 @@ function Invoke-ScriptGeneration {
 	param([string]$Configuration)
 
 	$dll = "GameCore/bin/$Configuration/net8.0/SteamEngine.GameCore.dll"
-	$generatedMarker = 'Generated/CompiledTriggerGroups.Generated.cs'
+	# #1358: GameCore writes generated sources only when their text changes, so their own write times no longer say when
+	# generation last ran; GeneratedCodeUtil touches this file every time instead.
+	$generatedMarker = 'Generated/generated-at.txt'
 
 	Set-MulPathToCheckedInUoFiles
 

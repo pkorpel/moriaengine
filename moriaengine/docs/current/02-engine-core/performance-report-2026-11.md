@@ -335,7 +335,8 @@ still missed; the rest are improvements.
    - `globals.sav`'s defs (130 ms);
    - `SaveBuffer.Rent` (80 ms with a warm pool);
    - `TimeSpan` formatting.
-5. **Script compile: 15.9 s of a 36 s boot.**
+5. **Script compile: 15.9 s of a 36 s boot.** Done in #1358: a boot with no change reuses both script assemblies
+   (test server boot 27 s -> 11 s), see scripting-pipeline.md.
    - Every boot and every test server compiles all of `scripts/`.
    - Reusing the last build's assembly when no source changed (a hash of the sources) would cut most of it.
    - That speeds up restarts, and every protocol test boot even more.
