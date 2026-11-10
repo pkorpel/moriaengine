@@ -114,6 +114,10 @@ for everyone who fought the victim, if the victim is of the other realm, not a c
 an arena, not one of that Nazgul's last 3 victims, and hadn't just died. Only a player's kill counts as a
 death, and not one right after another.
 
+A ring that leaves lies at its shrine in four fire columns (#910, the user's call; Erebor's `@dropon_ground`), so
+everyone sees it's free. It can't be picked up; a double click on it is the shrine's, the kill quest first. When a
+ring is given out, the lying one and its fire go. The leading ring lies at the First's shrine.
+
 **The First Nazgul.** A GM appoints a Nazgul on `i_lordnazgulsstone`, or a Nazgul takes it: with no First,
 `i_lordnazguls_gate` in Barad-dur lets a Nazgul open the way to Fela Nazgul, 3 of Mordor pass, and there's
 half an hour before the trial throws them out. A Nazgul who reaches `i_leading_shrine_power` inside swaps
