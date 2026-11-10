@@ -81,7 +81,11 @@ The home is taken once, at the NPC's first think (`CaptureHome`), and is never m
 that: an NPC a GM moves by hand (`.go`, `.move`, `.summonto`, a quest step) keeps its old home and,
 once awake and past its leash, walks back to it. This is Sphere's behaviour (HOME stays until a GM
 sets it) and was kept on purpose (#1206, the user's choice): a quest NPC placed by `.SetupWorld` and
-moved by a GM goes back to its spot. There is no GM command to set an NPC's home yet.
+moved by a GM goes back to its spot. A GM gives it a new home in two ways:
+- the NPC's `.info` (Home, typed as `x,y,z[,m]`, or the Home here button; #1315);
+- `.sethome` (#1228): first the NPC, then the new home, which can be a spot on the ground, a thing (its place) or the NPC itself (where it stands).
+
+Both go through `NPCDescriptor.MoveHome`. A city resident's home is its spot at work, so a new home must lie inside its workplace and its gem moves there.
 
 ### Home-return: a straight step first, A* when refused (#211, #1199)
 

@@ -282,6 +282,7 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendSpeech(".gmmenu");
 			var (menuUid, layout, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
 			Assert.Contains("Moderace", strings);
+			Assert.Contains(".sethome", strings); //#1228 item 9
 			foreach (string livingWorld in new[] { ".venue", ".venues", ".resident", ".udalost", ".vyvolat" }) { //#1312
 				Assert.Contains(livingWorld, strings);
 			}
