@@ -118,6 +118,11 @@ A ring that leaves lies at its shrine in four fire columns (#910, the user's cal
 everyone sees it's free. It can't be picked up; a double click on it is the shrine's, the kill quest first. When a
 ring is given out, the lying one and its fire go. The leading ring lies at the First's shrine.
 
+`.nazghulfell` (#909, Erebor's `nazghulfell`): the First Nazgul, of fame over 9900 (Lord or Lady), turns the uniform's
+horse into a fell beast (`i_mt_drake`'s look, 0x692) and back, no sooner than 5 minutes apart; a death brings the horse
+back. The same horse changes its look, as the uniform does (the user's call). `.settings` Realm Offices: `fellFame`,
+`fellCooldownMinutes`.
+
 **The First Nazgul.** A GM appoints a Nazgul on `i_lordnazgulsstone`, or a Nazgul takes it: with no First,
 `i_lordnazguls_gate` in Barad-dur lets a Nazgul open the way to Fela Nazgul, 3 of Mordor pass, and there's
 half an hour before the trial throws them out. A Nazgul who reaches `i_leading_shrine_power` inside swaps
@@ -185,7 +190,6 @@ area's spawn point. Moving a piece in game keeps it there.
 ## Not done
 
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
-- `.nazghulfell`, the First's fell beast (`i_mt_drake` in 0x692).
 - The gates of `i_nazgulsonly_gate`: Erebor's GMs placed them, for what isn't recorded.
 
 ## Realm uniform
