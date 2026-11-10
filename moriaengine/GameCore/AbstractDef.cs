@@ -254,16 +254,18 @@ namespace SteamEngine {
 			Logger.WriteDebug("Saving defs.");
 			output.WriteComment("Defs");
 
-			foreach (AbstractScript script in AllScripts) {
+			//#1360 - one snapshot: each AllScripts read copies the whole dictionary
+			ICollection<AbstractScript> allScripts = AllScripts;
+			foreach (AbstractScript script in allScripts) {
 				AbstractDef def = script as AbstractDef;
 				if (def != null) {
 					def.alreadySaved = false;
 				}
 			}
-			int count = AllScripts.Count;
+			int count = allScripts.Count;
 			int a = 0;
-			int countPerCent = count / 200;
-			foreach (AbstractScript script in AllScripts) {
+			int countPerCent = Math.Max(1, count / 200);
+			foreach (AbstractScript script in allScripts) {
 				AbstractDef def = script as AbstractDef;
 				if (def != null) {
 					if ((a % countPerCent) == 0) {

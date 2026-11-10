@@ -8,6 +8,14 @@ namespace SteamEngine.Tests {
 		Gamma,
 	}
 
+	public enum ObjectSaverTestBigEnum : ulong {
+		Max = ulong.MaxValue,
+	}
+
+	public enum ObjectSaverTestSignedEnum : short {
+		MinusOne = -1,
+	}
+
 	/// <summary>
 	/// Pure logic test for #407 - ObjectSaver.Save/Load's enum round-trip. No engine boot
 	/// needed. Found while investigating why Player.Race/Nation and Character.Realm all
@@ -31,6 +39,17 @@ namespace SteamEngine.Tests {
 			string saved = ObjectSaver.Save(ObjectSaverTestEnum.Gamma);
 			Assert.Contains("ObjectSaverTestEnum", saved);
 			Assert.DoesNotContain("(ObjectSaverTestEnum)", saved); // not the reference-coordinator shape
+		}
+
+		[Fact]
+		public void TheCachedNameGivesTheSameTextEveryTimeAndPerType() { //#1360
+			string first = ObjectSaver.Save(ObjectSaverTestEnum.Gamma);
+			Assert.Equal(first, ObjectSaver.Save(ObjectSaverTestEnum.Gamma));
+			Assert.Equal(first.Replace("2", "1"), ObjectSaver.Save(ObjectSaverTestEnum.Beta));
+			Assert.Equal("(Enum:" + typeof(ObjectSaverTestBigEnum).FullName + ")18446744073709551615", ObjectSaver.Save(ObjectSaverTestBigEnum.Max));
+			Assert.Equal("(Enum:" + typeof(ObjectSaverTestSignedEnum).FullName + ")-1", ObjectSaver.Save(ObjectSaverTestSignedEnum.MinusOne));
+			Assert.Equal(ObjectSaverTestBigEnum.Max, ObjectSaver.Load(ObjectSaver.Save(ObjectSaverTestBigEnum.Max)));
+			Assert.Equal(ObjectSaverTestSignedEnum.MinusOne, ObjectSaver.Load(ObjectSaver.Save(ObjectSaverTestSignedEnum.MinusOne)));
 		}
 
 		[Fact]

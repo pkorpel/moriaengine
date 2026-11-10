@@ -32,6 +32,20 @@ namespace SteamEngine.Tests.Perf {
 			string after = servers.GameOutputSnapshot();
 			int i = after.IndexOf("PERF_PROBE: counts", mark, StringComparison.Ordinal);
 			File.AppendAllText(OutFile, "    " + after.Substring(i, after.IndexOf(" |", i, StringComparison.Ordinal) - i) + "\n");
+
+			//#1360 - a loaded world's first save (and a second for comparison): #1228's one missed pass line was measured
+			//only after building the world
+			for (int n = 1; n <= 2; n++) {
+				mark = servers.GameOutputSnapshot().Length;
+				gm.SendSpeech(".TestPerf \"save\"");
+				Assert.True(servers.WaitForGameOutputSince("PERF_PROBE: save timings", mark, TimeSpan.FromSeconds(300)));
+				string saved = servers.GameOutputSnapshot();
+				foreach (string line in saved.Substring(mark).Split('\n')) {
+					if (line.Contains("PERF_PROBE: save", StringComparison.Ordinal)) {
+						File.AppendAllText(OutFile, "    LOAD save" + n + " " + line.Trim() + "\n");
+					}
+				}
+			}
 		}
 	}
 }

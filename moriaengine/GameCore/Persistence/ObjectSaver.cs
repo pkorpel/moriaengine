@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -295,10 +296,11 @@ namespace SteamEngine.Persistence {
 				//own generic reference-coordinator fallback (genericUidRE) already claims,
 				//to avoid colliding with that unrelated meaning.
 				//#1027 - an enum can be negative, Realm.Mordor is -1, and ToUInt64 threw on it mid-save
-				string number = (Enum.GetUnderlyingType(t) == typeof(ulong)) ?
+				EnumSaveInfo info = GetEnumSaveInfo(t);
+				string number = info.isUnsigned64 ?
 					Convert.ToUInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture) :
 					Convert.ToInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
-				return "(Enum:" + GetEnumTypeName(t) + ")" + number;
+				return info.prefix + number;
 			}
 			if (ConvertTools.IsNumberType(t)) {
 				return ((IConvertible) value).ToString(CultureInfo.InvariantCulture.NumberFormat);
@@ -584,6 +586,21 @@ namespace SteamEngine.Persistence {
 				return type.Name;
 			}
 			return type.FullName;
+		}
+
+		private sealed class EnumSaveInfo {
+			internal string prefix;
+			internal bool isUnsigned64;
+		}
+
+		//#1360 - the name and underlying type were looked up by reflection for every enum written (~85 ms a design world save)
+		private static readonly ConcurrentDictionary<Type, EnumSaveInfo> enumSaveInfos = new ConcurrentDictionary<Type, EnumSaveInfo>();
+
+		private static EnumSaveInfo GetEnumSaveInfo(Type type) {
+			return enumSaveInfos.GetOrAdd(type, t => new EnumSaveInfo {
+				prefix = "(Enum:" + GetEnumTypeName(t) + ")",
+				isUnsigned64 = Enum.GetUnderlyingType(t) == typeof(ulong)
+			});
 		}
 
 		/// <summary>
@@ -872,6 +889,7 @@ namespace SteamEngine.Persistence {
 
 		//unloads instences that come from scripts.
 		internal static void ForgetScripts() {
+			enumSaveInfos.Clear(); //names can change with the scripts' ClassManager registrations
 			Assembly coreAssembly = ClassManager.CoreAssembly;
 			List<ISaveImplementor> isis = new List<ISaveImplementor>(implementorsByName.Values);
 			implementorsByName.Clear();

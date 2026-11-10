@@ -60,6 +60,15 @@ namespace SteamEngine.CompiledScripts {
 				" nextSaveOk=" + WorldSaver.LastTimings.Success + " end");
 		}
 
+		/// <summary>#1360 - the load reserved the next save's buffers (the size of the files it read + 1/8).</summary>
+		[SteamFunction]
+		public static void TestSavePool(Character self) {
+			long loaded = WorldSaver.LastLoadedBytes;
+			long needed = (loaded + loaded / 8 + (1 << 20) - 1) >> 20;
+			Console.WriteLine("SAVE_POOL: loaded=" + (loaded > 0) + " reserved=" + (WorldSaver.PooledSaveChunks >= needed) +
+				" needed=" + needed + " pooled=" + WorldSaver.PooledSaveChunks + " end");
+		}
+
 		/// <summary>The autosave's own timer (PeriodicSave.scp) comes due now: it saves in the background.</summary>
 		[SteamFunction]
 		public static void TestSaveAutosaveFire(Character self) {

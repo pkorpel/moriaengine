@@ -430,6 +430,7 @@ namespace SteamEngine.Persistence {
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		private static bool TryLoad() {
+			loadedBytes = 0;
 			Timer.StartingLoading();
 			ObjectSaver.StartingLoading();
 
@@ -490,12 +491,34 @@ namespace SteamEngine.Persistence {
 			ObjectSaver.LoadingFinished();
 			//GameAccount.LoadingFinished();
 			Timer.LoadingFinished();
+			//#1360 - the next save is about as big as what was loaded; outside the load's try, as a failure here
+			//mustn't throw away a good world, and after the load's own temporary data is gone
+			try {
+				SaveBuffer.Reserve(loadedBytes + loadedBytes / 8);
+			} catch (OutOfMemoryException e) {
+				Logger.WriteWarning("Couldn't reserve the save buffers: " + e.Message);
+			}
 			//Region.LoadingFinished();
 			//Thing.LoadingFinished();//Things must come after regions
 			return true;
 		}
 
+		private static long loadedBytes;
+
+		/// <summary>#1360 - the size of the save files the last load read.</summary>
+		public static long LastLoadedBytes {
+			get { return loadedBytes; }
+		}
+
+		/// <summary>#1360 - save buffer chunks (1 MB each) waiting in the pool.</summary>
+		public static int PooledSaveChunks {
+			get { return SaveBuffer.PooledChunks; }
+		}
+
 		private static void InvokeLoad(StreamReader stream, string filename) {
+			if (stream.BaseStream.CanSeek) {
+				loadedBytes += stream.BaseStream.Length;
+			}
 			EOFMarked = false;
 			foreach (PropsSection section in PropsFileParser.Load(
 					filename, stream, StartsAsScript, true)) {
