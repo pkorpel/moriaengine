@@ -175,22 +175,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static readonly TagKey experienceWorthTK = TagKey.Acquire("_experienceWorth_");
-
-		/// <summary>Experience range {min, max} granted to the player who kills an NPC of this
-		/// type - a flat hand-tuned value, not derived from stats (Erebor's own pattern,
-		/// tag.experience={min max} - see LevelingSystem.AddExperience / #127). Null (the
-		/// default) means this NPC type grants no experience - most NPC content doesn't have
-		/// this configured yet (see #12, NPC content is ~55-60% incomplete).</summary>
-		public int[] ExperienceWorth {
-			get {
-				return this.GetTag(experienceWorthTK) as int[];
-			}
-			set {
-				this.SetTag(experienceWorthTK, value);
-			}
-		}
-
 		/// <summary>Rolls a random value in [min, max] (inclusive) from ExperienceWorth, or 0 if unset.</summary>
 		public int RollExperienceReward() {
 			int[] range = this.ExperienceWorth;
@@ -201,27 +185,6 @@ namespace SteamEngine.CompiledScripts {
 				return range[0];
 			}
 			return Globals.dice.Next(range[0], range[1] + 1);
-		}
-
-		private static readonly TagKey strRangeTK = TagKey.Acquire("_strRange_");
-		private static readonly TagKey dexRangeTK = TagKey.Acquire("_dexRange_");
-		private static readonly TagKey intRangeTK = TagKey.Acquire("_intRange_");
-
-		/// <summary>Starting Str/Dex/Int {min, max} range for a fresh NPC of this type (#559),
-		/// rolled once at creation by NPC.On_Create - mirrors ExperienceWorth's own shape.
-		/// Null (the default) means unconfigured - On_Create leaves the Character's own
-		/// stat-default (15, see Character.ct) untouched rather than zeroing it.</summary>
-		public int[] StrRange {
-			get { return this.GetTag(strRangeTK) as int[]; }
-			set { this.SetTag(strRangeTK, value); }
-		}
-		public int[] DexRange {
-			get { return this.GetTag(dexRangeTK) as int[]; }
-			set { this.SetTag(dexRangeTK, value); }
-		}
-		public int[] IntRange {
-			get { return this.GetTag(intRangeTK) as int[]; }
-			set { this.SetTag(intRangeTK, value); }
 		}
 
 		/// <summary>Rolls a value in [min, max] (inclusive) from `range`, or -1 if `range` is unset
@@ -240,414 +203,6 @@ namespace SteamEngine.CompiledScripts {
 		public int RollDex() { return RollStatRange(this.DexRange); }
 		public int RollInt() { return RollStatRange(this.IntRange); }
 
-		private static readonly TagKey stunChanceTK = TagKey.Acquire("_npcStunChance_");
-		private static readonly TagKey stunDurationTK = TagKey.Acquire("_npcStunDuration_");
-		private static readonly TagKey stunCooldownTK = TagKey.Acquire("_npcStunCooldown_");
-		private static readonly TagKey criticChanceTK = TagKey.Acquire("_npcCriticChance_");
-		private static readonly TagKey criticDamageTK = TagKey.Acquire("_npcCriticDamage_");
-		private static readonly TagKey roundattackChanceTK = TagKey.Acquire("_npcRoundattackChance_");
-		private static readonly TagKey roundattackDamageTK = TagKey.Acquire("_npcRoundattackDamage_");
-		private static readonly TagKey roundattackCooldownTK = TagKey.Acquire("_npcRoundattackCooldown_");
-		private static readonly TagKey pullDistanceTK = TagKey.Acquire("_npcPullDistance_");
-		private static readonly TagKey bleedChanceTK = TagKey.Acquire("_npcBleedChance_");
-		private static readonly TagKey knockbackChanceTK = TagKey.Acquire("_npcKnockbackChance_");
-		private static readonly TagKey selfresDelayTK = TagKey.Acquire("_npcSelfresDelay_");
-		private static readonly TagKey npcSpeedTK = TagKey.Acquire("_npcSpeed_");
-		private static readonly TagKey parakrikChanceTK = TagKey.Acquire("_npcParakrikChance_");
-		private static readonly TagKey parakrikCooldownTK = TagKey.Acquire("_npcParakrikCooldown_");
-		private static readonly TagKey npcCurseChanceTK = TagKey.Acquire("_npcCurseChance_");
-		private static readonly TagKey npcCurseCooldownTK = TagKey.Acquire("_npcCurseCooldown_");
-		private static readonly TagKey npcCurseDamageTK = TagKey.Acquire("_npcCurseDamage_");
-		private static readonly TagKey sniperChanceTK = TagKey.Acquire("_npcSniperChance_");
-		private static readonly TagKey sniperDamageTK = TagKey.Acquire("_npcSniperDamage_");
-		private static readonly TagKey summoningChanceTK = TagKey.Acquire("_npcSummoningChance_");
-		private static readonly TagKey summoningCooldownTK = TagKey.Acquire("_npcSummoningCooldown_");
-		private static readonly TagKey summoningLifetimeTK = TagKey.Acquire("_npcSummoningLifetime_");
-
-		/// <summary>Real-user-reported follow-up to #653's teventStubs batch - per-species
-		/// override {min, max} ranges for StunAbilityDef/CriticAbilityDef/
-		/// RoundattackAbilityDef's own default fields (same two-layer precedent as
-		/// SpellCastRange: an AbilityDef field is the engine-wide default, this is the
-		/// per-NPCDef override, confirmed real variance exists in the archive - e.g. stun
-		/// chance ranges from 3% on weak monsters to 100% on dragons). Null (the default)
-		/// means unconfigured - the consuming combat code falls back to the granted
-		/// AbilityDef's own field instead. Unlike StrRange/FameRange (rolled ONCE at
-		/// creation), these are rolled fresh every time the ability actually fires (e.g. a
-		/// fresh crit-damage roll on every landed hit) - see RollStatRange's own callers in
-		/// WeaponSkillDef/NPCAiTimer for where that happens.</summary>
-		public int[] StunChance {
-			get { return this.GetTag(stunChanceTK) as int[]; }
-			set { this.SetTag(stunChanceTK, value); }
-		}
-		public int[] StunDuration {
-			get { return this.GetTag(stunDurationTK) as int[]; }
-			set { this.SetTag(stunDurationTK, value); }
-		}
-		public int[] StunCooldown {
-			get { return this.GetTag(stunCooldownTK) as int[]; }
-			set { this.SetTag(stunCooldownTK, value); }
-		}
-		public int[] CriticChance {
-			get { return this.GetTag(criticChanceTK) as int[]; }
-			set { this.SetTag(criticChanceTK, value); }
-		}
-		public int[] CriticDamage {
-			get { return this.GetTag(criticDamageTK) as int[]; }
-			set { this.SetTag(criticDamageTK, value); }
-		}
-		public int[] RoundattackChance {
-			get { return this.GetTag(roundattackChanceTK) as int[]; }
-			set { this.SetTag(roundattackChanceTK, value); }
-		}
-		public int[] RoundattackDamage {
-			get { return this.GetTag(roundattackDamageTK) as int[]; }
-			set { this.SetTag(roundattackDamageTK, value); }
-		}
-		public int[] RoundattackCooldown {
-			get { return this.GetTag(roundattackCooldownTK) as int[]; }
-			set { this.SetTag(roundattackCooldownTK, value); }
-		}
-		public int[] PullDistance {
-			get { return this.GetTag(pullDistanceTK) as int[]; }
-			set { this.SetTag(pullDistanceTK, value); }
-		}
-		/// <summary>Real archive semantics (confirmed in Bleed.scp): unset means the chance
-		/// check never even runs, i.e. ALWAYS bleeds - BleedAbilityDef.Chance's own default is
-		/// already {1000,1000} (100%) to match, so null here (unconfigured) correctly falls
-		/// back to "always" via the normal two-layer precedent, nothing special needed. A
-		/// configured override only ever LOWERS it on specific species (real variance 10%-100%
-		/// confirmed in the archive).</summary>
-		public int[] BleedChance {
-			get { return this.GetTag(bleedChanceTK) as int[]; }
-			set { this.SetTag(bleedChanceTK, value); }
-		}
-		/// <summary>Already on the SAME 0-1000 permille scale as every other ability override
-		/// here - the real archive's own tag.npc_knockback is on a 0-100 scale, converted ×10
-		/// by SphereShardConverter on the way in (see ConvertedCharDef.cs's own comment) so
-		/// nothing downstream has to remember a special-case unit for this one field.</summary>
-		public int[] KnockbackChance {
-			get { return this.GetTag(knockbackChanceTK) as int[]; }
-			set { this.SetTag(knockbackChanceTK, value); }
-		}
-		/// <summary>{min,max} seconds after death before a fresh instance of this NPC respawns -
-		/// real archive field is tag.resstimer.</summary>
-		/// <summary>#860 - tag.npc_speed {min, max}: what this monster's swing speed is counted
-		/// from instead of its max stamina (f_getspeed_npc), rolled once at creation.</summary>
-		public int[] NpcSpeed {
-			get { return this.GetTag(npcSpeedTK) as int[]; }
-			set { this.SetTag(npcSpeedTK, value); }
-		}
-
-		public int[] SelfresDelay {
-			get { return this.GetTag(selfresDelayTK) as int[]; }
-			set { this.SetTag(selfresDelayTK, value); }
-		}
-		/// <summary>Real archive fields are tag.parakrik_chance/tag.parakrik_delay.</summary>
-		public int[] ParaKrikChance {
-			get { return this.GetTag(parakrikChanceTK) as int[]; }
-			set { this.SetTag(parakrikChanceTK, value); }
-		}
-		public int[] ParaKrikCooldown {
-			get { return this.GetTag(parakrikCooldownTK) as int[]; }
-			set { this.SetTag(parakrikCooldownTK, value); }
-		}
-		/// <summary>Real archive fields are tag.npc_curse_chance/_delay/_dmg.</summary>
-		public int[] NpcCurseChance {
-			get { return this.GetTag(npcCurseChanceTK) as int[]; }
-			set { this.SetTag(npcCurseChanceTK, value); }
-		}
-		public int[] NpcCurseCooldown {
-			get { return this.GetTag(npcCurseCooldownTK) as int[]; }
-			set { this.SetTag(npcCurseCooldownTK, value); }
-		}
-		public int[] NpcCurseDamage {
-			get { return this.GetTag(npcCurseDamageTK) as int[]; }
-			set { this.SetTag(npcCurseDamageTK, value); }
-		}
-		/// <summary>Real archive fields are tag.npc_sniper_chance/_dmg.</summary>
-		public int[] SniperChance {
-			get { return this.GetTag(sniperChanceTK) as int[]; }
-			set { this.SetTag(sniperChanceTK, value); }
-		}
-		public int[] SniperDamage {
-			get { return this.GetTag(sniperDamageTK) as int[]; }
-			set { this.SetTag(sniperDamageTK, value); }
-		}
-		/// <summary>Real archive fields are tag.npc_summoning_chance/_time/_removeTime.</summary>
-		public int[] SummoningChance {
-			get { return this.GetTag(summoningChanceTK) as int[]; }
-			set { this.SetTag(summoningChanceTK, value); }
-		}
-		public int[] SummoningCooldown {
-			get { return this.GetTag(summoningCooldownTK) as int[]; }
-			set { this.SetTag(summoningCooldownTK, value); }
-		}
-		public int[] SummoningLifetime {
-			get { return this.GetTag(summoningLifetimeTK) as int[]; }
-			set { this.SetTag(summoningLifetimeTK, value); }
-		}
-
-		//#797/#799 - monster abilities batch 4+ per-species overrides, same {min,max}-or-null shape as
-		//the ones above. Each .def field name (lowercased) maps to its own tag key here, so
-		//LoadScriptLine handles all of them with one lookup instead of one if-block each.
-		private static readonly Dictionary<string, TagKey> moreAbilityRangeTags = new Dictionary<string, TagKey>(StringComparer.OrdinalIgnoreCase) {
-			{ "phoenixfiredamage", TagKey.Acquire("_npcPhoenixFireDamage_") },
-			{ "explodedamage", TagKey.Acquire("_npcExplodeDamage_") },
-			{ "regenerationhp", TagKey.Acquire("_npcRegenerationHp_") },
-			{ "regenerationinterval", TagKey.Acquire("_npcRegenerationInterval_") },
-			{ "lifeleechamount", TagKey.Acquire("_npcLifeLeechAmount_") },
-			{ "reactivearmorpercent", TagKey.Acquire("_npcReactiveArmorPercent_") },
-			{ "stamdmgchance", TagKey.Acquire("_npcStamDmgChance_") },
-			{ "stamdmgpower", TagKey.Acquire("_npcStamDmgPower_") },
-			{ "lightningschance", TagKey.Acquire("_npcLightningsChance_") },
-			{ "regenerationdivisor", TagKey.Acquire("_npcRegenerationDivisor_") },
-			{ "deathdamage", TagKey.Acquire("_npcDeathDamage_") },
-			{ "lifeleechcap", TagKey.Acquire("_npcLifeLeechCap_") },
-			{ "acidchance", TagKey.Acquire("_npcAcidChance_") },
-			{ "aciddamage", TagKey.Acquire("_npcAcidDamage_") },
-			{ "resistcountdownchance", TagKey.Acquire("_npcResistCountdownChance_") },
-			{ "resistcountdownamount", TagKey.Acquire("_npcResistCountdownAmount_") },
-			{ "lightningsrange", TagKey.Acquire("_npcLightningsRange_") },
-			{ "npccursemanachance", TagKey.Acquire("_npcCurseManaChance_") },
-			{ "npccursemanacooldown", TagKey.Acquire("_npcCurseManaCooldown_") },
-			{ "npccursemanadamage", TagKey.Acquire("_npcCurseManaDamage_") },
-			{ "npccursestamchance", TagKey.Acquire("_npcCurseStamChance_") },
-			{ "npccursestamcooldown", TagKey.Acquire("_npcCurseStamCooldown_") },
-			{ "npccursestamdamage", TagKey.Acquire("_npcCurseStamDamage_") },
-			{ "pushallchance", TagKey.Acquire("_npcPushallChance_") },
-			{ "pushallcooldown", TagKey.Acquire("_npcPushallCooldown_") },
-			{ "magicshieldstrength", TagKey.Acquire("_npcMagicShieldStrength_") },
-			{ "dupecount", TagKey.Acquire("_npcDupeCount_") },
-			{ "backstabdamagereducer", TagKey.Acquire("_npcBackstabDamageReducer_") },
-			{ "multishotchance", TagKey.Acquire("_npcMultishotChance_") },
-			{ "multishotcooldown", TagKey.Acquire("_npcMultishotCooldown_") },
-			{ "multishotdamage", TagKey.Acquire("_npcMultishotDamage_") },
-			{ "dispelbombchance", TagKey.Acquire("_npcDispelBombChance_") },
-			{ "dispelbombrange", TagKey.Acquire("_npcDispelBombRange_") },
-			{ "dispelbombcooldown", TagKey.Acquire("_npcDispelBombCooldown_") },
-			{ "warcrycooldown", TagKey.Acquire("_npcWarcryCooldown_") },
-			//#1022 dragons: Erebor's tag.dragon_fire_*, dragon_fire_bomb_*, fire_dragon_round_*, dragon_fire_cage_*, dragon_fire_aura_*, bahenny_drak_aura_*
-			{ "firedragonchance", TagKey.Acquire("_npcFireDragonChance_") },
-			{ "firedragoncooldown", TagKey.Acquire("_npcFireDragonCooldown_") },
-			{ "firedragondamage", TagKey.Acquire("_npcFireDragonDamage_") },
-			{ "firedragonfiretype", TagKey.Acquire("_npcFireDragonFireType_") },
-			{ "firedragonbombchance", TagKey.Acquire("_npcFireDragonBombChance_") },
-			{ "firedragonbombcooldown", TagKey.Acquire("_npcFireDragonBombCooldown_") },
-			{ "firedragonbombdamage", TagKey.Acquire("_npcFireDragonBombDamage_") },
-			{ "firedragonbombfiretype", TagKey.Acquire("_npcFireDragonBombFireType_") },
-			{ "firedragonroundchance", TagKey.Acquire("_npcFireDragonRoundChance_") },
-			{ "firedragonroundcooldown", TagKey.Acquire("_npcFireDragonRoundCooldown_") },
-			{ "firedragonrounddamage", TagKey.Acquire("_npcFireDragonRoundDamage_") },
-			{ "firedragonroundfiretype", TagKey.Acquire("_npcFireDragonRoundFireType_") },
-			{ "firedragonroundturns", TagKey.Acquire("_npcFireDragonRoundTurns_") },
-			{ "firedragoncagechance", TagKey.Acquire("_npcFireDragonCageChance_") },
-			{ "firedragoncagecooldown", TagKey.Acquire("_npcFireDragonCageCooldown_") },
-			{ "firedragoncagefiretype", TagKey.Acquire("_npcFireDragonCageFireType_") },
-			{ "firedragoncageduration", TagKey.Acquire("_npcFireDragonCageDuration_") },
-			{ "firedragonaurachance", TagKey.Acquire("_npcFireDragonAuraChance_") },
-			{ "firedragonauracooldown", TagKey.Acquire("_npcFireDragonAuraCooldown_") },
-			{ "firedragonaurainterval", TagKey.Acquire("_npcFireDragonAuraInterval_") },
-			{ "firedragonauraticks", TagKey.Acquire("_npcFireDragonAuraTicks_") },
-			{ "firedragonauradamage", TagKey.Acquire("_npcFireDragonAuraDamage_") },
-			{ "firedragonauraresist", TagKey.Acquire("_npcFireDragonAuraResist_") },
-			{ "swampdragonaurachance", TagKey.Acquire("_npcSwampDragonAuraChance_") },
-			{ "swampdragonauracooldown", TagKey.Acquire("_npcSwampDragonAuraCooldown_") },
-			{ "swampdragonaurainterval", TagKey.Acquire("_npcSwampDragonAuraInterval_") },
-			{ "swampdragonauraticks", TagKey.Acquire("_npcSwampDragonAuraTicks_") },
-			{ "swampdragonauradamage", TagKey.Acquire("_npcSwampDragonAuraDamage_") },
-			//#1022 the dying bosses: Erebor's tag.e_explosionlava_*, tag.bomba_boy_dmg
-			{ "lavabombchance", TagKey.Acquire("_npcLavaBombChance_") },
-			{ "lavabombrange", TagKey.Acquire("_npcLavaBombRange_") },
-			{ "lavabombcooldown", TagKey.Acquire("_npcLavaBombCooldown_") },
-			{ "bombaboydamage", TagKey.Acquire("_npcBombaBoyDamage_") },
-			//#1022 Halda Molle: Erebor's tag.e_copy_chance, e_frosty_wave_*, warniak_type, warniak_count, e_warniak_hit_chance
-			{ "rozdelenicopychance", TagKey.Acquire("_npcRozdeleniCopyChance_") },
-			{ "frostwavechance", TagKey.Acquire("_npcFrostWaveChance_") },
-			{ "frostwavestrength", TagKey.Acquire("_npcFrostWaveStrength_") },
-			{ "warniaktype", TagKey.Acquire("_npcWarniakType_") },
-			{ "warniakcount", TagKey.Acquire("_npcWarniakCount_") },
-			{ "warniakdrophitchance", TagKey.Acquire("_npcWarniakDropHitChance_") },
-			//#1022 HCN tombs: Erebor's tag.npc_port_distance (f_npc_portTimer), tag.hcn_madnessAbilityChance/Strength
-			{ "npcportdistance", TagKey.Acquire("_npcPortDistance_") },
-			{ "hcnmadnesschance", TagKey.Acquire("_npcHcnMadnessChance_") },
-			{ "hcnmadnessstrength", TagKey.Acquire("_npcHcnMadnessStrength_") }
-		};
-
-		/// <summary>#1022 - a per-species tunable by its .def field name, null when unset or unknown.</summary>
-		internal int[] AbilityTuning(string fieldName) {
-			return moreAbilityRangeTags.TryGetValue(fieldName, out TagKey key) ? (this.GetTag(key) as int[]) : null;
-		}
-
-		private int[] GetAbilityRange(string fieldName) {
-			return this.GetTag(moreAbilityRangeTags[fieldName]) as int[];
-		}
-
-		private void SetAbilityRange(string fieldName, int[] value) {
-			this.SetTag(moreAbilityRangeTags[fieldName], value);
-		}
-
-		/// <summary>Real archive field is tag.phoenix_fire_damage.</summary>
-		public int[] PhoenixFireDamage {
-			get { return this.GetAbilityRange("phoenixfiredamage"); }
-			set { this.SetAbilityRange("phoenixfiredamage", value); }
-		}
-		/// <summary>Real archive field is tag.explode_dmg.</summary>
-		public int[] ExplodeDamage {
-			get { return this.GetAbilityRange("explodedamage"); }
-			set { this.SetAbilityRange("explodedamage", value); }
-		}
-		/// <summary>Real archive fields are tag.regeneration_hp/_speed (seconds).</summary>
-		public int[] RegenerationHp {
-			get { return this.GetAbilityRange("regenerationhp"); }
-			set { this.SetAbilityRange("regenerationhp", value); }
-		}
-		public int[] RegenerationInterval {
-			get { return this.GetAbilityRange("regenerationinterval"); }
-			set { this.SetAbilityRange("regenerationinterval", value); }
-		}
-		/// <summary>Real archive field is tag.npc_lifeLeech.</summary>
-		public int[] LifeLeechAmount {
-			get { return this.GetAbilityRange("lifeleechamount"); }
-			set { this.SetAbilityRange("lifeleechamount", value); }
-		}
-		/// <summary>Real archive field is tag.reactivearmor_damagePerc (percent).</summary>
-		public int[] ReactiveArmorPercent {
-			get { return this.GetAbilityRange("reactivearmorpercent"); }
-			set { this.SetAbilityRange("reactivearmorpercent", value); }
-		}
-		/// <summary>Real archive fields are tag.stam_dmg_chance/_power.</summary>
-		public int[] StamDmgChance {
-			get { return this.GetAbilityRange("stamdmgchance"); }
-			set { this.SetAbilityRange("stamdmgchance", value); }
-		}
-		public int[] StamDmgPower {
-			get { return this.GetAbilityRange("stamdmgpower"); }
-			set { this.SetAbilityRange("stamdmgpower", value); }
-		}
-		/// <summary>#1022 - real archive field is tag.npc_lifeLeech_cap.</summary>
-		public int[] LifeLeechCap {
-			get { return this.GetAbilityRange("lifeleechcap"); }
-			set { this.SetAbilityRange("lifeleechcap", value); }
-		}
-		/// <summary>#1022 - real archive fields are tag.acid_ppst and tag.acid_dmg.</summary>
-		public int[] AcidChance {
-			get { return this.GetAbilityRange("acidchance"); }
-			set { this.SetAbilityRange("acidchance", value); }
-		}
-		public int[] AcidDamage {
-			get { return this.GetAbilityRange("aciddamage"); }
-			set { this.SetAbilityRange("aciddamage", value); }
-		}
-		/// <summary>#1022 - real archive field is tag.death_damage.</summary>
-		public int[] DeathDamage {
-			get { return this.GetAbilityRange("deathdamage"); }
-			set { this.SetAbilityRange("deathdamage", value); }
-		}
-		/// <summary>#1022 - real archive field is tag.regespeed.</summary>
-		public int[] RegenerationDivisor {
-			get { return this.GetAbilityRange("regenerationdivisor"); }
-			set { this.SetAbilityRange("regenerationdivisor", value); }
-		}
-		/// <summary>#1022 - real archive fields are tag.resist_countdown_chance/_amount.</summary>
-		public int[] ResistCountdownChance {
-			get { return this.GetAbilityRange("resistcountdownchance"); }
-			set { this.SetAbilityRange("resistcountdownchance", value); }
-		}
-		public int[] ResistCountdownAmount {
-			get { return this.GetAbilityRange("resistcountdownamount"); }
-			set { this.SetAbilityRange("resistcountdownamount", value); }
-		}
-		/// <summary>Real archive fields are tag.e_lightnings_chance/_range.</summary>
-		public int[] LightningsChance {
-			get { return this.GetAbilityRange("lightningschance"); }
-			set { this.SetAbilityRange("lightningschance", value); }
-		}
-		public int[] LightningsRange {
-			get { return this.GetAbilityRange("lightningsrange"); }
-			set { this.SetAbilityRange("lightningsrange", value); }
-		}
-		/// <summary>Real archive fields are tag.npc_curse_mana_chance/_delay/_dmg.</summary>
-		public int[] NpcCurseManaChance {
-			get { return this.GetAbilityRange("npccursemanachance"); }
-			set { this.SetAbilityRange("npccursemanachance", value); }
-		}
-		public int[] NpcCurseManaCooldown {
-			get { return this.GetAbilityRange("npccursemanacooldown"); }
-			set { this.SetAbilityRange("npccursemanacooldown", value); }
-		}
-		public int[] NpcCurseManaDamage {
-			get { return this.GetAbilityRange("npccursemanadamage"); }
-			set { this.SetAbilityRange("npccursemanadamage", value); }
-		}
-		/// <summary>Real archive fields are tag.npc_curse_stam_chance/_delay/_dmg.</summary>
-		public int[] NpcCurseStamChance {
-			get { return this.GetAbilityRange("npccursestamchance"); }
-			set { this.SetAbilityRange("npccursestamchance", value); }
-		}
-		public int[] NpcCurseStamCooldown {
-			get { return this.GetAbilityRange("npccursestamcooldown"); }
-			set { this.SetAbilityRange("npccursestamcooldown", value); }
-		}
-		public int[] NpcCurseStamDamage {
-			get { return this.GetAbilityRange("npccursestamdamage"); }
-			set { this.SetAbilityRange("npccursestamdamage", value); }
-		}
-		/// <summary>Real archive fields are tag.e_pushall_chance/_time (seconds).</summary>
-		public int[] PushallChance {
-			get { return this.GetAbilityRange("pushallchance"); }
-			set { this.SetAbilityRange("pushallchance", value); }
-		}
-		public int[] PushallCooldown {
-			get { return this.GetAbilityRange("pushallcooldown"); }
-			set { this.SetAbilityRange("pushallcooldown", value); }
-		}
-		/// <summary>Real archive field is tag.npc_magicShield (percent of a swing absorbed).</summary>
-		public int[] MagicShieldStrength {
-			get { return this.GetAbilityRange("magicshieldstrength"); }
-			set { this.SetAbilityRange("magicshieldstrength", value); }
-		}
-		/// <summary>Real archive field is tag.dupecount (how many copies e_duplicator may make).</summary>
-		public int[] DupeCount {
-			get { return this.GetAbilityRange("dupecount"); }
-			set { this.SetAbilityRange("dupecount", value); }
-		}
-		/// <summary>Real archive field is tag.backstub_damageReducer (permille of the ambush bonus kept).</summary>
-		public int[] BackstabDamageReducer {
-			get { return this.GetAbilityRange("backstabdamagereducer"); }
-			set { this.SetAbilityRange("backstabdamagereducer", value); }
-		}
-		/// <summary>Real archive fields are tag.multishot_chance/_delay (seconds)/_dmg.</summary>
-		public int[] MultishotChance {
-			get { return this.GetAbilityRange("multishotchance"); }
-			set { this.SetAbilityRange("multishotchance", value); }
-		}
-		public int[] MultishotCooldown {
-			get { return this.GetAbilityRange("multishotcooldown"); }
-			set { this.SetAbilityRange("multishotcooldown", value); }
-		}
-		public int[] MultishotDamage {
-			get { return this.GetAbilityRange("multishotdamage"); }
-			set { this.SetAbilityRange("multishotdamage", value); }
-		}
-		/// <summary>Real archive fields are tag.e_explosiondispell_chance/_range/_time (seconds).</summary>
-		public int[] DispelBombChance {
-			get { return this.GetAbilityRange("dispelbombchance"); }
-			set { this.SetAbilityRange("dispelbombchance", value); }
-		}
-		public int[] DispelBombRange {
-			get { return this.GetAbilityRange("dispelbombrange"); }
-			set { this.SetAbilityRange("dispelbombrange", value); }
-		}
-		public int[] DispelBombCooldown {
-			get { return this.GetAbilityRange("dispelbombcooldown"); }
-			set { this.SetAbilityRange("dispelbombcooldown", value); }
-		}
-		/// <summary>Real archive field is tag.NPC_Warcry_delay - raw deciseconds, same convention as StunCooldown.</summary>
-		public int[] WarcryCooldown {
-			get { return this.GetAbilityRange("warcrycooldown"); }
-			set { this.SetAbilityRange("warcrycooldown", value); }
-		}
-
 		private static readonly TagKey summonedCreaturesTK = TagKey.Acquire("_npcSummonedCreatures_");
 		private static readonly TagKey battleSummonsTK = TagKey.Acquire("_npcBattleSummons_");
 
@@ -657,7 +212,6 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(battleSummonsTK, value); }
 		}
 
-
 		/// <summary>e_npc_summoning's own per-species reinforcement list (real archive fields
 		/// tag.npc_summoning_char[i]/_count) - same list-of-NPCDef shape as the already-shipped
 		/// Spells (#564). When non-empty, SummonerAbilityDef's consumer spawns ONE instance of
@@ -666,24 +220,6 @@ namespace SteamEngine.CompiledScripts {
 		public List<NPCDef> SummonedCreatures {
 			get { return this.GetTag(summonedCreaturesTK) as List<NPCDef>; }
 			set { this.SetTag(summonedCreaturesTK, value); }
-		}
-
-		private static readonly TagKey fameRangeTK = TagKey.Acquire("_fameRange_");
-		private static readonly TagKey karmaRangeTK = TagKey.Acquire("_karmaRange_");
-
-		/// <summary>Starting Fame/Karma {min, max} range for a fresh NPC of this type (#560),
-		/// rolled once at creation by NPC.On_Create - same shape as StrRange/DexRange/IntRange
-		/// (#559), EXCEPT Fame/Karma can legitimately roll to a real negative value in source
-		/// (e.g. c_titan's KARMA={-5000 -5999}) - #559's "-1 means unconfigured" sentinel would
-		/// collide with a real negative roll, so RollFame/RollKarma return a nullable int?
-		/// instead (null = unconfigured, leave the Character default of 0 untouched).</summary>
-		public int[] FameRange {
-			get { return this.GetTag(fameRangeTK) as int[]; }
-			set { this.SetTag(fameRangeTK, value); }
-		}
-		public int[] KarmaRange {
-			get { return this.GetTag(karmaRangeTK) as int[]; }
-			set { this.SetTag(karmaRangeTK, value); }
 		}
 
 		/// <summary>Rolls a value in [min, max] (inclusive) from `range`, or null if `range` is
@@ -701,30 +237,6 @@ namespace SteamEngine.CompiledScripts {
 
 		public int? RollFame() { return RollNullableStatRange(this.FameRange); }
 		public int? RollKarma() { return RollNullableStatRange(this.KarmaRange); }
-
-		private static readonly TagKey maxHitsRangeTK = TagKey.Acquire("_maxHitsRange_");
-		private static readonly TagKey maxStamRangeTK = TagKey.Acquire("_maxStamRange_");
-		private static readonly TagKey maxManaRangeTK = TagKey.Acquire("_maxManaRange_");
-
-		/// <summary>Starting MaxHits/MaxStam/MaxMana {min, max} range for a fresh NPC of this
-		/// type (#561), rolled once at creation by NPC.On_Create - same shape as StrRange/
-		/// DexRange/IntRange (#559). Unlike Fame/Karma, these can only ever be a non-negative
-		/// quantity in real source (confirmed - e.g. c_titan's own maxmana=0 is the lowest real
-		/// value seen, never negative), so #559's simple -1 "unconfigured" sentinel (via
-		/// RollStatRange, not the nullable RollNullableStatRange #560 needed) is safe to reuse
-		/// here.</summary>
-		public int[] MaxHitsRange {
-			get { return this.GetTag(maxHitsRangeTK) as int[]; }
-			set { this.SetTag(maxHitsRangeTK, value); }
-		}
-		public int[] MaxStamRange {
-			get { return this.GetTag(maxStamRangeTK) as int[]; }
-			set { this.SetTag(maxStamRangeTK, value); }
-		}
-		public int[] MaxManaRange {
-			get { return this.GetTag(maxManaRangeTK) as int[]; }
-			set { this.SetTag(maxManaRangeTK, value); }
-		}
 
 		public int RollMaxHits() { return RollStatRange(this.MaxHitsRange); }
 		public int RollMaxStam() { return RollStatRange(this.MaxStamRange); }
@@ -1014,7 +526,115 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly string[] retiredSavedTags = { "_aggroMode_", "_npcDefRealm_", "_npcDefTeachesSkill_", "_tamingDifficulty_",
 			"_moveRate_", "_npcSpellCastRange_", "_npcIsBoss_", "_npcDragonBrain_", "_npcNoAnimate_", "_npcHypnotizable_",
 			"_npcResistSilence_", "_npcMonsterType_", "_npcMonsterType2_", "_npcMonsterType3_", "_npcMagicHorse_", "_npcSerpentForm_",
-			"_npcStartingAbilities_" };
+			"_npcStartingAbilities_",
+			"_experienceWorth_",
+			"_strRange_",
+			"_dexRange_",
+			"_intRange_",
+			"_npcStunChance_",
+			"_npcStunDuration_",
+			"_npcStunCooldown_",
+			"_npcCriticChance_",
+			"_npcCriticDamage_",
+			"_npcRoundattackChance_",
+			"_npcRoundattackDamage_",
+			"_npcRoundattackCooldown_",
+			"_npcPullDistance_",
+			"_npcBleedChance_",
+			"_npcKnockbackChance_",
+			"_npcSpeed_",
+			"_npcSelfresDelay_",
+			"_npcParakrikChance_",
+			"_npcParakrikCooldown_",
+			"_npcCurseChance_",
+			"_npcCurseCooldown_",
+			"_npcCurseDamage_",
+			"_npcSniperChance_",
+			"_npcSniperDamage_",
+			"_npcSummoningChance_",
+			"_npcSummoningCooldown_",
+			"_npcSummoningLifetime_",
+			"_npcPhoenixFireDamage_",
+			"_npcExplodeDamage_",
+			"_npcRegenerationHp_",
+			"_npcRegenerationInterval_",
+			"_npcLifeLeechAmount_",
+			"_npcReactiveArmorPercent_",
+			"_npcStamDmgChance_",
+			"_npcStamDmgPower_",
+			"_npcLifeLeechCap_",
+			"_npcAcidChance_",
+			"_npcAcidDamage_",
+			"_npcDeathDamage_",
+			"_npcRegenerationDivisor_",
+			"_npcResistCountdownChance_",
+			"_npcResistCountdownAmount_",
+			"_npcLightningsChance_",
+			"_npcLightningsRange_",
+			"_npcCurseManaChance_",
+			"_npcCurseManaCooldown_",
+			"_npcCurseManaDamage_",
+			"_npcCurseStamChance_",
+			"_npcCurseStamCooldown_",
+			"_npcCurseStamDamage_",
+			"_npcPushallChance_",
+			"_npcPushallCooldown_",
+			"_npcMagicShieldStrength_",
+			"_npcDupeCount_",
+			"_npcBackstabDamageReducer_",
+			"_npcMultishotChance_",
+			"_npcMultishotCooldown_",
+			"_npcMultishotDamage_",
+			"_npcDispelBombChance_",
+			"_npcDispelBombRange_",
+			"_npcDispelBombCooldown_",
+			"_npcWarcryCooldown_",
+			"_fameRange_",
+			"_karmaRange_",
+			"_maxHitsRange_",
+			"_maxStamRange_",
+			"_maxManaRange_",
+			"_npcFireDragonChance_",
+			"_npcFireDragonCooldown_",
+			"_npcFireDragonDamage_",
+			"_npcFireDragonFireType_",
+			"_npcFireDragonBombChance_",
+			"_npcFireDragonBombCooldown_",
+			"_npcFireDragonBombDamage_",
+			"_npcFireDragonBombFireType_",
+			"_npcFireDragonRoundChance_",
+			"_npcFireDragonRoundCooldown_",
+			"_npcFireDragonRoundDamage_",
+			"_npcFireDragonRoundFireType_",
+			"_npcFireDragonRoundTurns_",
+			"_npcFireDragonCageChance_",
+			"_npcFireDragonCageCooldown_",
+			"_npcFireDragonCageFireType_",
+			"_npcFireDragonCageDuration_",
+			"_npcFireDragonAuraChance_",
+			"_npcFireDragonAuraCooldown_",
+			"_npcFireDragonAuraInterval_",
+			"_npcFireDragonAuraTicks_",
+			"_npcFireDragonAuraDamage_",
+			"_npcFireDragonAuraResist_",
+			"_npcSwampDragonAuraChance_",
+			"_npcSwampDragonAuraCooldown_",
+			"_npcSwampDragonAuraInterval_",
+			"_npcSwampDragonAuraTicks_",
+			"_npcSwampDragonAuraDamage_",
+			"_npcLavaBombChance_",
+			"_npcLavaBombRange_",
+			"_npcLavaBombCooldown_",
+			"_npcBombaBoyDamage_",
+			"_npcRozdeleniCopyChance_",
+			"_npcFrostWaveChance_",
+			"_npcFrostWaveStrength_",
+			"_npcWarniakType_",
+			"_npcWarniakCount_",
+			"_npcWarniakDropHitChance_",
+			"_npcPortDistance_",
+			"_npcHcnMadnessChance_",
+			"_npcHcnMadnessStrength_" };
 
 		public override void Unload() {
 			this.startingAbilities = null; //made again from the TEVENTS lines when the scripts are read again
@@ -1117,6 +737,45 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		//#1377 - ranges as typed Defs: fields in NPC.ct; an ability reads its tuning by the field's name (DragonEvents' Tuned)
+		private static readonly Dictionary<string, System.Reflection.PropertyInfo> rangeProperties = MakeRangeProperties();
+
+		private static Dictionary<string, System.Reflection.PropertyInfo> MakeRangeProperties() {
+			var byName = new Dictionary<string, System.Reflection.PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+			foreach (System.Reflection.PropertyInfo property in typeof(NPCDef).GetProperties()) {
+				if (property.PropertyType == typeof(int[])) {
+					byName[property.Name] = property;
+				}
+			}
+			return byName;
+		}
+
+		internal int[] AbilityTuning(string fieldName) {
+			return rangeProperties.TryGetValue(fieldName, out System.Reflection.PropertyInfo property) ? (int[]) property.GetValue(this) : null;
+		}
+
+		//#1377 - script keywords that name a range field differently
+		private static readonly Dictionary<string, string> rangeKeywords = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+			{ "experience", "experienceWorth" },
+			{ "str", "strRange" },
+			{ "dex", "dexRange" },
+			{ "int", "intRange" },
+			{ "fame", "fameRange" },
+			{ "karma", "karmaRange" },
+			{ "maxhits", "maxHitsRange" },
+			{ "maxstam", "maxStamRange" },
+			{ "maxmana", "maxManaRange" },
+		};
+
+		//#1377 - a range is written "min max" or a single value (both ends) in the scripts; FieldValue reads an array as a comma list
+		private static string RangeText(string args) {
+			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+			if (parts.Length == 1) {
+				return parts[0] + "," + parts[0];
+			}
+			return string.Join(",", parts);
+		}
+
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
@@ -1184,132 +843,12 @@ namespace SteamEngine.CompiledScripts {
 				this.Spells.Add(spell);
 				return;
 			}
-			if (param == "experience") {
-				string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-				if (parts.Length == 1) {
-					int value = ConvertTools.ParseInt32(parts[0]);
-					this.ExperienceWorth = new int[] { value, value };
-				} else if (parts.Length == 2) {
-					this.ExperienceWorth = new int[] { ConvertTools.ParseInt32(parts[0]), ConvertTools.ParseInt32(parts[1]) };
-				} else {
-					Logger.WriteWarning(filename, line, "experience '" + args + "' must be either a single value or 'min max'.");
-				}
+			if (rangeKeywords.TryGetValue(param, out string rangeField)) {
+				base.LoadScriptLine(filename, line, rangeField.ToLowerInvariant(), RangeText(args));
 				return;
 			}
-			if (param == "str") {
-				this.StrRange = ParseStatRange(filename, line, "str", args);
-				return;
-			}
-			if (param == "dex") {
-				this.DexRange = ParseStatRange(filename, line, "dex", args);
-				return;
-			}
-			if (param == "int") {
-				this.IntRange = ParseStatRange(filename, line, "int", args);
-				return;
-			}
-			if (param == "fame") {
-				this.FameRange = ParseStatRange(filename, line, "fame", args);
-				return;
-			}
-			if (param == "karma") {
-				this.KarmaRange = ParseStatRange(filename, line, "karma", args);
-				return;
-			}
-			if (param == "stunchance") {
-				this.StunChance = ParseStatRange(filename, line, "stunchance", args);
-				return;
-			}
-			if (param == "stunduration") {
-				this.StunDuration = ParseStatRange(filename, line, "stunduration", args);
-				return;
-			}
-			if (param == "stuncooldown") {
-				this.StunCooldown = ParseStatRange(filename, line, "stuncooldown", args);
-				return;
-			}
-			if (param == "criticchance") {
-				this.CriticChance = ParseStatRange(filename, line, "criticchance", args);
-				return;
-			}
-			if (param == "criticdamage") {
-				this.CriticDamage = ParseStatRange(filename, line, "criticdamage", args);
-				return;
-			}
-			if (param == "roundattackchance") {
-				this.RoundattackChance = ParseStatRange(filename, line, "roundattackchance", args);
-				return;
-			}
-			if (param == "roundattackdamage") {
-				this.RoundattackDamage = ParseStatRange(filename, line, "roundattackdamage", args);
-				return;
-			}
-			if (param == "roundattackcooldown") {
-				this.RoundattackCooldown = ParseStatRange(filename, line, "roundattackcooldown", args);
-				return;
-			}
-			if (param == "pulldistance") {
-				this.PullDistance = ParseStatRange(filename, line, "pulldistance", args);
-				return;
-			}
-			if (param == "bleedchance") {
-				this.BleedChance = ParseStatRange(filename, line, "bleedchance", args);
-				return;
-			}
-			if (param == "knockbackchance") {
-				this.KnockbackChance = ParseStatRange(filename, line, "knockbackchance", args);
-				return;
-			}
-			if (param == "npcspeed") {
-				this.NpcSpeed = ParseStatRange(filename, line, "npcspeed", args);
-				return;
-			}
-			if (param == "selfresdelay") {
-				this.SelfresDelay = ParseStatRange(filename, line, "selfresdelay", args);
-				return;
-			}
-			if (param == "parakrikchance") {
-				this.ParaKrikChance = ParseStatRange(filename, line, "parakrikchance", args);
-				return;
-			}
-			if (param == "parakrikcooldown") {
-				this.ParaKrikCooldown = ParseStatRange(filename, line, "parakrikcooldown", args);
-				return;
-			}
-			if (param == "npccursechance") {
-				this.NpcCurseChance = ParseStatRange(filename, line, "npccursechance", args);
-				return;
-			}
-			if (param == "npccursecooldown") {
-				this.NpcCurseCooldown = ParseStatRange(filename, line, "npccursecooldown", args);
-				return;
-			}
-			if (param == "npccursedamage") {
-				this.NpcCurseDamage = ParseStatRange(filename, line, "npccursedamage", args);
-				return;
-			}
-			if (param == "sniperchance") {
-				this.SniperChance = ParseStatRange(filename, line, "sniperchance", args);
-				return;
-			}
-			if (param == "sniperdamage") {
-				this.SniperDamage = ParseStatRange(filename, line, "sniperdamage", args);
-				return;
-			}
-			if (param == "summoningchance") {
-				this.SummoningChance = ParseStatRange(filename, line, "summoningchance", args);
-				return;
-			}
-			if (param == "summoningcooldown") {
-				this.SummoningCooldown = ParseStatRange(filename, line, "summoningcooldown", args);
-				return;
-			}
-			if (param == "summoninglifetime") {
-				this.SummoningLifetime = ParseStatRange(filename, line, "summoninglifetime", args);
-				return;
-			}
-			if (moreAbilityRangeTags.ContainsKey(param)) {
-				this.SetAbilityRange(param, ParseStatRange(filename, line, param, args));
+			if (rangeProperties.ContainsKey(param)) {
+				base.LoadScriptLine(filename, line, param, RangeText(args));
 				return;
 			}
 			if (param == "addbattlesummon") {
@@ -1334,18 +873,6 @@ namespace SteamEngine.CompiledScripts {
 					this.SummonedCreatures = new List<NPCDef>();
 				}
 				this.SummonedCreatures.Add(summonDef);
-				return;
-			}
-			if (param == "maxhits") {
-				this.MaxHitsRange = ParseStatRange(filename, line, "maxhits", args);
-				return;
-			}
-			if (param == "maxstam") {
-				this.MaxStamRange = ParseStatRange(filename, line, "maxstam", args);
-				return;
-			}
-			if (param == "maxmana") {
-				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
 				return;
 			}
 			if (param == "loot") {

@@ -52,9 +52,13 @@ A def has two kinds of values:
 A value the code itself defines and reads (aggro mode, move rate, a realm) belongs in a typed
 field, not a tag. `NPCDef`'s single values (aggro mode, realm, the taught skill, move rate,
 spell cast range, boss, dragon brain, no-animate, hypnotizable, silence resist, monster types,
-magic horse, serpent form) are `Defs:` fields in `NPC.ct` since #1375; its ranges and lists are
-still tags behind hand-written properties, filled by `NPCDef.LoadScriptLine`, until they move
-too (see `CLAUDE.md`).
+magic horse, serpent form) are `Defs:` fields in `NPC.ct` since #1375, and its {min, max}
+ranges (`int[]` fields, about 108: stats, experience, every monster ability's numbers) since
+#1377. `NPCDef.LoadScriptLine` only turns a range's script form (`min max`, or one value for
+both) into the comma list FieldValue reads an array from, and maps the keywords that differ
+from their field (`str` to `strRange`, `experience` to `experienceWorth`...). An ability reads
+its numbers by field name through `NPCDef.AbilityTuning`. Its lists are still tags until they
+move too (see `CLAUDE.md`).
 
 ### Code that sets a def value while scripts load
 
