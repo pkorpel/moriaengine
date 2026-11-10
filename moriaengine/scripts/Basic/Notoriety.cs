@@ -284,31 +284,29 @@ namespace SteamEngine.CompiledScripts {
 			return CharRelation.Unknown;
 		}
 
-		/// <summary>Region protection enforcement (#24) - true if `attacker` should be barred from initiating an attack on `target` here. Either party standing in a safe/guarded/no-pvp region blocks it, unless that region is also flagged as an arena.</summary>
+		/// <summary>Region protection enforcement (#24) - true if `attacker` should be barred from initiating an attack on `target`
+		/// here: either party standing in a safe region, or a player on a player where either stands in a no-PvP region (Sphere's
+		/// NO_PVP). An arena overrides both. #1019 - a guarded region doesn't bar anything, as on Erebor: its guards punish the
+		/// attacker instead (and no-PvP used to bar fighting monsters too, so nobody could fight in the goblin labyrinths).</summary>
 		public static bool IsAttackBlockedByRegion(Character attacker, AbstractCharacter target) {
-			if (RegionBarsCombat(attacker.Region as FlaggedRegion)) {
-				return true;
-			}
 			Character targetChar = target as Character;
-			if ((targetChar != null) && RegionBarsCombat(targetChar.Region as FlaggedRegion)) {
+			bool pvp = attacker.IsPlayerForCombat && (targetChar != null) && targetChar.IsPlayerForCombat;
+			if (RegionBarsCombat(attacker.Region as FlaggedRegion, pvp)) {
 				return true;
 			}
-			return false;
+			return (targetChar != null) && RegionBarsCombat(targetChar.Region as FlaggedRegion, pvp);
 		}
 
-		private static bool RegionBarsCombat(FlaggedRegion region) {
-			if (region == null) {
-				return false;
+		private static bool RegionBarsCombat(FlaggedRegion region, bool pvp) {
+			if ((region == null) || region.Flag_Arena) {
+				return false; //arenas explicitly override safe/nopvp
 			}
-			if (region.Flag_Arena) {
-				return false; //arenas explicitly override safe/guarded/nopvp
-			}
-			return region.Flag_Safe || region.Flag_Guarded || region.Flag_NoPvp;
+			return region.Flag_Safe || (pvp && region.Flag_NoPvp);
 		}
 
 		/// <summary>True if `self` should be exempt from the leveling system's death-experience-loss
 		/// (#128) - safe zones and arenas, matching the user's own stated design (deliberately a
-		/// narrower set of flags than RegionBarsCombat above - a guarded town isn't meant to grant
+		/// narrower set of flags than RegionBarsCombat above's - a no-PvP area isn't meant to grant
 		/// exp-loss immunity, only true safe zones and arenas are).</summary>
 		public static bool IsExemptFromExperienceLoss(Character self) {
 			FlaggedRegion region = self.Region as FlaggedRegion;
