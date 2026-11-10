@@ -136,13 +136,13 @@ namespace SteamEngine {
 									Array resultArray = Array.CreateInstance(elemType, n);
 
 									for (int i = 0; i < n; i++) {
-										resultArray.SetValue(ConvertTools.ConvertTo(elemType, this.ResolveSingleValue(tempVI, sourceArray[i], null)),
+										resultArray.SetValue(ConvertTools.ConvertTo(elemType, this.ResolveSingleValue(tempVI, sourceArray[i], elemType, null)),
 											i);
 									}
 
 									retVal = resultArray;
 								} else {
-									retVal = this.ResolveSingleValue(tempVI, value, retVal);
+									retVal = this.ResolveSingleValue(tempVI, value, this.type, retVal);
 								}
 							} else {
 								retVal = "";
@@ -173,8 +173,10 @@ namespace SteamEngine {
 			}
 		}
 
-		private object ResolveSingleValue(TemporaryValueImpl tempVI, string value, object retVal) {
-			if (!this.ResolveStringWithoutLScript(value, ref retVal)) {//this is a dirty shortcut to make resolving faster, without it would it last forever
+		//#1377 - valueType is the element type for an array field: resolving each element as the array type missed every shortcut
+		//below, so every element of an Int32[] went through LScript
+		private object ResolveSingleValue(TemporaryValueImpl tempVI, string value, Type valueType, object retVal) {
+			if (!this.ResolveStringWithoutLScript(value, valueType, ref retVal)) {//this is a dirty shortcut to make resolving faster, without it would it last forever
 				string statement = string.Concat("return(", value, ")");
 				retVal = LScriptMain.RunSnippet(
 					tempVI.filename, tempVI.line, Globals.Instance, statement);
@@ -186,7 +188,7 @@ namespace SteamEngine {
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		private bool ResolveStringWithoutLScript(string value, ref object retVal) {
+		private bool ResolveStringWithoutLScript(string value, Type valueType, ref object retVal) {
 			switch (this.fvType) {
 				case FieldValueType.Typeless:
 					if (TryResolveAsString(value, ref retVal)) {
@@ -203,7 +205,7 @@ namespace SteamEngine {
 					}
 					break;
 				case FieldValueType.Typed:
-					TypeCode code = Type.GetTypeCode(this.type);
+					TypeCode code = Type.GetTypeCode(valueType);
 					switch (code) {
 						case TypeCode.Boolean:
 							bool b;
@@ -215,12 +217,12 @@ namespace SteamEngine {
 						case TypeCode.Empty:
 						case TypeCode.DateTime:
 						case TypeCode.Object:
-							if (typeof(AbstractScript).IsAssignableFrom(this.type)) {
+							if (typeof(AbstractScript).IsAssignableFrom(valueType)) {
 								if (TryResolveAsScript(value, ref retVal)) {
 									return true;
 								}
 							}
-							if (TryResolveWithExternalParser(this.type, value, ref retVal)) {
+							if (TryResolveWithExternalParser(valueType, value, ref retVal)) {
 								return true;
 							}
 
@@ -233,11 +235,11 @@ namespace SteamEngine {
 							}
 							break;
 						default: //it's a number
-							if (this.type.IsEnum) {
+							if (valueType.IsEnum) {
 								try {
-									string enumStr = value.Replace(this.type.Name + ".", "") // "FieldValueType.Typed | FieldValueType.Typeless" -> "Typed , Typeles"
+									string enumStr = value.Replace(valueType.Name + ".", "") // "FieldValueType.Typed | FieldValueType.Typeless" -> "Typed , Typeles"
 										.Replace("|", ",").Replace("+", ","); //hopefully the actual value won't change by this optimisation ;)
-									retVal = Enum.Parse(this.type, enumStr, true);
+									retVal = Enum.Parse(valueType, enumStr, true);
 									return true;
 								} catch { }
 							}
@@ -263,7 +265,7 @@ namespace SteamEngine {
 					int id;
 					if (ConvertTools.TryParseInt32(value, out id)) {
 						ThingDef def;
-						if (typeof(AbstractItemDef).IsAssignableFrom(this.type)) {
+						if (typeof(AbstractItemDef).IsAssignableFrom(valueType)) {
 							def = ThingDef.FindItemDef(id);
 						} else {
 							def = ThingDef.FindCharDef(id);
