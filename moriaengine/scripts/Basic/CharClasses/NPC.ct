@@ -60,6 +60,24 @@ Defs:
 	SpellDef combatSpell = null
 	//#700 - the mount species it spawns riding (Erebor's tag.mount), keyword mountnpc; null for none
 	NPCDef mountCharDef = null
+	//#1405 - the add-up lists, one element per script line (NPCDef.LoadScriptLine gathers them), read as Spells, Loot...
+	//Not named as their keywords: a line named as a field loads at once, before the other scripts (AbstractDef.LoadScriptLines)
+	SpellDef[] spellList = null
+	NPCDef[] summonList = null
+	NPCDef[] battleSummonList = null
+	String[] lootList = null
+	//Equip lines, and each one's EquipColor and EquipName ("" where none), by index
+	String[] equipList = null
+	String[] equipColorList = null
+	String[] equipNameList = null
+	//"amount defname" each, the last Resources line; "[amount] category" each, the last FoodType line
+	String[] resourceList = null
+	String[] foodTypeList = null
+	//"SkillName min max" and "ResistX min max" each
+	String[] skillRangeList = null
+	String[] resistRangeList = null
+	//Sphere's CAN text, e.g. MT_WALK|MT_SWIM
+	string can = null
 	//#1377 - {min,max} ranges, rolled per NPC or per use; a script line gives "min max" or one value for both
 	Int32[] experienceWorth = null
 	Int32[] strRange = null
