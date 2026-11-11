@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 			self.Flag_WarMode = false;
 		}
 
-		/// <summary>#1347 - damage where we stand, as Sphere's: 20 from the rabbit, 20 from the other player (uid), 5 of god
+		/// <summary>#1347 - damage where we stand (it lands everywhere, as on Erebor): 20 from the rabbit, 20 from the other player (uid), 5 of god
 		/// damage; whether the rabbit's AI keeps us as a target; whether a lich beside us would cast at us.</summary>
 		[SteamFunction]
 		public static void TestRegionDamage(Character self, ScriptArgs sa) {

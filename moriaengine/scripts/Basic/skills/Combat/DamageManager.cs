@@ -191,7 +191,6 @@ namespace SteamEngine.CompiledScripts {
 				return 0;
 			}
 
-
 			//Defense in depth: a creature can never damage its own current owner/commander,
 			//however the attack got triggered - target selection (NPC.ShouldAggroOn,
 			//NPCAiTimer.IsValidTarget) already keeps this from happening in practice, but this
