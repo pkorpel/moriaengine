@@ -75,31 +75,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#962 - Erebor's f_poison_doPoison, i_memory_jed and the poison manager, the only way anything gets poisoned:
-	/// one running poison of each kind, a stronger dose replacing the weaker, each hit a tenth weaker, cure taking them
-	/// all. Monsters' poison and the Poison spell come here too.</summary>
+	/// <summary>#962 - Erebor's f_poison_doPoison and the poison manager, the only way anything gets poisoned: one running
+	/// poison of each kind, a stronger dose replacing the weaker, each hit a tenth weaker, cure taking them all. Monsters'
+	/// poison and the Poison spell come here too. #1422 - a running poison is its plugin, DamagingPoisonEffectPlugin
+	/// (p_poison, Erebor's i_memory_jed).</summary>
 	public static class Poison {
 		private const int CursedEffectSpeed = 6, CursedEffectLength = 15, DefaultSound = 221, FullResist = 1000;
 		private const int DeadlyAbove = 15, GreaterAbove = 10, NormalAbove = 5, ParalysisSeconds = 1;
 		private static readonly TagKey immuneUntilTK = TagKey.Acquire("_poisonImmuneUntil_");
 		private static readonly PluginKey paralysisPK = PluginKey.Acquire("_poisonParalysis_");
 		private static readonly PoisonKind[] kinds = (PoisonKind[]) Enum.GetValues(typeof(PoisonKind));
-
-		private sealed class Source : IActiveEffectSource {
-			public void AddEffects(Character ch, List<ActiveEffect> into) {
-				foreach (PoisonKind kind in kinds) {
-					if (ch.GetTimer(PoisonTimer.KeyOf(kind)) is PoisonTimer poison) {
-						into.Add(new ActiveEffect(EffectSection.Negative, Loc<PoisonLoc>.Get(ch.Language).Poisoned) { Detail = poison.strength.ToString() });
-					}
-				}
-			}
-		}
-
-		private static readonly Source source = new Source();
-
-		public static void Bootstrap() {
-			ActiveEffects.Register(source);
-		}
 
 		/// <summary>poison_c and the like, as the bottle's def names them.</summary>
 		public static PoisonKind ParseKind(string name) {
@@ -124,7 +109,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsPoisoned(Character ch) {
-			return Array.Exists(kinds, kind => ch.HasTimer(PoisonTimer.KeyOf(kind)));
+			return Array.Exists(kinds, kind => ch.GetPlugin(DamagingPoisonEffectPlugin.KeyOf(kind)) != null);
+		}
+
+		/// <summary>The running poison of that kind, or null.</summary>
+		public static DamagingPoisonEffectPlugin Running(Character ch, PoisonKind kind) {
+			return ch.GetPlugin(DamagingPoisonEffectPlugin.KeyOf(kind)) as DamagingPoisonEffectPlugin;
 		}
 
 		/// <summary>f_pm_isImmune: from a cure, or from resist.</summary>
@@ -146,21 +136,16 @@ namespace SteamEngine.CompiledScripts {
 			}
 			FightMemory.Record(target, dealer);
 			PoisonLoc texts = Loc<PoisonLoc>.Get(target.Language);
-			if (target.GetTimer(PoisonTimer.KeyOf(kind)) is PoisonTimer running) {
-				if (running.strength < strength) {
-					running.strength = strength;
-					running.dealer = dealer;
+			DamagingPoisonEffectPlugin running = Running(target, kind);
+			if (running != null) {
+				if (running.Strength < strength) {
+					running.Renew(dealer, strength);
 					target.SysMessage(target.IsFemale ? texts.AnotherDoseFemale : texts.AnotherDoseMale);
 				}
 			} else {
-				PoisonTimer timer = new PoisonTimer();
-				timer.strength = strength;
-				timer.dealer = dealer;
-				timer.kind = kind;
-				target.AddTimer(PoisonTimer.KeyOf(kind), timer);
-				timer.PeriodInSeconds = seconds;
-				timer.DueInSeconds = seconds;
-				target.Flag_GreenHealthBar = true;
+				DamagingPoisonEffectPlugin poison = (DamagingPoisonEffectPlugin) DamagingPoisonEffectPluginDef.Instance.Create();
+				target.AddPlugin(DamagingPoisonEffectPlugin.KeyOf(kind), poison);
+				poison.Begin(dealer, kind, strength, seconds);
 				target.SysMessage(target.IsFemale ? texts.PoisonedFemale : texts.PoisonedMale);
 			}
 			if (!quiet) {
@@ -170,12 +155,11 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>f_pm_removeAll: what a cure and death do.</summary>
+		/// <summary>f_pm_removeAll: what a cure does. A death ends them too (EffectDurationPlugin.On_Death).</summary>
 		public static void RemoveAll(Character ch) {
 			foreach (PoisonKind kind in kinds) {
-				ch.DeleteTimer(PoisonTimer.KeyOf(kind));
+				ch.DeletePlugin(DamagingPoisonEffectPlugin.KeyOf(kind));
 			}
-			ch.Flag_GreenHealthBar = false;
 		}
 
 		[SteamFunction]
@@ -183,23 +167,16 @@ namespace SteamEngine.CompiledScripts {
 			RemoveAll(self);
 		}
 
-		internal static void Ended(Character ch, PoisonTimer timer) {
-			timer.Delete();
-			if (!IsPoisoned(ch)) {
-				ch.Flag_GreenHealthBar = false;
-			}
-		}
-
 		/// <summary>The hit itself. Nothing left of it ends the poison.</summary>
-		internal static int Hit(Character self, PoisonTimer poison) {
-			WeeklyQuests.OnPoisonTick(self, poison.dealer, poison.strength); //#1090 - i_memory_jed's tick
-			switch (poison.kind) {
+		internal static int Hit(Character self, DamagingPoisonEffectPlugin poison) {
+			WeeklyQuests.OnPoisonTick(self, poison.Dealer, poison.Strength); //#1090 - i_memory_jed's tick
+			switch (poison.Kind) {
 				case PoisonKind.AbsoluteDamage:
-					return Damage(self, poison, poison.strength);
+					return Damage(self, poison.Strength);
 				case PoisonKind.PercentOfHits:
-					return Damage(self, poison, (self.MaxHits * poison.strength) / 100);
+					return Damage(self, (self.MaxHits * poison.Strength) / 100);
 				case PoisonKind.Paralyze:
-					if (self.ResistParalyse > poison.strength) {
+					if (self.ResistParalyse > poison.Strength) {
 						return 0;
 					}
 					ParalyzeEffectPluginDef.Paralyze(self, paralysisPK, TimeSpan.FromSeconds(ParalysisSeconds));
@@ -211,7 +188,7 @@ namespace SteamEngine.CompiledScripts {
 					DamageManager.CauseDamage(null, self, DamageType.MagicPoison, 1);
 					return 1;
 				case PoisonKind.Stamina:
-					int lost = (self.MaxStam * poison.strength) / 100;
+					int lost = (self.MaxStam * poison.Strength) / 100;
 					self.Stam = (short) Math.Max(self.Stam - lost, 0);
 					return lost;
 				default:
@@ -220,7 +197,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static int Damage(Character self, PoisonTimer poison, int amount) {
+		private static int Damage(Character self, int amount) {
 			int done = DamageManager.CauseDamage(null, self, DamageType.MagicPoison, amount); //damage_noresponse: credit is by FightMemory
 			PoisonLoc texts = Loc<PoisonLoc>.Get(self.Language);
 			if (self is Player) {
@@ -256,60 +233,16 @@ namespace SteamEngine.CompiledScripts {
 	internal static class StatPoison {
 		private const int ShareFrom = 110, Least = 10;
 
-		internal static void Apply(Character self, PoisonTimer poison) {
-			string spell = (poison.kind == PoisonKind.Feeblemind) ? "s_feeblemind" : (poison.kind == PoisonKind.Weaken) ? "s_weaken" : "s_clumsy";
-			int stat = (poison.kind == PoisonKind.Feeblemind) ? self.Int : (poison.kind == PoisonKind.Weaken) ? self.Str : self.Dex;
-			int lower = (self.IsPlayer || (stat < ShareFrom)) ? Math.Min(poison.strength, stat - Least) : (stat * poison.strength) / 100;
+		internal static void Apply(Character self, DamagingPoisonEffectPlugin poison) {
+			string spell = (poison.Kind == PoisonKind.Feeblemind) ? "s_feeblemind" : (poison.Kind == PoisonKind.Weaken) ? "s_weaken" : "s_clumsy";
+			int stat = (poison.Kind == PoisonKind.Feeblemind) ? self.Int : (poison.Kind == PoisonKind.Weaken) ? self.Str : self.Dex;
+			int lower = (self.IsPlayer || (stat < ShareFrom)) ? Math.Min(poison.Strength, stat - Least) : (stat * poison.Strength) / 100;
 			DurableCharEffectSpellDef def = (DurableCharEffectSpellDef) SpellDef.GetByDefname(spell);
 			self.DeletePlugin(def.EffectPluginKey_Potion);
 			EffectDurationPlugin plugin = (EffectDurationPlugin) def.EffectPluginDef.Create();
-			plugin.Init(poison.dealer, EffectFlag.HarmfulEffect | EffectFlag.FromPotion, -Math.Max(lower, 0),
-				TimeSpan.FromSeconds(PoisonEffectSettings.instance.SecondsFor(poison.kind)), def);
+			plugin.Init(poison.Dealer, EffectFlag.HarmfulEffect | EffectFlag.FromPotion, -Math.Max(lower, 0),
+				TimeSpan.FromSeconds(PoisonEffectSettings.instance.SecondsFor(poison.Kind)), def);
 			self.AddPlugin(def.EffectPluginKey_Potion, plugin);
-		}
-	}
-
-	/// <summary>i_memory_jed.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class PoisonTimer : BoundTimer {
-		private const int LeastLoss = 1, LossShare = 10, HitEffectSpeed = 1, HitEffectLength = 32, HitEffect = 0x1ae4;
-		private static readonly TimerKey[] keys = CreateKeys();
-
-		[SaveableData, CopyableData]
-		public int strength;
-
-		[SaveableData, CopyableData]
-		public Character dealer;
-
-		[SaveableData, CopyableData]
-		public PoisonKind kind;
-
-		[LoadingInitializer, DeepCopyImplementation]
-		public PoisonTimer() {
-		}
-
-		private static TimerKey[] CreateKeys() {
-			TimerKey[] created = new TimerKey[Enum.GetValues(typeof(PoisonKind)).Length];
-			for (int i = 0; i < created.Length; i++) {
-				created[i] = TimerKey.Acquire("_poison" + i + "_");
-			}
-			return created;
-		}
-
-		internal static TimerKey KeyOf(PoisonKind kind) {
-			return keys[(int) kind];
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			Character self = (Character) cont;
-			if (self.Flag_Dead || (this.strength < 1) || Poison.IsImmune(self) || (Poison.Hit(self, this) <= 0)) {
-				Poison.Ended(self, this);
-				return;
-			}
-			if (!self.IsDeleted && !self.Flag_Dead) {
-				EffectFactory.StationaryEffect(self, HitEffect, HitEffectSpeed, HitEffectLength);
-				this.strength -= Math.Max(this.strength / LossShare, LeastLoss);
-			}
 		}
 	}
 

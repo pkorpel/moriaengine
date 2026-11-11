@@ -14,5 +14,8 @@
 //	Or visit http://www.gnu.org/copyleft/gpl.html
 
 
-[PluginTemplate DamagingPoisonEffectPlugin : FadingEffectDurationPlugin]
+[PluginTemplate DamagingPoisonEffectPlugin : EffectDurationPlugin]
+Vars:
+	internal PoisonKind kind = PoisonKind.AbsoluteDamage
+	internal int strength = 0
 

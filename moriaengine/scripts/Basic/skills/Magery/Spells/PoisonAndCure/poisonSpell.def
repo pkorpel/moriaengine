@@ -24,21 +24,18 @@ CASTTIME=2.0
 RUNEITEM=i_rune_POISON
 SCROLLITEM=i_scroll_POISON
 FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
-EFFECT=0,5 //damage per tick. Tick interval set in PoisonEffectPluginDef
+EFFECT=0,5 //unused: PoisonSpellDef works the strength out (f_effect_a_poison), Poison hits every 5 s
 DURATION=0,100.0
 MANAUSE=10
 Requirements=30.0 Magery
 EffectPluginDef = p_poison
 
-//unused, since the key is global for all poisons, including those from poisoning. Set below in p_poison
+//unused: each poison kind has its own key (DamagingPoisonEffectPlugin.KeyOf), shared with poisoning, traps and monsters
 //EffectPluginKey_Spell = @@spellEffect_poison
 //EffectPluginKey_Potion = @@potionEffect_poison
 
 on=@effectChar
 	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
 
+//#1422 - Erebor's i_memory_jed, one running poison of each kind (Poison.Apply sets its kind, strength and hit period)
 [DamagingPoisonEffectPluginDef p_poison]
-TickInterval = 5
-MaxTicks = 60
-MaxPower = 1000
-PluginKey = @@damaging_poison

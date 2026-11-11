@@ -227,6 +227,11 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 - **Standcast** (#1386): `StandcastPlugin` answers the caster's `@spellCast`,
   `@monsterSpellPower` and `@activateAbility` instead of being looked up by the spell formula
   and switched off by Magery; its freeze is `CastFreezePlugin`, refusing `@denyMove`.
+- **Poison** (#1422): a running poison is `DamagingPoisonEffectPlugin` (`p_poison`, the original code's dead plugin
+  rebuilt on `EffectDurationPlugin`), one per kind under its kind's key, instead of `Poison`'s per-kind timers, its own
+  `.boosts` source and a green-bar flag set by hand. `Poison` keeps the rules and its API (Apply, IsPoisoned, RemoveAll,
+  the hits). A death ends it through `EffectDurationPlugin.On_Death`, so `Character`'s death no longer calls
+  `Poison.RemoveAll`. Callers that poison (traps, monsters, the thief, the spell, the skill) are unchanged.
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
   player's success fails), `@spellCastTry` and `@hitTry` (starving hurts), as Erebor's player

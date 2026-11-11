@@ -145,14 +145,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class DamagingPoisonEffectPlugin {
-		public override string EffectName {
-			get {
-				return "Poison";
-			}
-		}
-	}
-
 	public partial class BleedingEffectPlugin {
 		public override string EffectName {
 			get {
