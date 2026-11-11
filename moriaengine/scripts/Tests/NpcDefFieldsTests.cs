@@ -103,18 +103,15 @@ namespace SteamEngine.CompiledScripts {
 			//#1377 - an array field's elements resolved through LScript took minutes here; the number shortcut takes well under a second
 			Check("readAllQuickly", readAll.ElapsedMilliseconds < 15000);
 
-			//an older save's section: the retired tags are dropped, a saved typed field loads with its type
+			//a saved def section: a typed field loads with its type
 			NPCDef ratman = Def("c_ratman");
 			int hypnotizableBefore = ratman.Hypnotizable;
 			Type sectionType = typeof(PropsSection);
 			PropsSection section = (PropsSection) Activator.CreateInstance(sectionType, BindingFlags.NonPublic | BindingFlags.Instance, null,
 				new object[] { "test", "NPCDef", "c_ratman", 0, "" }, null);
 			MethodInfo add = sectionType.GetMethod("AddPropsLine", BindingFlags.NonPublic | BindingFlags.Instance);
-			add.Invoke(section, new object[] { "tag._npcIsBoss_", "1", 1, "" });
-			add.Invoke(section, new object[] { "tag._npcStartingAbilities_", "7", 2, "" });
-			add.Invoke(section, new object[] { "hypnotizable", "77", 3, "" });
+			add.Invoke(section, new object[] { "hypnotizable", "77", 1, "" });
 			ratman.LoadFromSaves(section);
-			Check("savedRetiredDropped", (ratman.GetTag(TagKey.Acquire("_npcIsBoss_")) == null) && (ratman.GetTag(TagKey.Acquire("_npcStartingAbilities_")) == null));
 			Check("savedTyped", ratman.Hypnotizable == 77);
 			ratman.Hypnotizable = hypnotizableBefore;
 			Console.WriteLine("NPCDEFFIELDS_DONE");

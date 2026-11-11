@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -53,15 +52,6 @@ namespace SteamEngine.CompiledScripts {
 			Check("noOldTags", (defs > 1000) && (oldTags == 0));
 			Check("everyDefReads", unreadable == 0);
 
-			//an older save's section: the retired tags are dropped
-			Type sectionType = typeof(PropsSection);
-			PropsSection section = (PropsSection) Activator.CreateInstance(sectionType, BindingFlags.NonPublic | BindingFlags.Instance, null,
-				new object[] { "test", "EquippableDef", "i_dagger_copper", 0, "" }, null);
-			MethodInfo add = sectionType.GetMethod("AddPropsLine", BindingFlags.NonPublic | BindingFlags.Instance);
-			add.Invoke(section, new object[] { "tag._toolType_", "1", 1, "" });
-			add.Invoke(section, new object[] { "tag._associatedSkill_", "8", 2, "" });
-			dagger.LoadFromSaves(section);
-			Check("savedRetiredDropped", (dagger.GetTag(oldToolTypeTK) == null) && (dagger.GetTag(oldSkillTK) == null) && (dagger.UseSkill == SkillName.None));
 			Console.WriteLine("EQUIPDEFFIELDS_DONE");
 		}
 	}

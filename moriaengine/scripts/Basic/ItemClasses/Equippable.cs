@@ -33,10 +33,6 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class EquippableDef {
-		/// <summary>#1384 - ToolType and AssociatedSkill were def tags until then; a save
-		/// written before may still carry them in a def section.</summary>
-		private static readonly string[] retiredSavedTags = { "_toolType_", "_associatedSkill_" };
-
 		/// <summary>#370 - the skill a dclick/`.usehand` "use" action on this equippable
 		/// starts (e.g. a pickaxe's Mining, a hatchet's Lumberjacking), and the skill it counts
 		/// as the tool for (IsHoldingToolFor). SkillName.None means this item has no "use"
@@ -69,12 +65,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public override void LoadFromSaves(PropsSection input) {
-			foreach (string tag in retiredSavedTags) {
-				input.TryPopPropsLine("tag." + tag);
-			}
-			base.LoadFromSaves(input);
-		}
 	}
 
 	[ViewableClass]
