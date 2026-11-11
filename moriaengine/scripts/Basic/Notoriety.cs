@@ -304,6 +304,14 @@ namespace SteamEngine.CompiledScripts {
 			return region.Flag_Safe || (pvp && region.Flag_NoPvp);
 		}
 
+		/// <summary>#1347 - Sphere's NPC_GetAttackMotivation: nobody standing in a safe area is worth attacking. Sphere's
+		/// own damage rule for safe and no-PvP areas (EreborNext CChar.Damage) never applied on Erebor: every player and
+		/// creature carries e_gethit, whose @GetHit cancels the engine's hit and applies it through damage_final/dmgHits
+		/// as god damage, which the rule lets through. So, as on Erebor, damage lands there.</summary>
+		public static bool IsInSafeArea(Character ch) {
+			return (ch.Region as FlaggedRegion)?.Flag_Safe == true;
+		}
+
 		/// <summary>True if `self` should be exempt from the leveling system's death-experience-loss
 		/// (#128) - safe zones and arenas, matching the user's own stated design (deliberately a
 		/// narrower set of flags than RegionBarsCombat above's - a no-PvP area isn't meant to grant

@@ -590,6 +590,9 @@ namespace SteamEngine.CompiledScripts {
 			if (!CanSee(self, candidate) && !MonsterSpecialAttacks.HasDetect(self)) {
 				return false; //#1038 - one that detects keeps at it, it reveals while fighting
 			}
+			if (Notoriety.IsInSafeArea(candidate)) {
+				return false; //#1347 - Sphere's NPC_GetAttackMotivation: 0 for a target in a safe area
+			}
 			return Point2D.GetSimpleDistance(self, candidate) <= GiveUpRange;
 		}
 
@@ -605,7 +608,7 @@ namespace SteamEngine.CompiledScripts {
 		private Character FindTarget(NPC self) {
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, AggroRange)) {
 				Character candidate = ch as Character;
-				if ((candidate != null) && CanSee(self, candidate) && self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
+				if ((candidate != null) && CanSee(self, candidate) && !Notoriety.IsInSafeArea(candidate) && self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
 					return candidate;
 				}
 			}
@@ -852,6 +855,9 @@ namespace SteamEngine.CompiledScripts {
 		/// tick - callers should fall back to normal weapon combat in that case.
 		/// </summary>
 		private bool TryCastSpell(NPC self, Character target) {
+			if (Notoriety.IsInSafeArea(self)) {
+				return false; //#1347 - Sphere's NPC_FightMayCast: no casting in a safe area
+			}
 			SpellDef spell = this.ChooseSpellToCast(self, target);
 			if (spell == null) {
 				return false;
