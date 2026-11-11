@@ -146,6 +146,28 @@ fought them, within 5 minutes of a previous death, or in a safe zone or arena.
 `deathExpPaidPercent` (100) of it goes to those who fought, shared evenly: nothing for one of the victim's own
 realm, or for killing a craftsman. The level never goes down.
 
+## Triggers (#1416)
+
+- `@gainExperience` (cancellable, `GainExperienceArgs`) is raised on the player in `AddExperience`, after the
+  inline bonuses (boosters, RP rank, the beacons). `BaseAmount` is the gain before any bonus, which is what
+  bonuses take their percent of. `Amount` is what will be added, and a handler may change it. A cancel adds nothing.
+  - A gain diverted by a hypnosis is paid later and raises it then, possibly negative.
+  - Compiled handlers only: a scripted one sees the numbers but can't change `Amount`.
+- `@killCredit` (`KillCreditArgs`: `victim`, `share`) is raised on each fighter credited with a death. It is
+  Erebor's `trigger_kill` (`@playerKill` on a player, `@npckill` on an NPC; here one trigger for both):
+  - on a monster's death, after the fighter's own experience, and on the blood pact's bearer who earns through it.
+    A blood-pact giver earns nothing and gets no credit. A monster worth nothing still credits its fighters with 0.
+    A summon credits nobody;
+  - on a player's death, on every fighter, with `share` 0 where nothing is paid, as Erebor's `addfame` 0:
+    - a player of the victim's own realm;
+    - a craftsman victim;
+    - a victim within the post-death immunity, in a safe zone or arena, or with no experience to lose.
+  - Only a death nobody fought credits nobody.
+  - `share` is the fighter's share. An NPC fighter is given nothing, and a hypnotized player is given it later.
+  - A blood-pact giver still earns on a player's death (Erebor skipped it): #1417.
+- Plugins and trigger groups hear both. The systems still called inline (weekly quests, Q017, the shaman's pacts,
+  boosters) move onto them with #1399's candidates.
+
 ## Gates and quests - explicitly out of scope
 
 Experience-gated content (quests, milestone gates) is deliberately not built - the user's
