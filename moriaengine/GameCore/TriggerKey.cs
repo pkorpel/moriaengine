@@ -55,6 +55,7 @@ namespace SteamEngine {
 		public static readonly TriggerKey step = Acquire("step");
 		public static readonly TriggerKey stepTaken = Acquire("stepTaken"); //#1414
 		public static readonly TriggerKey itemStep = Acquire("itemStep");
+		public static readonly TriggerKey pickingUp = Acquire("pickingUp"); //#1426
 
 		public static readonly TriggerKey login = Acquire("login");
 		public static readonly TriggerKey logout = Acquire("logout");
