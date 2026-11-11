@@ -268,9 +268,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (self is Player caster) {
 				MagicChargePlugin.AfterCast(caster, spell, skillSeqArgs.Target1 as Character); //#1017
-				NecroAbilities.SpellDone(caster, spell, skillSeqArgs.Tool is SpellScroll);
 			}
-			if (!self.IsDeleted) { //#1419 - @spellSuccess, after the effect and the inline after-cast work
+			if (!self.IsDeleted) { //#1419 - @spellSuccess, after the effect and the inline after-cast work; the profession plugin's mana back (#1440)
 				self.TryTrigger(tkSpellSuccess, new ScriptArgs(new SpellSuccessArgs(self, spell, skillSeqArgs.Target1, skillSeqArgs.Tool is SpellScroll)));
 			}
 		}

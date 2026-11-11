@@ -20,7 +20,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>f_spelldone, not for recall, mark and gate. A scroll gives back half.</summary>
+		/// <summary>f_spelldone, not for recall, mark and gate. A scroll gives back half. The profession plugin's @spellSuccess
+		/// calls it (#1440).</summary>
 		internal static void SpellDone(Player self, SpellDef spell, bool fromScroll) {
 			bool mage = Professions.HasProfession(self, Professions.Mage);
 			if ((!mage && !Professions.HasProfession(self, Professions.Necromant)) || (spell.Id == 32) || (spell.Id == 52) || (spell.Id == 45)) {

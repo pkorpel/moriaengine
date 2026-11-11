@@ -75,8 +75,8 @@ After a successful Magery cast, the caster's `@spellSuccess` is raised (#1419, `
 fromScroll). It comes at the end of `MagerySkillDef.On_Success`:
 1. the cast is paid;
 2. `SpellDef.Trigger_Success` runs, which may have done nothing: refused at the target, cancelled, or resisted;
-3. the inline after-cast work: combat wear, a mage's charge, the necromancer's bookkeeping;
-4. then `@spellSuccess`.
+3. the inline after-cast work: combat wear, a mage's charge;
+4. then `@spellSuccess`, where the profession plugin gives the necromancer's and mage's mana back (#1440).
 
 Notes:
 - The timing is ours. 0.99z8 has no `@spellSuccess`, and later Sphere raises it before the effect.

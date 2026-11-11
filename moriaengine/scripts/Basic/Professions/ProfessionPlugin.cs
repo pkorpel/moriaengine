@@ -137,6 +137,14 @@ namespace SteamEngine.CompiledScripts {
 			this.counterOn = false;
 		}
 
+		/// <summary>#1440 - after a successful cast (Magery's @spellSuccess): the necromancer's darkpower and the mage's
+		/// concentration may give mana back (f_spelldone). Both classes, so the base plugin answers it.</summary>
+		public virtual void On_SpellSuccess(SpellSuccessArgs args) {
+			if (this.Cont is Player caster) {
+				NecroAbilities.SpellDone(caster, args.Spell, args.FromScroll);
+			}
+		}
+
 		/// <summary>#1429 - a blow landing on the player, before the dodge (Erebor's @aftergetswing): the shield block,
 		/// which six classes may learn. A profession's own plugin adds its part and calls this.</summary>
 		public virtual void On_GetSwingLanding(WeaponSwingArgs swing) {

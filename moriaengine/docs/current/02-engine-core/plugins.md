@@ -90,7 +90,7 @@ monster's loot there.
 
 Spells have two more (#1419, [magery-spells.md](../04-gameplay-systems/magery-spells.md)): `@spellPower` on the caster
 (`SpellPowerArgs`, a mutable `SpellPower`), before the target's defense and after the inline pre-defense modifiers;
-and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The pre-defense modifiers (charge,
+and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The profession plugin gives the necromancer's and mage's mana back there (#1440). The pre-defense modifiers (charge,
 Koncentrace, a stolen talent) stay at a fixed point because they multiply in order and plugins run newest first.
 
 `@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow

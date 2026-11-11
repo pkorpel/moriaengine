@@ -678,13 +678,32 @@ namespace SteamEngine.CompiledScripts {
 			player.Mana = 0;
 			SpellDef fireball = SpellDef.GetByDefname("s_fireball");
 			for (int i = 0; (i < 400) && (player.Mana == 0); i++) {
-				NecroAbilities.SpellDone(player, fireball, false);
+				CastDone(player, fireball, false); //#1440 - @spellSuccess, as Magery raises it
 			}
 			Report("darkpowerGivesManaBack", player.Mana == (fireball.ManaUse * 850) / 1000);
 			player.Mana = 0;
-			NecroAbilities.SpellDone(player, SpellDef.GetByDefname("s_recall"), false);
+			for (int i = 0; (i < 400) && (player.Mana == 0); i++) {
+				CastDone(player, fireball, true);
+			}
+			Report("aScrollGivesHalfBack", player.Mana == ((fireball.ManaUse * 850) / 1000) / 2);
+			player.Mana = 0;
+			CastDone(player, SpellDef.GetByDefname("s_recall"), false);
 			Report("notForRecall", player.Mana == 0);
+			player.Profession = Professions.Thief; //another class this character has been, its own counter on
+			player.Stam = player.MaxStam;
+			ThiefAbilities.Ripper(player);
+			player.Mana = 0;
+			for (int i = 0; i < 100; i++) {
+				CastDone(player, fireball, false);
+			}
+			Report("noManaBackForOtherClasses", ClassAbilities.CounterOn(player) && (player.Mana == 0));
+			player.Profession = Professions.Necromant;
 			Console.WriteLine("NECRO_DONE");
+		}
+
+		/// <summary>Magery's @spellSuccess after a cast, without the cast.</summary>
+		private static void CastDone(Player player, SpellDef spell, bool fromScroll) {
+			player.TryTrigger(TriggerKey.Acquire("spellSuccess"), new ScriptArgs(new SpellSuccessArgs(player, spell, null, fromScroll)));
 		}
 
 		internal static NPC Dummy(Character self, int offset) {

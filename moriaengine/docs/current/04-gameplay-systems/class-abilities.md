@@ -15,6 +15,10 @@ The class counter (`.berserker`, `.sniper`, `.ripper`, `.vigour`, the necromance
 death takes it, in the plugin's `@death`; a new profession starts without one. Before, a counter left on through a
 profession change kept firing for the new class.
 
+The necromancer's darkpower and the mage's concentration give mana back after a successful cast (f_spelldone: 85%,
+half from a scroll, never for recall, mark or gate). The profession plugin answers Magery's `@spellSuccess` for both
+classes (#1440); it ran as a direct call on the line before that trigger.
+
 ## Spell absorption
 
 `speldodge` (`a_spell_absorption`), e_allplayers' @beforegeteffect: a monster's spell on a player is swallowed whole,
