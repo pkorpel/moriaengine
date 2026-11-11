@@ -55,9 +55,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey TypeTK = TagKey.Acquire("_pactType_");
 		internal static readonly TagKey ByTK = TagKey.Acquire("_pactBy_");
 		internal static readonly TagKey ToTK = TagKey.Acquire("_pactTo_");
-		private static readonly TagKey nextPactTK = TagKey.Acquire("_nextPact_");
 		private static readonly TagKey bloodOffTK = TagKey.Acquire("_bloodPactOff_");
-		private static readonly TagKey nextLifePactTK = TagKey.Acquire("_nextLifePact_");
 		internal static readonly TagKey LifePactByTK = TagKey.Acquire("_lifePactBy_");
 		internal static readonly TimerKey PactTK = TimerKey.Acquire("_pact_");
 		internal static readonly TimerKey SoulTK = TimerKey.Acquire("_soulRemover_");
@@ -78,14 +76,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>f_pact_can_do.</summary>
 		private static bool CanPact(Player self) {
-			if (!ShamanAbilities.IsShaman(self)) {
+			ShamanProfessionPlugin shaman = ShamanProfessionPlugin.Of(self); //#1442 - the cooldown is its
+			if (shaman == null) {
 				self.RedMessage("Tohle nemuzes pouzivat");
 			} else if (self.Level < 20) {
 				self.SysMessage("Na to jsi jeste prilis " + (self.IsFemale ? "nezkusena" : "nezkuseny") + ".", ClassAbilities.ClassMessageHue);
 			} else if (ClassAbilities.Points(self, "woodoo_pacts") <= 0) {
 				self.SysMessage("Potrebujes body v abilite Voodoo - pakty ", ClassAbilities.ClassMessageHue);
-			} else if (ClassAbilities.SecondsTag(self, nextPactTK) > Globals.TimeInSeconds) {
-				self.SysMessage("Muzes pouzit az za " + (int) (ClassAbilities.SecondsTag(self, nextPactTK) - Globals.TimeInSeconds) + " sekund.", ClassAbilities.ClassMessageHue);
+			} else if (shaman.nextPact > Globals.TimeInSeconds) {
+				self.SysMessage("Muzes pouzit az za " + (int) (shaman.nextPact - Globals.TimeInSeconds) + " sekund.", ClassAbilities.ClassMessageHue);
 			} else if (self.GetTag(ToTK) != null) {
 				self.SysMessage("Uz pouzivas " + NameOf(self.GetTag(TypeTK) as string), ClassAbilities.ClassMessageHue);
 			} else {
@@ -161,7 +160,10 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				ShamanAbilities.ConsumeOne(shaman, ShamanAbilities.RubyDef);
 			}
-			shaman.SetTag(nextPactTK, Globals.TimeInSeconds + ClassAbilitySettings.instance.pactAgainSeconds);
+			ShamanProfessionPlugin cooldowns = ShamanProfessionPlugin.Of(shaman);
+			if (cooldowns != null) {
+				cooldowns.nextPact = Globals.TimeInSeconds + ClassAbilitySettings.instance.pactAgainSeconds;
+			}
 			EffectFactory.StationaryEffect(shaman, 0x376a, 9, 20);
 			EffectFactory.StationaryEffect(target, 0x376a, 9, 20);
 			shaman.Sound(583);
@@ -321,8 +323,9 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			int lifepact = ClassAbilities.Points(self, "woodoo_lifepact");
-			double next = ClassAbilities.SecondsTag(self, nextLifePactTK);
-			if (!ShamanAbilities.IsShaman(self)) {
+			ShamanProfessionPlugin shaman = ShamanProfessionPlugin.Of(self); //#1442 - the cooldown is its
+			double next = (shaman == null) ? 0 : shaman.nextLifePact;
+			if (shaman == null) {
 				self.SysMessage("Nic se nestalo.");
 			} else if (PlayerHunger.IsHungry(self)) {
 				self.RedMessage("Ve tvem soustredeni te rusi hlad...");
@@ -338,7 +341,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Zamer hrace kteremu chces darovat LifePact.");
 			} else {
 				self.SysMessage("Nepovedlo se.");
-				self.SetTag(nextLifePactTK, Globals.TimeInSeconds + settings.lifePactFailSeconds);
+				shaman.nextLifePact = Globals.TimeInSeconds + settings.lifePactFailSeconds;
 			}
 		}
 
@@ -361,7 +364,10 @@ namespace SteamEngine.CompiledScripts {
 				target.SysMessage(shaman.Name + " ti daroval Pakt zivota.", ClassAbilities.ClassMessageHue);
 				shaman.Stam = (short) (shaman.Stam - (60 - lifepact));
 				shaman.Mana = (short) (shaman.Mana - (70 - lifepact));
-				shaman.SetTag(nextLifePactTK, Globals.TimeInSeconds + settings.lifePactAgainSeconds);
+				ShamanProfessionPlugin cooldowns = ShamanProfessionPlugin.Of(shaman);
+				if (cooldowns != null) {
+					cooldowns.nextLifePact = Globals.TimeInSeconds + settings.lifePactAgainSeconds;
+				}
 				EffectFactory.StationaryEffect(shaman, 0x376a, 9, 20);
 				EffectFactory.StationaryEffect(target, 0x376a, 9, 20);
 				shaman.Sound(583);

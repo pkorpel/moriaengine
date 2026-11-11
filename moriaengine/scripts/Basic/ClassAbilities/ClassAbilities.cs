@@ -157,7 +157,6 @@ namespace SteamEngine.CompiledScripts {
 		/// @death (#1438).</summary>
 		internal static void OnDeath(Character self) {
 			PriestAbilities.NoteDeath(self);
-			ShamanAbilities.OnDeath(self);
 			MysticMind.OnDeath(self);
 			ShamanPacts.OnGone(self);
 		}

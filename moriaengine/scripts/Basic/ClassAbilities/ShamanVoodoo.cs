@@ -11,7 +11,6 @@ namespace SteamEngine.CompiledScripts {
 	public static class ShamanVoodoo {
 		internal const int Damage = 1, Exhaust = 2, Bleed = 3, Poisoned = 4, Shock = 5, NoPort = 6, NoHorse = 7;
 		internal const int Strength = 11, Cunning = 12, Agility = 13, Protect = 14;
-		private static readonly TagKey nextVoodooTK = TagKey.Acquire("_nextWoodoo_");
 		private static readonly TagKey headDurabilityTK = TagKey.Acquire("vydrz");
 		private static readonly string[] metals = { "_copper", "_iron", "_verite", "_valorite", "_obsidian", "_adamantinum", "_mithril" };
 
@@ -30,13 +29,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool CanVoodoo(Player self) {
-			if (!Professions.HasProfession(self, Professions.Shaman)) {
+			ShamanProfessionPlugin shaman = ShamanProfessionPlugin.Of(self); //#1442 - the cooldown is its
+			if (shaman == null) {
 				self.SysMessage("Co tim chces dokazat?");
 			} else if (self.Level < 20) {
 				self.SysMessage("Nejsi jeste dost dobry saman.");
 			} else if (WarriorAbilities.IsFrozen(self)) {
 				self.SysMessage("You are frozen and cannot move.");
-			} else if ((ClassAbilities.SecondsTag(self, nextVoodooTK) > Globals.TimeInSeconds) && !self.IsGM) {
+			} else if ((shaman.nextVoodoo > Globals.TimeInSeconds) && !self.IsGM) {
 				self.SysMessage("Jeste nelze pouzit.");
 			} else {
 				return true;
@@ -57,12 +57,12 @@ namespace SteamEngine.CompiledScripts {
 			if (Globals.dice.Next(1000) >= 250 + (20 * ClassAbilities.Points(self, "woodoo_curse"))) {
 				self.SysMessage("Nepovedlo se.");
 				VoodooEffectTimer.Apply(self, curse, null); //a failed curse falls on the shaman
-				self.SetTag(nextVoodooTK, Globals.TimeInSeconds + settings.voodooDelaySeconds);
+				ShamanProfessionPlugin.Of(self).nextVoodoo = Globals.TimeInSeconds + settings.voodooDelaySeconds;
 				return;
 			}
 			HidingSkillDef.Reveal(self);
 			self.Say("Heru Curu Mor Tir");
-			self.SetTag(nextVoodooTK, Globals.TimeInSeconds + (settings.voodooDelaySeconds * 10));
+			ShamanProfessionPlugin.Of(self).nextVoodoo = Globals.TimeInSeconds + (settings.voodooDelaySeconds * 10);
 			Handle(self, CorpseCarving.HeadOf(head), curse);
 			int durability = Convert.ToInt32(head.GetTag(headDurabilityTK) ?? 0);
 			if (durability == 0) {
@@ -90,7 +90,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			HidingSkillDef.Reveal(self);
 			self.Say("Heru Curu Mor Tir");
-			self.SetTag(nextVoodooTK, Globals.TimeInSeconds + (ClassAbilitySettings.instance.voodooDelaySeconds / 10));
+			ShamanProfessionPlugin.Of(self).nextVoodoo = Globals.TimeInSeconds + (ClassAbilitySettings.instance.voodooDelaySeconds / 10);
 			int blessing;
 			switch ((potion == null) ? "" : potion.Def.PrettyDefname.ToLowerInvariant()) {
 				case "i_potion_strengthless":
