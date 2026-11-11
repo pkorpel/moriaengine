@@ -40,8 +40,6 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static readonly TagKey CatchedOnceTK = TagKey.Acquire("_wasCatched_");
 		internal static readonly TagKey FieldReleasedAtTK = TagKey.Acquire("_catchFieldReleasedAt_");
-		internal static readonly TagKey BuffDmgBonusTK = TagKey.Acquire("_buffDmgBonus_");
-		internal static readonly TagKey NpcDamageCutTK = TagKey.Acquire("_changeDmgPercent_");
 		private static readonly PluginKey fieldParalysisPK = PluginKey.Acquire("_catchFieldParalysis_");
 
 		internal static bool IsMystic(Character ch) {
@@ -362,7 +360,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Nemas dost many.");
 			} else if (!IsIdle(self)) {
 				self.RedMessage("Pro ukradnuti talentu musis byt v naprostem klidu.");
-			} else if (self.HasTimer(BuffStealTimer.Key)) {
+			} else if (BuffStealPlugin.Of(self) != null) {
 				self.RedMessage("Tuto schopnost jeste nelze pouzit.");
 			} else {
 				self.SysMessage("Zamer monstrum, ktere chces zbavit talentu.");
@@ -394,18 +392,18 @@ namespace SteamEngine.CompiledScripts {
 			int talent = TalentOf(target);
 			if (!self.CanSeeLOS(target).Allow) {
 				self.RedMessage("Nemas s cilem primy kontakt.");
-			} else if (target.HasTimer(BuffStolenTimer.Key)) {
+			} else if (BuffStolenPlugin.Of(target) != null) {
 				self.RedMessage("Cili uz nekdo talent vzal.");
 			} else if (self.Stam < 80) {
 				self.SysMessage("Nemas dost staminy.");
 			} else if (talent == 0) {
 				self.SysMessage("Cil nema zadny talent.");
 			} else {
-				BuffStealTimer timer = new BuffStealTimer();
-				timer.target = target;
-				timer.type = talent;
-				self.AddTimer(BuffStealTimer.Key, timer);
-				timer.DueInSeconds = 3;
+				BuffStealPlugin steal = (BuffStealPlugin) BuffStealPluginDef.instance.Create(); //#1457 - i_buffSteal
+				steal.target = target;
+				steal.type = talent;
+				self.AddPlugin(BuffStealPlugin.Key, steal);
+				steal.Timer = 3;
 				self.SysMessage("Pokusis se cili ukrast talent.");
 				self.Sound(586);
 			}
@@ -439,8 +437,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>i_buffSteal's first tick: the checks, then f_buffSteal. Returns how long the next state lasts.</summary>
-		internal static void StealTick(Player self, BuffStealTimer timer) {
+		/// <summary>i_buffSteal's first tick: the checks, then f_buffSteal, and the next state's time.</summary>
+		internal static void StealTick(Player self, BuffStealPlugin timer) {
 			Character target = timer.target;
 			if ((target == null) || target.IsDeleted || !self.CanSeeLOS(target).Allow) {
 				self.RedMessage("Ztratil" + (self.IsFemale ? "a" : "") + " jsi cil z dohledu.");
@@ -457,7 +455,7 @@ namespace SteamEngine.CompiledScripts {
 				timer.Delete();
 				return;
 			}
-			if (target.HasTimer(BuffStolenTimer.Key)) {
+			if (BuffStolenPlugin.Of(target) != null) {
 				self.RedMessage("Cili uz nekdo talent vzal.");
 				timer.Delete();
 				return;
@@ -471,32 +469,32 @@ namespace SteamEngine.CompiledScripts {
 				if (PowerOf(target) == 0) { //Erebor applied it at power 1 and could never take it back
 					self.RedMessage("Cil nema definovanu silu boostu!");
 					timer.state = 2;
-					timer.DueInSeconds = 20;
+					timer.Timer = 20;
 					return;
 				}
 				ClassAbilities.ReduceStaminaToZero(self, power * 6);
 				Steal(self, target, timer);
 				timer.state = 1;
 				timer.success = true;
-				timer.DueInSeconds = 60;
+				timer.Timer = 60;
 			} else if (rolled ? (Globals.dice.Next(0, (3 * a) + 1) < Globals.dice.Next(0, Math.Max(m - a, 0) + 1)) : (Globals.dice.Next(0, (2 * a) + 1) < (m - a))) {
 				self.RedMessage("Pri pokusu ovladnout talent cile jsi fatalne " + (self.IsFemale ? "selhala!" : "selhal!"));
 				ClassAbilities.ReduceStaminaToZero(self, 100);
 				Cripple(self, timer);
 				timer.state = 1;
 				timer.success = false;
-				timer.DueInSeconds = 60;
+				timer.Timer = 60;
 			} else {
 				ClassAbilities.ReduceStaminaToZero(self, power * (rolled ? 6 : 10));
 				self.SysMessage("Nepodarilo se ti ovladnout talent cile.", ClassAbilities.ClassMessageHue);
 				timer.state = 2;
-				timer.DueInSeconds = 20;
+				timer.Timer = 20;
 			}
 		}
 
-		private static void Steal(Player self, Character target, BuffStealTimer timer) {
+		private static void Steal(Player self, Character target, BuffStealPlugin timer) {
 			int v = buffStats[timer.power - 1], d = buffDmgNpc[timer.power - 1];
-			BuffStolenTimer npcTimer = new BuffStolenTimer();
+			BuffStolenPlugin npcTimer = (BuffStolenPlugin) BuffStolenPluginDef.instance.Create(); //#1457 - i_buffStealNPC
 			npcTimer.type = timer.type;
 			switch (timer.type) {
 				case 1:
@@ -506,7 +504,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case 2:
 					self.Str = (short) (self.Str + v);
-					target.SetTag(NpcDamageCutTK, d);
+					npcTimer.cut = d;
 					break;
 				case 3:
 					self.Dex = (short) (self.Dex + v);
@@ -514,17 +512,17 @@ namespace SteamEngine.CompiledScripts {
 					target.Dex = (short) (target.Dex - npcTimer.changed);
 					break;
 				case 4:
-					self.SetTag(BuffDmgBonusTK, buffDmg[timer.power - 1]);
-					target.SetTag(NpcDamageCutTK, d);
+					timer.bonus = buffDmg[timer.power - 1];
+					npcTimer.cut = d;
 					break;
 			}
 			timer.changed = (timer.type == 4) ? 0 : v;
-			target.AddTimer(BuffStolenTimer.Key, npcTimer);
-			npcTimer.DueInSeconds = 60;
+			target.AddPlugin(BuffStolenPlugin.Key, npcTimer);
+			npcTimer.Timer = 60;
 			self.SysMessage((self.IsFemale ? "Ukradla" : "Ukradl") + " jsi talent protivnika. " + ((timer.type == 4) ? "Zvysen Utok." : "Zvysena " + talentNames[timer.type - 1] + "."), ClassAbilities.ClassMessageHue);
 		}
 
-		private static void Cripple(Player self, BuffStealTimer timer) {
+		private static void Cripple(Player self, BuffStealPlugin timer) {
 			int v = buffStats[timer.power - 1];
 			timer.changed = (timer.type == 4) ? 0 : v;
 			switch (timer.type) {
@@ -538,14 +536,14 @@ namespace SteamEngine.CompiledScripts {
 					self.Dex = (short) (self.Dex - v);
 					break;
 				case 4:
-					self.SetTag(BuffDmgBonusTK, -buffDmg[timer.power - 1]);
+					timer.bonus = -buffDmg[timer.power - 1];
 					break;
 			}
 			self.SysMessage("Docasne " + ((timer.type == 4) ? "ochromen Utok." : "ochromena " + talentNames[timer.type - 1] + "."), ClassAbilities.ClassMessageHue);
 		}
 
 		/// <summary>f_buffreturnDown after a steal, f_buffreturnUp after a fatal failure.</summary>
-		internal static void Reverse(Character self, BuffStealTimer timer) {
+		internal static void Reverse(Character self, BuffStealPlugin timer) {
 			int sign = timer.success ? -1 : 1;
 			self.SysMessage(timer.success ? "Ztracis ziskany talent." : "Ochromeni po neuspesnem kradeni talentu pominulo.", ClassAbilities.ClassMessageHue);
 			switch (timer.type) {
@@ -560,36 +558,9 @@ namespace SteamEngine.CompiledScripts {
 					self.Dex = (short) (self.Dex + (sign * timer.changed));
 					break;
 				case 4:
-					self.RemoveTag(BuffDmgBonusTK);
+					timer.bonus = 0;
 					break;
 			}
-		}
-
-		/// <summary>e_mystik's @death: a steal under way is undone and its cooldown goes with it.</summary>
-		internal static void OnDeath(Character self) {
-			if (self.GetTimer(BuffStealTimer.Key) is BuffStealTimer timer) {
-				if (timer.state == 1) {
-					Reverse(self, timer);
-				}
-				timer.Delete();
-			}
-		}
-
-		/// <summary>magie.scp:176 and e_npcChangeDmg, on blows: a stolen attack talent, and a robbed monster's cut.</summary>
-		internal static void ModifyBlow(Character attacker, Character defender, WeaponSwingArgs swing) {
-			if (attacker is Player && !defender.IsPlayerForCombat && (attacker.GetTag(BuffDmgBonusTK) is int bonus)) {
-				swing.DamageAfterAC += (swing.DamageAfterAC / 100) * bonus;
-			}
-			if ((attacker is NPC) && (attacker.GetTag(NpcDamageCutTK) is int cut)) {
-				swing.DamageAfterAC -= (swing.DamageAfterAC * cut) / 100;
-			}
-		}
-
-		internal static int ModifySpellPower(Character caster, Character target, int spellPower) {
-			if (!target.IsPlayerForCombat && (caster.GetTag(BuffDmgBonusTK) is int bonus)) {
-				return spellPower + ((spellPower / 100) * bonus);
-			}
-			return spellPower;
 		}
 		#endregion
 	}
@@ -627,84 +598,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			MysticMind.BuffStealTarget(self, targetted);
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_buffSteal: state 0 the 3 s wind-up, 1 the 60 s effect, 2 the cooldown.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class BuffStealTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_buffSteal_");
-
-		[SaveableData, CopyableData]
-		public Character target;
-
-		[SaveableData, CopyableData]
-		public int type, power, changed, state;
-
-		[SaveableData, CopyableData]
-		public bool success;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public BuffStealTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			Player self = cont as Player;
-			if (self == null) {
-				return;
-			}
-			if (this.state == 0) {
-				this.Again(self);
-				MysticMind.StealTick(self, this);
-			} else if (this.state == 1) {
-				MysticMind.Reverse(self, this);
-				BuffStealTimer cooldown = this.Again(self);
-				cooldown.state = 2;
-				cooldown.DueInSeconds = 50 + (7 * this.power);
-			}
-		}
-
-		/// <summary>A one-shot timer is gone by its timeout, so the next state is a fresh one.</summary>
-		private BuffStealTimer Again(Player self) {
-			BuffStealTimer next = new BuffStealTimer();
-			next.target = this.target;
-			next.type = this.type;
-			next.power = this.power;
-			next.changed = this.changed;
-			next.state = this.state;
-			next.success = this.success;
-			self.AddTimer(Key, next);
-			next.DueInSeconds = 1;
-			return next;
-		}
-	}
-
-	/// <summary>i_buffStealNPC: 60 s, then the monster has its talent back.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class BuffStolenTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_buffStealNpc_");
-
-		[SaveableData, CopyableData]
-		public int type, changed;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public BuffStolenTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character npc) {
-				switch (this.type) {
-					case 1:
-						npc.SetRealSkillValue((int) SkillName.EvalInt, npc.GetSkill(SkillName.EvalInt) + this.changed);
-						break;
-					case 3:
-						npc.Dex = (short) (npc.Dex + this.changed);
-						break;
-					default:
-						npc.RemoveTag(MysticMind.NpcDamageCutTK);
-						break;
-				}
-			}
 		}
 	}
 }

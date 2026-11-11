@@ -112,4 +112,103 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly ControlNpcPluginDef instance =
 			(ControlNpcPluginDef) new ControlNpcPluginDef("p_controlNpc", "C# scripts", -1).Register();
 	}
+
+	/// <summary>#1457 - Erebor's i_buffSteal on the mystic: state 0 the 3 s wind-up, 1 the 60 s stolen talent (or the
+	/// crippling of a fatal failure), 2 the rest. The stolen attack talent (tag.buffDmgBonus) is its bonus: blows and spell
+	/// power against monsters, at @swingLanding and @spellPower. Its own @death ends it, as e_mystik's @death consumed
+	/// i_buffSteal; its @unAssign (Erebor's @unEquip) gives a held talent back whenever it goes.</summary>
+	[Dialogs.ViewableClass]
+	public partial class BuffStealPlugin {
+		internal static readonly PluginKey Key = PluginKey.Acquire("_buffSteal_");
+
+		internal static BuffStealPlugin Of(Character ch) {
+			return ch.GetPlugin(Key) as BuffStealPlugin;
+		}
+
+		/// <summary>i_buffSteal's @timer.</summary>
+		public void On_Timer() {
+			if (!(this.Cont is Player self)) {
+				return;
+			}
+			if (this.state == 0) {
+				this.Timer = 1; //a fallback: StealTick sets the next state's time or deletes it
+				MysticMind.StealTick(self, this);
+			} else if (this.state == 1) {
+				MysticMind.Reverse(self, this);
+				this.state = 2;
+				this.Timer = 50 + (7 * this.power);
+			} else {
+				this.Delete();
+			}
+		}
+
+		/// <summary>e_mystik's @death: consume(1 i_buffSteal), in any state; @unAssign gives a held talent back.</summary>
+		public void On_Death() {
+			this.Delete();
+		}
+
+		/// <summary>i_buffSteal's @unEquip: a talent still held goes back.</summary>
+		public void On_UnAssign(Character cont) {
+			if (this.state == 1) {
+				MysticMind.Reverse(cont, this);
+				this.state = 2;
+			}
+		}
+
+		/// <summary>The stolen attack talent on a blow at a monster (magie.scp:176's buffDmgBonus).</summary>
+		public void On_SwingLanding(WeaponSwingArgs swing) {
+			if ((this.bonus != 0) && (swing.attacker is Player) && !swing.defender.IsPlayerForCombat) {
+				swing.DamageAfterAC += (swing.DamageAfterAC / 100) * this.bonus;
+			}
+		}
+
+		/// <summary>magie.scp:176: the stolen attack talent on a spell's power against a monster.</summary>
+		public void On_SpellPower(SpellPowerArgs args) {
+			if ((this.bonus != 0) && (args.TargetChar != null) && !args.TargetChar.IsPlayerForCombat) {
+				args.SpellPower += (args.SpellPower / 100) * this.bonus;
+			}
+		}
+	}
+
+	public partial class BuffStealPluginDef {
+		public static readonly BuffStealPluginDef instance =
+			(BuffStealPluginDef) new BuffStealPluginDef("p_buffSteal", "C# scripts", -1).Register();
+	}
+
+	/// <summary>#1457 - Erebor's i_buffStealNPC with e_npcChangeDmg: 60 s of a robbed monster, then its talent comes
+	/// back. Its blows lose the cut (tag.changeDmgPercent) at @swingLanding, e_npcChangeDmg's @AfterSwing.</summary>
+	[Dialogs.ViewableClass]
+	public partial class BuffStolenPlugin {
+		internal static readonly PluginKey Key = PluginKey.Acquire("_buffStealNpc_");
+
+		internal static BuffStolenPlugin Of(Character ch) {
+			return ch.GetPlugin(Key) as BuffStolenPlugin;
+		}
+
+		/// <summary>i_buffStealNPC's @timer: f_buffreturnNPC.</summary>
+		public void On_Timer() {
+			if (this.Cont is Character npc) {
+				switch (this.type) {
+					case 1:
+						npc.SetRealSkillValue((int) SkillName.EvalInt, npc.GetSkill(SkillName.EvalInt) + this.changed);
+						break;
+					case 3:
+						npc.Dex = (short) (npc.Dex + this.changed);
+						break;
+				}
+			}
+			this.Delete();
+		}
+
+		public void On_SwingLanding(WeaponSwingArgs swing) {
+			if (this.cut != 0) {
+				swing.DamageAfterAC -= (swing.DamageAfterAC * this.cut) / 100;
+			}
+		}
+	}
+
+	public partial class BuffStolenPluginDef {
+		public static readonly BuffStolenPluginDef instance =
+			(BuffStolenPluginDef) new BuffStolenPluginDef("p_buffStealNpc", "C# scripts", -1).Register();
+	}
 }

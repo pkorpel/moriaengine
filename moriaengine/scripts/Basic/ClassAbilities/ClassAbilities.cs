@@ -157,7 +157,6 @@ namespace SteamEngine.CompiledScripts {
 		/// @death (#1438).</summary>
 		internal static void OnDeath(Character self) {
 			PriestAbilities.NoteDeath(self);
-			MysticMind.OnDeath(self);
 		}
 
 		private static TagKey TagOf(string name) {
