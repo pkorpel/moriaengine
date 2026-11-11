@@ -84,7 +84,7 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Hypnoza docasne zakazana");
 			} else if (ball == null) {
 				self.SysMessage("Musis mit svou kristalovou kouli!");
-			} else if (self.HasTimer(BuffStealTimer.Key)) {
+			} else if (BuffStealPlugin.Of(self) != null) {
 				self.RedMessage("Tva mysl je prilis vycerpana na pouziti hypnozy.");
 			} else if ((CatchFieldPlugin.Of(self) != null) || (CatchPlugin.Of(self) != null)) {
 				self.SysMessage("Tva mysl je jiz plne zaneprazdnena.");

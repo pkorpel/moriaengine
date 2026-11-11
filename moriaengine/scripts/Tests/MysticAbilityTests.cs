@@ -120,24 +120,56 @@ namespace SteamEngine.CompiledScripts {
 			int flags = def.Hypnotizable;
 			def.Hypnotizable = 0x8 | 0x400000; //strength, power 1
 			short str = player.Str;
-			BuffStealTimer stealing = null;
-			for (int i = 0; (i < 30) && !robbed.HasTimer(BuffStolenTimer.Key); i++) {
-				player.DeleteTimer(BuffStealTimer.Key);
+			BuffStealPlugin stealing = null;
+			for (int i = 0; (i < 30) && (BuffStolenPlugin.Of(robbed) == null); i++) {
+				player.DeletePlugin(BuffStealPlugin.Key);
 				player.Stam = player.MaxStam;
 				MysticMind.BuffStealTarget(player, robbed);
-				stealing = player.GetTimer(BuffStealTimer.Key) as BuffStealTimer;
+				stealing = BuffStealPlugin.Of(player); //#1457 - i_buffSteal
 				if (stealing != null) {
-					MysticMind.StealTick(player, stealing);
+					stealing.TryRun(TriggerKey.Acquire("timer"), null, out object s0, out object c0); //its own @timer: the wind-up ends
 				}
 			}
-			Report("aTalentIsStolen", (player.Str == str + 2) && (robbed.GetTag(MysticMind.NpcDamageCutTK) is int cut) && (cut == 20));
+			BuffStolenPlugin stolen = BuffStolenPlugin.Of(robbed); //i_buffStealNPC
+			Report("aTalentIsStolen", (player.Str == str + 2) && (stolen != null) && (stolen.cut == 20) && (stealing != null) && (stealing.state == 1) && (stealing.Timer > 59));
+
+			int cutBlow = 0; //#1457 - e_npcChangeDmg's @AfterSwing: the robbed monster's blow loses its cut
+			WeaponSwingArgs monsterBlow = DamageManager.GetWeaponSwingArgs(robbed, player);
+			monsterBlow.DamageAfterAC = 100;
+			DamageManager.Trigger_SwingLanding(monsterBlow);
+			cutBlow = (int) monsterBlow.DamageAfterAC;
+			Report("theRobbedMonsterHitsLess", cutBlow == 80);
+
 			if (stealing != null) {
-				MysticMind.Reverse(player, stealing);
+				stealing.TryRun(TriggerKey.Acquire("timer"), null, out object s1, out object c1); //the 60 s end
 			}
-			Report("andGivenBack", player.Str == str);
+			Report("andGivenBack", (player.Str == str) && (stealing != null) && (stealing.state == 2) && (BuffStealPlugin.Of(player) == stealing));
+
+			if (stealing != null) { //an attack talent: the bonus on blows and spells against monsters
+				stealing.type = 4;
+				stealing.state = 1;
+				stealing.success = true;
+				stealing.bonus = 5;
+			}
+			WeaponSwingArgs mysticBlow = DamageManager.GetWeaponSwingArgs(player, robbed);
+			mysticBlow.DamageAfterAC = 100;
+			DamageManager.Trigger_SwingLanding(mysticBlow);
+			SpellPowerArgs power = new SpellPowerArgs(player, (SpellDef) SpellDef.GetByDefname("s_magic_arrow"), robbed, robbed, 1000);
+			player.TryTrigger(TriggerKey.Acquire("spellPower"), new ScriptArgs(power));
+			Report("aStolenAttackAddsToBlowsAndSpells", ((int) mysticBlow.DamageAfterAC == 105) && (power.SpellPower == 1050));
+
+			if (stealing != null) { //#1457 - e_mystik's @death consumes i_buffSteal; a held Strength goes back
+				stealing.type = 2;
+				stealing.bonus = 0;
+				stealing.changed = 2;
+				stealing.state = 1;
+				player.Str = (short) (str + 2);
+			}
+			player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //@death alone, nobody dies
+			Report("deathEndsTheStealAndGivesItBack", (BuffStealPlugin.Of(player) == null) && (player.Str == str));
+
 			def.Hypnotizable = flags;
 			robbed.Delete();
-			player.DeleteTimer(BuffStealTimer.Key);
 
 			MysticHypnosis.FindBall(player).On_DClick(player);
 			Console.WriteLine("MYSTIC_DONE");

@@ -47,8 +47,8 @@ triggers:
    [Spells in combat.md](combat.md#swing-formulas-860)) or Magery skill
    (`GetSpellPowerAgainstChar`/`GetSpellPowerAgainstNonChar`).
    - Against a character, the inline modifiers are applied in a fixed order before the target's defense: a mage's
-     charge, the shaman's Koncentrace, a mystic's stolen talent. Then the caster's `@spellPower` is raised (#1419,
-     `SpellPowerArgs`: a handler may change `SpellPower`). Then the defense is taken, and magic items' slayers are
+     charge, the shaman's Koncentrace. Then the caster's `@spellPower` is raised (#1419, `SpellPowerArgs`: a handler
+     may change `SpellPower`); a mystic's stolen attack talent answers it (#1457). Then the defense is taken, and magic items' slayers are
      applied after it.
    - Against an item or the ground, `@spellPower` comes after the charge bonus, with that spot as `Target`
      (`TargetChar` null).
