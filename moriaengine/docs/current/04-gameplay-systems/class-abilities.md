@@ -107,6 +107,11 @@ and exactly 60 does nothing, as Erebor's.
 The Resurrection spell on a player who died less than 5 s ago does nothing, "Na oziveni jeste nejsi pripraven."
 (e_allplayers' @beforegeteffect), unless the area has `region_cf_instantRes`: the four arenas and Domov drakulu.
 
+The priest's self-resurrection (`.resurrection`) keeps its cooldown on the priest's profession plugin,
+`PriestProfessionPlugin` (`p_profession_priest` in priest.def, #1435). The time of death and the 5 s rule above are
+every player's, so they stay on the character. A GM of another class may still use it, without a cooldown. Setting
+the profession again starts a fresh plugin, and with it no cooldown.
+
 ## Warrior
 
 Double swing (e_war) is the warrior's alone, from level 30, with a long or broad sword or a large battle, double or
@@ -162,6 +167,8 @@ behind; on Erebor both were the thief's own event. The shield strike still runs
 from a direct call after the damage, beside the stun blow other classes share, with its state on the plugin. The mask
 and the knife immunity stay tags: the mask swaps the character's own identity and must outlast a profession change, and
 the immunity belongs to the target.
+
+A backstab whose target is gone before its 0.1 s wait no longer blocks the next one (#1436).
 
 `.mask` is refused in the areas with `tag.nomask` (the start rooms), "ty hnusnej bugere. Nic nebude", as on Erebor.
 The naming dialog suggests a random name of the player's sex from Erebor's name lists (`NameList`). Under the Incognito
