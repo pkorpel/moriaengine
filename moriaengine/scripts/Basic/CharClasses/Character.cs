@@ -1403,8 +1403,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (!this.Flag_Dead) {
 
-				PolymorphSpellDef.End(this); //#1001 - as Sphere, the spell's memory goes with you
-				IncognitoSpellDef.End(this);
 				Notoriety.RegisterMurder(this, killedBy);
 				HouseEvents.OnDeath(this, killedBy);
 				this.Trigger_HostileAction(killedBy);

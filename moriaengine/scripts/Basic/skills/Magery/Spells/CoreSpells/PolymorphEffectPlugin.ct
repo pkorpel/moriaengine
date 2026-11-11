@@ -1,0 +1,5 @@
+[PluginTemplate PolymorphEffectPlugin : EffectDurationPlugin]
+Vars:
+	internal int oldModel = 0
+	internal int strChange = 0
+	internal int dexChange = 0

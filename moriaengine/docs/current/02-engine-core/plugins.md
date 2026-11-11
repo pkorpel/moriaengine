@@ -232,6 +232,10 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   `.boosts` source and a green-bar flag set by hand. `Poison` keeps the rules and its API (Apply, IsPoisoned, RemoveAll,
   the hits). A death ends it through `EffectDurationPlugin.On_Death`, so `Character`'s death no longer calls
   `Poison.RemoveAll`. Callers that poison (traps, monsters, the thief, the spell, the skill) are unchanged.
+- **Polymorph and Incognito** (#1424): the spells are `DurableCharEffectSpellDef`s with `p_polymorph`/`p_incognito`
+  holding what a timer and tags held by hand. The plugins restore on unassign, and `EffectDurationPlugin.On_Death`
+  ends them, so `Character`'s death no longer calls their `End`. `DurableCharEffectSpellDef` used to throw for a source that
+  was neither a potion, a book nor a scroll; an ability or a rune now uses the spell's key.
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
   player's success fails), `@spellCastTry` and `@hitTry` (starving hurts), as Erebor's player

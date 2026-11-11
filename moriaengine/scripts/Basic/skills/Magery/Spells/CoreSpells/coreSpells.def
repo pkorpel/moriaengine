@@ -95,6 +95,10 @@ EFFECT=0
 DURATION=120,480
 MANAUSE=20
 Requirements=500.0 Magery
+EffectPluginDef = p_incognito
+
+//#1424 - the disguise: the true name and skin it hides
+[IncognitoEffectPluginDef p_incognito]
 
 //f_effect_a_mana_vampire, despite the name takes it from the target and gives none to the caster
 [ManaDrainSpellDef 53]
@@ -126,3 +130,7 @@ EFFECT=0
 DURATION=300,480
 MANAUSE=40
 Requirements=700.0 Magery
+EffectPluginDef = p_polymorph
+
+//#1424 - the form: the body it replaced and what it did to Str and Dex
+[PolymorphEffectPluginDef p_polymorph]
