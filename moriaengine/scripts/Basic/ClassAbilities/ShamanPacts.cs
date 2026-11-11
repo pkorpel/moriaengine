@@ -34,7 +34,7 @@ namespace SteamEngine.CompiledScripts {
 					player.Target(SingletonScript<Targ_Empathy>.Instance, this);
 					break;
 				case "i_empathy_bottle":
-					if (player.HasTimer(ShamanPacts.EmpathyTK)) {
+					if (EmpathyPlugin.Of(player) != null) {
 						player.SysMessage("Nelze pouzit.", ClassAbilities.ClassMessageHue);
 					} else {
 						ShamanPacts.DrinkEmpathy(player, this);
@@ -52,9 +52,6 @@ namespace SteamEngine.CompiledScripts {
 	/// its bonus counts 5 s ticks against tenths; kept. Where Erebor's script was broken a pact ends on death and
 	/// shared blood can kill.</summary>
 	public static class ShamanPacts {
-		internal static readonly TagKey LifePactByTK = TagKey.Acquire("_lifePactBy_");
-		internal static readonly TimerKey SoulTK = TimerKey.Acquire("_soulRemover_");
-		internal static readonly TimerKey EmpathyTK = TimerKey.Acquire("_getPhysResists_");
 
 		internal static string NameOf(string type) {
 			switch (type) {
@@ -366,7 +363,6 @@ namespace SteamEngine.CompiledScripts {
 				shaman.SysMessage("Nemas schranku.");
 			} else {
 				int lifepact = ClassAbilities.Points(shaman, "woodoo_lifepact");
-				target.SetTag(LifePactByTK, shaman);
 				shaman.SysMessage("Daroval jsi Pakt zivota " + target.Name, ClassAbilities.ClassMessageHue);
 				target.SysMessage(shaman.Name + " ti daroval Pakt zivota.", ClassAbilities.ClassMessageHue);
 				shaman.Stam = (short) (shaman.Stam - (60 - lifepact));
@@ -380,58 +376,73 @@ namespace SteamEngine.CompiledScripts {
 				shaman.Sound(583);
 				Item soul = (Item) ((ItemDef) ThingDef.GetByDefname("i_soul")).Create(target.Backpack);
 				soul.SetAttribute(ItemAttributes.attr_newbie, true); //attr 010: it stays on its holder through death
-				SoulTimer timer = new SoulTimer();
-				timer.createdAt = Globals.TimeInSeconds;
-				target.DeleteTimer(SoulTK);
-				target.AddTimer(SoulTK, timer);
-				timer.DueInSeconds = 1200 + (60 * lifepact);
+				LifePactPlugin old = LifePactPlugin.Of(target);
+				if (old != null) {
+					old.Delete();
+				}
+				LifePactPlugin pact = (LifePactPlugin) LifePactPluginDef.instance.Create(); //#1447 - i_soul_remover
+				pact.giver = shaman;
+				pact.createdAt = Globals.TimeInSeconds;
+				target.AddPlugin(LifePactPlugin.Key, pact);
+				pact.Timer = 1200 + (60 * lifepact);
 			}
 		}
 
-		/// <summary>The dead branch: 20 s after the pact was given and 5 s after dying, back with 10% of everything,
-		/// plus 9% a point of the giver's lifepact_stats.</summary>
+		/// <summary>i_soul_remover's end: the soul goes from its holder.</summary>
+		internal static void RemoveSoul(Character self) {
+			Item soul = ShamanAbilities.FindInPack(self, "i_soul");
+			if (soul != null) {
+				soul.Delete();
+			}
+		}
+
+		/// <summary>The dead branch: 20 s after the pact was given and 5 s after dying (at once where the area resurrects
+		/// at once, region_cf_instantRes), back with 10% of everything, plus 9% a point of the giver's lifepact_stats.</summary>
 		private static void Rise(Player self) {
 			Item soul = ShamanAbilities.FindInPack(self, "i_soul");
-			SoulTimer timer = self.GetTimer(SoulTK) as SoulTimer;
+			LifePactPlugin pact = LifePactPlugin.Of(self);
 			if (soul == null) {
 				self.SysMessage("Nemas u sebe dusi.");
 				return;
 			}
-			if ((timer != null) && (Globals.TimeInSeconds - timer.createdAt < 20)) {
+			if ((pact != null) && (Globals.TimeInSeconds - pact.createdAt < 20)) {
 				self.SysMessage("Tva duse je jeste prilis neklidna");
 				return;
 			}
-			if (Globals.TimeInSeconds - PriestAbilities.DiedAt(self) < 5) {
+			FlaggedRegion area = RegionEventSystem.AreaOf(self.Region);
+			if ((Globals.TimeInSeconds - PriestAbilities.DiedAt(self) < 5) && !((area != null) && area.HasCustomFlag(FlaggedRegion.InstantRes))) {
 				self.SysMessage("Na oziveni jeste nejsi " + (self.IsFemale ? "pripravena" : "pripraven") + ".");
 				return;
 			}
-			Character shaman = self.GetTag(LifePactByTK) as Character;
+			Character shaman = ((pact == null) || (pact.giver == null) || pact.giver.IsDeleted) ? null : pact.giver; //a gone giver reads 0, as Erebor's dead uid
 			int stats = (shaman == null) ? 0 : ClassAbilities.Points(shaman, "woodoo_lifepact_stats");
 			self.Resurrect(null);
 			self.Hits = (short) Math.Max(1, (self.MaxHits * (10 + (9 * stats))) / 100);
 			self.Mana = (short) ((self.MaxMana * (10 + (9 * stats))) / 100);
 			self.Stam = (short) ((self.MaxStam * (10 + (9 * stats))) / 100);
 			soul.Delete();
-			self.RemoveTag(LifePactByTK);
-			self.DeleteTimer(SoulTK);
+			if (pact != null) {
+				pact.Delete();
+			}
 		}
 
-		/// <summary>i_getphysresists: 8 s of reading a monster's physical resists by Arms Lore.</summary>
+		/// <summary>i_getphysresists: 8 s of reading a monster's physical resists by Arms Lore, on EmpathyPlugin (#1447).</summary>
 		internal static void DrinkEmpathy(Player self, ShamanItem bottle) {
 			if (bottle.Amount > 1) {
 				bottle.Amount--;
 			} else {
 				bottle.Delete();
 			}
-			EffectEndTimer timer = new EffectEndTimer();
-			self.AddTimer(EmpathyTK, timer);
-			timer.DueInSeconds = 8;
+			EmpathyPlugin empathy = (EmpathyPlugin) EmpathyPluginDef.instance.Create();
+			empathy.Init(self, EffectFlag.BeneficialEffect | EffectFlag.FromPotion, 0, TimeSpan.FromSeconds(EmpathyPlugin.Seconds));
+			self.AddPlugin(EmpathyPlugin.Key, empathy);
 			self.SysMessage("Nyni jsi " + (self.IsFemale ? "schopna" : "schopen") + " kratkou chvili rozpoznat rezisty.");
+			EffectFactory.StationaryEffect(self, 0x3779, 6, 20); //i_fx_sparkle_2
 		}
 
-		/// <summary>e_getphysresists' @AfterSwing.</summary>
+		/// <summary>e_getphysresists' @AfterSwing, from EmpathyPlugin while it lasts.</summary>
 		internal static void ReadPhysical(Player self, Character target) {
-			if (!self.HasTimer(EmpathyTK) || target.IsPlayer || (self.GetSkill(SkillName.ArmsLore) <= Globals.dice.Next(10, 1201))) {
+			if (target.IsPlayer || (self.GetSkill(SkillName.ArmsLore) <= Globals.dice.Next(10, 1201))) {
 				return;
 			}
 			Tell(self, target, ResistText(target.ResistSlashing, "secnymi zbranemi", "secnym zbranim"));
@@ -559,27 +570,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			ShamanPacts.ReadMagic(self, targetted, parameter as Item);
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_soul_remover: the soul goes, and with it the pact.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class SoulTimer : BoundTimer {
-		[SaveableData, CopyableData]
-		public double createdAt;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public SoulTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character self) {
-				Item soul = ShamanAbilities.FindInPack(self, "i_soul");
-				if (soul != null) {
-					soul.Delete();
-				}
-				self.RemoveTag(ShamanPacts.LifePactByTK);
-			}
 		}
 	}
 }

@@ -287,8 +287,9 @@ namespace SteamEngine.Tests.Protocol {
 					Thread.Sleep(6000);
 					game.SendSpeech(".TestShamanRise");
 					Assert.True(this.fixture.WaitForGameOutput("SHAMAN_DONE", Wait), this.fixture.GameOutputSnapshot());
+					this.TheElixirReadsAndEnds(game); //#1447
 					string output = this.fixture.GameOutputSnapshot();
-					foreach (string check in new[] { "bloodToMind", "mindToBloodTurnsItTwice", "balanceComesBack", "theRitualIsAPluginOnTheCharacter", "deathEndsTheRitualThroughItsPlugin", "theShieldRestsAsAPlugin", "theShieldComesBackAfterItsRest", "theShieldExpiresIntoItsRest", "theShamansPluginIsItsProfessionPlugin", "theCurseCooldownIsThePlugins", "thePactCooldownIsThePlugins", /*#1442*/ "sacrificeTradesHitsForMana", "theShieldCostsACitrine", "theShieldIgnoresPlayers", "theShieldTakesAMonstersSpell", "theRestGetsThrough", "concentrationIsSometimesAThirdStronger", "noConcentrationOnPlayers", "noConcentrationForFields", "weakeningTakesARuby", "aBloodPactCostsBlood", "aMonstersBlowIsShared", "theGiverEarnsThroughTheBearer", "aPlayersBlowSwitchesItOff", "cancellingEndsBothSides", "aManaPactMayBeOwn", "aMonstersRealBlowIsSharedThroughTheTrigger", "deathEndsThePactThroughItsPlugin", /*#1445*/ "theCaseIsAShamansThing", "aLifePactGivesASoul", "resistsRead", "theElixirLetsResistsBeSeen", "theSoulStaysThroughDeath", "tooRestlessRightAfterDying", "theSoulBringsItBack", "backWithATenth",
+					foreach (string check in new[] { "bloodToMind", "mindToBloodTurnsItTwice", "balanceComesBack", "theRitualIsAPluginOnTheCharacter", "deathEndsTheRitualThroughItsPlugin", "theShieldRestsAsAPlugin", "theShieldComesBackAfterItsRest", "theShieldExpiresIntoItsRest", "theShamansPluginIsItsProfessionPlugin", "theCurseCooldownIsThePlugins", "thePactCooldownIsThePlugins", /*#1442*/ "sacrificeTradesHitsForMana", "theShieldCostsACitrine", "theShieldIgnoresPlayers", "theShieldTakesAMonstersSpell", "theRestGetsThrough", "concentrationIsSometimesAThirdStronger", "noConcentrationOnPlayers", "noConcentrationForFields", "weakeningTakesARuby", "aBloodPactCostsBlood", "aMonstersBlowIsShared", "theGiverEarnsThroughTheBearer", "aPlayersBlowSwitchesItOff", "cancellingEndsBothSides", "aManaPactMayBeOwn", "aMonstersRealBlowIsSharedThroughTheTrigger", "deathEndsThePactThroughItsPlugin", /*#1445*/ "theCaseIsAShamansThing", "aLifePactGivesASoul", "resistsRead", "theElixirLetsResistsBeSeen", "theSoulStaysThroughDeath", "tooRestlessRightAfterDying", "theSoulBringsItBack", "backWithATenth", "theLifePactIsAPluginOnTheReceiver", "theLifePactStaysThroughDeath", "risingEndsTheLifePact", "theElixirStaysThroughDeath", "theSoulGoesWhenThePactEnds", "anArenaRisesAtOnce", "oneElixirAtATime", "theElixirEndsItself", /*#1447*/
 								"aPlayersBodyFallsApart", "daggersCurseByMetal", "aCurseHurtsAFifth", "aSecondCurseFallsBack", "noPortRefusesRecall", "aMonstersBodyGivesItsResources", "theAstralMorphTakesTheBody" }) {
 						string marker = "CLASS_ABILITY: " + check + "=";
 						int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
@@ -297,6 +298,29 @@ namespace SteamEngine.Tests.Protocol {
 					}
 				}
 			}
+		}
+
+		/// <summary>#1447 - the shaman's client hears the elixir read the orc's resists, then its end line; the soul given
+		/// meanwhile has ended by then.</summary>
+		private void TheElixirReadsAndEnds(TestGameClient game) {
+			game.SendSpeech(".TestShamanEmpathy");
+			DateTime deadline = DateTime.UtcNow + Wait;
+			bool read = false, ended = false;
+			while (!ended && (DateTime.UtcNow < deadline)) {
+				string message;
+				try {
+					message = game.ReadSystemMessage(deadline - DateTime.UtcNow);
+				} catch (TimeoutException) {
+					break;
+				}
+				read = read || message.Contains("secnymi zbranemi", StringComparison.Ordinal);
+				ended = read && message.StartsWith("Nyni jiz", StringComparison.Ordinal) && message.Contains("rozpoznat rezisty", StringComparison.Ordinal); //the first elixir's end is earlier in the stream
+			}
+			Assert.True(this.fixture.WaitForGameOutput("SHAMAN_EMPATHY_READ", Wait), this.fixture.GameOutputSnapshot());
+			Assert.True(read, "The elixir never read the orc. Game output:\n" + this.fixture.GameOutputSnapshot());
+			Assert.True(ended, "The elixir's end line never came. Game output:\n" + this.fixture.GameOutputSnapshot());
+			game.SendSpeech(".TestShamanSoulGone");
+			Assert.True(this.fixture.WaitForGameOutput("SHAMAN_SOUL_DONE", Wait), this.fixture.GameOutputSnapshot());
 		}
 
 		private TestGameClient Login(string name, string account = TestAccount) {

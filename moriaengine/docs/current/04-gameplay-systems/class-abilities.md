@@ -47,7 +47,20 @@ It goes once it holds neither side. One plugin, not one per side: a mana pact ma
   `@afterGetHit`, raised once the blow's damage is dealt.
 - **Experience:** the blood pact's experience (the giver earns through the bearer) is still read by the leveling code.
 
-The life pact and the empathy elixir follow.
+## Shaman's life pact and empathy elixir (#1447)
+
+- **The life pact** is a `LifePactPlugin` on its receiver: Erebor's `i_soul_remover`. It holds the shaman who gave it and
+  when. Its timer is the soul's end (1200 s, plus 60 s a `woodoo_lifepact` point); then the soul and the plugin go.
+  - It stays through death, since rising from death is its use.
+  - The dead receiver rises with `.lifepact` once the soul is 20 s old and 5 s after dying. In an area that resurrects at
+    once (`region_cf_instantRes`, the arenas), the 5 s wait is skipped, as on Erebor.
+  - Rising ends the pact.
+- **The empathy elixir** is an `EmpathyPlugin` for 8 s (in `LifePactPlugin.cs`): Erebor's `i_getphysresists` with
+  `e_getphysresists`.
+  - Its own `@swingLanding` reads the struck monster's physical resists by Arms Lore. Erebor's `@AfterSwing` ran for a
+    dodged blow and a landed one alike, and `@swingLanding` runs before the dodge, so a dodged blow is still read.
+  - It stays through death and shows in `.boosts`. It ends with Erebor's line ("Nyni jiz nejsi schopen rozpoznat
+    rezisty.").
 
 ## Shaman's voodoo and carving bodies
 
