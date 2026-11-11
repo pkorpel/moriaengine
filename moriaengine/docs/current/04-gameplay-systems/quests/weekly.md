@@ -3,6 +3,16 @@
 Code: `scripts/Basic/Quests/Weekly/`, from Erebor's `questy/weekly.scp` and the journal's weekly section
 (`questy/System/questmenu.scp`). #1090.
 
+The set is `WeeklyQuestPlugin`'s, on the player, put on with the first set (#1426). Its handlers are Erebor's player events.
+They hear the player's triggers:
+- `@login`;
+- `@itemDClick`, before the item's own use;
+- `@itemStep`, for webs;
+- `@pickingUp`, for a monster's loot from its body. This trigger is raised in GameCore beside `On_PickingUp`.
+- `@killCredit`, for monster kills. A blood pact's bearer counts its credit too, as Erebor's `@playerKill` reached it.
+
+These events still call `WeeklyQuests` directly, each with its own number: the teacher's greeting, the bandage heal, the palantir, the poison and bleed ticks, and a blow's damage. A blow counts what it took, capped at the hits there were, and counts even when reactive armour killed the attacker.
+
 ## How a player gets them
 
 No NPC gives them. A player of **level 10 or more who isn't a craftsman** gets a set of tasks, checked at each level-up,
@@ -94,4 +104,5 @@ urovni."; a craftsman: "Plneni Tydennich Questu je prozatim pro povolani kraft n
 Tests: `QuestJournalTests.WeeklyQuestsFollowErebor` (protocol: counts by level, the pools, no blocked or repeated task, Erebor's
 worked reward example, no set for a craftsman, the week and its renewal, eating, a teacher's greeting, a web once, a spawned
 monster's loot and not a plain one's, blows both ways, bleeding, a streak, the payouts into the bank, the journal's page,
-a task's detail and the popup of a task done).
+a task's detail and the popup of a task done; since #1426 also each moved event through its trigger route: a real double
+click, a step onto a web, a pick-up from a monster's body, a kill credit and a login).

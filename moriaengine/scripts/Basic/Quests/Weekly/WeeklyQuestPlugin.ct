@@ -1,0 +1,3 @@
+[PluginTemplate WeeklyQuestPlugin : Plugin]
+Vars:
+	internal WeeklySet set = null

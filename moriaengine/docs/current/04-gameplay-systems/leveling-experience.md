@@ -165,8 +165,8 @@ realm, or for killing a craftsman. The level never goes down.
   - Only a death nobody fought credits nobody.
   - `share` is the fighter's share. An NPC fighter is given nothing, and a hypnotized player is given it later.
   - A blood-pact giver still earns on a player's death (Erebor skipped it): #1417.
-- Plugins and trigger groups hear both. The systems still called inline (weekly quests, Q017, the shaman's pacts,
-  boosters) move onto them with #1399's candidates.
+- Plugins and trigger groups hear both. Weekly quests count kills through `@killCredit` since #1426. The systems still
+  called inline (Q017, the shaman's pacts, boosters) move onto them with #1399's candidates.
 
 ## Gates and quests - explicitly out of scope
 
