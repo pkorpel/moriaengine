@@ -84,6 +84,11 @@ cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount
 is what bonuses take their percent of); and `@killCredit` (`KillCreditArgs`: victim, share) on every fighter credited
 with a death, player or NPC.
 
+Spells have two more (#1419, [magery-spells.md](../04-gameplay-systems/magery-spells.md)): `@spellPower` on the caster
+(`SpellPowerArgs`, a mutable `SpellPower`), before the target's defense and after the inline pre-defense modifiers;
+and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The pre-defense modifiers (charge,
+Koncentrace, a stolen talent) stay at a fixed point because they multiply in order and plugins run newest first.
+
 `@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow
 that landed, before its damage: a `WeaponSwingArgs` whose `DamageAfterAC` a handler may change (it's what
 `CauseDamage` gets), and both are cancellable: a cancel ends the blow as a dodged one (no damage, `@afterSwing` still
