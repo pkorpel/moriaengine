@@ -75,7 +75,9 @@ whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. A character
 is worked out: a plugin returning Cancel holds it still (`CastFreezePlugin`, the paralysis
 plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `EntangledPlugin`
 and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `@step` instead comes too late: #767's collision with other characters
-(a shove, its stamina) runs before `@step`.
+(a shove, its stamina) runs before `@step`. After the step, `@stepTaken` (#1414, `AbstractCharacter.Trigger_StepTaken`,
+with `running`) tells it a step was really taken. It comes before `On_StepTaken`, only for a step (`@newPosition`
+fires for teleports too and has no `running`), and never for a GM.
 
 `@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow
 that landed, before its damage: a `WeaponSwingArgs` whose `DamageAfterAC` a handler may change (it's what

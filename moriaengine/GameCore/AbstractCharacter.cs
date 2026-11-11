@@ -763,7 +763,7 @@ namespace SteamEngine {
 				this.point4d.SetXYZ(newX, newY, newZ);
 				this.ChangedP(oldPoint, mt);
 				if (!canMoveEverywhere) {
-					this.On_StepTaken(running); //#779 - e.g. walking stamina drain
+					this.Trigger_StepTaken(running); //#779 - e.g. walking stamina drain; #1414 - @stepTaken
 				}
 				if ((oldRegion != newRegion) && !this.IsDeleted) {
 					this.On_RegionChanged(oldRegion, newRegion); //#813
@@ -840,7 +840,26 @@ namespace SteamEngine {
 			return true;
 		}
 
-		/// <summary>Called by WalkRunOrFly right after a step was actually taken (#779). Not called for GM players.</summary>
+		/// <summary>#1414 - right after a step was actually taken: @stepTaken (with `running`) as any trigger (the global
+		/// trigger groups, the character's own and its plugins, its def's), then On_StepTaken. Unlike @step it comes after
+		/// the move (and after @newPosition and the destination items' @step), and unlike @newPosition only for a step, never
+		/// a teleport. Not raised for GM players (they move anywhere), nor for a character the move itself deleted (an NPC
+		/// killed by a trap it stepped on).</summary>
+		private void Trigger_StepTaken(bool running) {
+			if (this.IsDeleted) {
+				return;
+			}
+			this.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(running));
+			if (this.IsDeleted) {
+				return;
+			}
+			try {
+				this.On_StepTaken(running);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		/// <summary>Called by WalkRunOrFly right after a step was actually taken (#779), after @stepTaken. Not called for GM
+		/// players.</summary>
 		public virtual void On_StepTaken(bool running) {
 		}
 
