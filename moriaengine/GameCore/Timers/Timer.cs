@@ -41,6 +41,11 @@ namespace SteamEngine.Timers {
 
 		internal int index = -1; //index in the Priorityqueue. do not touch!
 		internal TimeSpan fireAt = negativeOneSecond;//internal (instead of private) because of the priorityqueue. do not touch!
+		//#1451 - the heap's own key: fireAt as it was when the timer thread queued it. A game thread moves fireAt in place
+		//(PrivateSetFireAt) and only queues a change; ordered by fireAt itself, the heap sorted other timers against a moved
+		//key until that change came, and a due timer could sit below a later one. Written only in Enqueue: by the timer
+		//thread, or at a load before that thread starts.
+		internal TimeSpan queuedAt;
 		private TimeSpan period = negativeOneSecond;//if this is > -1, it will be repeated.
 
 		private static Thread timerThread;
@@ -152,9 +157,9 @@ namespace SteamEngine.Timers {
 				Timer timer = priorityQueue.Peek();
 				//Console.WriteLine("TimingOut timer "+timer);
 
-				if (timer.fireAt < now) {
+				if (timer.queuedAt < now) {
 					timer = priorityQueue.Dequeue();
-					TimeSpan fireAt = timer.fireAt;
+					TimeSpan fireAt = timer.queuedAt; //fireAt itself while no change is pending, and one pending skips it below
 					if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
 						//#798 - globalLock first, then the timer (lock order #17, see Main.cs). This used to
 						//lock the timer and wait for globalLock inside it, while a packet handler holding
@@ -194,7 +199,7 @@ namespace SteamEngine.Timers {
 						}
 						currentTimer = null;
 						if (System.Diagnostics.Stopwatch.GetTimestamp() - roundStart >= roundBudgetTicks) {
-							return (priorityQueue.Count > 0) && (priorityQueue.Peek().fireAt < now);
+							return (priorityQueue.Count > 0) && (priorityQueue.Peek().queuedAt < now);
 						}
 					}
 				} else {
