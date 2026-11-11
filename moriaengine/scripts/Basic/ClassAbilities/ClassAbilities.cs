@@ -138,9 +138,8 @@ namespace SteamEngine.CompiledScripts {
 			return (self.GetTag(counterTK) != null) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(self.EffectiveLevel));
 		}
 
-		/// <summary>A player's @AfterSwing on a blow that's landing: the critical blow and the classes' modifiers that
-		/// aren't on their profession plugins yet. The warrior's and ranger's own parts follow in their @swingLanding (#1429,
-		/// #1431).</summary>
+		/// <summary>A player's @AfterSwing on a blow that's landing: the critical blow, from the counter the classes share.
+		/// Each class's own part follows in its profession plugin's @swingLanding (warrior #1429, ranger #1431, thief #1433).</summary>
 		internal static void ModifyOwnBlow(Player self, Character target, WeaponSwingArgs swing) {
 			if (CounterFires(self)) {
 				if (RangerAbilities.IsShooting(self)) {
@@ -150,9 +149,6 @@ namespace SteamEngine.CompiledScripts {
 					swing.DamageAfterAC = (swing.DamageAfterAC * ClassAbilitySettings.instance.criticalPermille) / 1000;
 				}
 			}
-			ThiefAbilities.ModifyOwnBlow(self, target, swing);
-			ThiefAbilities.ChargeWarFork(self, target);
-			ThiefAbilities.AfterFencingBlow(self, target, swing);
 		}
 
 		/// <summary>Death takes the counter away, sphereevents.scp.</summary>

@@ -13,8 +13,8 @@ namespace SteamEngine.CompiledScripts {
 			return ch.GetPlugin(professionKey) as WarriorProfessionPlugin;
 		}
 
-		/// <summary>The warrior's own blow (e_war's double swing, the stance), after the critical blow and the other
-		/// classes' modifiers that still sit in ClassAbilities.ModifyOwnBlow.</summary>
+		/// <summary>The warrior's own blow (e_war's double swing, the stance), after the critical blow in
+		/// ClassAbilities.ModifyOwnBlow.</summary>
 		public void On_SwingLanding(WeaponSwingArgs swing) {
 			WarriorAbilities.ModifyOwnBlow(this, swing);
 		}

@@ -107,6 +107,7 @@ namespace SteamEngine.Tests.Protocol {
 						"aKillChargesTheSpreeThroughTheTrigger", "theSpreeAddsThroughTheTrigger",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"theCounterIsOffAgain", "anAreaHoldsTheProbe", "theProbeWandersRoundItsPoint", "ebonyTurnsElvenNearTheProbe", "oneElvenLogOnly", "anElvenTreeHasNothingThere", "onlyCraftsmenMeetTheProbe", "farFromTheProbeEbonyStays",
+						"theThiefsPluginIsItsProfessionPlugin", "thiefStateIsThePlugins", "fromBehindWithASlitInTheSwing", "hidingIsNotedOnThePlugin", //#1433
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
 						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "theMaskSuggestsAName", "rentalInfoShowsTheOtherIdentity", "underIncognitoTheRuneIsRenamed", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "aPoisonedKnifePoisons", "strikeSpendsChargesOnThoseAround", "aWarForkSwingsTwice", "aFencingBlowSpendsTheSlit", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
 						"theBallIsItsOwnThing", "onlyPetsAndSummonsObey", "aSummonCanBeTaken", "itObeysTheMystic", "catchTakesHold", "bothStandStill",

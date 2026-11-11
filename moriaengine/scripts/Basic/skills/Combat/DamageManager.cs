@@ -352,7 +352,7 @@ namespace SteamEngine.CompiledScripts {
 				if (attacker is Player striker) {
 					ClassAbilities.ModifyOwnBlow(striker, defender, swingArgs); //#1017
 				}
-				Trigger_SwingLanding(swingArgs); //#1429 - the warrior's part, on its profession plugin
+				Trigger_SwingLanding(swingArgs); //#1429 - each class's own part, on its profession plugin
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
