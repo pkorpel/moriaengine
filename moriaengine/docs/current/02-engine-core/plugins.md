@@ -106,6 +106,13 @@ Before the dodge, a swing raises `@swingLanding` on the attacker and `@getSwingL
 `@aftergetswing`: the blow is landing, armour and the monsters' own modifiers are applied, and the dodge is still to
 come. Handlers change `DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them.
 
+Once a landed blow's damage is dealt, a swing raises `@afterHit` on the attacker and `@afterGetHit` on the defender
+(#1445, `DamageManager.Trigger_AfterHit`, args: the `WeaponSwingArgs` and the damage). They come after the damage, the
+stun, the knockback, the bleeding and the magic items, and before the monsters' after-swing reactions. They are not
+raised for a dodged or cancelled blow, which ends in `@afterSwing`, nor for a blow that killed and deleted the defender
+(an NPC), so a handler must not count kills here; `@kill` is for that. A blow of 0 still raises them. The shaman's blood
+pact answers `@afterGetHit`.
+
 A death raises `@kill` on the killer (#1431, Sphere's `@Kill`, args: the victim), in `Character.CauseDeath` after
 `@death`, unless there's no killer, it killed itself or it's deleted. The ranger's plugin charges its killing spree there.
 

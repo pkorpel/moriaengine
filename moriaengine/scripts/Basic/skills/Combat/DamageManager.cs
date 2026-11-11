@@ -422,8 +422,8 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
 				MagicCombat.AfterSwing(attacker, defender, actualDamage); //#1017 - leech, paralysis
 				if (!defender.IsDeleted) {
-					ShamanPacts.ShareBlood(attacker, defender, actualDamage); //#1017
-					if (attacker is Player reader) {
+					Trigger_AfterHit(swingArgs, actualDamage); //#1445 - the blow and its damage are done: the blood pact shares it
+					if (attacker is Player reader && !defender.IsDeleted && !attacker.IsDeleted) {
 						ShamanPacts.ReadPhysical(reader, defender);
 					}
 				}
@@ -713,6 +713,23 @@ namespace SteamEngine.CompiledScripts {
 		public static void Trigger_GetSwingLanding(WeaponSwingArgs swingArgs) {
 			if (!swingArgs.defender.IsDeleted) {
 				swingArgs.defender.TryTrigger(getSwingLandingTK, swingArgs);
+			}
+		}
+
+		static TriggerKey afterHitTK = TriggerKey.Acquire("afterHit");
+		static TriggerKey afterGetHitTK = TriggerKey.Acquire("afterGetHit");
+
+		/// <summary>#1445 - a landed blow's damage is dealt (args: the swing, the damage): @afterHit on the attacker, then
+		/// @afterGetHit on the defender. Raised in ProcessSwing after the damage, the stun, the knockback, the bleeding and
+		/// the magic items' leech and paralysis, before the monsters' after-swing reactions; not on a dodged or cancelled
+		/// blow (those end in @afterSwing). The blood pact (PactPlugin) answers @afterGetHit.</summary>
+		public static void Trigger_AfterHit(WeaponSwingArgs swingArgs, int damage) {
+			ScriptArgs args = new ScriptArgs(swingArgs, damage);
+			if (!swingArgs.attacker.IsDeleted) {
+				swingArgs.attacker.TryTrigger(afterHitTK, args);
+			}
+			if (!swingArgs.defender.IsDeleted) {
+				swingArgs.defender.TryTrigger(afterGetHitTK, args);
 			}
 		}
 

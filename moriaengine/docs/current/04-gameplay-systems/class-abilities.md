@@ -36,6 +36,19 @@ A player's spell never is, nor is anything while the player is possessing a mons
   lasts 30 s; then, or when it's cancelled or a spell breaks through, the shield rests 180 s. A monster's spell eats the pool first, at its fixed point in the damage. The
   shield stays through death, as Erebor's memory item did, and `.boosts` shows it.
 
+## Shaman's pacts (#1445)
+
+A blood, mana or stamina pact is held by one `PactPlugin` on each side. Each character has one, holding whatever it gives
+(type and bearer), whatever it bears (type, giver, and the regen every 5 s with its end) and the blood sharing's switch.
+It goes once it holds neither side. One plugin, not one per side: a mana pact may be the shaman's own.
+- **Death and logout:** the plugin's own `@death` and `@logout` end the pacts, the borne one first, otherwise the given
+  one. They were direct calls before.
+- **Blood sharing:** a monster's blow moves 15%, at most 20, from the one hit to the other side. It answers
+  `@afterGetHit`, raised once the blow's damage is dealt.
+- **Experience:** the blood pact's experience (the giver earns through the bearer) is still read by the leveling code.
+
+The life pact and the empathy elixir follow.
+
 ## Shaman's voodoo and carving bodies
 
 A blade used on a body carves it (`CorpseCarving.cs`, f_weapon_sharp_targon_item): daggers and other fencing blades
