@@ -7,6 +7,9 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>#1019 - where an attack may start, by real attack requests: a guarded town allows it (its guards punish, as
 	/// on Erebor), a no-PvP area allows fighting monsters but not players, a safe zone allows nothing, an arena everything.
+	/// #1347 - as on Erebor: damage still lands in safe and no-PvP areas (Erebor's e_gethit applied every hit as god
+	/// damage, past the engine's area rule), but nobody in a safe area is an NPC's target or spell; the areas' lines as
+	/// one walks in and out.
 	/// Server side: scripts/Tests/RegionAttackTests.cs.</summary>
 	[Collection(RegionAttackCollection.Name)]
 	public class RegionAttackTests {
@@ -14,6 +17,7 @@ namespace SteamEngine.Tests.Protocol {
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
 
 		private readonly GameServerPairFixture fixture;
+		private uint lastOther;
 
 		public RegionAttackTests(GameServerPairFixture servers) {
 			this.fixture = servers;
@@ -25,10 +29,17 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(a, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
 				using (var b = this.Connect("Region Victim", AccountB)) {
 					this.Check(a, b, "guarded", "guarded=True safe=False", true, true);
+					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=True casts=True");
 					this.Ask(a, ".TestRegionAttackRestore", "REGION_RESTORED:");
 					this.Check(a, b, "a_Goblin_Labyrint_1", "nopvp=True arena=False", true, false);
+					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=True casts=True");
+					AssertSystemMessage(a, "You are safe from other players here.");
 					this.Check(a, b, "a_Arena_Lamy", "safe=True nopvp=False arena=False", false, false); //safe only, despite its name
+					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=False casts=False"); //damage lands, as on Erebor
+					AssertSystemMessage(a, "You have a feeling of complete safety");
 					this.Check(a, b, "a_Arena_Gondor", "arena=True", true, true);
+					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=True casts=True");
+					AssertSystemMessage(a, "You lose your feeling of safety");
 					this.Ask(a, ".TestRegionAttackRestore", "REGION_RESTORED:");
 				}
 			}
@@ -41,6 +52,7 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains(flags, go);
 			uint rabbit = Number(go, "rabbit=");
 			uint other = Number(this.Ask(b, ".TestRegionAttackJoin " + Number(go, "me="), "REGION_JOIN:"), "uid=");
+			this.lastOther = other;
 			a.SendRequestAttack(rabbit);
 			Thread.Sleep(300);
 			string onRabbit = Field(this.Ask(a, ".TestRegionAttackReport", "REGION_ATTACK:"));
@@ -49,6 +61,31 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(300);
 			string onPlayer = Field(this.Ask(a, ".TestRegionAttackReport", "REGION_ATTACK:"));
 			Assert.True(onPlayer == (player ? "target=" + other : "target=none"), "the player in " + region + ": " + onPlayer);
+		}
+
+		/// <summary>#1347 - the damage, the rabbit's target and a lich's cast where a stands (b beside, from Check).</summary>
+		private void CheckDamage(TestGameClient a, string expected) {
+			string line = this.Ask(a, ".TestRegionDamage " + this.lastOther, "REGION_DAMAGE:");
+			Assert.True(line.Contains(expected), "expected " + expected + ", got " + line);
+		}
+
+		/// <summary>Reads system messages until this one comes (the area's line, sent as the Go moved a into the area).</summary>
+		private static void AssertSystemMessage(TestGameClient client, string text) {
+			DateTime deadline = DateTime.UtcNow + Wait;
+			string seen = "";
+			while (DateTime.UtcNow < deadline) {
+				string message;
+				try {
+					message = client.ReadSystemMessage(deadline - DateTime.UtcNow);
+				} catch (TimeoutException) {
+					break;
+				}
+				if (message.Contains(text)) {
+					return;
+				}
+				seen += message + " | ";
+			}
+			Assert.Fail("No system message '" + text + "'; saw: " + seen);
 		}
 
 		private static string Field(string line) {

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.Regions;
 
@@ -61,6 +62,34 @@ namespace SteamEngine.CompiledScripts {
 				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 			}
 			self.Flag_WarMode = false;
+		}
+
+		/// <summary>#1347 - damage where we stand (it lands everywhere, as on Erebor): 20 from the rabbit, 20 from the other player (uid), 5 of god
+		/// damage; whether the rabbit's AI keeps us as a target; whether a lich beside us would cast at us.</summary>
+		[SteamFunction]
+		public static void TestRegionDamage(Character self, ScriptArgs sa) {
+			Character other = (Character) Thing.UidGetCharacter(uint.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture));
+			NPC rabbit = (NPC) self.GetTag(monsterTK);
+			int monster = Lost(self, rabbit, DamageType.Physical, 20);
+			int player = Lost(self, other, DamageType.Physical, 20);
+			int god = Lost(self, rabbit, DamageType.Irresistable, 5);
+			BindingFlags any = BindingFlags.Instance | BindingFlags.NonPublic;
+			NPCAiTimer rabbitAi = NPCAiTimer.GetFor(rabbit);
+			bool targets = (bool) typeof(NPCAiTimer).GetMethod("IsValidTarget", any).Invoke(rabbitAi, new object[] { rabbit, self });
+			NPC lich = (NPC) ThingDef.GetByDefname("c_liche_nb").Create(self.X - 1, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(lich, 300);
+			lich.Mana = lich.MaxMana;
+			bool casts = (bool) typeof(NPCAiTimer).GetMethod("TryCastSpell", any).Invoke(NPCAiTimer.GetFor(lich), new object[] { lich, self });
+			lich.Delete();
+			self.Hits = self.MaxHits;
+			Console.WriteLine("REGION_DAMAGE: monsterHurts=" + (monster > 0) + " playerHurts=" + (player > 0) + " god=" + god + " targets=" + targets + " casts=" + casts + " end");
+		}
+
+		private static int Lost(Character self, Character from, DamageType flags, double damage) {
+			self.Hits = self.MaxHits;
+			int before = self.Hits;
+			DamageManager.CauseDamage(from, self, flags, damage);
+			return before - self.Hits;
 		}
 
 		[SteamFunction]
