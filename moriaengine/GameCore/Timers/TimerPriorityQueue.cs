@@ -91,6 +91,7 @@ namespace SteamEngine.Timers {
 				this.Grow();
 			}
 			this.count++;
+			timer.queuedAt = timer.fireAt; //#1451 - the key it's ordered by from now on, whatever a game thread does to fireAt
 			this.BubbleUp(this.count - 1, timer);
 			//this.version++;
 		}
@@ -99,7 +100,7 @@ namespace SteamEngine.Timers {
 			int parent = GetParentIndex(index);
 			// note: (index > 0) means there is a parent
 			while ((index > 0) &&
-					(this.heap[parent].fireAt > timer.fireAt)) {
+					(this.heap[parent].queuedAt > timer.queuedAt)) {
 				//original line: (heap[parent].Priority.CompareTo(he.Priority) < 0)
 				//is true when parent priority is lower than our current priority - in case of timers means it higher time
 				Timer parentTimer = this.heap[parent];
@@ -131,7 +132,7 @@ namespace SteamEngine.Timers {
 			int child = GetLeftChildIndex(index);
 			while (child < this.count) {
 				if (((child + 1) < this.count) &&
-						(this.heap[child].fireAt > this.heap[child + 1].fireAt)) {
+						(this.heap[child].queuedAt > this.heap[child + 1].queuedAt)) {
 					//orig. line: (heap[child].Priority.CompareTo(heap[child + 1].Priority) < 0))
 					//is true when left child has lower priority than right one
 					child++;
