@@ -8,20 +8,15 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1017 - the warrior's abilities from specabilities.scp, new_events.scp's e_stunattack and
-	/// sphereevents.scp's @AfterSwing. Cooldowns are Erebor's serv.time tags, in seconds.</summary>
+	/// sphereevents.scp's @AfterSwing. The stance and the cooldowns (Erebor's serv.time tags, in seconds) are fields of the
+	/// warrior's profession plugin since #1429.</summary>
 	public static class WarriorAbilities {
 		private const string OnlyWarrior = "Toto muze pouzit jen valecnik.";
 		private const string Frozen = "You are frozen and cannot move.";
 		private const double StunSeconds = 2;
 
-		private static readonly TagKey nextRoundAttackTK = TagKey.Acquire("_nextRoundAttack_");
-		private static readonly TagKey nextLeapTK = TagKey.Acquire("_nextLeap_");
-		private static readonly TagKey nextCryTK = TagKey.Acquire("_nextCry_");
 		private static readonly TagKey nextStunTK = TagKey.Acquire("_omraceniNext_");
 		private static readonly TagKey stunReadyTK = TagKey.Acquire("_zmrazeni_");
-		private static readonly TagKey defendingTK = TagKey.Acquire("_defending_");
-		private static readonly TagKey nextSingleTauntTK = TagKey.Acquire("_nextTauntSingle_");
-		private static readonly TagKey nextMassTauntTK = TagKey.Acquire("_nextTauntMass_");
 		internal static readonly TimerKey roundAttackTK = TimerKey.Acquire("_roundAttack_");
 		private static readonly PluginKey stunKey = PluginKey.Acquire("_warriorStun_");
 
@@ -44,13 +39,14 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void RoundAttack(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			if (!IsWarrior(self)) {
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
 				self.RedMessage(OnlyWarrior);
 			} else if (self.HasTimer(roundAttackTK)) {
 				self.RedMessage("Jeste nelze pouzit.");
 			} else if (IsFrozen(self)) {
 				self.SysMessage(Frozen);
-			} else if (!self.IsGM && (ClassAbilities.SecondsTag(self, nextRoundAttackTK) > Globals.TimeInSeconds)) {
+			} else if (!self.IsGM && (war.nextRoundAttack > Globals.TimeInSeconds)) {
 				self.RedMessage("Jeste nelze pouzit.");
 			} else if (!HoldsRoundAttackWeapon(self)) {
 				self.SysMessage("S timhle paratkem je to nemozne.");
@@ -69,7 +65,11 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static void FinishRoundAttack(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			self.SetTag(nextRoundAttackTK, Globals.TimeInSeconds + settings.roundAttackDelaySeconds);
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
+				return; //no longer a warrior by the time it swings
+			}
+			war.nextRoundAttack = Globals.TimeInSeconds + settings.roundAttackDelaySeconds;
 			if (Globals.dice.Next(10001) > (ClassAbilities.Points(self, "roundattack") * settings.roundAttackChance)) {
 				self.RedMessage("Nepovedlo se.");
 				return;
@@ -205,7 +205,8 @@ namespace SteamEngine.CompiledScripts {
 		public static void Leap(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
 			Character target = WeaponSkillTargetQueuePlugin.CurrentTarget(self);
-			if (!IsWarrior(self)) {
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
 				self.SysMessage(OnlyWarrior);
 			} else if (target == null) {
 				self.SysMessage("Lze pouzit jen pri boji");
@@ -219,13 +220,13 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(Frozen);
 			} else if (Globals.dice.Next(10001) > (ClassAbilities.Points(self, "leap") * settings.leapChance)) {
 				self.RedMessage("Utok se nepovedl.");
-				self.SetTag(nextLeapTK, Globals.TimeInSeconds + settings.leapDelaySeconds);
-			} else if (ClassAbilities.SecondsTag(self, nextLeapTK) > Globals.TimeInSeconds) {
+				war.nextLeap = Globals.TimeInSeconds + settings.leapDelaySeconds;
+			} else if (war.nextLeap > Globals.TimeInSeconds) {
 				self.SysMessage("Jeste nelze pouzit.");
-				self.SetTag(nextLeapTK, Globals.TimeInSeconds + settings.leapDelaySeconds);
+				war.nextLeap = Globals.TimeInSeconds + settings.leapDelaySeconds;
 			} else if (IsInHouse(target)) {
 				self.SysMessage("Nesmis utocit do domu.");
-				self.SetTag(nextLeapTK, Globals.TimeInSeconds + settings.leapDelaySeconds);
+				war.nextLeap = Globals.TimeInSeconds + settings.leapDelaySeconds;
 			} else {
 				int distance = Point2D.GetSimpleDistance(self, target);
 				if (ClassAbilities.ReduceStamina(self, distance * settings.leapStaminaPerTile)) {
@@ -235,7 +236,7 @@ namespace SteamEngine.CompiledScripts {
 						MonsterSpecialAttacks.ForceMove(self, settings.leapRange, (x, y) => Point2D.GetDirFromTo(new Point2D(x, y), target), (x, y) => false);
 						self.SysMessage("Nedostal ses az k cili...", ClassAbilities.ClassMessageHue);
 					}
-					self.SetTag(nextLeapTK, Globals.TimeInSeconds + settings.leapDelaySeconds);
+					war.nextLeap = Globals.TimeInSeconds + settings.leapDelaySeconds;
 				}
 			}
 		}
@@ -248,7 +249,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>[Function warcry]: everyone near is shaken out of casting, and the warrior loses its mana.</summary>
 		internal static void Warcry(Character self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			if (!IsWarrior(self)) {
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
 				self.SysMessage(OnlyWarrior);
 			} else if (self.Flag_Dead) {
 				self.SysMessage("You are dead!");
@@ -256,11 +258,11 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(Frozen);
 			} else if (!self.IsGM && (Globals.dice.Next(10001) > (ClassAbilities.Points(self, "warcry") * settings.warcryChance))) {
 				self.RedMessage("Nepovedlo se.");
-				self.SetTag(nextCryTK, Globals.TimeInSeconds + settings.warcryDelaySeconds);
-			} else if (!self.IsGM && (ClassAbilities.SecondsTag(self, nextCryTK) > Globals.TimeInSeconds)) {
+				war.nextCry = Globals.TimeInSeconds + settings.warcryDelaySeconds;
+			} else if (!self.IsGM && (war.nextCry > Globals.TimeInSeconds)) {
 				self.SysMessage("Jeste nelze pouzit.");
 			} else if (ClassAbilities.ReduceStamina(self, Globals.dice.Next(5, 9))) {
-				self.SetTag(nextCryTK, Globals.TimeInSeconds + settings.warcryDelaySeconds);
+				war.nextCry = Globals.TimeInSeconds + settings.warcryDelaySeconds;
 				self.Mana = 0;
 				self.Sound(self.IsFemale ? 824 : 1098);
 				List<Character> shaken = new List<Character>();
@@ -281,23 +283,24 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>[function defstance]. Erebor's class list calls it .stance, which a thief's vigilance shares.</summary>
 		[SteamFunction]
 		public static void DefStance(Character self) {
-			if (!IsWarrior(self)) {
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
 				self.SysMessage(OnlyWarrior);
-			} else if (self.GetTag(defendingTK) == null) {
+			} else if (!war.defending) {
 				if (((Player) self).Level < 10) {
 					self.SysMessage("Na to jsi jeste prilis nezkuseny");
 				} else if (self.Stam < 80) {
 					self.SysMessage("Tohle ted nedokazes...");
 				} else {
 					PayForStance(self);
-					self.SetTag(defendingTK, 1);
+					war.defending = true;
 					self.SysMessage("Zaujal jsi obranny postoj.");
 				}
 			} else if (self.Stam < 80) {
 				self.SysMessage("Tohle ted nedokazes...");
 			} else {
 				PayForStance(self);
-				self.RemoveTag(defendingTK);
+				war.defending = false;
 				self.SysMessage("Zrusil jsi obranny postoj.");
 			}
 		}
@@ -307,29 +310,21 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static bool InDefStance(Character ch) {
-			return ch.GetTag(defendingTK) != null;
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(ch);
+			return (war != null) && war.defending;
 		}
 
 		private static double DefStanceFactor(Character self) {
 			return (100 - ((ClassAbilitySettings.instance.defStanceDamagePercent * ClassAbilities.Points(self, "defstance")) / 10)) / 100.0;
 		}
 
-		/// <summary>@AfterSwing of a player, on a blow that's landing.</summary>
-		internal static void ModifyOwnBlow(Player self, Character target, WeaponSwingArgs swing) {
+		/// <summary>#1429 - the warrior's part of its @AfterSwing on a blow that's landing (WarriorProfessionPlugin's
+		/// @swingLanding): e_war's double swing, then the stance.</summary>
+		internal static void ModifyOwnBlow(WarriorProfessionPlugin war, WeaponSwingArgs swing) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			if (ClassAbilities.CounterFires(self)) {
-				if (RangerAbilities.IsShooting(self)) {
-					RangerAbilities.CriticalShot(self, target, swing);
-				} else {
-					self.SysMessage("Kriticky zasah!", ClassAbilities.ClassMessageHue);
-					swing.DamageAfterAC = (swing.DamageAfterAC * settings.criticalPermille) / 1000;
-				}
-			}
-			RangerAbilities.ApplySpree(self, target, swing);
-			ThiefAbilities.ModifyOwnBlow(self, target, swing);
-			ThiefAbilities.ChargeWarFork(self, target);
-			ThiefAbilities.AfterFencingBlow(self, target, swing);
-			if (!target.IsPlayer && IsWarrior(self) && (self.Level >= settings.doubleSwingMinLevel)) { //#1070 - e_war's
+			Player self = (Player) war.Cont;
+			Character target = swing.defender;
+			if (!target.IsPlayer && (self.Level >= settings.doubleSwingMinLevel)) { //#1070 - e_war's
 				int points = ClassAbilities.Points(self, "doubleswing");
 				if ((points > 0) && IsDoubleSwingWeapon(self) && (Globals.dice.Next(1, 1001) <= (100 + (points * 5))) && (self.Stam >= settings.doubleSwingStamina)) {
 					self.Stam = (short) (self.Stam - settings.doubleSwingStamina);
@@ -339,10 +334,9 @@ namespace SteamEngine.CompiledScripts {
 					swing.DamageAfterAC = (swing.DamageAfterAC * settings.doubleSwingPermille) / 1000;
 				}
 			}
-			if (InDefStance(self) && !target.IsPlayer) {
+			if (war.defending && !target.IsPlayer) {
 				swing.DamageAfterAC = swing.DamageAfterAC * DefStanceFactor(self);
 			}
-			RangerAbilities.TryBleedBolt(self, target, swing); //#1070 - e_bleed_bolt
 		}
 
 		private static bool IsDoubleSwingWeapon(Character self) {
@@ -367,13 +361,19 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>@aftergetswing of a player: its stance, and f_shieldDodge_afterGetSwing.</summary>
-		internal static void ModifyIncomingBlow(Player self, Character attacker, WeaponSwingArgs swing) {
-			if (attacker.IsPlayer) {
-				return;
+		/// <summary>#1429 - the warrior's part of its @aftergetswing (WarriorProfessionPlugin's @getSwingLanding): the stance,
+		/// against monsters only.</summary>
+		internal static void ModifyIncomingBlow(WarriorProfessionPlugin war, WeaponSwingArgs swing) {
+			if (war.defending && !swing.attacker.IsPlayer) {
+				swing.DamageAfterAC = swing.DamageAfterAC * DefStanceFactor(swing.defender);
 			}
-			if (InDefStance(self)) {
-				swing.DamageAfterAC = swing.DamageAfterAC * DefStanceFactor(self);
+		}
+
+		/// <summary>f_shieldDodge_afterGetSwing: a shield takes part of a monster's blow. Six classes may learn it, so
+		/// every profession plugin's @getSwingLanding runs it (#1429).</summary>
+		internal static void ShieldBlock(Character self, WeaponSwingArgs swing) {
+			if (swing.attacker.IsPlayer) {
+				return;
 			}
 			if (ClassAbilities.Points(self, "vykryti") > Globals.dice.Next(100)) {
 				Item shield = self.FindLayer(LayerNames.Hand2) as Item;
@@ -411,7 +411,8 @@ namespace SteamEngine.CompiledScripts {
 		private static bool TauntAllowed(Player self, bool mass) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
 			int points = ClassAbilities.Points(self, "taunt");
-			if (!IsWarrior(self)) {
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
 				self.SysMessage(OnlyWarrior);
 				return false;
 			}
@@ -426,11 +427,14 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Nemas dostatek staminy.");
 				return false;
 			}
-			TagKey nextTK = mass ? nextMassTauntTK : nextSingleTauntTK;
-			double next = ClassAbilities.SecondsTag(self, nextTK);
+			double next = mass ? war.nextMassTaunt : war.nextSingleTaunt;
 			if (next > Globals.TimeInSeconds) {
 				self.RedMessage("Zbrkle pouziti schopnosti jen oddalilo cas, kdy ji pujde znovu pouzit.");
-				self.SetTag(nextTK, next + settings.tauntDelayPenaltySeconds);
+				if (mass) {
+					war.nextMassTaunt = next + settings.tauntDelayPenaltySeconds;
+				} else {
+					war.nextSingleTaunt = next + settings.tauntDelayPenaltySeconds;
+				}
 				return false;
 			}
 			HidingSkillDef.UnHide(self);
@@ -457,7 +461,7 @@ namespace SteamEngine.CompiledScripts {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
 			self.Sound(self.IsFemale ? 824 : 1098);
 			self.Stam = (short) Math.Max(0, self.Stam - settings.massTauntStamina);
-			self.SetTag(nextMassTauntTK, Globals.TimeInSeconds + TauntDelay(self, settings.massTauntDelaySeconds));
+			WarriorProfessionPlugin.Of(self).nextMassTaunt = Globals.TimeInSeconds + TauntDelay(self, settings.massTauntDelaySeconds);
 			int strength = (self.Str * 1000) / 250, stamina = ((self.Stam + 50) * 1000) / Math.Max(1, (int) self.MaxStam);
 			List<NPC> near = new List<NPC>();
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, settings.tauntRange)) {
@@ -494,6 +498,11 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>i_taunt_target's @targon_char.</summary>
 		internal static void TauntOne(Player self, NPC target) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
+			WarriorProfessionPlugin war = WarriorProfessionPlugin.Of(self);
+			if (war == null) {
+				self.SysMessage(OnlyWarrior); //no longer a warrior when the cursor came back
+				return;
+			}
 			if (Point2D.GetSimpleDistance(self, target) > settings.tauntRange) {
 				self.RedMessage("Cil je mimo tvuj dosah");
 				return;
@@ -508,7 +517,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			self.Stam = (short) Math.Max(0, self.Stam - settings.singleTauntStamina);
-			self.SetTag(nextSingleTauntTK, Globals.TimeInSeconds + TauntDelay(self, settings.singleTauntDelaySeconds));
+			war.nextSingleTaunt = Globals.TimeInSeconds + TauntDelay(self, settings.singleTauntDelaySeconds);
 			int strength = (self.Str * 1000) / 250, stamina = ((self.Stam + 50) * 1000) / Math.Max(1, (int) self.MaxStam);
 			bool works = Globals.dice.Next(1, 10001) <= ((strength * stamina * (1000 - resist)) / 100000);
 			self.Sound(works ? (self.IsFemale ? 824 : 1098) : (self.IsFemale ? 823 : 1097));
