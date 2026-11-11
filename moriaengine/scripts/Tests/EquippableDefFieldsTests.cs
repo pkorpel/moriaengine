@@ -3,8 +3,7 @@ using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1384 - EquippableDef's tool type and skill are typed .ct def fields, read from the same .def lines the
-	/// hand-written parser read; UseSkill derives the skill as before; none of the old tags left on a def, and an older
-	/// save's tags are dropped.</summary>
+	/// hand-written parser read; UseSkill derives the skill as before; none of the old tags left on a def.</summary>
 	public static class EquippableDefFieldsTests {
 		private static readonly TagKey oldToolTypeTK = TagKey.Acquire("_toolType_");
 		private static readonly TagKey oldSkillTK = TagKey.Acquire("_associatedSkill_");

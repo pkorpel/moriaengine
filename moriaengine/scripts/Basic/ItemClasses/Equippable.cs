@@ -64,7 +64,6 @@ namespace SteamEngine.CompiledScripts {
 				return SkillName.None;
 			}
 		}
-
 	}
 
 	[ViewableClass]
