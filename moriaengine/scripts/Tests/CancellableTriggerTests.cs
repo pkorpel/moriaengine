@@ -22,5 +22,54 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("CANCELLABLE_TRIGGER:" + line + " end");
 		}
+
+		private static readonly TriggerKey throwTK = TriggerKey.Acquire("testThrow");
+
+		/// <summary>#1372 - an item's and an account's Trigger and CancellableTrigger let an exception from a trigger group
+		/// through (they called the base's Try versions, which swallow it); TryTrigger and TryCancellableTrigger still don't.</summary>
+		[SteamFunction]
+		public static void TestThrowingTrigger(Character self) {
+			TriggerGroup group = SingletonScript<E_TestThrows>.Instance;
+			Item dagger = (Item) ThingDef.GetByDefname("i_dagger").Create(self.X + 1, self.Y, self.Z, self.M);
+			dagger.AddTriggerGroup(group);
+			AbstractAccount account = self.Account;
+			//real args: a compiled trigger group's generated Run reads them, so null threw a NullReferenceException of its own
+			account.AddTriggerGroup(group);
+			try {
+				Console.WriteLine("CANCELLABLE_THROW: itemTrigger=" + Throws(() => dagger.Trigger(throwTK, new ScriptArgs()))
+					+ " itemCancellable=" + Throws(() => dagger.CancellableTrigger(throwTK, new ScriptArgs()))
+					+ " itemTry=" + Throws(() => dagger.TryTrigger(throwTK, new ScriptArgs()))
+					+ " itemTryCancellable=" + Throws(() => dagger.TryCancellableTrigger(throwTK, new ScriptArgs()))
+					+ " accountTrigger=" + Throws(() => account.Trigger(throwTK, new ScriptArgs()))
+					+ " accountCancellable=" + Throws(() => account.CancellableTrigger(throwTK, new ScriptArgs()))
+					+ " accountTry=" + Throws(() => account.TryTrigger(throwTK, new ScriptArgs()))
+					+ " accountTryCancellable=" + Throws(() => account.TryCancellableTrigger(throwTK, new ScriptArgs())) + " end");
+			} finally {
+				account.RemoveTriggerGroup(group);
+				dagger.Delete();
+			}
+		}
+
+		/// <summary>True only for E_TestThrows' own exception (maybe wrapped), so an unrelated throw can't pass.</summary>
+		private static bool Throws(Action call) {
+			try {
+				call();
+				return false;
+			} catch (Exception e) {
+				for (Exception x = e; x != null; x = x.InnerException) {
+					if (x.Message.Contains("TESTTHROW")) {
+						return true;
+					}
+				}
+				Console.WriteLine("CANCELLABLE_THROW_OTHER: " + e);
+				return false;
+			}
+		}
+	}
+
+	public class E_TestThrows : CompiledTriggerGroup {
+		public void On_TestThrow(PluginHolder self) {
+			throw new InvalidOperationException("TESTTHROW from a trigger group");
+		}
 	}
 }
