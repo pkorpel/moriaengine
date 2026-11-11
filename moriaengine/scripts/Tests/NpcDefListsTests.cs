@@ -43,6 +43,46 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("NPCDEFLISTS_DUMPED: defs=" + defs.Count + " path=" + path);
 		}
 
+		private const string Changed = "c_a_jackrabbit";
+
+		/// <summary>A GM's change to every list field of one def, as the fields' own setters make it, for a save.</summary>
+		[SteamFunction]
+		public static void TestSetNpcDefLists(Character self) {
+			NPCDef def = (NPCDef) ThingDef.GetByDefname(Changed);
+			def.LootList = new string[] { "i_gold,7", "i_apple" };
+			def.SpellList = new SpellDef[] { SpellDef.GetByDefname("s_fireball"), SpellDef.GetByDefname("s_harm") };
+			def.SummonList = new NPCDef[] { (NPCDef) ThingDef.GetByDefname("c_sheep_woolly") };
+			def.EquipList = new string[] { "i_dagger, 5 7", "{i_bardiche 1 i_halberd 2}" };
+			def.EquipColorList = new string[] { "0x21", "" };
+			def.EquipNameList = new string[] { "Rabbit's knife", "" };
+			def.ResourceList = new string[] { "3 i_hide" };
+			def.FoodTypeList = new string[] { "7 t_fruit", "t_crops" };
+			def.SkillRangeList = new string[] { "Wrestling 500 600" };
+			def.ResistRangeList = new string[] { "ResistFire 100 200" };
+			def.Can = "MT_SWIM";
+			Console.WriteLine("NPCDEFLISTS_REPORT: " + Report(def));
+		}
+
+		[SteamFunction]
+		public static void TestReportNpcDefLists(Character self) {
+			Console.WriteLine("NPCDEFLISTS_REPORT: " + Report((NPCDef) ThingDef.GetByDefname(Changed)));
+		}
+
+		private static string Report(NPCDef def) {
+			StringBuilder sb = new StringBuilder();
+			Line(sb, "loot", def.Loot);
+			Line(sb, "spells", def.Spells?.Select(s => s.PrettyDefname));
+			Line(sb, "summons", def.SummonedCreatures?.Select(s => s.PrettyDefname));
+			Line(sb, "equip", def.StartingEquipment?.Select(e => e.Defname + "|" + Range(e.AmountRange) + "|" + e.Color + "|" + e.Name));
+			Line(sb, "resources", def.ButcherResources?.Select(r => r.Amount + " " + r.Defname));
+			Line(sb, "food", def.FoodTypes?.Select(f => f.SatiationValue + " " + f.CategoryOrDefname));
+			Line(sb, "skills", def.SkillValueRanges?.Select(p => p.Key + " " + Range(p.Value)));
+			Line(sb, "resists", def.ResistRanges?.Select(p => p.Key + " " + Range(p.Value)));
+			DynamicMovementSettings m = def.DefaultMovementSettings as DynamicMovementSettings;
+			sb.Append("  can=").Append((m == null) ? "none" : (m.canCrossLand + " " + m.canSwim + " " + m.canFly));
+			return sb.ToString().Replace("\n", "") + " end";
+		}
+
 		private static void Line(StringBuilder sb, string name, IEnumerable<string> items) {
 			if (items == null) {
 				return;

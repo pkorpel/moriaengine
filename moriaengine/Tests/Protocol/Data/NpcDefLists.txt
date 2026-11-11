@@ -2289,14 +2289,14 @@
   can=True False False False False 2
 [c_eq_cm_tkadlena]
   loot=i_gold
-  equip=i_monster_create|||| ; i_dress_full||<colors_all>|| ; i_bracelet_silver|||| ; i_monster_create||||
+  equip=i_monster_create|||| ; i_dress_full||colors_all|| ; i_bracelet_silver|||| ; i_monster_create||||
   resources=8 t_magic
   skills=Parry 1500 1500 ; SpiritSpeak 600 600 ; Tactics 1200 1200 ; Wrestling 1600 1600
   resists=resistparalyse 500 750 ; resistpoison 500 750 ; resistsummon 500 750
   can=True False False False False 2
 [c_eq_cm_tkadlena_2]
   loot=i_gold
-  equip=i_dress_full||<colors_all>|| ; i_necklace_gold_beads|||| ; i_monster_create||||
+  equip=i_dress_full||colors_all|| ; i_necklace_gold_beads|||| ; i_monster_create||||
   resources=8 t_magic
   skills=Parry 1500 1500 ; SpiritSpeak 1000 1000 ; Tactics 1200 1200 ; Wrestling 1300 1300
   resists=resistbleed 500 750 ; resistparalyse 750 850 ; resistpoison 990 990 ; resiststabbing 250 600 ; resistsummon 500 750
