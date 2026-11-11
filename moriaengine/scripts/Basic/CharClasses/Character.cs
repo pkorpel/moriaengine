@@ -1396,6 +1396,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static TriggerKey deathTK = TriggerKey.Acquire("death");
+		private static TriggerKey killTK = TriggerKey.Acquire("kill"); //#1431
 
 		public void CauseDeath(Character killedBy) {
 			if (MysticHypnosis.InterceptDeath(this, killedBy)) { //#1017 - a possessing mystic or its alter ego comes home instead
@@ -1416,8 +1417,8 @@ namespace SteamEngine.CompiledScripts {
 
 				this.Trigger_Death(killedBy);
 				ClassAbilities.OnDeath(this); //#1017
-				if ((killedBy is Player hunter) && (this is NPC prey)) {
-					RangerAbilities.OnKill(hunter, prey);
+				if ((killedBy != null) && !killedBy.IsDeleted && (killedBy != this)) {
+					killedBy.TryTrigger(killTK, new ScriptArgs(this)); //#1431 - Sphere's @Kill: the ranger's spree charge (Erebor's @finalBlow)
 				}
 
 				CharSyncQueue.AboutToChangeHitpoints(this);

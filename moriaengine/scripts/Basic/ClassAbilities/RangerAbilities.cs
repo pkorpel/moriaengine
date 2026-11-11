@@ -7,20 +7,13 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1017 - the ranger's abilities: specabilities.scp and Effects/splitshot.scp. A critical shot,
-	/// from .sniper's counter, is what sets off a readied knockback or split shot.</summary>
+	/// from .sniper's counter, is what sets off a readied knockback or split shot. The cooldowns and the spree's target
+	/// are fields of the ranger's profession plugin since #1431.</summary>
 	public static class RangerAbilities {
 		private const string Frozen = "You are frozen and cannot move.";
-		private static readonly TagKey nextKnockbackTK = TagKey.Acquire("_nextRangeArrow_");
-		private static readonly TagKey nextSplitShotTK = TagKey.Acquire("_nextSplitShot_");
-		private static readonly TagKey nextCrushingArrowTK = TagKey.Acquire("_nextCrushingArrow_");
-		private static readonly TagKey spreeTargetTK = TagKey.Acquire("_killingSpreeTarget_");
 		private const int SpreeBaseBonus = 5;
 		private static readonly TimerKey knockbackReadyTK = TimerKey.Acquire("_knockbackReady_");
 		private static readonly TimerKey splitShotReadyTK = TimerKey.Acquire("_splitShotReady_");
-
-		internal static bool IsRanger(Character ch) {
-			return Professions.HasProfession(ch, Professions.Ranger);
-		}
 
 		internal static bool IsShooting(Character ch) {
 			return (ch.WeaponType == WeaponType.Bow) || (ch.WeaponType == WeaponType.XBow);
@@ -38,16 +31,17 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction("Knockback")]
 		public static void KnockbackAbility(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			if (!IsRanger(self)) {
+			RangerProfessionPlugin ranger = RangerProfessionPlugin.Of(self);
+			if (ranger == null) {
 				self.SysMessage("Toto muze pouzit jen ranger.");
 			} else if (WarriorAbilities.IsFrozen(self)) {
 				self.SysMessage(Frozen);
 			} else if (!self.IsGM && (Globals.dice.Next(10001) > (ClassAbilities.Points(self, "knockback") * settings.knockbackChance))) {
 				self.RedMessage("Nepovedlo se.");
-				self.SetTag(nextKnockbackTK, Globals.TimeInSeconds + settings.knockbackDelaySeconds);
-			} else if (ClassAbilities.SecondsTag(self, nextKnockbackTK) > Globals.TimeInSeconds) {
+				ranger.nextKnockback = Globals.TimeInSeconds + settings.knockbackDelaySeconds;
+			} else if (ranger.nextKnockback > Globals.TimeInSeconds) {
 				self.SysMessage("Jeste nelze pouzit.");
-				self.SetTag(nextKnockbackTK, Globals.TimeInSeconds + settings.knockbackDelaySeconds);
+				ranger.nextKnockback = Globals.TimeInSeconds + settings.knockbackDelaySeconds;
 			} else if (ClassAbilities.ReduceStamina(self, 25)) {
 				self.SysMessage("Ucinek tve strelby je drtivy.");
 				LongRangePlugin.LongRangeDef.Deactivate(self); //src.tag(rangearrowdst,0)
@@ -55,7 +49,7 @@ namespace SteamEngine.CompiledScripts {
 				EffectEndTimer timer = new EffectEndTimer();
 				self.AddTimer(knockbackReadyTK, timer);
 				timer.DueInSeconds = settings.knockbackEffectSeconds;
-				self.SetTag(nextKnockbackTK, Globals.TimeInSeconds + settings.knockbackDelaySeconds);
+				ranger.nextKnockback = Globals.TimeInSeconds + settings.knockbackDelaySeconds;
 			}
 		}
 
@@ -80,7 +74,8 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void SplitShot(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			if (!IsRanger(self)) {
+			RangerProfessionPlugin ranger = RangerProfessionPlugin.Of(self);
+			if (ranger == null) {
 				self.RedMessage("Toto muze pouzit jen hranicar.");
 			} else if (self.Flag_Dead) {
 				self.RedMessage("Jako duch nemuzes pouzivat tuto schopnost.");
@@ -88,7 +83,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(Frozen);
 			} else if (ClassAbilities.Points(self, "splitshot") <= 0) {
 				self.RedMessage("Neumis pouzivat tuto schopnost.");
-			} else if (ClassAbilities.SecondsTag(self, nextSplitShotTK) > Globals.TimeInSeconds) {
+			} else if (ranger.nextSplitShot > Globals.TimeInSeconds) {
 				self.RedMessage("Jeste nelze pouzit.");
 			} else if (ClassAbilities.ReduceStamina(self, settings.splitShotStamina)) {
 				self.DeleteTimer(splitShotReadyTK);
@@ -97,7 +92,7 @@ namespace SteamEngine.CompiledScripts {
 				timer.DueInSeconds = settings.splitShotEffectSeconds;
 				AbilityIcons.ShowSplitShot(self); //#1070
 				self.SysMessage("Chystas se vystrelit rozdelenou strelu!");
-				self.SetTag(nextSplitShotTK, Globals.TimeInSeconds + settings.splitShotDelaySeconds);
+				ranger.nextSplitShot = Globals.TimeInSeconds + settings.splitShotDelaySeconds;
 			}
 		}
 
@@ -105,7 +100,8 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void CrushingArrow(Player self) {
 			Character target = WeaponSkillTargetQueuePlugin.CurrentTarget(self);
-			if (!IsRanger(self)) {
+			RangerProfessionPlugin ranger = RangerProfessionPlugin.Of(self);
+			if (ranger == null) {
 				self.SysMessage("Toto muze pouzit jen ranger.");
 			} else if (self.Flag_Dead) {
 				self.SysMessage("Jako duch nemuzes tuto abilitu pouzit!");
@@ -113,7 +109,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(Frozen);
 			} else if (ClassAbilities.Points(self, "crushingArrow") <= 0) {
 				self.RedMessage("Neumis pouzivat tuto schopnost.");
-			} else if (ClassAbilities.SecondsTag(self, nextCrushingArrowTK) > Globals.TimeInSeconds) {
+			} else if (ranger.nextCrushingArrow > Globals.TimeInSeconds) {
 				self.SysMessage("Jeste nelze pouzit.");
 			} else if (!IsShooting(self)) {
 				self.SysMessage("Musis v ruce drzet strelnou zbran!");
@@ -127,7 +123,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			} else if (ClassAbilities.ReduceStamina(self, ClassAbilitySettings.instance.crushingArrowStamina)) {
 				self.SysMessage("Chystas se vystrelit drtivou strelu!", ClassAbilities.ClassMessageHue);
-				self.SetTag(nextCrushingArrowTK, Globals.TimeInSeconds + ClassAbilitySettings.instance.crushingArrowNextSeconds);
+				ranger.nextCrushingArrow = Globals.TimeInSeconds + ClassAbilitySettings.instance.crushingArrowNextSeconds;
 				self.DeleteTimer(CrushingArrowTimer.Key);
 				CrushingArrowTimer timer = new CrushingArrowTimer();
 				timer.target = target;
@@ -228,28 +224,33 @@ namespace SteamEngine.CompiledScripts {
 			return (resist < 750) ? "Cil z casti odolava tvemu drtivemu sipu!" : "Cil znacne odolava tvemu drtivemu sipu!";
 		}
 
-		/// <summary>e_killingSpreeCharge's blow on a monster: each charge adds 5% and a point, one is used up.</summary>
-		internal static void ApplySpree(Player self, Character target, WeaponSwingArgs swing) {
+		/// <summary>e_killingSpreeCharge's blow on a monster (the ranger's @swingLanding, #1431): each charge adds 5% and
+		/// a point, one is used up.</summary>
+		internal static void ApplySpree(RangerProfessionPlugin ranger, WeaponSwingArgs swing) {
+			Player self = (Player) ranger.Cont;
+			Character target = swing.defender;
 			SpreeTimer spree = self.GetTimer(SpreeTimer.Key) as SpreeTimer;
 			if ((spree == null) || target.IsPlayer) {
 				return;
 			}
 			swing.DamageAfterAC = (swing.DamageAfterAC * (100 + (spree.charges * (SpreeBaseBonus + ClassAbilities.Points(self, "killingSpree"))))) / 100;
-			self.SetTag(spreeTargetTK, target);
+			ranger.spreeTarget = target;
 			spree.Drop(self);
 		}
 
-		/// <summary>@finalBlow on a monster: a charge, and one more if the spree's own blow did it.</summary>
-		internal static void OnKill(Player self, NPC victim) {
+		/// <summary>@finalBlow on a monster (the ranger's @kill, #1431): a charge, and one more if it was the last target of
+		/// the spree's blow.</summary>
+		internal static void OnKill(RangerProfessionPlugin ranger, NPC victim) {
+			Player self = (Player) ranger.Cont;
 			if ((ClassAbilities.Points(self, "killingSpree") <= 0) || victim.IsPetOf(self)) {
 				return;
 			}
 			SpreeTimer.Add(self);
 			self.SysMessage((self.IsFemale ? "Dorazila" : "Dorazil") + " jsi cil. Chut zabijet ti vzrostla!", ClassAbilities.ClassMessageHue);
-			if (self.GetTag(spreeTargetTK) == victim) {
+			if (ranger.spreeTarget == victim) {
 				SpreeTimer.Add(self);
 			}
-			self.RemoveTag(spreeTargetTK);
+			ranger.spreeTarget = null;
 		}
 
 		/// <summary>The critical shot of @AfterSwing: x1.8, and what was readied goes off.</summary>

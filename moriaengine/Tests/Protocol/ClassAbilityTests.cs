@@ -91,7 +91,7 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".TestMysticAbilities");
 				Assert.True(this.fixture.WaitForGameOutput("MYSTIC_DONE", Wait), this.fixture.GameOutputSnapshot());
 				var ball = game.ReadGumpDialogWithStrings(Wait);
-				for (int i = 0; (i < 10) && (ball.Strings.Count == 0); i++) { //#1070 - the ranger's and thief's icons come first
+				for (int i = 0; (i < 20) && (ball.Strings.Count == 0); i++) { //#1070 - the ranger's and thief's icons come first (about 9 since #1431)
 					ball = game.ReadGumpDialogWithStrings(Wait);
 				}
 				Assert.Contains("Ovladani NPC", ball.Strings);
@@ -103,6 +103,8 @@ namespace SteamEngine.Tests.Protocol {
 						"splitRangeStaysUnderItsLimit", "splitNextToTheTargetIsStrongest", "splitIsNeverAFullBlow", "splitShotCostsStamina", "splitShotMustCoolDown",
 						"aSpreeShowsItsIcon", "aSplitShotShowsItsIcon", "theLastChargeClosesTheIcon", "crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "aWeakerArrowWaitsItsTurn", "arrowRecordsAsErebor",
 						"aLightCrossbowTakesJaggedBoltsOnly", "aJaggedBoltBleeds", "aCrushingArrowUsesABolt", "killsBuildASpree",
+						"theRangersPluginIsItsProfessionPlugin", "rangerCooldownsAreThePlugins", "theSpreeMeetsABlowInTheSwing", //#1431
+						"aKillChargesTheSpreeThroughTheTrigger", "theSpreeAddsThroughTheTrigger",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"theCounterIsOffAgain", "anAreaHoldsTheProbe", "theProbeWandersRoundItsPoint", "ebonyTurnsElvenNearTheProbe", "oneElvenLogOnly", "anElvenTreeHasNothingThere", "onlyCraftsmenMeetTheProbe", "farFromTheProbeEbonyStays",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
