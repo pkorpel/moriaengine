@@ -386,6 +386,11 @@ namespace SteamEngine.CompiledScripts {
 				}
 				swingArgs.DamageAfterAC = Q026.WraithBlow(attacker, defender, swingArgs.DamageAfterAC); //#1272 e_q026_hcnPoisoning_NPC: curses, then hits a cursed hero harder
 
+				Trigger_Hit(swingArgs); //#1411 - Sphere's @hit and @getHit: the blow landed
+				if (defender.IsDeleted || attacker.IsDeleted) {
+					return;
+				}
+
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false, out double reactiveReturn);
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
@@ -669,6 +674,18 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return result;
+		}
+
+		static TriggerKey hitTK = TriggerKey.Acquire("hit");
+		static TriggerKey getHitTK = TriggerKey.Acquire("getHit");
+
+		/// <summary>#1411 - Sphere's @hit on the attacker, then @getHit on the defender: a blow that wasn't dodged, before its
+		/// damage is applied. A handler may change swingArgs.DamageAfterAC (what CauseDamage gets).</summary>
+		public static void Trigger_Hit(WeaponSwingArgs swingArgs) {
+			swingArgs.attacker.TryTrigger(hitTK, swingArgs);
+			if (!swingArgs.defender.IsDeleted) {
+				swingArgs.defender.TryTrigger(getHitTK, swingArgs);
+			}
 		}
 
 		static TriggerKey causeDamageTK = TriggerKey.Acquire("causeDamage");
