@@ -2269,6 +2269,21 @@ namespace SteamEngine.CompiledScripts {
 		//#813 - the archive's region events (r_nosumon, r_SafeZone...)
 		public override void On_RegionChanged(Region oldRegion, Region newRegion) {
 			RegionEventSystem.Transition(this, oldRegion, newRegion);
+			if (this.IsPlayer) {
+				AnnounceSafety(this, oldRegion as FlaggedRegion, newRegion as FlaggedRegion);
+			}
+		}
+
+		/// <summary>#1347 - Sphere's area change lines (EreborNext CChar.Placement), in its English.</summary>
+		private static void AnnounceSafety(Character ch, FlaggedRegion oldRegion, FlaggedRegion newRegion) {
+			bool oldNoPvp = (oldRegion != null) && oldRegion.Flag_NoPvp, newNoPvp = (newRegion != null) && newRegion.Flag_NoPvp;
+			if (oldNoPvp != newNoPvp) {
+				ch.SysMessage(newNoPvp ? "You are safe from other players here." : "You lose your safety from other players.");
+			}
+			bool oldSafe = (oldRegion != null) && oldRegion.Flag_Safe, newSafe = (newRegion != null) && newRegion.Flag_Safe;
+			if (oldSafe != newSafe) {
+				ch.SysMessage(newSafe ? "You have a feeling of complete safety" : "You lose your feeling of safety");
+			}
 		}
 
 		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere

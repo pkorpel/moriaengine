@@ -200,7 +200,21 @@ Two related but deliberately different-scoped checks:
   the guards punish the attacker instead. No-PvP used to bar fighting monsters too, so nobody
   could fight in the goblin labyrinths (32 no-PvP areas). On the archive map no region is
   guarded without also being safe (the jail, the cage, the labour camp). It covers only a
-  player's attack request: monsters, pets and harmful spells aren't checked against regions.
+  player's attack request; the damage itself has its own rule below.
+- `RegionStopsDamage(attacker, defender, flags)` (#1347) - Sphere 0.99z8's damage rule
+  (EreborNext `CChar.Damage`), checked in `DamageManager.CauseDamage` for every hurt: where the
+  **victim** stands decides, whoever hurts it (a monster, a pet, a spell, a poison or bleed tick).
+  A `Flag_Safe` area takes all damage; a `Flag_NoPvp` area takes a player's damage on a player
+  (monsters still hurt there). God damage (`DamageType.Irresistable`, Sphere's DAMAGE_GOD:
+  starving, scripted kills) goes through. The hit glows off the victim (0x37C3). The arena flag
+  doesn't change it: Sphere's check doesn't read it, and no area here is both safe and an arena.
+  Also from Sphere: an NPC doesn't pick, or keep, a target standing in a safe area
+  (`NPC_GetAttackMotivation`, `NPCAiTimer.FindTarget`/`IsValidTarget`), and an NPC standing in a
+  safe area doesn't cast (`NPC_FightMayCast`, `NPCAiTimer.TryCastSpell`). A player walking or
+  teleporting across the edge gets Sphere's lines (`Character.On_RegionChanged`): "You are safe
+  from other players here." / "You lose your safety from other players." and "You have a feeling
+  of complete safety" / "You lose your feeling of safety". Sphere's stealing refusals in these
+  areas aren't ported: stealing is off on Erebor.
 - `IsExemptFromExperienceLoss(self)` - a **narrower** set of flags
   (`Flag_Safe`/`Flag_Arena` only, deliberately excluding `Flag_Guarded`/`Flag_NoPvp`) used by
   the Leveling system's death-experience-loss mechanic (see
