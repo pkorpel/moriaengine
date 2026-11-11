@@ -24,7 +24,7 @@ Defname = class_ranger //class_ as alternate prefix
 PvPArmorChange = -2 //nastaveni_global_armorchange_vP
 PvPMindDefenseChange = 200 //nastaveni_global_armorchangeom_vP
 Name = "ranger"
-professionPluginDef = p_profession_default
+professionPluginDef = p_profession_ranger //#1431 - cooldowns, killing spree: RangerProfessionPlugin
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
@@ -82,3 +82,6 @@ titlesFemale="Wanderer", "Woodswoman", "Tracker", "Tamer", "Archer", "Markswoman
 
 //list allowed spells - Magic Arrow/Night Sight/Teleport/Recall/Dispel/Mark, per the wiki
 allowedSpells=s_magic_arrow, s_nightsight, s_teleport, s_recall, s_dispel, s_mark, s_harm
+
+//#1431 - the ranger's own profession plugin (ClassAbilities/RangerProfessionPlugin.cs)
+[RangerProfessionPluginDef p_profession_ranger]
