@@ -473,8 +473,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
-			if ((cont is Player self) && (this.target != null) && !this.target.IsDeleted) {
+			if (!(cont is Player self)) {
+				return;
+			}
+			if ((this.target != null) && !this.target.IsDeleted) {
 				ThiefAbilities.FinishStab(self, this.target);
+			} else {
+				ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+				if (thief != null) {
+					thief.stabbing = false; //#1436 - the target is gone, the thief may stab again
+				}
 			}
 		}
 	}

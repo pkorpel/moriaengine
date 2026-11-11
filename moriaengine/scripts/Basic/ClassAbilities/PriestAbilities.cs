@@ -66,9 +66,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>[Function resurrection].</summary>
+	/// <summary>[Function resurrection]. Its cooldown is the priest's profession plugin's since #1435.</summary>
 	public static class PriestAbilities {
-		private static readonly TagKey nextSelfResTK = TagKey.Acquire("_priestNextSelfres_");
 		private static readonly TagKey diedAtTK = TagKey.Acquire("_diedAt_");
 		private const double RestlessSeconds = 10, CandleSeconds = 86400;
 
@@ -124,8 +123,9 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void Resurrection(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			double next = ClassAbilities.SecondsTag(self, nextSelfResTK);
-			if (!Professions.HasProfession(self, Professions.Priest) && !self.IsGM) {
+			PriestProfessionPlugin priest = PriestProfessionPlugin.Of(self); //null for a GM of another class
+			double next = (priest == null) ? 0 : priest.nextSelfRes;
+			if ((priest == null) && !self.IsGM) {
 				self.RedMessage("Nemuzes pouzit tuto schopnost.");
 			} else if (!self.Flag_Dead) {
 				self.RedMessage("Jsi nazivu, nepotrebujes se ozivovat.");
@@ -137,10 +137,14 @@ namespace SteamEngine.CompiledScripts {
 			} else if ((FindLitCandle(self) == null) && !self.IsGM) {
 				self.SysMessage("Tva svice jiz vyhasla.");
 			} else if ((ClassAbilities.Points(self, "selfres") * 45) < Globals.dice.Next(1001)) {
-				self.SetTag(nextSelfResTK, Globals.TimeInSeconds + settings.selfResFailSeconds);
+				if (priest != null) {
+					priest.nextSelfRes = Globals.TimeInSeconds + settings.selfResFailSeconds;
+				}
 				self.SysMessage("Nepovedlo se ti ozivit se.");
 			} else {
-				self.SetTag(nextSelfResTK, Globals.TimeInSeconds + settings.selfResSuccessSeconds);
+				if (priest != null) {
+					priest.nextSelfRes = Globals.TimeInSeconds + settings.selfResSuccessSeconds;
+				}
 				self.Resurrect(null);
 				PutOutCandle(self);
 				int hits = ClassAbilities.Points(self, "selfres_hp"), mana = ClassAbilities.Points(self, "selfres_mana"), stamina = ClassAbilities.Points(self, "selfres_stamina");

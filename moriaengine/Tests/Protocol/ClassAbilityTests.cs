@@ -86,6 +86,11 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("CRAFTSMAN_DONE", Wait), this.fixture.GameOutputSnapshot());
 				game.SendSpeech(".TestThiefAbilities");
 				Assert.True(this.fixture.WaitForGameOutput("THIEF_DONE", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech(".TestBackstabTargetGone"); //#1436
+				Assert.True(this.fixture.WaitForGameOutput("STAB_GONE_SET", Wait), this.fixture.GameOutputSnapshot());
+				Thread.Sleep(1000); //the backstab's 0.1 s timer
+				game.SendSpeech(".TestBackstabTargetGoneCheck");
+				Assert.True(this.fixture.WaitForGameOutput("STAB_GONE_DONE", Wait), this.fixture.GameOutputSnapshot());
 				game.SendSpeech(".TestNecroAbilities");
 				Assert.True(this.fixture.WaitForGameOutput("NECRO_DONE", Wait), this.fixture.GameOutputSnapshot());
 				game.SendSpeech(".TestMysticAbilities");
@@ -108,6 +113,7 @@ namespace SteamEngine.Tests.Protocol {
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"theCounterIsOffAgain", "anAreaHoldsTheProbe", "theProbeWandersRoundItsPoint", "ebonyTurnsElvenNearTheProbe", "oneElvenLogOnly", "anElvenTreeHasNothingThere", "onlyCraftsmenMeetTheProbe", "farFromTheProbeEbonyStays",
 						"theThiefsPluginIsItsProfessionPlugin", "thiefStateIsThePlugins", "fromBehindWithASlitInTheSwing", "hidingIsNotedOnThePlugin", //#1433
+						"aStabIsUnderWay", "aVanishedTargetFreesTheBackstab", //#1436
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
 						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "theMaskSuggestsAName", "rentalInfoShowsTheOtherIdentity", "underIncognitoTheRuneIsRenamed", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "aPoisonedKnifePoisons", "strikeSpendsChargesOnThoseAround", "aWarForkSwingsTwice", "aFencingBlowSpendsTheSlit", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
 						"theBallIsItsOwnThing", "onlyPetsAndSummonsObey", "aSummonCanBeTaken", "itObeysTheMystic", "catchTakesHold", "bothStandStill",
@@ -136,7 +142,8 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("PRIEST_DONE", Wait), this.fixture.GameOutputSnapshot());
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "restoredByTens", "lightingMakesALitCandle", "theCandleStaysThroughDeath", "tooRestlessRightAfterDying",
-						"thePriestRises", "risesAtHalfHits", "theCandleBurnsOut" }) {
+						"thePriestRises", "risesAtHalfHits", "theCandleBurnsOut",
+						"thePriestsPluginIsItsProfessionPlugin", "selfResCooldownIsThePlugins" }) { //#1435
 					string marker = "CLASS_ABILITY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

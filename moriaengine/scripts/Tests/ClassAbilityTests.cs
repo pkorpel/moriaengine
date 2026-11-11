@@ -330,13 +330,27 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestPriestRise(Character self) {
 			Player player = (Player) self;
-			for (int i = 0; (i < 200) && player.Flag_Dead; i++) { //90% a try at 20 points, each failure's delay wiped
+			PriestProfessionPlugin priest = ProfessionPlugin.GetInstalledPlugin(player) as PriestProfessionPlugin; //#1435
+			Report("thePriestsPluginIsItsProfessionPlugin", priest != null);
+			bool failureWaits = false;
+			if (priest != null) { //no points: fails 1000 times in 1001, and waits the failure's 75 s
+				ClassAbilities.SetPoints(player, "selfres", 0);
 				PriestAbilities.Resurrection(player);
-				self.RemoveTag(TagKey.Acquire("_priestNextSelfres_"));
+				failureWaits = !player.Flag_Dead || (Math.Abs(priest.nextSelfRes - (Globals.TimeInSeconds + ClassAbilitySettings.instance.selfResFailSeconds)) < 1);
+				ClassAbilities.SetPoints(player, "selfres", 20);
+				priest.nextSelfRes = 0;
+			}
+			for (int i = 0; (i < 200) && player.Flag_Dead && (priest != null); i++) { //90% a try at 20 points, each failure's delay wiped
+				PriestAbilities.Resurrection(player);
+				if (player.Flag_Dead) {
+					priest.nextSelfRes = 0;
+				}
 			}
 			Report("thePriestRises", !player.Flag_Dead);
 			Report("risesAtHalfHits", player.Hits == (player.MaxHits / 2));
 			Report("theCandleBurnsOut", PriestAbilities.FindLitCandle(player) == null);
+			Report("selfResCooldownIsThePlugins", failureWaits && (priest != null) &&
+				(priest.nextSelfRes > Globals.TimeInSeconds + ClassAbilitySettings.instance.selfResSuccessSeconds - 60)); //rising set the long one
 			Console.WriteLine("PRIEST_DONE");
 		}
 
@@ -385,6 +399,33 @@ namespace SteamEngine.CompiledScripts {
 			Report("theSpreeAddsThroughTheTrigger", (Math.Abs(swing.DamageAfterAC - 1150) < 0.001) && (ranger.spreeTarget == second) &&
 				!player.HasTimer(SpreeTimer.Key));
 			second.CauseDeath(player); //the spree's own target: two charges
+		}
+
+		/// <summary>#1436 - a backstab whose target is deleted before its 0.1 s timer: the timer must still free the
+		/// thief to stab again. Step one readies the stab and deletes the target; the protocol side waits, then
+		/// TestBackstabTargetGoneCheck reads the mark.</summary>
+		[SteamFunction]
+		public static void TestBackstabTargetGone(Character self) {
+			Player player = (Player) self;
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(player);
+			if (thief == null) {
+				Report("aStabIsUnderWay", false);
+				Console.WriteLine("STAB_GONE_SET");
+				return;
+			}
+			thief.stabbing = false;
+			NPC target = Dummy(self, 1);
+			ThiefAbilities.StabAt(player, target);
+			Report("aStabIsUnderWay", thief.stabbing && player.HasTimer(BackstabTimer.Key));
+			target.Delete();
+			Console.WriteLine("STAB_GONE_SET");
+		}
+
+		[SteamFunction]
+		public static void TestBackstabTargetGoneCheck(Character self) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			Report("aVanishedTargetFreesTheBackstab", (thief != null) && !thief.stabbing && !self.HasTimer(BackstabTimer.Key));
+			Console.WriteLine("STAB_GONE_DONE");
 		}
 
 		/// <summary>#1433 - e_thief's @AfterSwing in a real swing, before @hit: a fencing blow from behind with a readied
