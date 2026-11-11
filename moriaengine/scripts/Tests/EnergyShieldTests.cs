@@ -136,6 +136,14 @@ namespace SteamEngine.CompiledScripts {
 			DamageManager.CauseDamage(self, self, DamageType.Irresistable, 20);
 			Check("playerDamageWhole", (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
 			Check("standcastRefusedUnderIt", RefusesStandcast(self));
+			//with a mana shield too: the energy shield first (20 -> 15), the mana shield takes the 15 (damage_final's order)
+			self.AddPlugin(DamageManager.manaShieldKey, ((PluginDef) AbstractScript.GetByDefname("p_mana_shield")).Create());
+			self.Mana = 100;
+			int manaLost = MonsterHit(self);
+			Console.WriteLine("STANDCAST_SHIELD: mana shield lost=" + manaLost + " mana=" + self.Mana + " energy=" + up.EffectPower + " hits=" + self.Hits + "/" + self.MaxHits);
+			Check("manaShieldAfterEnergy", (manaLost == 0) && (self.Mana == 85) && Near(up.EffectPower, 10) && (self.Hits == self.MaxHits));
+			self.DeletePlugin(DamageManager.manaShieldKey);
+			up.EffectPower = 30;
 
 			self.Hits = self.MaxHits;
 			self.Stam = self.MaxStam;

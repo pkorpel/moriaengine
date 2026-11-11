@@ -53,7 +53,8 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Stitonos")) {
 				this.Run(game, ".TestEnergyShield", "STANDCAST_SHIELD_DONE");
 				this.AssertChecks("notForWarrior", "needsPoints", "sixtyManaNothing", "upForManaAndAmethyst", "energyAndDuration", "tableEnds",
-					"recallRefused", "gateAllowed", "spellTwice", "monsterDamageOnce", "playerDamageWhole", "standcastRefusedUnderIt");
+					"recallRefused", "gateAllowed", "spellTwice", "monsterDamageOnce", "playerDamageWhole", "standcastRefusedUnderIt",
+					"manaShieldAfterEnergy");
 				game.SendMoveRequest(2, false, 0); //east, shield up
 				var (accepted, _, _, _) = game.ReadMoveResult(System.TimeSpan.FromSeconds(10));
 				Assert.True(accepted, "A step with the energy shield up was refused.");
