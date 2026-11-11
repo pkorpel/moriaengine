@@ -27,8 +27,8 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Hazejici")) {
 				this.Run(game, ".TestThrowingTrigger", "CANCELLABLE_THROW:");
 				string line = this.LastLine("CANCELLABLE_THROW:");
-				Assert.Contains("itemTrigger=True itemCancellable=True itemTry=False itemTryCancellable=False", line);
-				Assert.Contains("accountTrigger=True accountCancellable=True accountTry=False accountTryCancellable=False", line);
+				Assert.True(line.Contains("itemTrigger=True itemCancellable=True itemTry=False itemTryCancellable=False"), line + "\n" + this.fixture.GameOutputSnapshot());
+				Assert.True(line.Contains("accountTrigger=True accountCancellable=True accountTry=False accountTryCancellable=False"), line + "\n" + this.fixture.GameOutputSnapshot());
 			}
 		}
 

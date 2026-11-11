@@ -33,16 +33,17 @@ namespace SteamEngine.CompiledScripts {
 			Item dagger = (Item) ThingDef.GetByDefname("i_dagger").Create(self.X + 1, self.Y, self.Z, self.M);
 			dagger.AddTriggerGroup(group);
 			AbstractAccount account = self.Account;
+			//real args: a compiled trigger group's generated Run reads them, so null threw a NullReferenceException of its own
 			account.AddTriggerGroup(group);
 			try {
-				Console.WriteLine("CANCELLABLE_THROW: itemTrigger=" + Throws(() => dagger.Trigger(throwTK, (ScriptArgs) null))
-					+ " itemCancellable=" + Throws(() => dagger.CancellableTrigger(throwTK, (ScriptArgs) null))
-					+ " itemTry=" + Throws(() => dagger.TryTrigger(throwTK, (ScriptArgs) null))
-					+ " itemTryCancellable=" + Throws(() => dagger.TryCancellableTrigger(throwTK, (ScriptArgs) null))
-					+ " accountTrigger=" + Throws(() => account.Trigger(throwTK, (ScriptArgs) null))
-					+ " accountCancellable=" + Throws(() => account.CancellableTrigger(throwTK, (ScriptArgs) null))
-					+ " accountTry=" + Throws(() => account.TryTrigger(throwTK, (ScriptArgs) null))
-					+ " accountTryCancellable=" + Throws(() => account.TryCancellableTrigger(throwTK, (ScriptArgs) null)) + " end");
+				Console.WriteLine("CANCELLABLE_THROW: itemTrigger=" + Throws(() => dagger.Trigger(throwTK, new ScriptArgs()))
+					+ " itemCancellable=" + Throws(() => dagger.CancellableTrigger(throwTK, new ScriptArgs()))
+					+ " itemTry=" + Throws(() => dagger.TryTrigger(throwTK, new ScriptArgs()))
+					+ " itemTryCancellable=" + Throws(() => dagger.TryCancellableTrigger(throwTK, new ScriptArgs()))
+					+ " accountTrigger=" + Throws(() => account.Trigger(throwTK, new ScriptArgs()))
+					+ " accountCancellable=" + Throws(() => account.CancellableTrigger(throwTK, new ScriptArgs()))
+					+ " accountTry=" + Throws(() => account.TryTrigger(throwTK, new ScriptArgs()))
+					+ " accountTryCancellable=" + Throws(() => account.TryCancellableTrigger(throwTK, new ScriptArgs())) + " end");
 			} finally {
 				account.RemoveTriggerGroup(group);
 				dagger.Delete();
