@@ -12,7 +12,7 @@ namespace SteamEngine.CompiledScripts {
 			return ch.GetPlugin(professionKey) as RangerProfessionPlugin;
 		}
 
-		/// <summary>e_killingSpreeCharge on the ranger's blow, after the critical shot and the other classes' modifiers.</summary>
+		/// <summary>e_killingSpreeCharge on the ranger's blow, after the critical shot.</summary>
 		public void On_SwingLanding(WeaponSwingArgs swing) {
 			RangerAbilities.ApplySpree(this, swing);
 		}

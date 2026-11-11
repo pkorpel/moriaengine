@@ -8,16 +8,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017, #477, #478, #481 - the thief's abilities from specabilities.scp and e_thief: the backstab
 	/// from hiding, blows from behind, the throat slit and the shield strike. Ripper is the class counter.</summary>
 	public static class ThiefAbilities {
-		private static readonly TagKey hiddenAtTK = TagKey.Acquire("_hiddenAt_");
-		private static readonly TagKey stabbingTK = TagKey.Acquire("_isStabbing_");
-		private static readonly TagKey throatReadyTK = TagKey.Acquire("_podriznuti_");
-		private static readonly TagKey nextThroatTK = TagKey.Acquire("_podriznutiNext_");
-		private static readonly TagKey shieldReadyTK = TagKey.Acquire("_shieldZmrazeni_");
-		private static readonly TagKey nextShieldTK = TagKey.Acquire("_uderstitemNext_");
 		private static readonly PluginKey shieldStunKey = PluginKey.Acquire("_thiefShieldStun_");
 		private static readonly PluginKey knifeStunKey = PluginKey.Acquire("_thiefKnifeStun_");
-		private static readonly TagKey nextThrowTK = TagKey.Acquire("_nextThrow_");
-		private static readonly TagKey nextStrikeTK = TagKey.Acquire("_nextStrike_");
 		private static readonly TagKey knifeImmuneTK = TagKey.Acquire("_kudlyImmune_");
 		private const double MinHiddenSeconds = 3, StunSeconds = 2;
 
@@ -25,9 +17,12 @@ namespace SteamEngine.CompiledScripts {
 			return Professions.HasProfession(ch, Professions.Thief);
 		}
 
-		/// <summary>i_stealthbonus: when hiding began, a backstab waits 3 s of it.</summary>
+		/// <summary>i_stealthbonus: when hiding began, a backstab waits 3 s of it. A thief's, on its plugin (#1433).</summary>
 		internal static void NoteHidden(Character self) {
-			self.SetTag(hiddenAtTK, Globals.TimeInSeconds);
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief != null) {
+				thief.hiddenAt = Globals.TimeInSeconds;
+			}
 		}
 
 		[SteamFunction]
@@ -45,11 +40,12 @@ namespace SteamEngine.CompiledScripts {
 		/// reaches it through .usehand on Erebor; here it's .backstab and a target.</summary>
 		[SteamFunction]
 		public static void Backstab(Player self) {
-			if (!IsThief(self)) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief == null) {
 				self.SysMessage("Tato funkce neni urcena pro tebe.", ClassAbilities.ClassMessageHue);
 			} else if (!self.Flag_Hidden && !self.Flag_InvisByMagic) {
 				self.SysMessage("Nesmis byt videt...");
-			} else if (self.GetTag(stabbingTK) != null) {
+			} else if (thief.stabbing) {
 				self.SysMessage("Pouzivas probodnuti prilis rychle po sobe!");
 			} else {
 				self.Target(SingletonScript<Targ_Backstab>.Instance);
@@ -57,6 +53,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void StabAt(Player self, Character target) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief == null) {
+				return; //no longer a thief when the cursor came back
+			}
 			if (!self.CanSeeLOS(target).Allow) {
 				self.SysMessage("Nevidis na cil.");
 				return;
@@ -70,7 +70,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			self.SysMessage("Pripravujes se k bodnuti...", ClassAbilities.ClassMessageHue);
-			self.SetTag(stabbingTK, 1);
+			thief.stabbing = true;
 			BackstabTimer timer = new BackstabTimer();
 			timer.target = target;
 			self.AddTimer(BackstabTimer.Key, timer);
@@ -81,7 +81,11 @@ namespace SteamEngine.CompiledScripts {
 		/// 1000 against players or * 35 against monsters, for x1.8 or x1.5 of a blow. It reveals either way.</summary>
 		internal static void FinishStab(Player self, Character target) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			self.RemoveTag(stabbingTK);
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief == null) {
+				return;
+			}
+			thief.stabbing = false;
 			if (!self.CanSeeLOS(target).Allow) {
 				self.SysMessage("Nevidis na cil.");
 				return;
@@ -90,7 +94,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Cil prilis daleko.");
 				return;
 			}
-			if ((Globals.TimeInSeconds - ClassAbilities.SecondsTag(self, hiddenAtTK)) < MinHiddenSeconds) {
+			if ((Globals.TimeInSeconds - thief.hiddenAt) < MinHiddenSeconds) {
 				self.SysMessage("Nejsi dostatecne dlouho " + (self.IsFemale ? "skryta" : "skryty") + "!");
 				return;
 			}
@@ -109,7 +113,7 @@ namespace SteamEngine.CompiledScripts {
 			int bonus = target.IsPlayer ? settings.backstabBonusVsP : settings.backstabBonusVsM;
 			double damage = (DamageManager.GetWeaponSwingArgs(self, target).DamageAfterAC * bonus) / 1000;
 			HidingSkillDef.Reveal(self);
-			self.RemoveTag(hiddenAtTK);
+			thief.hiddenAt = 0;
 			DamageManager.CauseDamage(self, target, self.WeaponDamageType, damage);
 		}
 
@@ -131,8 +135,11 @@ namespace SteamEngine.CompiledScripts {
 			return (points <= 10) ? points * 4 : 40 + points;
 		}
 
-		/// <summary>e_thief's @AfterSwing with fencing on a monster: from behind, then the shield strike.</summary>
-		internal static void ModifyOwnBlow(Player self, Character target, WeaponSwingArgs swing) {
+		/// <summary>e_thief's @AfterSwing with fencing on a monster: from behind, then the throat slit (the thief's
+		/// @swingLanding, #1433).</summary>
+		internal static void ModifyOwnBlow(ThiefProfessionPlugin thief, WeaponSwingArgs swing) {
+			Player self = (Player) thief.Cont;
+			Character target = swing.defender;
 			if (!IsFencing(self) || target.IsPlayer) {
 				return;
 			}
@@ -142,7 +149,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Uder do zad!", ClassAbilities.ClassMessageHue);
 				swing.DamageAfterAC += (swing.DamageAfterAC * FromBehindBonus(behind)) / 1000;
 				int throat = ClassAbilities.Points(self, "podriznuti");
-				if ((self.GetTag(throatReadyTK) != null) && (throat > 0)) {
+				if (thief.throatReady && (throat > 0)) {
 					self.SysMessage("Podriznuti!", ClassAbilities.ClassMessageHue);
 					swing.DamageAfterAC += (swing.DamageAfterAC * ThroatBonus(throat)) / 100;
 				}
@@ -158,8 +165,10 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1070 - the rest of e_thief's @AfterSwing: a war fork's double swing on a monster (no level needed,
 		/// unlike e_war's), and any fencing blow spends a readied throat slit.</summary>
-		internal static void AfterFencingBlow(Player self, Character target, WeaponSwingArgs swing) {
-			if (!IsThief(self) || !IsFencing(self)) {
+		internal static void AfterFencingBlow(ThiefProfessionPlugin thief, WeaponSwingArgs swing) {
+			Player self = (Player) thief.Cont;
+			Character target = swing.defender;
+			if (!IsFencing(self)) {
 				return;
 			}
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
@@ -172,11 +181,14 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Dvojity zasah!", ClassAbilities.ClassMessageHue);
 				swing.DamageAfterAC = (swing.DamageAfterAC * settings.doubleSwingPermille) / 1000;
 			}
-			self.RemoveTag(throatReadyTK);
+			thief.throatReady = false;
 		}
 
-		/// <summary>e_thief with a war fork: a blow the counter makes special charges a round strike, up to 3.</summary>
-		internal static void ChargeWarFork(Player self, Character target) {
+		/// <summary>e_thief with a war fork: a blow the counter makes special charges a round strike, up to 3. The thief's
+		/// own since #1433, as e_thief was on Erebor.</summary>
+		internal static void ChargeWarFork(ThiefProfessionPlugin thief, WeaponSwingArgs swing) {
+			Player self = (Player) thief.Cont;
+			Character target = swing.defender;
 			if (!IsFencing(self) || !HoldsWarFork(self) || !ClassAbilities.CounterFires(self)) {
 				return;
 			}
@@ -193,15 +205,16 @@ namespace SteamEngine.CompiledScripts {
 		public static void Strike(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
 			StrikeChargeTimer charges = self.GetTimer(StrikeChargeTimer.Key) as StrikeChargeTimer;
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
 			if (self.Flag_Dead) {
 				self.SysMessage("Jako duch nemuzes tuto abilitu pouzit!");
-			} else if (ClassAbilities.SecondsTag(self, nextStrikeTK) > Globals.TimeInSeconds) {
+			} else if ((thief != null) && (thief.nextStrike > Globals.TimeInSeconds)) {
 				self.RedMessage("Jeste nelze pouzit.");
-				self.SetTag(nextStrikeTK, Globals.TimeInSeconds + 1);
-			} else if ((charges == null) || (charges.charges <= 0)) {
+				thief.nextStrike = Globals.TimeInSeconds + 1;
+			} else if ((thief == null) || (charges == null) || (charges.charges <= 0)) {
 				self.RedMessage("Nemas pripraveny zadny uder!");
 			} else if (ClassAbilities.ReduceStamina(self, settings.strikeStamina)) {
-				self.SetTag(nextStrikeTK, Globals.TimeInSeconds + 0.5);
+				thief.nextStrike = Globals.TimeInSeconds + 0.5;
 				int count = charges.charges;
 				int percent = (count * settings.strikeBase) + (((count * count) - 1) * settings.strikeBonus);
 				charges.Delete();
@@ -210,17 +223,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>f_thief_shieldStrike, after a blow lands.</summary>
+		/// <summary>f_thief_shieldStrike, after a blow lands. Still a direct call beside the shared stun blow; its state is
+		/// the thief's plugin's (#1433).</summary>
 		internal static void TryShieldStrike(Player self, NPC target) {
-			if (!IsFencing(self) || (self.GetTag(shieldReadyTK) == null)) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if ((thief == null) || !IsFencing(self) || !thief.shieldReady) {
 				return;
 			}
-			self.RemoveTag(shieldReadyTK);
+			thief.shieldReady = false;
 			Item shield = self.FindLayer(LayerNames.Hand2) as Item;
 			if (!CraftingSkillDef.IsOfType(shield, "t_shield")) {
 				return;
 			}
-			double window = ClassAbilities.SecondsTag(self, nextShieldTK) - ((200 - (ClassAbilities.Points(self, "uderstitem") * 5)) / 10.0);
+			double window = thief.nextShield - ((200 - (ClassAbilities.Points(self, "uderstitem") * 5)) / 10.0);
 			if (window < Globals.TimeInSeconds) {
 				self.SysMessage("Prilis dlouho si cekal a rana ti nevysla");
 				return;
@@ -252,7 +267,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Nemas zadny cil.");
 				return;
 			}
-			if (!IsThief(self)) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief == null) {
 				self.SysMessage("Toto muze pouzit jen zlodej.");
 				return;
 			}
@@ -282,8 +298,8 @@ namespace SteamEngine.CompiledScripts {
 			if (knife.Amount <= 0) {
 				knife.Delete();
 			}
-			double previous = ClassAbilities.SecondsTag(self, nextThrowTK);
-			self.SetTag(nextThrowTK, Globals.TimeInSeconds + settings.throwDelaySeconds);
+			double previous = thief.nextThrow;
+			thief.nextThrow = Globals.TimeInSeconds + settings.throwDelaySeconds;
 			if (previous >= Globals.TimeInSeconds) {
 				self.SysMessage((self.IsFemale ? "Pokusila" : "Pokusil") + " jsi se hodit prilis rychle a dyka ti vypadla z ruky!", ClassAbilities.ClassMessageHue);
 				DropKnifeAt(self);
@@ -359,16 +375,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>[function podriznuti]. The next fencing blow spends the readied slit (e_thief's @AfterSwing).</summary>
 		[SteamFunction]
 		public static void Podriznuti(Player self) {
-			if (!IsThief(self)) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief == null) {
 				self.SysMessage("Tohle neni pro tebe");
 			} else if (self.Stam < 50) {
 				self.SysMessage("Tohle ted nedokazes...");
-			} else if (ClassAbilities.SecondsTag(self, nextThroatTK) > Globals.TimeInSeconds) {
+			} else if (thief.nextThroat > Globals.TimeInSeconds) {
 				self.SysMessage("Abilitu jeste nemuzes pouzit.", ClassAbilities.ClassMessageHue);
 			} else if (ClassAbilities.ReduceStamina(self, 45)) {
-				self.SetTag(throatReadyTK, 1);
+				thief.throatReady = true;
 				self.SysMessage("Muzes monstrum podriznout!");
-				self.SetTag(nextThroatTK, Globals.TimeInSeconds + 15);
+				thief.nextThroat = Globals.TimeInSeconds + 15;
 			}
 		}
 
@@ -376,18 +393,19 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void UderStitem(Player self) {
 			int points = ClassAbilities.Points(self, "uderstitem");
-			if (!IsThief(self)) {
+			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
+			if (thief == null) {
 				self.SysMessage("Tohle neni pro tebe");
-			} else if (ClassAbilities.SecondsTag(self, nextShieldTK) > Globals.TimeInSeconds) {
+			} else if (thief.nextShield > Globals.TimeInSeconds) {
 				self.SysMessage("Abilitu jeste nemuzes pouzit.", ClassAbilities.ClassMessageHue);
 			} else if (points <= 0) {
 				self.SysMessage("Tohle nedokazes");
 			} else if (Globals.dice.Next(1, 11) > Math.Min(points, 10)) {
 				self.SysMessage("Nepodarilo se ti pripravit stit.");
 			} else if (ClassAbilities.ReduceStamina(self, 30)) {
-				self.SetTag(shieldReadyTK, 1);
+				thief.shieldReady = true;
 				self.SysMessage("Muzes zasadit uder stitem!");
-				self.SetTag(nextShieldTK, Globals.TimeInSeconds + ((350 - (points * 5)) / 10.0));
+				thief.nextShield = Globals.TimeInSeconds + ((350 - (points * 5)) / 10.0);
 			}
 		}
 	}

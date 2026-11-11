@@ -117,9 +117,9 @@ detection, left out in #777.
 The warrior has its own profession plugin, `WarriorProfessionPlugin` (`p_profession_warrior` in warrior.def, #1429). It
 holds the stance and the cooldowns of round attack, leap, war cry and both taunts. Erebor kept these in tags. It also
 changes the warrior's blows through `@swingLanding` and `@getSwingLanding`: double swing and the stance on its own blow,
-the stance on a monster's. A blow's order is unchanged. Of the class modifiers, the critical blow, the ranger's and the
-thief's own run first, then `@swingLanding`, then the jagged bolt; after the mystic's stolen talents and the magic items' slayers,
-`@getSwingLanding`, then the dodge. Shield
+the stance on a monster's. A blow's order is unchanged. The critical blow (the shared counter) runs first, then
+`@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433), then the jagged bolt;
+after the mystic's stolen talents and the magic items' slayers, `@getSwingLanding`, then the dodge. Shield
 blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
 The stun blow and the critical blow's counter are shared by several classes and are still plain calls. A profession
 change starts a fresh plugin: a stance and cooldowns don't carry over.
@@ -140,8 +140,7 @@ weaker, shorter one is dropped.
 
 The ranger has its own profession plugin, `RangerProfessionPlugin` (`p_profession_ranger` in ranger.def, #1431), on the
 warrior's pattern. It holds the cooldowns of knockback, split shot and crushing arrow, and the killing spree's last
-target. Erebor kept these in tags. The spree adds to the ranger's blow in `@swingLanding`, after the critical shot and
-the thief's modifiers. It gets a charge in `@kill`, Sphere's trigger on the killer (Erebor's `@finalBlow`), and two when
+target. Erebor kept these in tags. The spree adds to the ranger's blow in `@swingLanding`, after the critical shot. It gets a charge in `@kill`, Sphere's trigger on the killer (Erebor's `@finalBlow`), and two when
 its own target dies. A dodged blow still uses a charge up, as on Erebor. Shared with other classes and still plain
 calls: the critical shot (the counter), the bleed bolt, and the readied effects' timers on the player.
 
@@ -149,6 +148,20 @@ calls: the critical shot (the counter), the bleed bolt, and the readied effects'
 
 A thief's war fork on a monster also has the double swing, at any level (e_thief's @AfterSwing). Any fencing blow
 spends a readied throat slit (`.podriznuti`), whether it came from behind or not.
+
+The thief has its own profession plugin, `ThiefProfessionPlugin` (`p_profession_thief` in thief.def, #1433), on the
+warrior's pattern. It holds what Erebor kept in the thief's tags:
+- when hiding began, and a backstab under way;
+- the readied throat slit and shield strike, with their cooldowns;
+- the knife throw's and round strike's cooldowns.
+
+e_thief's @AfterSwing is its `@swingLanding`, in Erebor's order: the blow from behind and the throat slit, the war fork's
+charge, then the war fork's double swing, which spends the slit. Only a thief charges a war fork or strikes from behind
+now. Before, anyone fencing a war fork with a class counter could charge it, and stray `utok_do_zad` points struck from
+behind; on Erebor both were the thief's own event. The shield strike still runs
+from a direct call after the damage, beside the stun blow other classes share, with its state on the plugin. The mask
+and the knife immunity stay tags: the mask swaps the character's own identity and must outlast a profession change, and
+the immunity belongs to the target.
 
 `.mask` is refused in the areas with `tag.nomask` (the start rooms), "ty hnusnej bugere. Nic nebude", as on Erebor.
 The naming dialog suggests a random name of the player's sex from Erebor's name lists (`NameList`). Under the Incognito
