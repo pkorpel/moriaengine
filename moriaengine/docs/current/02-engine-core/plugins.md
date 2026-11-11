@@ -77,6 +77,14 @@ plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `E
 and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `@step` instead comes too late: #767's collision with other characters
 (a shove, its stamina) runs before `@step`.
 
+`@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow
+that landed, before its damage: a `WeaponSwingArgs` whose `DamageAfterAC` a handler may change (it's what
+`CauseDamage` gets), and both are cancellable: a cancel ends the blow as a dodged one (no damage, `@afterSwing` still
+raised, and the boss after-swing reactions a dodge runs) and `@getHit` isn't raised after a cancelled `@hit`. They
+differ from Sphere's: raised after the dodge and the blow's own modifiers (armour, monster shields, class abilities),
+with the damage stage (resists, shields, minimum damage, reactive armour) still to come in `CauseDamage`; only for
+swings (a mystic's strike too, not spells nor ability blows such as backstab or split shot); and SRC isn't set. `VineHoldPlugin` counts the blows on a holding vine there.
+
 ## Declaring a plugin
 
 ### The class: `.ct` template or by hand

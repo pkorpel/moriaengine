@@ -2981,6 +2981,15 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		/// <summary>#1411 - a landed blow, before its damage; can be cancelled (DamageManager.Trigger_Hit).</summary>
+		public TriggerResult On_Hit(WeaponSwingArgs args) {
+			return TriggerResult.Continue;
+		}
+
+		public TriggerResult On_GetHit(WeaponSwingArgs args) {
+			return TriggerResult.Continue;
+		}
+
 		public void On_CauseDamage(DamageArgs args) {
 		}
 
