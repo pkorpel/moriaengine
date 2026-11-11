@@ -18,7 +18,7 @@ Defname = class_thief //class_ as alternate prefix
 PvPArmorChange = -10 //nastaveni_global_armorchange_vP
 PvPMindDefenseChange = 200 //nastaveni_global_armorchangeom_vP
 Name = "thief"
-professionPluginDef = p_profession_default
+professionPluginDef = p_profession_thief //#1433 - stabs, slits, shield strikes, cooldowns: ThiefProfessionPlugin
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
@@ -191,3 +191,5 @@ a_swordsmanship_delayspeedup = 1, 2, 5
 //	
 //Finesa - uder	1
 
+//#1433 - the thief's own profession plugin (ClassAbilities/ThiefProfessionPlugin.cs)
+[ThiefProfessionPluginDef p_profession_thief]

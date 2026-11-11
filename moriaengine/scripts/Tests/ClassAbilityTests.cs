@@ -387,6 +387,30 @@ namespace SteamEngine.CompiledScripts {
 			second.CauseDeath(player); //the spree's own target: two charges
 		}
 
+		/// <summary>#1433 - e_thief's @AfterSwing in a real swing, before @hit: a fencing blow from behind with a readied
+		/// throat slit, 10 points of each: the probe's 1000, +100 permille from behind, +40% for the slit, and the slit spent.</summary>
+		private static void TestThiefBlowInASwing(Player player, ThiefProfessionPlugin thief, NPC victim) {
+			ClassAbilities.SetPoints(player, "utok_do_zad", 10);
+			ClassAbilities.SetPoints(player, "podriznuti", 10);
+			thief.throatReady = true;
+			NPCAiTimer.Freeze(victim, 300);
+			victim.Direction = Direction.East; //looking away from the thief, who stands to its west
+			victim.AddTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			player.AddTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			try {
+				getHitSaw = -1;
+				setTheBlow = true;
+				DamageManager.ProcessSwing(player, victim); //a player's blow isn't dodged
+				Report("fromBehindWithASlitInTheSwing", (Math.Abs(getHitSaw - 1540) < 0.001) && !thief.throatReady);
+				Console.WriteLine("CLASS_ABILITY_INFO: thiefGetHitSaw=" + getHitSaw);
+			} finally {
+				setTheBlow = false;
+				ClassAbilities.SetPoints(player, "utok_do_zad", 0); //the war fork's check later must see no blow from behind
+				victim.RemoveTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+				player.RemoveTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			}
+		}
+
 		[SteamFunction]
 		public static void TestCraftsmanVigour(Character self) {
 			Player player = (Player) self;
@@ -451,6 +475,12 @@ namespace SteamEngine.CompiledScripts {
 			player.MaxStam = 200;
 			player.Stam = 200;
 			ClassAbilities.Reset(player);
+			ThiefProfessionPlugin thief = ProfessionPlugin.GetInstalledPlugin(player) as ThiefProfessionPlugin; //#1433
+			Report("theThiefsPluginIsItsProfessionPlugin", thief != null);
+			if (thief == null) {
+				Console.WriteLine("THIEF_DONE");
+				return;
+			}
 			Report("behindBonusSteps", (ThiefAbilities.FromBehindBonus(10) == 100) && (ThiefAbilities.FromBehindBonus(20) == 220));
 			Report("throatBonusSteps", (ThiefAbilities.ThroatBonus(10) == 40) && (ThiefAbilities.ThroatBonus(30) == 70));
 			NPC victim = Dummy(self, 1);
@@ -469,6 +499,8 @@ namespace SteamEngine.CompiledScripts {
 			player.Stam = 200;
 			ThiefAbilities.UderStitem(player);
 			Report("shieldStrikeCostsStamina", player.Stam == 170);
+			Report("thiefStateIsThePlugins", thief.throatReady && (thief.nextThroat > Globals.TimeInSeconds) && thief.shieldReady &&
+				(thief.nextShield > Globals.TimeInSeconds));
 
 			foreach (SkillName skill in new[] { SkillName.Fencing, SkillName.Tactics, SkillName.Anatomy }) {
 				player.SetRealSkillValue((int) skill, 1000);
@@ -478,7 +510,8 @@ namespace SteamEngine.CompiledScripts {
 			CombatSettings.instance.weapAttack = weapAttack * 100;
 			ClassAbilities.SetPoints(player, "backstab", 30);
 			HidingSkillDef.Hide(player);
-			player.SetTag(TagKey.Acquire("_hiddenAt_"), Globals.TimeInSeconds - 10);
+			Report("hidingIsNotedOnThePlugin", Math.Abs(thief.hiddenAt - Globals.TimeInSeconds) < 1); //#1433
+			thief.hiddenAt = Globals.TimeInSeconds - 10;
 			short before = victim.Hits;
 			for (int i = 0; (i < 20) && (victim.Hits == before); i++) { //30 points: 105% a try against a monster
 				player.Stam = 200;
@@ -487,6 +520,7 @@ namespace SteamEngine.CompiledScripts {
 			CombatSettings.instance.weapAttack = weapAttack;
 			Report("aBackstabHurts", victim.Hits < before);
 			Report("aBackstabReveals", !player.Flag_Hidden);
+			TestThiefBlowInASwing(player, thief, victim);
 			victim.Delete();
 
 			ThiefMask.ClearMask(player);
@@ -522,7 +556,7 @@ namespace SteamEngine.CompiledScripts {
 			short markHits = mark.Hits;
 			for (int i = 0; (i < 10) && (mark.Hits == markHits); i++) {
 				player.Stam = 200;
-				player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+				thief.nextThrow = 0;
 				ThiefAbilities.ThrowKnife(player);
 			}
 			Report("aKnifeHitsTheMonster", mark.Hits == markHits - 1);
@@ -530,18 +564,18 @@ namespace SteamEngine.CompiledScripts {
 			ThiefDefence.SetMagicDefence(mark, 0, 0, 100, 0); //#1070 - magic ranged reflex, then block
 			markHits = mark.Hits;
 			player.Stam = 200;
-			player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+			thief.nextThrow = 0;
 			ThiefAbilities.ThrowKnife(player);
 			Report("aMagicReflexSendsTheKnifeBack", (mark.Hits == markHits) && (player.Stam == ((200 - (3 * ClassAbilitySettings.instance.throwStaminaPerTile)) * 4) / 5));
 			ThiefDefence.SetMagicDefence(mark, 0, 0, 0, 100);
-			player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+			thief.nextThrow = 0;
 			ThiefAbilities.ThrowKnife(player);
 			Report("aMagicBlockStopsIt", mark.Hits == markHits);
 			ThiefDefence.SetMagicDefence(mark, 0, 0, 0, 0);
 			PoisonedItemPlugin.Bind(knives, PoisonKind.AbsoluteDamage, "test", 50, 0); //#1070 - the knife's own poison
 			for (int i = 0; (i < 10) && !Poison.IsPoisoned(mark); i++) {
 				player.Stam = 200;
-				player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+				thief.nextThrow = 0;
 				ThiefAbilities.ThrowKnife(player);
 			}
 			Report("aPoisonedKnifePoisons", Poison.IsPoisoned(mark));
@@ -566,12 +600,12 @@ namespace SteamEngine.CompiledScripts {
 			Item fork = (Item) ((ItemDef) ThingDef.GetByDefname("i_war_fork")).Create(player);
 			ClassAbilities.SetPoints(player, "doubleswing", 200);
 			player.Stam = 200;
-			player.SetTag(TagKey.Acquire("_podriznuti_"), 1);
+			thief.throatReady = true;
 			NPC forked = Dummy(self, 1);
 			WeaponSwingArgs forkSwing = new WeaponSwingArgs(player, forked, 0, 0, 0, 100);
-			ThiefAbilities.AfterFencingBlow(player, forked, forkSwing);
+			DamageManager.Trigger_SwingLanding(forkSwing); //#1433 - e_thief's @AfterSwing is the plugin's @swingLanding
 			Report("aWarForkSwingsTwice", (forkSwing.DamageAfterAC == 150) && (player.Stam == 200 - ClassAbilitySettings.instance.doubleSwingStamina));
-			Report("aFencingBlowSpendsTheSlit", !player.HasTag(TagKey.Acquire("_podriznuti_")));
+			Report("aFencingBlowSpendsTheSlit", !thief.throatReady);
 			forked.Delete();
 			fork.Delete();
 			ClassAbilities.SetPoints(player, "doubleswing", 0);
