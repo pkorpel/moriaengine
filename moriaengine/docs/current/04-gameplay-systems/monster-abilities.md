@@ -456,7 +456,8 @@ ported, so nothing places these monsters yet.
   - ranger with a bow: one within 8, blow and knockback; without, a plain blow on one within 2;
   - necromancer: 5 within 4, poison of their mind power;
   - priest: 5 within 4, Curse at their Healing;
-  - shaman: a random voodoo on one within 8 who has none;
+  - shaman: a random voodoo curse on one within 8 who has no voodoo, a real lasting one (#1450; it used to be a single
+    hit, and shock, no recall and no riding did nothing);
   - mystic: 5 within 4, their mind-power blow and 20-30 s paralysis;
   - anyone else: a plain blow on one within 2.
 

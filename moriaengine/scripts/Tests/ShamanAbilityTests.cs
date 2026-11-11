@@ -222,12 +222,43 @@ namespace SteamEngine.CompiledScripts {
 			ShamanVoodoo.Arrive(partner, player, ShamanVoodoo.Damage);
 			Report("aCurseHurtsAFifth", ShamanVoodoo.Has(partner, ShamanVoodoo.Damage) && (partner.Hits == 80));
 			Report("theCurseCooldownIsThePlugins", (shaman != null) && (shaman.nextVoodoo > Globals.TimeInSeconds)); //#1442
+			VoodooEffectPlugin curse = VoodooEffectPlugin.CurseOf(partner); //#1450 - i_woodooeffect
+			Report("theCurseIsAPlugin", (curse != null) && (curse.kind == ShamanVoodoo.Damage) && (curse.shaman == player) && (curse.Timer > 29));
 			ShamanVoodoo.Arrive(partner, player, ShamanVoodoo.Shock);
-			Report("aSecondCurseFallsBack", ShamanVoodoo.Has(player, ShamanVoodoo.Shock) && ShamanVoodoo.RefusesCast(player, SpellDef.GetByDefname("s_heal") as SpellDef));
-			VoodooEffectTimer.Apply(player, ShamanVoodoo.NoPort, null);
-			Report("noPortRefusesRecall", ShamanVoodoo.RefusesCast(player, SpellDef.GetByDefname("s_recall") as SpellDef) && ShamanVoodoo.RefusesRide(player));
-			player.DeleteTimer(VoodooEffectTimer.Key);
-			partner.DeleteTimer(VoodooEffectTimer.Key);
+			Report("aSecondCurseFallsBack", ShamanVoodoo.Has(player, ShamanVoodoo.Shock) && DeniesCast(player, "s_heal"));
+			VoodooEffectPlugin.RemoveAll(player); //they stack: the shock would refuse the heal below too
+			VoodooEffectPlugin.Apply(player, ShamanVoodoo.NoPort, null);
+			Report("noPortRefusesRecall", DeniesCast(player, "s_recall") && !DeniesCast(player, "s_heal") && ShamanVoodoo.RefusesRide(player));
+			VoodooEffectPlugin.Apply(player, ShamanVoodoo.NoHorse, null);
+			Report("noHorseThrowsTheRider", RidesAStep(player));
+			VoodooEffectPlugin.Apply(player, ShamanVoodoo.Damage, null);
+			Report("cursesStackAsErebors", (VoodooEffectPlugin.AllOf(player).Count == 3) && ShamanVoodoo.Has(player, ShamanVoodoo.NoPort) && ShamanVoodoo.Has(player, ShamanVoodoo.NoHorse));
+			VoodooEffectPlugin.RemoveAll(player);
+			VoodooEffectPlugin.Apply(partner, ShamanVoodoo.Strength, player);
+			VoodooEffectPlugin blessing = VoodooEffectPlugin.BlessingOf(partner);
+			Report("aBlessingSitsBesideACurse", (blessing != null) && (VoodooEffectPlugin.CurseOf(partner) == curse) && ShamanVoodoo.Has(partner, ShamanVoodoo.Damage));
+			ActiveEffect shown = (blessing == null) ? null : blessing.DescribeEffect(partner);
+			Report("voodooShowsOnBoosts", (shown != null) && (shown.Name == "Voodoo") && (shown.Section == EffectSection.Positive) && (shown.Detail == "sila"));
+			string spellName = null; //#1450 - a spell given as an ability's effect named itself by casting to AbilityDef, and threw
+			SpellDef strength = (SpellDef) SpellDef.GetByDefname("s_strength");
+			foreach (Plugin plugin in partner.GetAllPlugins()) {
+				if ((plugin is EffectDurationPlugin effect) && (effect.SourceDef == strength) && ((effect.Flags & EffectFlag.FromAbility) == EffectFlag.FromAbility)) {
+					try {
+						spellName = effect.EffectName;
+					} catch (InvalidCastException) {
+						spellName = "threw";
+					}
+				}
+			}
+			Report("aBlessingsSpellNamesItself", spellName == strength.Name);
+			VoodooHandlePlugin.RemoveAll(partner); //the head's real curse above is still on its way: no landing in later steps
+			if (curse != null) { //TestShamanSoulGone reads both, seconds later
+				partner.Hits = 100;
+				curse.Timer = 1;
+			}
+			if (blessing != null) {
+				blessing.Timer = 1;
+			}
 			dagger.Delete();
 
 			NPC crow = (NPC) ((NPCDef) ThingDef.GetByDefname("C_BIRD_CROW")).Create(player.X + 1, player.Y, player.Z, player.M);
@@ -299,6 +330,11 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestShamanSoulGone(Character self) {
 			Player player = (Player) self;
 			Player partner = FindPlayer("Seer");
+			VoodooEffectPlugin curse = VoodooEffectPlugin.CurseOf(partner); //#1450 - set to tick in a second by TestShamanRise
+			//a fired timer that isn't set again reads -1; the curse's harm came again (a fifth of 100, regen can't bring back 20)
+			Report("theCurseComesBack", (curse != null) && (curse.Timer > 0) && (partner.Hits < 100));
+			Report("aBlessingGoesAtItsTick", VoodooEffectPlugin.BlessingOf(partner) == null);
+			VoodooEffectPlugin.RemoveAll(partner);
 			Report("theSoulGoesWhenThePactEnds", (LifePactPlugin.Of(partner) == null) && (ShamanAbilities.FindInPack(partner, "i_soul") == null));
 			Report("theElixirEndsItself", EmpathyPlugin.Of(player) == null);
 
@@ -319,6 +355,30 @@ namespace SteamEngine.CompiledScripts {
 			partner.Go(before);
 			partner.Hits = partner.MaxHits;
 			Console.WriteLine("SHAMAN_SOUL_DONE");
+		}
+
+		/// <summary>#1450 - @denySpellCast as Magery raises it after the rules: does the caster's own event refuse?</summary>
+		private static bool DeniesCast(Player self, string spell) {
+			SkillSequenceArgs args = SkillSequenceArgs.Acquire(self, SkillName.Magery, null, null, null, SpellDef.GetByDefname(spell), null);
+			return self.TryCancellableTrigger(TriggerKey.Acquire("denySpellCast"), args.scriptArgs) == TriggerResult.Cancel;
+		}
+
+		/// <summary>#1450 - mounted on a new horse, one real step: true when the step threw the rider.</summary>
+		private static bool RidesAStep(Player self) {
+			NPC horse = (NPC) ((NPCDef) ThingDef.GetByDefname("c_horse_tan")).Create(self.X, self.Y, self.Z, self.M);
+			self.Mount = horse;
+			bool mounted = self.Flag_Riding, stepped = false;
+			self.Stam = self.MaxStam;
+			for (int dir = 0; (dir < 8) && !stepped; dir++) {
+				self.Direction = (Direction) dir;
+				stepped = self.WalkRunOrFly((Direction) dir, false, true);
+			}
+			bool thrown = mounted && stepped && !self.Flag_Riding;
+			if (self.Flag_Riding) {
+				self.Dismount();
+			}
+			horse.Delete();
+			return thrown;
 		}
 
 		private static int CountAround(Character self, string defname) {

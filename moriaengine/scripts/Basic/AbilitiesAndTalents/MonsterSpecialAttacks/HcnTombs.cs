@@ -273,14 +273,12 @@ namespace SteamEngine.CompiledScripts {
 			} else if (prof == Professions.Shaman) {
 				count = 1; range = 8;
 				message = "V nahlem pomateni kolem sebe bezhlave sesilas kletby!";
-				effect = victim => {
-					for (int kind = 1; kind <= 7; kind++) {
-						if (ShamanVoodoo.Has(victim, kind)) {
-							return;
-						}
+				effect = victim => { //#1450 - a real lasting curse, as Erebor's woodooeffect; any voodoo (a blessing too) spares one
+					if (VoodooEffectPlugin.HasAny(victim)) {
+						return;
 					}
-					ShamanVoodoo.On(victim, Globals.dice.Next(1, 8), player);
 					victim.SysMessage("Jsi pod prokletim voodoo.");
+					VoodooEffectPlugin.Apply(victim, Globals.dice.Next(1, 8), player);
 				};
 			} else if (prof == Professions.Mystic) {
 				count = 5; range = 4;

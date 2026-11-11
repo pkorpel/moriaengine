@@ -66,8 +66,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			DurableCharEffectSpellDef spell = MagicReflectionPluginDef.MagicReflectionSpellDef;
 			MagicReflectionPlugin plugin = (MagicReflectionPlugin) MagicReflectionPluginDef.instance.Create();
-			//the source def must match the FromAbility flag - EffectDurationPlugin.EffectName casts
-			//it to AbilityDef for the "effect ended" message
+			//FromAbility with the ability as its source: EffectDurationPlugin.EffectName names it after the ability
 			plugin.Init(defender, EffectFlag.FromAbility | EffectFlag.BeneficialEffect, def.Power, autoReflectDuration, def);
 			defender.AddPlugin(spell.EffectPluginKey_Spell, plugin);
 			return true;

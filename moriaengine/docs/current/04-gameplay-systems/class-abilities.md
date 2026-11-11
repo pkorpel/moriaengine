@@ -82,6 +82,21 @@ A potion used on a head (double click the head) blesses its owner: Strength, Cun
 at 1.334 * the shaman's Spirit Speak, Stoneskin protection at 1.4 * it (and the chest armour comes off). `woodoo`
 points * 900 out of 10000, 3 s between.
 
+How these are held (#1450):
+- **On its way**, a curse or a blessing is a `VoodooHandlePlugin` on its owner: Erebor's `i_mem_woodoo`. Each has a key
+  of its own, since several may be on their way at once.
+- **Arrived**, it is a `VoodooEffectPlugin`: Erebor's `i_woodooeffect`.
+  - Each has a key of its own, so they stack as Erebor's memories did: a blessing beside a curse (it used to cure it), and
+    a curse thrown back beside one already there (it used to replace it).
+  - `.boosts` shows each as "Voodoo" with its kind, as Erebor's boosts menu did.
+  - A shaman with either can't curse ("Prokleti ti brani proklinat nekoho jinyho."), and someone with either throws a
+    curse back.
+  - A curse's events are the plugin's own triggers: no casting and no Recall at `@denySpellCast`, after the casting
+    rules, as Erebor's events ran after e_allplayers. No riding is at `@stepTaken`.
+  - The travel stone and the ferry still ask the curse directly, as nothing there raises a trigger.
+- **Not ported:** the extra `i_warcry_effect` Erebor's woodooeffect gave a curse. Its time reads `var(warcry_src)`, a
+  global left by whoever last used a warcry anywhere. Also e_noport's telepad refusal (`t_telepad2` does nothing here).
+
 `.astralmorph` (a GM command, as it wasn't on Erebor's lists): a shaman takes a monster corpse's body and colour and
 wears nothing while morphed; again gives the own body back.
 
