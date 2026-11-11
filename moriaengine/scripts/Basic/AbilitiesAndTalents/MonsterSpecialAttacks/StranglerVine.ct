@@ -18,7 +18,7 @@
 [PluginTemplate EntangledPlugin : Plugin]
 Vars:
 	//#1409 - the vine holding this character
-	Character vine = null
+	internal Character vine = null
 
 [PluginTemplate VineHoldPlugin : Plugin]
 Vars:

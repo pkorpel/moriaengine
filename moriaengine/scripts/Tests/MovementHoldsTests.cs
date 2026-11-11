@@ -76,8 +76,9 @@ namespace SteamEngine.CompiledScripts {
 			MonsterSpecialAttacks.TryEntangle(vine, self);
 			bool heldAgain = !self.CheckCanMove(false);
 			self.P(self.X + 1, self.Y, self.Z);
-			Check("leavingTheTileFrees", heldAgain && self.CheckCanMove(false) && (self.GetPlugin(EntangledPlugin.key) == null)
-				&& (vine.GetPlugin(VineHoldPlugin.key) == null));
+			bool vineGoes = vine.CheckCanMove(false); //the vine's own check finds the hold broken and lets go
+			Check("leavingTheTileFrees", heldAgain && vineGoes && (vine.GetPlugin(VineHoldPlugin.key) == null)
+				&& (self.GetPlugin(EntangledPlugin.key) == null) && self.CheckCanMove(false));
 			vine.Delete();
 			Console.WriteLine("HOLDS_DONE");
 		}

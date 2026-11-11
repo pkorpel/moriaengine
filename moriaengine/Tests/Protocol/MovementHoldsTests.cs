@@ -17,8 +17,8 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestHoldsFreeze", "HOLDS_FROZEN");
 				this.AssertChecks("frozenIsAPlugin");
 				game.SendMoveRequest(2, false, 0); //east
-				var (refused, _, _, _) = game.ReadMoveResult(TimeSpan.FromSeconds(10));
-				Assert.False(refused, "A frozen player's step was taken.");
+				var (accepted, _, _, _) = game.ReadMoveResult(TimeSpan.FromSeconds(10));
+				Assert.False(accepted, "A frozen player's step was taken.");
 				this.Run(game, ".TestHoldsUnfreeze", "HOLDS_UNFROZEN");
 				this.AssertChecks("unfrozen");
 				game.SendMoveRequest(2, false, 0); //a refused step starts the sequence again
