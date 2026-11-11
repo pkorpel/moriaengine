@@ -49,12 +49,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>True only for E_TestThrows' own exception (maybe wrapped), so an unrelated throw can't pass.</summary>
 		private static bool Throws(Action call) {
 			try {
 				call();
 				return false;
-			} catch (Exception) {
-				return true;
+			} catch (Exception e) {
+				for (Exception x = e; x != null; x = x.InnerException) {
+					if (x.Message.Contains("TESTTHROW")) {
+						return true;
+					}
+				}
+				Console.WriteLine("CANCELLABLE_THROW_OTHER: " + e);
+				return false;
 			}
 		}
 	}
