@@ -8,39 +8,43 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1001 - Sphere's SPELL_Polymorph, on the caster alone: the form's body, and its Str and Dex within -50 to +150
-	/// of yours, for 5 to 8 minutes. A new form ends the old one first. The form is picked in PolymorphMenu.</summary>
+	/// of yours, for 5 to 8 minutes. A new form ends the old one first. The form is picked in PolymorphMenu. #1424 - the
+	/// form is its plugin, p_polymorph: it times out, ends at death and gives everything back as it goes.</summary>
 	[ViewableClass]
-	public class PolymorphSpellDef : DurableSpellDef {
+	public class PolymorphSpellDef : DurableCharEffectSpellDef {
 		private const int MostLost = -50, MostGained = 150;
-		private static readonly TimerKey timerKey = TimerKey.Acquire("_polymorph_");
-		private static readonly TagKey modelTK = TagKey.Acquire("_polymorphModel_");
-		private static readonly TagKey strTK = TagKey.Acquire("_polymorphStr_");
-		private static readonly TagKey dexTK = TagKey.Acquire("_polymorphDex_");
 
 		public PolymorphSpellDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 		}
 
+		private static PolymorphSpellDef Instance {
+			get {
+				return (PolymorphSpellDef) SpellDef.GetByDefname("s_polymorph");
+			}
+		}
+
+		/// <summary>The running form, from a spell or a potion, or null.</summary>
+		private static PolymorphEffectPlugin Running(Character target) {
+			PolymorphSpellDef def = Instance;
+			return (target.GetPlugin(def.EffectPluginKey_Spell) ?? target.GetPlugin(def.EffectPluginKey_Potion)) as PolymorphEffectPlugin;
+		}
+
 		internal static bool IsPolymorphed(Character target) {
-			return target.HasTag(modelTK);
+			return Running(target) != null;
 		}
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
-			base.On_EffectChar(target, spellEffectArgs);
-
 			NPCDef form = PolymorphMenu.TakeChoice(target);
 			if (form == null) {
 				return;
 			}
-			End(target);
-			target.SetTag(modelTK, target.Model);
-			target.Model = form.Model;
-			target.SetTag(strTK, ApplyStat(target.Str, form.RollStr(), value => target.Str = value));
-			target.SetTag(dexTK, ApplyStat(target.Dex, form.RollDex(), value => target.Dex = value));
-			target.AddTimer(timerKey, new PolymorphEndTimer()).DueInSeconds = this.GetDurationForValue(spellEffectArgs.SpellPower);
+			End(target); //the old form, under either key
+			base.On_EffectChar(target, spellEffectArgs);
+			Running(target)?.Become(form);
 		}
 
-		private static int ApplyStat(short current, int ofForm, Action<short> set) {
+		internal static int ApplyStat(short current, int ofForm, Action<short> set) {
 			if (ofForm <= 0) { //a form with none set leaves it alone
 				return 0;
 			}
@@ -50,29 +54,40 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void End(Character target) {
-			target.DeleteTimer(timerKey);
-			if (target.HasTag(modelTK)) {
-				target.Model = (int) target.GetTag(modelTK);
-				target.Str = (short) (target.Str - (int) target.GetTag(strTK));
-				target.Dex = (short) (target.Dex - (int) target.GetTag(dexTK));
-				target.Hits = (short) Math.Min(target.Hits, target.MaxHits);
-				target.Stam = (short) Math.Min(target.Stam, target.MaxStam);
-				target.RemoveTag(modelTK);
-				target.RemoveTag(strTK);
-				target.RemoveTag(dexTK);
-			}
+			PolymorphSpellDef def = Instance;
+			target.DeletePlugin(def.EffectPluginKey_Spell);
+			target.DeletePlugin(def.EffectPluginKey_Potion);
 		}
 	}
 
-	[SaveableClass, DeepCopyableClass]
-	public class PolymorphEndTimer : BoundTimer {
-		[LoadingInitializer, DeepCopyImplementation]
-		public PolymorphEndTimer() {
+	/// <summary>#1424 - a polymorph's form: the body it replaced and what it did to Str and Dex, all given back as it ends
+	/// (its time, a death, a new form). Silent and not dispellable, as before.</summary>
+	[ViewableClass]
+	public partial class PolymorphEffectPlugin {
+		internal void Become(NPCDef form) {
+			Character self = (Character) this.Cont;
+			this.oldModel = self.Model;
+			self.Model = form.Model;
+			this.strChange = PolymorphSpellDef.ApplyStat(self.Str, form.RollStr(), value => self.Str = value);
+			this.dexChange = PolymorphSpellDef.ApplyStat(self.Dex, form.RollDex(), value => self.Dex = value);
 		}
 
-		protected override void OnTimeout(TagHolder cont) {
-			PolymorphSpellDef.End((Character) cont);
+		public override void On_UnAssign(Character cont) {
+			if (this.oldModel != 0) {
+				cont.Model = this.oldModel;
+				cont.Str = (short) (cont.Str - this.strChange);
+				cont.Dex = (short) (cont.Dex - this.dexChange);
+				cont.Hits = (short) Math.Min(cont.Hits, cont.MaxHits);
+				cont.Stam = (short) Math.Min(cont.Stam, cont.MaxStam);
+			}
 		}
+
+		public override void On_Dispell(SpellEffectArgs spell) {
+		}
+	}
+
+	[ViewableClass]
+	public partial class PolymorphEffectPluginDef {
 	}
 
 	/// <summary>#1001 - Sphere's sm_polymorph, a gump or the picture menu, MenuStyles.</summary>

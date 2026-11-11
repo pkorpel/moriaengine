@@ -93,10 +93,8 @@ namespace SteamEngine.CompiledScripts {
 			PluginKey key;
 			if ((effectFlag & EffectFlag.FromPotion) == EffectFlag.FromPotion) {
 				key = this.EffectPluginKey_Potion;
-			} else if ((effectFlag & (EffectFlag.FromSpellBook | EffectFlag.FromSpellScroll)) != EffectFlag.None) {
+			} else { //#1424 - a book, a scroll, or anything else casting it (an ability, a rune): the spell's own key
 				key = this.EffectPluginKey_Spell;
-			} else {
-				throw new SEException("Undefined source type");
 			}
 
 			target.DeletePlugin(key);
