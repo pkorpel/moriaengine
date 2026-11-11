@@ -286,13 +286,15 @@ namespace SteamEngine.CompiledScripts {
 			jagged.Delete();
 
 			ClassAbilities.SetPoints(player, "killingSpree", 10);
-			RangerAbilities.OnKill(player, prey);
-			RangerAbilities.OnKill(player, prey);
+			TestRangerPlugin(player); //#1431 - leaves two charges, from a kill of the spree's own target
 			SpreeTimer spree = (SpreeTimer) player.GetTimer(SpreeTimer.Key);
 			Report("killsBuildASpree", (spree != null) && (spree.charges == 2));
 			Report("aSpreeShowsItsIcon", player.HasOpenedDialog(SingletonScript<D_ChargeIcon>.Instance)); //#1070
 			ClassAbilities.SetPoints(player, "splitshot", 10);
-			player.RemoveTag(TagKey.Acquire("_nextSplitShot_"));
+			RangerProfessionPlugin rangerPlugin = RangerProfessionPlugin.Of(player);
+			if (rangerPlugin != null) { //theRangersPluginIsItsProfessionPlugin reports it otherwise
+				rangerPlugin.nextSplitShot = 0;
+			}
 			player.Stam = 200;
 			RangerAbilities.SplitShot(player);
 			Report("aSplitShotShowsItsIcon", player.HasOpenedDialog(SingletonScript<D_SplitShotIcon>.Instance));
@@ -336,6 +338,53 @@ namespace SteamEngine.CompiledScripts {
 			Report("risesAtHalfHits", player.Hits == (player.MaxHits / 2));
 			Report("theCandleBurnsOut", PriestAbilities.FindLitCandle(player) == null);
 			Console.WriteLine("PRIEST_DONE");
+		}
+
+		/// <summary>#1431 - the ranger's state is its profession plugin's; the killing spree adds to a blow through
+		/// @swingLanding (also in a real swing, before @hit) and gains its charges through @kill: one a kill, two when the
+		/// spree's own target dies. 10 points: a charge adds 5 + 10 percent.</summary>
+		private static void TestRangerPlugin(Player player) {
+			RangerProfessionPlugin ranger = ProfessionPlugin.GetInstalledPlugin(player) as RangerProfessionPlugin;
+			Report("theRangersPluginIsItsProfessionPlugin", ranger != null);
+			if (ranger == null) {
+				return;
+			}
+			Report("rangerCooldownsAreThePlugins", (ranger.nextKnockback > Globals.TimeInSeconds) && (ranger.nextSplitShot > Globals.TimeInSeconds));
+			player.InvalidateCombatWeaponValues(); //the crossbow was deleted: Character.Weapon is a cache a scripted delete leaves stale
+
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			NPCAiTimer.Freeze(orc, 300);
+			orc.AddTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			player.AddTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			try {
+				getHitSaw = -1;
+				setTheBlow = true;
+				for (int i = 0; (i < 300) && (getHitSaw < 0); i++) {
+					player.DeleteTimer(SpreeTimer.Key); //one charge for each try: a dodged swing uses one up too
+					SpreeTimer.Add(player);
+					DamageManager.ProcessSwing(player, orc);
+				}
+				setTheBlow = false;
+				Report("theSpreeMeetsABlowInTheSwing", Math.Abs(getHitSaw - 1150) < 0.001);
+			} finally {
+				setTheBlow = false;
+				orc.RemoveTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+				player.RemoveTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+				orc.Delete();
+				player.DeleteTimer(SpreeTimer.Key);
+			}
+
+			NPC first = Dummy(player, 2), second = Dummy(player, 3);
+			first.CauseDeath(player);
+			SpreeTimer spree = player.GetTimer(SpreeTimer.Key) as SpreeTimer;
+			Report("aKillChargesTheSpreeThroughTheTrigger", (spree != null) && (spree.charges == 1));
+
+			WeaponSwingArgs swing = DamageManager.GetWeaponSwingArgs(player, second);
+			swing.DamageAfterAC = 1000;
+			DamageManager.Trigger_SwingLanding(swing);
+			Report("theSpreeAddsThroughTheTrigger", (Math.Abs(swing.DamageAfterAC - 1150) < 0.001) && (ranger.spreeTarget == second) &&
+				!player.HasTimer(SpreeTimer.Key));
+			second.CauseDeath(player); //the spree's own target: two charges
 		}
 
 		[SteamFunction]

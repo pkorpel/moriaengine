@@ -138,6 +138,13 @@ The crushing arrow needs ammunition ("Nemas zadne strelivo.") and uses one when 
 Erebor's records: the strongest running one is what's off, a weaker one that lasts longer takes over when it ends, and a
 weaker, shorter one is dropped.
 
+The ranger has its own profession plugin, `RangerProfessionPlugin` (`p_profession_ranger` in ranger.def, #1431), on the
+warrior's pattern. It holds the cooldowns of knockback, split shot and crushing arrow, and the killing spree's last
+target. Erebor kept these in tags. The spree adds to the ranger's blow in `@swingLanding`, after the critical shot and
+the thief's modifiers. It gets a charge in `@kill`, Sphere's trigger on the killer (Erebor's `@finalBlow`), and two when
+its own target dies. A dodged blow still uses a charge up, as on Erebor. Shared with other classes and still plain
+calls: the critical shot (the counter), the bleed bolt, and the readied effects' timers on the player.
+
 ## Thief
 
 A thief's war fork on a monster also has the double swing, at any level (e_thief's @AfterSwing). Any fencing blow

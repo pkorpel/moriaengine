@@ -106,6 +106,9 @@ Before the dodge, a swing raises `@swingLanding` on the attacker and `@getSwingL
 `@aftergetswing`: the blow is landing, armour and the monsters' own modifiers are applied, and the dodge is still to
 come. Handlers change `DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them.
 
+A death raises `@kill` on the killer (#1431, Sphere's `@Kill`, args: the victim), in `Character.CauseDeath` after
+`@death`, unless there's no killer, it killed itself or it's deleted. The ranger's plugin charges its killing spree there.
+
 A profession's behaviour lives on its profession plugin. This is the original code's own pattern: each profession .def
 names its `professionPluginDef`, and `ProfessionPlugin.InstallProfessionPlugin` puts that plugin on the player under
 `_profession_`. Mage's `p_profession_mage` adds LScript `@SkillSelect`/`@SkillStart` to the shared `ProfessionPlugin`
