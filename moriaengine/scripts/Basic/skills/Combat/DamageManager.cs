@@ -416,9 +416,6 @@ namespace SteamEngine.CompiledScripts {
 					Poison.FromMonster(poisoner, defender); //#962 - combat.scp's wasHarmed
 				}
 
-				//#778 - a strangler vine holding someone lets go after enough landed hits
-				MonsterSpecialAttacks.CountEntangleHit(defender);
-
 				//#794 - a hit interrupts an elite's gate spell
 				EliteMonster.OnGotHit(defender);
 

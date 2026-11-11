@@ -38,7 +38,6 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly int[] buffDmgNpc = { 20, 22, 24, 26, 28, 30, 32, 34, 36, 38 };
 		private static readonly string[] talentNames = { "Inteligence", "Sila", "Obratnost", "Utok" };
 
-		internal static readonly TagKey ImmobileTK = TagKey.Acquire("_mysticImmobile_");
 		internal static readonly TagKey CatchedOnceTK = TagKey.Acquire("_wasCatched_");
 		internal static readonly TagKey FieldReleasedAtTK = TagKey.Acquire("_catchFieldReleasedAt_");
 		internal static readonly TagKey CatchedByTK = TagKey.Acquire("_catchedBy_");
@@ -60,17 +59,13 @@ namespace SteamEngine.CompiledScripts {
 			return (ch is NPC npc) ? ((NPCDef) npc.Def).Hypnotizable : 0;
 		}
 
-		/// <summary>Sphere's flag_immobile, as catch and catchField set it: no steps, a blow is still possible.</summary>
+		/// <summary>Sphere's flag_immobile, as catch and catchField set it: no steps, a blow is still possible (#1409: ImmobilePlugin).</summary>
 		internal static bool CheckCanMove(Character self) {
-			return self.GetTag(ImmobileTK) == null;
+			return !ImmobilePlugin.IsImmobile(self);
 		}
 
 		private static void SetImmobile(Character ch, bool on) {
-			if (on) {
-				ch.SetTag(ImmobileTK, 1);
-			} else {
-				ch.RemoveTag(ImmobileTK);
-			}
+			ImmobilePlugin.Set(ch, on);
 		}
 
 		private static bool IsIdle(Character ch) {

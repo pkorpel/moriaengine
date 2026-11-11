@@ -33,7 +33,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_Create() {
 			base.On_Create();
 			this.Flag_Invulnerable = true; //e_vendor_custom's first hit makes it invulnerable and frozen
-			this.SetTag(MysticMind.ImmobileTK, 1);
+			ImmobilePlugin.Set(this, true);
 		}
 
 		public Character Owner {
