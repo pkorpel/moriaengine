@@ -114,6 +114,16 @@ two-handed axe. A taunted monster has karma -100 until the taunt ends (`f_taunt`
 strike charges are the thief's war fork ones (`.strike`). Leap's GM-step resist isn't here: it only fed Erebor's GM-step
 detection, left out in #777.
 
+The warrior has its own profession plugin, `WarriorProfessionPlugin` (`p_profession_warrior` in warrior.def, #1429). It
+holds the stance and the cooldowns of round attack, leap, war cry and both taunts. Erebor kept these in tags. It also
+changes the warrior's blows through `@swingLanding` and `@getSwingLanding`: double swing and the stance on its own blow,
+the stance on a monster's. A blow's order is unchanged. Of the class modifiers, the critical blow, the ranger's and the
+thief's own run first, then `@swingLanding`, then the jagged bolt; after the mystic's stolen talents and the magic items' slayers,
+`@getSwingLanding`, then the dodge. Shield
+blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
+The stun blow and the critical blow's counter are shared by several classes and are still plain calls. A profession
+change starts a fresh plugin: a stance and cooldowns don't carry over.
+
 ## Ranger
 
 A bow takes only the ammunition its TDATA3 names (`WeaponDef.AmmoType`, from the converter): bows arrows, the heavy

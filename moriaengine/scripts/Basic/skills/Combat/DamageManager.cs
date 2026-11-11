@@ -349,8 +349,15 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
 				MonsterSpecialAttacks.TryAbsorbSwing(attacker, defender, swingArgs); //#1022 - scales, mana shield
 
-				if (attacker is Player warrior) {
-					WarriorAbilities.ModifyOwnBlow(warrior, defender, swingArgs); //#1017
+				if (attacker is Player striker) {
+					ClassAbilities.ModifyOwnBlow(striker, defender, swingArgs); //#1017
+				}
+				Trigger_SwingLanding(swingArgs); //#1429 - the warrior's part, on its profession plugin
+				if (defender.IsDeleted || attacker.IsDeleted) {
+					return;
+				}
+				if (attacker is Player bolter) {
+					RangerAbilities.TryBleedBolt(bolter, defender, swingArgs); //#1070 - e_bleed_bolt
 				}
 				MysticMind.ModifyBlow(attacker, defender, swingArgs); //#1017 - stolen talents
 				MagicCombat.ModifyBlow(attacker, defender, swingArgs); //#1017 - magic items' slayers
@@ -359,8 +366,9 @@ namespace SteamEngine.CompiledScripts {
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
-				if (defender is Player blocker) {
-					WarriorAbilities.ModifyIncomingBlow(blocker, attacker, swingArgs); //#1017
+				Trigger_GetSwingLanding(swingArgs); //#1429 - the stance and the shield, on the profession plugin
+				if (defender.IsDeleted || attacker.IsDeleted) {
+					return;
 				}
 
 				//#866 - f_dmgFinal_dodge's order: abilities that send the blow back or stop it, then dodge
@@ -686,6 +694,26 @@ namespace SteamEngine.CompiledScripts {
 			MonsterSpecialAttacks.TryBalrogSwing(attacker, defender); //#1022 so does e_balrog's
 			MonsterSpecialAttacks.TryHcnMadness(attacker, defender); //#1022 and e_hcn_madnessability's
 			Trigger_AfterSwing(swingArgs);
+		}
+
+		static TriggerKey swingLandingTK = TriggerKey.Acquire("swingLanding");
+		static TriggerKey getSwingLandingTK = TriggerKey.Acquire("getSwingLanding");
+
+		/// <summary>#1429 - Erebor's @AfterSwing of a player: a blow that's landing, before the dodge, after armour and the
+		/// monsters' own modifiers. Handlers change swingArgs.DamageAfterAC; nothing cancels here (@hit can). The warrior's
+		/// profession plugin answers it.</summary>
+		public static void Trigger_SwingLanding(WeaponSwingArgs swingArgs) {
+			if (!swingArgs.attacker.IsDeleted) { //a monster's own modifier before it may have taken it away
+				swingArgs.attacker.TryTrigger(swingLandingTK, swingArgs);
+			}
+		}
+
+		/// <summary>#1429 - Erebor's @aftergetswing of a player, at the same stage on the defender, after the attacker's
+		/// stolen talents and magic items. The profession plugins answer it (stance, shield block).</summary>
+		public static void Trigger_GetSwingLanding(WeaponSwingArgs swingArgs) {
+			if (!swingArgs.defender.IsDeleted) {
+				swingArgs.defender.TryTrigger(getSwingLandingTK, swingArgs);
+			}
 		}
 
 		static TriggerKey hitTK = TriggerKey.Acquire("hit");
