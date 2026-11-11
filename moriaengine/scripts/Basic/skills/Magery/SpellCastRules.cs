@@ -67,10 +67,6 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return true;
 			}
-			if (ShamanVoodoo.RefusesCast(self, spell)) { //#1070 - the voodoo's e_warcry_effect and e_noport
-				fizzle = false;
-				return false;
-			}
 			if (!self.IsGM && !Is(spell, NoLight) && !WorkLight.CheckWithMessage(self)) {
 				return false;
 			}

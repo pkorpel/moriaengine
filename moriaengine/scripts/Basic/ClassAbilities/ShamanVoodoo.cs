@@ -1,7 +1,5 @@
 using System;
 using SteamEngine.Common;
-using SteamEngine.Persistence;
-using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1070 - the shaman's voodoo on a carved head (specabilities.scp's woodoo, gvoodoo, woodoohandle,
@@ -50,13 +48,13 @@ namespace SteamEngine.CompiledScripts {
 			if (!CanVoodoo(self)) {
 				return;
 			}
-			if (self.HasTimer(VoodooEffectTimer.Key)) {
+			if (VoodooEffectPlugin.HasAny(self)) {
 				self.SysMessage("Prokleti ti brani proklinat nekoho jinyho.");
 				return;
 			}
 			if (Globals.dice.Next(1000) >= 250 + (20 * ClassAbilities.Points(self, "woodoo_curse"))) {
 				self.SysMessage("Nepovedlo se.");
-				VoodooEffectTimer.Apply(self, curse, null); //a failed curse falls on the shaman
+				VoodooEffectPlugin.Apply(self, curse, null); //a failed curse falls on the shaman
 				ShamanProfessionPlugin.Of(self).nextVoodoo = Globals.TimeInSeconds + settings.voodooDelaySeconds;
 				return;
 			}
@@ -123,31 +121,27 @@ namespace SteamEngine.CompiledScripts {
 			victim.Emote(feelings[Globals.dice.Next(feelings.Length)], 0);
 			victim.Sound(0x19d);
 			shaman.SysMessage("Prokleti voodoo seslano uspesne", ClassAbilities.ClassMessageHue);
-			VoodooHandleTimer timer = new VoodooHandleTimer();
-			timer.shaman = shaman;
-			timer.kind = kind;
-			victim.AddTimer(TimerKey.Acquire("_voodooHandle_" + Globals.dice.Next()), timer);
-			timer.DueInSeconds = (kind > 10) ? 5 : 10;
+			VoodooHandlePlugin.Send(victim, shaman, kind); //#1450 - i_mem_woodoo
 		}
 
 		/// <summary>i_mem_woodoo's @timer: one already cursed throws a curse back, and so does magic reflection.</summary>
 		internal static void Arrive(Character victim, Player shaman, int kind) {
-			if ((kind < 10) && victim.HasTimer(VoodooEffectTimer.Key)) {
+			if ((kind < 10) && VoodooEffectPlugin.HasAny(victim)) {
 				victim.SysMessage("Neprijemny pocit pominul.");
 				shaman?.SysMessage("Cil " + victim.Name + " odolal.", ClassAbilities.ClassMessageHue);
 				if (shaman != null) {
-					VoodooEffectTimer.Apply(shaman, kind, null);
+					VoodooEffectPlugin.Apply(shaman, kind, null);
 				}
 			} else if ((kind < 10) && (MagicReflectionPluginDef.GetMagicReflectionPlugin(victim) != null)) {
 				shaman?.SysMessage("Tva magie byla odrazena!", ClassAbilities.ClassMessageHue);
 				victim.SysMessage("Citis jakoby nekdo v dalce vykrikl prekvapenim.");
 				if (shaman != null) {
-					VoodooEffectTimer.Apply(shaman, kind, null);
+					VoodooEffectPlugin.Apply(shaman, kind, null);
 				}
 			} else {
 				shaman?.SysMessage("Cil podlehl voodoo!", ClassAbilities.ClassMessageHue);
 				victim.SysMessage("Jsi pod vlivem voodoo magie!");
-				VoodooEffectTimer.Apply(victim, kind, shaman);
+				VoodooEffectPlugin.Apply(victim, kind, shaman);
 			}
 		}
 
@@ -199,35 +193,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>A voodoo of this kind on ch, among all it has: they stack (#1450).</summary>
 		internal static bool Has(Character ch, int kind) {
-			return (ch.GetTimer(VoodooEffectTimer.Key) is VoodooEffectTimer timer) && (timer.kind == kind);
+			return VoodooEffectPlugin.AllOf(ch).Exists(effect => effect.kind == kind);
 		}
 
-		/// <summary>e_warcry_effect while cursed with it: "Jsi v soku, nemuzes kouzlit!"; e_noport: no recall.</summary>
-		internal static bool RefusesCast(Character ch, SpellDef spell) {
-			if (Has(ch, Shock)) {
-				ch.SysMessage("Jsi v soku, nemuzes kouzlit!");
-				return true;
-			}
-			if (Has(ch, NoPort) && (spell.Id == 32)) {
-				ch.SysMessage("Nelze cestovat kouzlem.");
-				return true;
-			}
-			return false;
-		}
-
-		/// <summary>e_noport's i_travelstone_delay.</summary>
+		/// <summary>e_noport's i_travelstone_delay: no trigger there, so a direct call from the travel stone.</summary>
 		internal static bool RefusesRide(Character ch) {
 			if (Has(ch, NoPort)) {
 				ch.SysMessage("Dostavnik te neprijal.");
 				return true;
 			}
 			return false;
-		}
-
-		/// <summary>e_nohorse's @step.</summary>
-		internal static bool ThrowsRider(Character ch) {
-			return Has(ch, NoHorse) && !ch.IsGM;
 		}
 	}
 
@@ -307,81 +284,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
 			self.SysMessage("Toto neni telo!");
 			return TargetResult.RestartTargetting;
-		}
-	}
-
-	/// <summary>i_mem_woodoo: the voodoo on its way to its owner.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class VoodooHandleTimer : BoundTimer {
-		[SaveableData, CopyableData]
-		public Player shaman;
-
-		[SaveableData, CopyableData]
-		public int kind;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public VoodooHandleTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character victim) {
-				ShamanVoodoo.Arrive(victim, this.shaman, this.kind);
-			}
-		}
-	}
-
-	/// <summary>i_woodooeffect: the curse or blessing on someone. A curse comes back every 30 s, "Jsi pod prokletim
-	/// voodoo.", until its owner is blessed (the Bless spell) or dead; a blessing is given once.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class VoodooEffectTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_woodooEffect_");
-		private const double Period = 30;
-
-		[SaveableData, CopyableData]
-		public int kind;
-
-		[SaveableData, CopyableData]
-		public Character shaman;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public VoodooEffectTimer() {
-		}
-
-		internal static void Apply(Character ch, int kind, Character shaman) {
-			if (ch.GetTimer(Key) is VoodooEffectTimer old) {
-				ShamanVoodoo.Off(ch, old.kind);
-				old.Delete();
-			}
-			VoodooEffectTimer timer = new VoodooEffectTimer();
-			timer.kind = kind;
-			timer.shaman = shaman;
-			ch.AddTimer(Key, timer);
-			timer.DueInSeconds = Period;
-			timer.PeriodInSeconds = Period;
-			ShamanVoodoo.On(ch, kind, shaman);
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (!(cont is Character ch)) {
-				return;
-			}
-			if ((this.kind > 10) || ch.Flag_Dead || IsBlessed(ch)) {
-				ch.SysMessage("voodoo pominulo");
-				ShamanVoodoo.Off(ch, this.kind);
-				this.Delete();
-				return;
-			}
-			ch.SysMessage("Jsi pod prokletim voodoo.");
-			ShamanVoodoo.On(ch, this.kind, this.shaman);
-		}
-
-		private static bool IsBlessed(Character ch) {
-			foreach (Plugin plugin in ch.GetAllPlugins()) {
-				if (plugin is BlessSpellEffectPlugin) {
-					return true;
-				}
-			}
-			return false;
 		}
 	}
 

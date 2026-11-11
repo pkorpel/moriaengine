@@ -93,8 +93,9 @@ namespace SteamEngine.CompiledScripts {
 			get {
 				if (this.sourceDef != null)
 				{
-					if ((this.flags & EffectFlag.FromAbility) == EffectFlag.FromAbility) {
-						return ((AbilityDef) this.sourceDef).Name;
+					//#1450 - a spell given as an ability's effect (the voodoo blessings, the madness curse) has the spell as its source
+					if (((this.flags & EffectFlag.FromAbility) == EffectFlag.FromAbility) && (this.sourceDef is AbilityDef ability)) {
+						return ability.Name;
 					}
 					if (this.sourceDef is SpellDef spell) { //#927 - from a potion too
 						return spell.Name;
