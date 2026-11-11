@@ -423,9 +423,6 @@ namespace SteamEngine.CompiledScripts {
 				MagicCombat.AfterSwing(attacker, defender, actualDamage); //#1017 - leech, paralysis
 				if (!defender.IsDeleted) {
 					Trigger_AfterHit(swingArgs, actualDamage); //#1445 - the blow and its damage are done: the blood pact shares it
-					if (attacker is Player reader && !defender.IsDeleted && !attacker.IsDeleted) {
-						ShamanPacts.ReadPhysical(reader, defender);
-					}
 				}
 				if (attacker is NPC poisoner) {
 					Poison.FromMonster(poisoner, defender); //#962 - combat.scp's wasHarmed

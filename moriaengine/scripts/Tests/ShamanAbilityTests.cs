@@ -1,5 +1,6 @@
 using System;
 using SteamEngine.Common;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - the shaman: rituals, sacrifice, weakening, concentration, voodoo shield, pacts, the life pact.
@@ -157,19 +158,23 @@ namespace SteamEngine.CompiledScripts {
 			player.Mana = 100;
 			ShamanPacts.GiveLife(player, partner);
 			Report("aLifePactGivesASoul", (ShamanAbilities.FindInPack(partner, "i_soul") != null) && soulCase.IsDeleted && (player.Stam == 45) && (player.Mana == 35));
+			LifePactPlugin lifePact = LifePactPlugin.Of(partner); //#1447 - i_soul_remover, 1200 s + 60 s a point
+			Report("theLifePactIsAPluginOnTheReceiver", (lifePact != null) && (lifePact.giver == player) && (lifePact.Timer > 1490) && (lifePact.Timer <= 1500));
 
 			Report("resistsRead", (ShamanPacts.ResistText(-500, "ohnem", null) == "je smrtelne nachylny na utok ohnem.") && (ShamanPacts.ResistText(999, "ohnem", null) == "je prakticky nezranitelny ohnem."));
 			Item bottle = Give(player, "i_empathy_bottle", 1);
 			ShamanPacts.DrinkEmpathy(player, (ShamanItem) bottle);
-			Report("theElixirLetsResistsBeSeen", player.HasTimer(ShamanPacts.EmpathyTK) && bottle.IsDeleted);
+			EmpathyPlugin empathy = EmpathyPlugin.Of(player); //#1447 - i_getphysresists
+			Report("theElixirLetsResistsBeSeen", (empathy != null) && (empathy.Timer > 7) && (empathy.Timer <= 8) && bottle.IsDeleted);
 
 			monster.Delete();
 			partner.Hits = 0;
 			partner.CauseDeath(null);
-			if (partner.GetTimer(ShamanPacts.SoulTK) is SoulTimer soul) {
+			if (LifePactPlugin.Of(partner) is LifePactPlugin soul) {
 				soul.createdAt -= 60;
 			}
 			Report("theSoulStaysThroughDeath", partner.Flag_Dead && (ShamanAbilities.FindInPack(partner, "i_soul") != null));
+			Report("theLifePactStaysThroughDeath", LifePactPlugin.Of(partner) != null);
 			ShamanPacts.LifePact(partner);
 			Report("tooRestlessRightAfterDying", partner.Flag_Dead);
 			Console.WriteLine("SHAMAN_PARTNER_DIED");
@@ -181,6 +186,7 @@ namespace SteamEngine.CompiledScripts {
 			ShamanPacts.LifePact(partner);
 			Report("theSoulBringsItBack", !partner.Flag_Dead && (ShamanAbilities.FindInPack(partner, "i_soul") == null));
 			Report("backWithATenth", partner.Hits == Math.Max(1, partner.MaxHits / 10));
+			Report("risingEndsTheLifePact", LifePactPlugin.Of(partner) == null);
 
 			//#1070 - carving and the voodoo
 			Player player = (Player) self;
@@ -245,6 +251,74 @@ namespace SteamEngine.CompiledScripts {
 				Report("theAstralMorphTakesTheBody", morphed && !AstralMorph.IsMorphed(player) && (player.Model == model));
 			}
 			Console.WriteLine("SHAMAN_DONE");
+		}
+
+		/// <summary>#1447 - the elixir reads a monster through the shaman's own @swingLanding (the client hears the lines and
+		/// then the elixir's end); the partner gets a life pact whose soul ends in a second, and a ghost in an arena (instant
+		/// resurrection) rises from it at once.</summary>
+		[SteamFunction]
+		public static void TestShamanEmpathy(Character self) {
+			Player player = (Player) self;
+			Player partner = FindPlayer("Seer");
+			player.SetRealSkillValue((int) SkillName.ArmsLore, 1000);
+			EmpathyPlugin old = EmpathyPlugin.Of(player);
+			if (old != null) {
+				old.Delete();
+			}
+			ShamanPacts.DrinkEmpathy(player, (ShamanItem) Give(player, "i_empathy_bottle", 1));
+			EmpathyPlugin drunk = EmpathyPlugin.Of(player);
+			Item second = Give(player, "i_empathy_bottle", 1);
+			second.On_DClick(player);
+			Report("oneElixirAtATime", (drunk != null) && (EmpathyPlugin.Of(player) == drunk) && !second.IsDeleted);
+			second.Delete();
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			NPCAiTimer.Freeze(orc, 300);
+			try {
+				for (int i = 0; i < 10; i++) { //Arms Lore 100.0 against 1.0 to 120.0
+					DamageManager.Trigger_SwingLanding(DamageManager.GetWeaponSwingArgs(player, orc));
+				}
+				player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //@death alone, nobody dies
+				Report("theElixirStaysThroughDeath", EmpathyPlugin.Of(player) != null);
+			} finally {
+				orc.Delete();
+			}
+
+			ClassAbilities.SetPoints(player, "woodoo_lifepact", 0);
+			player.Stam = 100;
+			player.Mana = 100;
+			Give(player, "i_soul_case", 1);
+			ShamanPacts.GiveLife(player, partner);
+			LifePactPlugin ending = LifePactPlugin.Of(partner);
+			if (ending != null) {
+				ending.Timer = 1;
+			}
+			Console.WriteLine("SHAMAN_EMPATHY_READ");
+		}
+
+		[SteamFunction]
+		public static void TestShamanSoulGone(Character self) {
+			Player player = (Player) self;
+			Player partner = FindPlayer("Seer");
+			Report("theSoulGoesWhenThePactEnds", (LifePactPlugin.Of(partner) == null) && (ShamanAbilities.FindInPack(partner, "i_soul") == null));
+			Report("theElixirEndsItself", EmpathyPlugin.Of(player) == null);
+
+			player.Stam = 100;
+			player.Mana = 100;
+			Give(player, "i_soul_case", 1);
+			ShamanPacts.GiveLife(player, partner);
+			LifePactPlugin pact = LifePactPlugin.Of(partner);
+			if (pact != null) {
+				pact.createdAt -= 60;
+			}
+			partner.Hits = 0;
+			partner.CauseDeath(null);
+			Point4D before = new Point4D(partner.X, partner.Y, partner.Z, partner.M);
+			partner.Go(((FlaggedRegion) StaticRegion.GetByDefname("a_Arena_Gondor")).P);
+			ShamanPacts.LifePact(partner);
+			Report("anArenaRisesAtOnce", (pact != null) && !partner.Flag_Dead && (LifePactPlugin.Of(partner) == null));
+			partner.Go(before);
+			partner.Hits = partner.MaxHits;
+			Console.WriteLine("SHAMAN_SOUL_DONE");
 		}
 
 		private static int CountAround(Character self, string defname) {
