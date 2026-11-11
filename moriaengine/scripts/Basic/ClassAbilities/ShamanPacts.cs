@@ -275,20 +275,27 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>sphereevents.scp's kill credit: a shaman who gave a blood pact earns nothing himself...</summary>
 		internal static bool EarnsNoKillExp(Player fighter) {
-			if ((fighter != null) && ((fighter.GetTag(TypeTK) as string) == "blood") && (fighter.GetTag(ToTK) != null) && !InCity(fighter)) {
+			if (GivesBloodPact(fighter)) {
 				fighter.SysMessage("Zkusenosti ziskas od nositele paktu.");
 				return true;
 			}
 			return false;
 		}
 
-		/// <summary>...and earns what the one bearing it earns.</summary>
-		internal static void ShareKillExp(Player fighter, int share) {
+		/// <summary>EarnsNoKillExp without its message (#1416: a kill worth nothing still credits no giver).</summary>
+		internal static bool GivesBloodPact(Player fighter) {
+			return (fighter != null) && ((fighter.GetTag(TypeTK) as string) == "blood") && (fighter.GetTag(ToTK) != null) && !InCity(fighter);
+		}
+
+		/// <summary>...and earns what the one bearing it earns. The shaman paid (for #1416's @killCredit), or null.</summary>
+		internal static Player ShareKillExp(Player fighter, int share) {
 			Player shaman = (fighter == null) ? null : fighter.GetTag(ByTK) as Player;
 			if ((shaman != null) && ((fighter.GetTag(TypeTK) as string) == "blood") && !InCity(shaman)) {
 				shaman.SysMessage("Ziskavas zkusenosti za aplikovany pakt na " + fighter.Name + ".");
 				LevelingSystem.AddExperience(shaman, share);
+				return shaman;
 			}
+			return null;
 		}
 
 		private static bool InCity(Character ch) {
