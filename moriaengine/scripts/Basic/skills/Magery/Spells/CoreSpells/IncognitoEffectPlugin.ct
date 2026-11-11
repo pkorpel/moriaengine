@@ -1,0 +1,4 @@
+[PluginTemplate IncognitoEffectPlugin : EffectDurationPlugin]
+Vars:
+	internal string trueName = null
+	internal int color = 0

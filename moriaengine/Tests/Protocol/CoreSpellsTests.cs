@@ -116,6 +116,32 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1424 - Polymorph and Incognito as their effect plugins.</summary>
+	[Collection(CoreSpellsCollection.Name)]
+	public sealed class MorphPluginTests {
+		private readonly GameServerPairFixture fixture;
+
+		public MorphPluginTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		[Fact]
+		public void PolymorphAndIncognitoAreTheirPlugins() {
+			using var client = CommandPermissionTests.Connect("coretest", "Morph Tester");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestMorphPlugins", "MORPH_DONE");
+			string output = this.fixture.GameOutputSnapshot();
+			string failed = "";
+			foreach (string check in new[] { "incognitoIsPlugin", "secondIncognitoRenews", "incognitoTimesOut", "polymorphIsPlugin", "deathEndsBoth" }) {
+				string marker = "MORPH_CHECK: " + check + "=";
+				int at = output.LastIndexOf(marker, StringComparison.Ordinal);
+				if ((at < 0) || !output.Substring(at + marker.Length).StartsWith("True", StringComparison.Ordinal)) {
+					failed += " " + check;
+				}
+			}
+			Assert.True(failed.Length == 0, "Failed checks:" + failed);
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class CoreSpellsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "CoreSpells";

@@ -265,6 +265,16 @@ Mass Bless is an area spell of 8 tiles from its target, the user's call (#1001):
 
 Nine core spells live in Spells/CoreSpells with Erebor's live values (#1001): Create Food, Magic Trap, Magic Untrap, Magic Lock, Telekinesis, Unlock, Incognito, Mana Vampire, Polymorph. Skill 250.0 to 700.0 keeps them out of a book, and a scroll only halves that for the roll, so it fizzles; only GMs cast them. Sphere's wands have difficulty 1 and would work, but wands aren't ported. Magic Trap and Untrap have no effect in Sphere itself. Mana Vampire takes mana without giving any to the caster, as `f_effect_a_mana_vampire`, and is refused on a target without Magery. Unlock opens a door one time in 900, `MAGICUNLOCKDOOR`. Polymorph's `sm_polymorph` acts on the caster alone; Sphere's GM cursor for polymorphing others isn't ported. Incognito on an item isn't ported, there's no ATTR_IDENTIFIED here. Neither is dispellable yet.
 
+Since #1424, Polymorph and Incognito keep their state in their effect plugins (`DurableCharEffectSpellDef`):
+- **`p_polymorph`:** the body it replaced and the Str and Dex changes.
+- **`p_incognito`:** the true name and skin.
+- How they behave:
+  - Their time running out, a death, or (for Polymorph) a new form gives everything back.
+  - Both show in `.boosts` with the time left. An incognito doesn't name who disguised you.
+  - A polymorphed character now dies in its form: the death sound is the form's. The old code gave the body back first.
+  - Both still end silently and still aren't dispellable.
+  - A second Incognito keeps the name and skin and only renews the time, as Sphere.
+
 The menus of Tracking, Summon and Polymorph open as a dialog, as Sphere's picture menu (packet 0x7C with models) or both at once, `MenuStyles` (#1004). The choice stays with the players: `.menustyle` cycles it for the character; `defaultStyle` on `.settings` is for everyone else, 0 a dialog, 1 the picture menu, 2 both. With both open the first answer counts: the picture menu closes the dialog, and once the dialog is gone the picture menu is ignored, as a server can't close that one. Tracking has Sphere's five rows both ways, in English, and a pick of a name tracks, where 99z8's does nothing. Its "Anything that moves" lists NPCs and animals, not players, because our All does.
 
 `i_scroll_case` (`t_svitkovac`) holds up to 999999 scrolls of each spell as counts on the item. Scrolls go in by dropping them on it, by its Pridat cursor, or a whole container by targeting it. Pages are the circles in pairs, necromancy and the rest. Vybrat takes one of everything.
