@@ -14,6 +14,34 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SHAMAN_PARTNER_READY");
 		}
 
+		/// <summary>#1445 - a frozen orc's real blow on the blood pact's bearer: a probe makes it 40 at @getHit, and the
+		/// bearer's @afterGetHit moves a share of the damage to the shaman.</summary>
+		private static void TestBloodInASwing(Player shaman, Player bearer) {
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(bearer.X + 1, bearer.Y, bearer.Z, bearer.M);
+			NPCAiTimer.Freeze(orc, 300);
+			bearer.AddTriggerGroup(SingletonScript<E_BlowOf40>.Instance);
+			try {
+				bool shared = false;
+				int shamanLoss = 0, bearerLoss = 0;
+				for (int i = 0; (i < 50) && !shared; i++) {
+					bearer.Hits = bearer.MaxHits;
+					shaman.Hits = shaman.MaxHits;
+					DamageManager.ProcessSwing(orc, bearer);
+					shamanLoss = shaman.MaxHits - shaman.Hits;
+					bearerLoss = bearer.MaxHits - bearer.Hits;
+					shared = (shamanLoss > 0) && (bearerLoss > 0);
+				}
+				//the blow dealt bearerLoss + shamanLoss in all, and the shaman took 15% of it once
+				Report("aMonstersRealBlowIsSharedThroughTheTrigger", shared &&
+					(shamanLoss == Math.Min(((bearerLoss + shamanLoss) * ClassAbilitySettings.instance.bloodPactPercent) / 100, 20)));
+			} finally {
+				bearer.RemoveTriggerGroup(SingletonScript<E_BlowOf40>.Instance);
+				orc.Delete();
+				bearer.Hits = bearer.MaxHits;
+				shaman.Hits = shaman.MaxHits;
+			}
+		}
+
 		[SteamFunction]
 		public static void TestShamanAbilities(Character self) {
 			Player player = (Player) self;
@@ -28,6 +56,8 @@ namespace SteamEngine.CompiledScripts {
 			player.Int = 100;
 			ClassAbilities.Reset(player);
 			ClassAbilities.OnDeath(player);
+			ShamanPacts.OnGone(player); //#1445 - a pact left by an aborted run
+			ShamanPacts.OnGone(partner);
 			ClassAbilities.SetPoints(player, "woodoo", 10);
 			Give(player, ShamanAbilities.RubyDef, 10);
 			Give(player, ShamanAbilities.CitrineDef, 1);
@@ -96,24 +126,29 @@ namespace SteamEngine.CompiledScripts {
 			player.Hits = player.MaxHits;
 			int shamanHits = player.Hits;
 			ShamanPacts.Give(player, partner, "blood");
-			Report("aBloodPactCostsBlood", (player.Hits == shamanHits - 29) && (partner.GetTag(ShamanPacts.ByTK) == player) && partner.HasTimer(ShamanPacts.PactTK));
+			Report("aBloodPactCostsBlood", (player.Hits == shamanHits - 29) && (PactPlugin.Of(partner) != null) && (PactPlugin.Of(partner).giver == player) &&
+				(PactPlugin.Of(partner).TimerObject != null) && (PactPlugin.Of(player) != null) && (PactPlugin.Of(player).receiver == partner)); //#1445
 			Report("thePactCooldownIsThePlugins", (ShamanProfessionPlugin.Of(player) != null) && (ShamanProfessionPlugin.Of(player).nextPact > Globals.TimeInSeconds)); //#1442
+			TestBloodInASwing(player, partner); //#1445
 			partner.Hits = 50;
 			shamanHits = player.Hits;
-			ShamanPacts.ShareBlood(monster, partner, 100);
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(monster, partner), 100); //#1445 - as ProcessSwing raises it
 			Report("aMonstersBlowIsShared", (partner.Hits == 65) && (player.Hits == shamanHits - 15));
 			Report("theGiverEarnsThroughTheBearer", ShamanPacts.EarnsNoKillExp(player) && !ShamanPacts.EarnsNoKillExp(partner));
-			ShamanPacts.ShareBlood(player, partner, 100);
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, partner), 100);
 			partner.Hits = 50;
-			ShamanPacts.ShareBlood(monster, partner, 100);
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(monster, partner), 100);
 			Report("aPlayersBlowSwitchesItOff", partner.Hits == 50);
 			ShamanPacts.CancelPact(player);
-			Report("cancellingEndsBothSides", (player.GetTag(ShamanPacts.ToTK) == null) && (partner.GetTag(ShamanPacts.ByTK) == null) && !partner.HasTimer(ShamanPacts.PactTK));
+			Report("cancellingEndsBothSides", (PactPlugin.Of(player) == null) && (PactPlugin.Of(partner) == null));
 
 			ShamanPacts.Give(player, player, "mana");
-			Report("aManaPactMayBeOwn", (Count(player, ShamanAbilities.RubyDef) == 6) && player.HasTimer(ShamanPacts.PactTK));
+			PactPlugin own = PactPlugin.Of(player);
+			Report("aManaPactMayBeOwn", (Count(player, ShamanAbilities.RubyDef) == 6) && (own != null) && (own.givenType == "mana") && (own.borneType == "mana") &&
+				(own.TimerObject != null));
 			player.Mana = 0;
-			ShamanPacts.CancelPact(player);
+			player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //#1445 - @death alone, nobody dies
+			Report("deathEndsThePactThroughItsPlugin", PactPlugin.Of(player) == null);
 
 			Item soulCase = Give(player, "i_soul_case", 1);
 			Report("theCaseIsAShamansThing", soulCase is ShamanItem);
@@ -244,6 +279,13 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void Report(string name, bool ok) {
 			ClassAbilityTests.Report(name, ok);
+		}
+	}
+
+	/// <summary>#1445 - a blow of 40 at @getHit, so a real swing always hurts and kills no one.</summary>
+	public class E_BlowOf40 : CompiledTriggerGroup {
+		public void On_GetHit(Character self, WeaponSwingArgs swingArgs) {
+			swingArgs.DamageAfterAC = 40;
 		}
 	}
 }

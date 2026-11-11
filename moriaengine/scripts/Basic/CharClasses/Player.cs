@@ -403,7 +403,6 @@ namespace SteamEngine.CompiledScripts {
 		/// that transition has actually completed.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
-			ShamanPacts.OnGone(this); //#1017 - @Logout ends a pact
 			MysticHypnosis.OnLogout(this); //#1017 - and brings a possessing mystic home
 			Boosters.Pause(this); //#1090 - a booster's hours count only online
 			AfkCheck.OnLogout(this); //#1107 - e_afk_controlled @logout
