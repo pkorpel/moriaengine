@@ -12,9 +12,6 @@ namespace SteamEngine.CompiledScripts {
 	/// specabilities.scp, magie.scp and combat.scp. Pacts and the soul are in ShamanPacts.</summary>
 	public static class ShamanAbilities {
 		internal const string RubyDef = "i_gem_ruby", CitrineDef = "i_gem_citrine";
-		private static readonly TagKey ritualTK = TagKey.Acquire("_voodooRitual_");
-		private static readonly TagKey shieldPoolTK = TagKey.Acquire("_voodooShield_");
-		internal static readonly TimerKey ShieldTK = TimerKey.Acquire("_voodooShieldTimer_");
 		private const int RitualAmount = 30, SpikeEffect = 0x37c4, RitualSound = 0x1a0;
 
 		internal static bool IsShaman(Character ch) {
@@ -52,14 +49,15 @@ namespace SteamEngine.CompiledScripts {
 			EffectFactory.StationaryEffect(self, SpikeEffect, 0, 20);
 		}
 
-		/// <summary>The stats ritual in effect: 1 blood to mind, 2 mind to blood, 0 none.</summary>
+		/// <summary>The stats ritual in effect: 1 blood to mind, 2 mind to blood, 0 none. Its plugin's since #1442.</summary>
 		internal static int Ritual(Character self) {
-			return Convert.ToInt32(self.GetTag(ritualTK) ?? 0);
+			VoodooStatsPlugin ritual = VoodooStatsPlugin.Of(self);
+			return (ritual == null) ? 0 : ritual.ritual;
 		}
 
 		/// <summary>i_voodoo_stats: a player's max hits and stamina follow Vitality here, max mana Intelligence,
 		/// so Erebor's maxhits, maxstam -30 and int, maxmana +30 are Vitality -30 and Intelligence +30.</summary>
-		private static void ApplyRitual(Player self, int ritual, int times) {
+		internal static void ApplyRitual(Player self, int ritual, int times) {
 			int sign = (ritual == 1) ? 1 : -1;
 			self.Vit = (short) (self.Vit - (sign * RitualAmount * times));
 			self.Int = (short) (self.Int + (sign * RitualAmount * times));
@@ -101,7 +99,12 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			ApplyRitual(self, ritual, (now == 0) ? 1 : 2);
-			self.SetTag(ritualTK, ritual);
+			VoodooStatsPlugin plugin = VoodooStatsPlugin.Of(self);
+			if (plugin == null) {
+				plugin = (VoodooStatsPlugin) VoodooStatsPluginDef.instance.Create();
+				self.AddPlugin(VoodooStatsPlugin.Key, plugin);
+			}
+			plugin.ritual = ritual;
 			self.SysMessage(done);
 		}
 
@@ -114,19 +117,8 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			ApplyRitual(self, (ritual == 1) ? 2 : 1, 1);
-			self.RemoveTag(ritualTK);
+			self.DeletePlugin(VoodooStatsPlugin.Key);
 			self.SysMessage("Sila krve je nyni v rovnovaze.");
-		}
-
-		/// <summary>e_voodoo_stats' @death.</summary>
-		internal static void OnDeath(Character dead) {
-			Player self = dead as Player;
-			int ritual = (self == null) ? 0 : Ritual(self);
-			if (ritual != 0) {
-				ApplyRitual(self, (ritual == 1) ? 2 : 1, 1);
-				self.RemoveTag(ritualTK);
-				self.SysMessage("Sila krve te se smrti opousti.");
-			}
 		}
 
 		/// <summary>[function voodooobet]: 40 hits for mana. Erebor's script let hits go below 0; here it kills.</summary>
@@ -215,12 +207,12 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void VoodooShield(Player self) {
 			int points = ClassAbilities.Points(self, "voodooShield");
-			VoodooShieldTimer timer = self.GetTimer(ShieldTK) as VoodooShieldTimer;
+			VoodooShieldPlugin shield = VoodooShieldPlugin.Of(self);
 			if (!IsShaman(self) || (points <= 0)) {
 				self.SysMessage("Tohle nemuzes pouzivat.");
-			} else if ((timer != null) && (self.GetTag(shieldPoolTK) == null)) {
+			} else if ((shield != null) && !shield.IsUp) {
 				self.SysMessage("Tva magicka moc je jeste prilis oslabena.");
-			} else if (timer != null) {
+			} else if (shield != null) {
 				self.SysMessage("Jeste stale mas stit kolem sebe vytvoren.");
 			} else if (FindInPack(self, CitrineDef) == null) {
 				self.SysMessage("Nemas potrebne prisady.");
@@ -228,10 +220,9 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Nemas dost energie!");
 			} else if (self.Mana > 30) {
 				ConsumeOne(self, CitrineDef);
-				self.SetTag(shieldPoolTK, points * 5);
-				VoodooShieldTimer shield = new VoodooShieldTimer();
-				self.AddTimer(ShieldTK, shield);
-				shield.DueInSeconds = 30;
+				VoodooShieldPlugin up = (VoodooShieldPlugin) VoodooShieldPluginDef.instance.Create();
+				up.Init(self, EffectFlag.BeneficialEffect | EffectFlag.FromAbility, points * 5, TimeSpan.FromSeconds(VoodooShieldPlugin.UpSeconds));
+				self.AddPlugin(VoodooShieldPlugin.Key, up);
 				self.Say("Beleg Del Tir");
 				EffectFactory.StationaryEffect(self, 0x2ed0, 6, 20);
 				self.Sound(0x212);
@@ -243,39 +234,33 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void CancelVoodooShield(Player self) {
-			VoodooShieldTimer timer = self.GetTimer(ShieldTK) as VoodooShieldTimer;
-			if ((timer != null) && (self.GetTag(shieldPoolTK) != null)) {
-				self.RemoveTag(shieldPoolTK);
-				timer.StartRest();
+			VoodooShieldPlugin shield = VoodooShieldPlugin.Of(self);
+			if ((shield != null) && shield.IsUp) {
+				shield.StartRest();
 				self.SysMessage("Zrusil jsi voodoo stit.", ClassAbilities.ClassMessageHue);
 			}
 		}
 
-		internal static void EndShield(Character self) {
-			self.RemoveTag(shieldPoolTK);
-		}
-
 		internal static bool HasShieldUp(Character self) {
-			return self.GetTag(shieldPoolTK) != null;
+			VoodooShieldPlugin shield = VoodooShieldPlugin.Of(self);
+			return (shield != null) && shield.IsUp;
 		}
 
-		/// <summary>f_dmgFinal_applyVoodooShield: a monster's spell eats the pool first.</summary>
+		/// <summary>f_dmgFinal_applyVoodooShield: a monster's spell eats the pool first. The pool is the shield plugin's
+		/// since #1442.</summary>
 		internal static double AbsorbSpell(Character attacker, Character defender, double damage) {
-			object pool = defender.GetTag(shieldPoolTK);
-			if ((pool == null) || (attacker == null) || attacker.IsPlayer) {
+			VoodooShieldPlugin shield = VoodooShieldPlugin.Of(defender);
+			if ((shield == null) || !shield.IsUp || (attacker == null) || attacker.IsPlayer) {
 				return damage;
 			}
-			int left = Convert.ToInt32(pool) - (int) damage;
+			int left = shield.Pool - (int) damage;
 			EffectFactory.StationaryEffect(defender, 0x2eeb, 6, 20);
 			if (left < 0) {
-				defender.RemoveTag(shieldPoolTK);
-				if (defender.GetTimer(ShieldTK) is VoodooShieldTimer timer) {
-					timer.StartRest();
-				}
+				shield.StartRest();
 				defender.SysMessage("Kouzlo castesne pohlceno.", ClassAbilities.ClassMessageHue);
 				return -left;
 			}
-			defender.SetTag(shieldPoolTK, left);
+			shield.Pool = left;
 			defender.SysMessage("Kouzlo pohlceno stitem", ClassAbilities.ClassMessageHue);
 			return 0;
 		}
@@ -347,41 +332,6 @@ namespace SteamEngine.CompiledScripts {
 			again.weaker = true;
 			monster.AddTimer(Key, again);
 			again.DueInSeconds = 20 + (2 * this.points);
-		}
-	}
-
-	/// <summary>i_voodooshield: 30 s up, then 180 s before another.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class VoodooShieldTimer : BoundTimer {
-		[SaveableData, CopyableData]
-		public bool resting;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public VoodooShieldTimer() {
-		}
-
-		internal void StartRest() {
-			this.resting = true;
-			this.DueInSeconds = 180;
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			Character self = cont as Character;
-			if (self == null) {
-				return;
-			}
-			if (!this.resting) {
-				if (ShamanAbilities.HasShieldUp(self)) {
-					self.SysMessage("Stit se vycerpal.", ClassAbilities.ClassMessageHue);
-				}
-				ShamanAbilities.EndShield(self);
-				VoodooShieldTimer rest = new VoodooShieldTimer();
-				rest.resting = true;
-				self.AddTimer(ShamanAbilities.ShieldTK, rest);
-				rest.DueInSeconds = 180;
-				return;
-			}
-			self.SysMessage("Nyni muzes pouzit voodoo stit znovu.", ClassAbilities.ClassMessageHue);
 		}
 	}
 }

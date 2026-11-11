@@ -25,6 +25,17 @@ classes (#1440); it ran as a direct call on the line before that trigger.
 "Kouzlo pohlceno.", at `points * 10` out of 1000, the permille weapon dodge uses too (`nastaveni_ability_pvMdodge`).
 A player's spell never is, nor is anything while the player is possessing a monster.
 
+## Shaman's own state (#1442)
+
+- The shaman has its own profession plugin, `ShamanProfessionPlugin` (`p_profession_shaman` in shaman.def), on the
+  warrior's pattern. It holds the cooldowns of voodoo, the pacts and the life pact.
+- The stats ritual (`.voodooint`, `.voodoovit`) is a plugin of its own on the character, `VoodooStatsPlugin`, which is
+  Erebor's `i_voodoo_stats`. It isn't on the profession plugin: it changes the character's own stats, so it outlasts a
+  profession change, and `.voodoorovnovaha` needs no class. Its own `@death` puts the stats back.
+- The voodoo shield (`.voodooshield`) is `VoodooShieldPlugin`, built like the energy shield. Its pool is 5 a point and
+  lasts 30 s; then, or when it's cancelled or a spell breaks through, the shield rests 180 s. A monster's spell eats the pool first, at its fixed point in the damage. The
+  shield stays through death, as Erebor's memory item did, and `.boosts` shows it.
+
 ## Shaman's voodoo and carving bodies
 
 A blade used on a body carves it (`CorpseCarving.cs`, f_weapon_sharp_targon_item): daggers and other fencing blades

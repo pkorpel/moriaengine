@@ -38,6 +38,11 @@ namespace SteamEngine.CompiledScripts {
 			Report("mindToBloodTurnsItTwice", (player.Int == 70) && (player.Vit == 130));
 			ShamanAbilities.VoodooRovnovaha(player);
 			Report("balanceComesBack", (player.Int == 100) && (player.Vit == 100) && (ShamanAbilities.Ritual(player) == 0));
+			Give(player, ShamanAbilities.RubyDef, 1); //#1442 - one more ritual; the pack is newest first, so this ruby goes and the counts below stay
+			ShamanAbilities.VoodooInt(player);
+			Report("theRitualIsAPluginOnTheCharacter", (VoodooStatsPlugin.Of(player) != null) && (VoodooStatsPlugin.Of(player).ritual == 1));
+			player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //@death alone, nobody dies
+			Report("deathEndsTheRitualThroughItsPlugin", (player.Int == 100) && (player.Vit == 100) && (VoodooStatsPlugin.Of(player) == null));
 
 			player.Hits = 90;
 			player.Mana = 0;
@@ -52,6 +57,23 @@ namespace SteamEngine.CompiledScripts {
 			Report("theShieldIgnoresPlayers", ShamanAbilities.AbsorbSpell(partner, player, 15) == 15);
 			Report("theShieldTakesAMonstersSpell", ShamanAbilities.AbsorbSpell(monster, player, 15) == 0);
 			Report("theRestGetsThrough", (ShamanAbilities.AbsorbSpell(monster, player, 15) == 10) && !ShamanAbilities.HasShieldUp(player));
+			VoodooShieldPlugin shield = VoodooShieldPlugin.Of(player); //#1442
+			Report("theShieldRestsAsAPlugin", (shield != null) && !shield.IsUp && (shield.Timer > 170));
+			if (shield != null) {
+				shield.On_Timer(); //the rest's end
+			}
+			Report("theShieldComesBackAfterItsRest", VoodooShieldPlugin.Of(player) == null);
+			short manaBefore = player.Mana;
+			Give(player, ShamanAbilities.CitrineDef, 1);
+			player.Mana = 100;
+			ShamanAbilities.VoodooShield(player); //a new one, whose 30 s run out
+			VoodooShieldPlugin second = VoodooShieldPlugin.Of(player);
+			if (second != null) {
+				second.On_Timer();
+			}
+			Report("theShieldExpiresIntoItsRest", (second != null) && (VoodooShieldPlugin.Of(player) == second) && !second.IsUp && (second.Timer > 170));
+			player.DeletePlugin(VoodooShieldPlugin.Key);
+			player.Mana = manaBefore;
 
 			ClassAbilities.SetPoints(player, "woodoo_curse", 10);
 			int procs = 0;
@@ -75,6 +97,7 @@ namespace SteamEngine.CompiledScripts {
 			int shamanHits = player.Hits;
 			ShamanPacts.Give(player, partner, "blood");
 			Report("aBloodPactCostsBlood", (player.Hits == shamanHits - 29) && (partner.GetTag(ShamanPacts.ByTK) == player) && partner.HasTimer(ShamanPacts.PactTK));
+			Report("thePactCooldownIsThePlugins", (ShamanProfessionPlugin.Of(player) != null) && (ShamanProfessionPlugin.Of(player).nextPact > Globals.TimeInSeconds)); //#1442
 			partner.Hits = 50;
 			shamanHits = player.Hits;
 			ShamanPacts.ShareBlood(monster, partner, 100);
@@ -146,13 +169,18 @@ namespace SteamEngine.CompiledScripts {
 			Item dagger = (Item) ((ItemDef) ThingDef.GetByDefname("i_dagger_copper")).Create(player.Backpack);
 			Report("daggersCurseByMetal", (ShamanVoodoo.DaggerTier(dagger) == 1) && (ShamanVoodoo.DaggerTier(((ItemDef) ThingDef.GetByDefname("i_dagger")).Create(player.Backpack) as Item) == 0));
 			ClassAbilities.SetPoints(player, "woodoo_curse", 40);
-			player.RemoveTag(TagKey.Acquire("_nextWoodoo_"));
+			ShamanProfessionPlugin shaman = ShamanProfessionPlugin.Of(player); //#1442
+			Report("theShamansPluginIsItsProfessionPlugin", shaman != null);
+			if (shaman != null) {
+				shaman.nextVoodoo = 0;
+			}
 			if (head != null) {
 				ShamanVoodoo.Curse(player, head, ShamanVoodoo.Damage);
 			}
 			partner.Hits = 100;
 			ShamanVoodoo.Arrive(partner, player, ShamanVoodoo.Damage);
 			Report("aCurseHurtsAFifth", ShamanVoodoo.Has(partner, ShamanVoodoo.Damage) && (partner.Hits == 80));
+			Report("theCurseCooldownIsThePlugins", (shaman != null) && (shaman.nextVoodoo > Globals.TimeInSeconds)); //#1442
 			ShamanVoodoo.Arrive(partner, player, ShamanVoodoo.Shock);
 			Report("aSecondCurseFallsBack", ShamanVoodoo.Has(player, ShamanVoodoo.Shock) && ShamanVoodoo.RefusesCast(player, SpellDef.GetByDefname("s_heal") as SpellDef));
 			VoodooEffectTimer.Apply(player, ShamanVoodoo.NoPort, null);
