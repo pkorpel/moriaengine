@@ -67,7 +67,7 @@ namespace SteamEngine.CompiledScripts {
 		/// through this method.
 		/// </summary>
 		public static void AddExperience(Player player, int amount) {
-			if (player == null || amount == 0) {
+			if (player == null || player.IsDeleted || amount == 0) { //#1416 - @gainExperience can't be raised on a deleted one
 				return;
 			}
 			if (MysticHypnosis.CountsExperience(player, amount)) { //#1017 - paid on the way home from a hypnosis
@@ -77,6 +77,11 @@ namespace SteamEngine.CompiledScripts {
 			amount += Boosters.Bonus(player, baseAmount); //#1090 - Erebor's addexp: a running booster's percent of a gain
 			amount += RpRanks.Bonus(player, baseAmount); //#1116 - and the RP rank's, both of the base, added
 			amount += WorldEvents.ExperienceBonus(player, baseAmount); //#1286 - the beacons of Gondor lit: the realm's bonus
+			int? granted = LevelingTriggers.GainExperience(player, baseAmount, amount); //#1416 - @gainExperience may change it or cancel
+			if ((granted == null) || (granted.Value == 0)) {
+				return;
+			}
+			amount = granted.Value;
 			player.Experience += amount;
 			if (amount > 0) {
 				player.SysMessage("You have gained " + amount + " experience.");
@@ -383,12 +388,20 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Erebor's @death for a monster. The cap is for areas of tag.realm below 3, and not for elites.</summary>
 		public static void ShareMonsterExperience(NPC victim, Character killedBy) {
-			int reward = victim.ExperienceReward;
-			if ((reward == 0) || SummonSpellDef.IsSummonedCreature(victim)) {
+			if (SummonSpellDef.IsSummonedCreature(victim)) {
 				return;
 			}
+			int reward = victim.ExperienceReward;
 			List<Character> fighters = FindFighters(victim, killedBy, true);
 			if (fighters.Count == 0) {
+				return;
+			}
+			if (reward == 0) { //#1416 - Erebor's loop credits a kill worth nothing too, with 0
+				foreach (Character fighter in fighters) {
+					if (!ShamanPacts.GivesBloodPact(fighter as Player)) {
+						LevelingTriggers.KillCredit(fighter, victim, 0);
+					}
+				}
 				return;
 			}
 			int share = MonsterShare(reward, fighters.Count);
@@ -402,7 +415,8 @@ namespace SteamEngine.CompiledScripts {
 					continue;
 				}
 				AddExperience(fighter as Player, share);
-				ShamanPacts.ShareKillExp(fighter as Player, share);
+				LevelingTriggers.KillCredit(fighter, victim, share); //#1416 - Erebor's trigger_kill after the addexp
+				LevelingTriggers.KillCredit(ShamanPacts.ShareKillExp(fighter as Player, share), victim, share); //and on the blood pact's bearer
 				WeeklyQuests.OnKillCredit(fighter as Player, victim, share); //#1090 - @playerKill with added_experience_bydeath
 				Q017.OnKillCredit(fighter as Player, victim); //#1268 - Terlak's gate crystals
 			}
@@ -420,22 +434,22 @@ namespace SteamEngine.CompiledScripts {
 			List<Character> fighters = FindFighters(victim, killedBy, false);
 			bool immune = IsWithinPostDeathImmunity(victim) || Notoriety.IsExemptFromExperienceLoss(victim);
 			victim.SetTag(lastDeathTimeTK, Globals.TimeAsSpan);
-			if (immune || (fighters.Count == 0)) {
+			if (fighters.Count == 0) {
 				return;
 			}
-			int nextLevel = (victim.Level + 1) * settings.nextLevelCoefficient;
-			int lost = Math.Min((int) ((long) nextLevel * settings.deathExpLossPercent / 100), victim.Experience);
-			if (lost <= 0) {
-				return;
+			int lost = 0;
+			if (!immune) {
+				int nextLevel = (victim.Level + 1) * settings.nextLevelCoefficient;
+				lost = Math.Max(0, Math.Min((int) ((long) nextLevel * settings.deathExpLossPercent / 100), victim.Experience));
+				victim.Experience -= lost;
 			}
-			victim.Experience -= lost;
+			//#1416 - Erebor's loop runs whatever was lost (immune, nothing left to lose: addfame 0) and credits every fighter
 			int share = (int) ((long) lost * settings.deathExpPaidPercent / 100) / fighters.Count;
-			if (!Professions.HasProfession(victim, Professions.Craftsman)) {
-				foreach (Character fighter in fighters) {
-					if (fighter.Realm != victim.Realm) {
-						AddExperience(fighter as Player, share);
-					}
-				}
+			bool craftsman = Professions.HasProfession(victim, Professions.Craftsman);
+			foreach (Character fighter in fighters) {
+				int paid = (craftsman || ((fighter is Player) && (fighter.Realm == victim.Realm))) ? 0 : share; //own realm: player kills only, as Erebor
+				AddExperience(fighter as Player, paid);
+				LevelingTriggers.KillCredit(fighter, victim, paid);
 			}
 		}
 

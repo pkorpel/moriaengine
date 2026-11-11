@@ -79,6 +79,11 @@ and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `
 with `running`) tells it a step was really taken. It comes before `On_StepTaken`, only for a step (`@newPosition`
 fires for teleports too and has no `running`), and never for a GM.
 
+Experience has two (#1416, [leveling-experience.md](../04-gameplay-systems/leveling-experience.md)): `@gainExperience`,
+cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount` a handler may change (`BaseAmount`
+is what bonuses take their percent of); and `@killCredit` (`KillCreditArgs`: victim, share) on every fighter credited
+with a death, player or NPC.
+
 `@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow
 that landed, before its damage: a `WeaponSwingArgs` whose `DamageAfterAC` a handler may change (it's what
 `CauseDamage` gets), and both are cancellable: a cancel ends the blow as a dodged one (no damage, `@afterSwing` still
