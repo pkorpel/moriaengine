@@ -10,6 +10,11 @@ Two points a level to spend (`d_rearability`), each ability limited by class and
 keep it (`ClassAbilities.abilityDefs`); the rest are tags named as on Erebor. `ClassAbilities.Points(ch, name)` reads
 either.
 
+The class counter (`.berserker`, `.sniper`, `.ripper`, `.vigour`, the necromancer's and the mage's, Erebor's
+`specability`) is a field of the profession plugin every class has (#1438). Each class can switch on only its own;
+death takes it, in the plugin's `@death`; a new profession starts without one. Before, a counter left on through a
+profession change kept firing for the new class.
+
 ## Spell absorption
 
 `speldodge` (`a_spell_absorption`), e_allplayers' @beforegeteffect: a monster's spell on a player is swallowed whole,
@@ -126,7 +131,8 @@ the stance on a monster's. A blow's order is unchanged. The critical blow (the s
 `@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433), then the jagged bolt;
 after the mystic's stolen talents and the magic items' slayers, `@getSwingLanding`, then the dodge. Shield
 blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
-The stun blow and the critical blow's counter are shared by several classes and are still plain calls. A profession
+The stun blow and the critical blow are shared by several classes and are still plain calls (the counter itself is the
+profession plugin's since #1438). A profession
 change starts a fresh plugin: a stance and cooldowns don't carry over.
 
 ## Ranger

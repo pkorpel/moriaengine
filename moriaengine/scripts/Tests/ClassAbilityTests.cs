@@ -467,6 +467,17 @@ namespace SteamEngine.CompiledScripts {
 			CraftsmanAbilities.Vigour(player);
 			ClassAbilities.SetPoints(player, "vigourMining", 500);
 			Report("theCounterAndPointsFindBetter", CraftsmanAbilities.FindsBetter(player, "vigourMining"));
+			ProfessionPlugin plugin = ProfessionPlugin.GetInstalledPlugin(player); //#1438
+			Report("theCounterIsTheProfessionPlugins", (plugin != null) && plugin.counterOn);
+			player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //@death alone, nobody dies
+			Report("deathTakesTheCounter", !ClassAbilities.CounterOn(player));
+			player.Stam = player.MaxStam;
+			CraftsmanAbilities.Vigour(player);
+			bool onBefore = ClassAbilities.CounterOn(player);
+			player.Profession = Professions.Craftsman; //set again: a fresh plugin
+			Report("aNewProfessionDropsTheCounter", onBefore && !ClassAbilities.CounterOn(player));
+			player.Stam = player.MaxStam;
+			CraftsmanAbilities.Vigour(player); //on again, for the check below that turns it off
 
 			//#427 - the elven probe: near it ebony turns elven and an elven tree has nothing, for craftsmen only
 			CraftsmanAbilities.Vigour(player); //the counter off, or vigour could move the ebony up first
@@ -660,7 +671,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = Professions.Necromant;
 			player.Level = 100;
 			player.Stam = player.MaxStam;
-			ClassAbilities.OnDeath(player); //the craftsman's counter from earlier on this character
+			ClassAbilities.OnDeath(player); //the other classes' leftovers; a counter goes with each new profession plugin (#1438)
 			NecroAbilities.Darkpower(player);
 			Report("darkpowerTurnsTheCounterOn", ClassAbilities.CounterOn(player));
 			player.MaxMana = 200;
