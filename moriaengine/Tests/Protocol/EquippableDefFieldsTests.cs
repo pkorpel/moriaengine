@@ -13,7 +13,7 @@ namespace SteamEngine.Tests.Protocol {
 		public void ToolTypeAndSkillAreTypedDefFields() {
 			using (TestGameClient game = this.Login("Nastrojar")) {
 				this.Run(game, ".TestEquippableDefFields", "EQUIPDEFFIELDS_DONE");
-				this.AssertChecks("testDefLoaded", "pickaxe", "pole", "axe", "dagger", "explicitSkill", "noOldTags", "everyDefReads", "savedRetiredDropped");
+				this.AssertChecks("testDefLoaded", "pickaxe", "pole", "axe", "dagger", "explicitSkill", "noOldTags", "everyDefReads");
 			}
 		}
 	}

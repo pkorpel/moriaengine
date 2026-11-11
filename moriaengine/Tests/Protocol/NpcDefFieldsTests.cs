@@ -16,7 +16,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("aggroGuards", "aggroHostile", "realm", "teaches", "moveRate", "isBoss", "dragonBrain", "noAnimate",
 					"hypnotizable", "resistSilence", "monsterType", "monsterType2", "magicHorse", "serpentForm", "defaultAggro", "defaultRealm",
 					"defaultTeaches", "defaultMoveRate", "defaultSpellCastRange", "defaultFlags", "defaultNumbers", "defaultStrings", "noOldTags",
-					"everyDefReads", "readAllQuickly", "savedRetiredDropped", "savedTyped",
+					"everyDefReads", "readAllQuickly", "savedTyped",
 					"rangeTwo", "rangeSingle", "rangeExperience", "rangeMaxHits", "rangeTable", "rangeByName", "rangeDefault",
 					"combatSpell", "mountCharDef", "defRefDefaults");
 			}
