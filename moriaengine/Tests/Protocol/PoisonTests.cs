@@ -145,6 +145,35 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1422 - the running poison is its plugin.</summary>
+	[Collection(PoisonCollection.Name)]
+	public class PoisonPluginTests {
+		private readonly GameServerPairFixture fixture;
+
+		public PoisonPluginTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		[Fact]
+		public void APoisonIsItsPlugin() {
+			using var client = CommandPermissionTests.Connect("poisontest", "Poison Plugin");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestPoisonPrepare \"0\"", "POISON_PREPARED:");
+			string made = CommandPermissionTests.Ask(this.fixture, client, ".TestPoisonNpc", "POISON_NPC:");
+			string npc = made.Substring(made.IndexOf('#') + 1).Trim();
+			CommandPermissionTests.Ask(this.fixture, client, ".TestPoisonPlugin " + npc, "POISON_PLUGIN_DONE");
+			string output = this.fixture.GameOutputSnapshot();
+			string failed = "";
+			foreach (string check in new[] { "isPlugin", "listed", "bleedingKeepsGreen", "greenGoesAfter", "deathEndsIt" }) {
+				string marker = "POISON_CHECK: " + check + "=";
+				int at = output.LastIndexOf(marker, StringComparison.Ordinal);
+				if ((at < 0) || !output.Substring(at + marker.Length).StartsWith("True", StringComparison.Ordinal)) {
+					failed += " " + check;
+				}
+			}
+			Assert.True(failed.Length == 0, "Failed checks:" + failed);
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class PoisonCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Poison";

@@ -54,7 +54,7 @@ namespace SteamEngine.CompiledScripts {
 	public class AllFadingEffectsMassSetting : MassSettings_ByClass_List<FadingEffectDurationPluginDef> {
 
 		public override string Name {
-			get { return "Vsechny 'fading' efekty (bleeding, jedy, apod.)"; }
+			get { return "Vsechny 'fading' efekty (bleeding apod.)"; }
 		}
 	}
 

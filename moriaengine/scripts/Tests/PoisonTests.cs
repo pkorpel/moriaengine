@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -65,8 +66,8 @@ namespace SteamEngine.CompiledScripts {
 			Character target = (Character) Thing.UidGetCharacter(Number(Words(sa)[0]));
 			string strengths = "";
 			foreach (PoisonKind kind in Enum.GetValues(typeof(PoisonKind))) {
-				if (target.GetTimer(PoisonTimer.KeyOf(kind)) is PoisonTimer timer) {
-					strengths += kind + "=" + timer.strength + ",";
+				if (Poison.Running(target, kind) is DamagingPoisonEffectPlugin poison) {
+					strengths += kind + "=" + poison.Strength + ",";
 				}
 			}
 			Console.WriteLine("POISON_REPORT: poisoned=" + Poison.IsPoisoned(target) + " green=" + target.Flag_GreenHealthBar + " hits=" + target.Hits
@@ -109,6 +110,35 @@ namespace SteamEngine.CompiledScripts {
 			npc.SetRealSkillValue((int) SkillName.Poisoning, 1000);
 			Poison.FromMonster(npc, self);
 			Console.WriteLine("POISON_MONSTER: done");
+		}
+
+		/// <summary>#1422 - a running poison is its plugin: under its kind's key, listed by .boosts with its strength, the
+		/// green bar shared with bleeding (the bar stays while still bleeding), and a death ends it.</summary>
+		[SteamFunction]
+		public static void TestPoisonPlugin(Character self, ScriptArgs sa) {
+			Character target = (Character) Thing.UidGetCharacter(Number(Words(sa)[0]));
+			Poison.Apply(target, self, 7, 60, PoisonKind.AbsoluteDamage, true);
+			DamagingPoisonEffectPlugin poison = target.GetPlugin(DamagingPoisonEffectPlugin.KeyOf(PoisonKind.AbsoluteDamage)) as DamagingPoisonEffectPlugin;
+			string name = Loc<PoisonLoc>.Get(target.Language).Poisoned;
+			bool listed = ActiveEffects.Of(target).Exists(effect => (effect.Name == name) && (effect.Detail == "7") && string.IsNullOrEmpty(effect.Source)); //no dealer named
+			Console.WriteLine("POISON_CHECK: isPlugin=" + ((poison != null) && (poison.Kind == PoisonKind.AbsoluteDamage) && (poison.Strength == 7) && (poison.Dealer == self)));
+			Console.WriteLine("POISON_CHECK: listed=" + listed);
+
+			BleedingEffectPluginDef bleeding = (BleedingEffectPluginDef) PluginDef.GetByDefname("p_bleeding_effect");
+			bleeding.Strike(self, target, 5);
+			bool bothGreen = target.Flag_GreenHealthBar;
+			Poison.RemoveAll(target);
+			Console.WriteLine("POISON_CHECK: bleedingKeepsGreen=" + (bothGreen && !Poison.IsPoisoned(target) && target.Flag_GreenHealthBar));
+			target.DeletePlugin(bleeding.PluginKey);
+			Console.WriteLine("POISON_CHECK: greenGoesAfter=" + !target.Flag_GreenHealthBar);
+
+			Poison.Apply(self, self, 7, 60, PoisonKind.Stamina, true);
+			bool selfPoisoned = Poison.IsPoisoned(self);
+			self.CauseDeath(null);
+			bool endedAtDeath = !Poison.IsPoisoned(self);
+			self.Resurrect();
+			Console.WriteLine("POISON_CHECK: deathEndsIt=" + (selfPoisoned && endedAtDeath && !self.Flag_GreenHealthBar));
+			Console.WriteLine("POISON_PLUGIN_DONE");
 		}
 
 		[SteamFunction]
