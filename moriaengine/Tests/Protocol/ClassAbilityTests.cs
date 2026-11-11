@@ -110,7 +110,7 @@ namespace SteamEngine.Tests.Protocol {
 						"aLightCrossbowTakesJaggedBoltsOnly", "aJaggedBoltBleeds", "aCrushingArrowUsesABolt", "killsBuildASpree",
 						"theRangersPluginIsItsProfessionPlugin", "rangerCooldownsAreThePlugins", "theSpreeMeetsABlowInTheSwing", //#1431
 						"aKillChargesTheSpreeThroughTheTrigger", "theSpreeAddsThroughTheTrigger",
-						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
+						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter", "theCounterIsTheProfessionPlugins", "deathTakesTheCounter", "aNewProfessionDropsTheCounter", //#1438
 						"theCounterIsOffAgain", "anAreaHoldsTheProbe", "theProbeWandersRoundItsPoint", "ebonyTurnsElvenNearTheProbe", "oneElvenLogOnly", "anElvenTreeHasNothingThere", "onlyCraftsmenMeetTheProbe", "farFromTheProbeEbonyStays",
 						"theThiefsPluginIsItsProfessionPlugin", "thiefStateIsThePlugins", "fromBehindWithASlitInTheSwing", "hidingIsNotedOnThePlugin", //#1433
 						"aStabIsUnderWay", "aVanishedTargetFreesTheBackstab", //#1436

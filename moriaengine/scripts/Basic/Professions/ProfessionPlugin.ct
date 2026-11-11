@@ -18,3 +18,4 @@
 Var:
 	private ProfessionDef profession = null
 	private SkillRank skillRank = SkillRank.Novice
+	internal bool counterOn = false
