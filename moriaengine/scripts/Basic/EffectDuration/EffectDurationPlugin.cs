@@ -131,6 +131,13 @@ namespace SteamEngine.CompiledScripts {
 
 		private const int FirstSpellIcon = 0x8C0;
 
+		/// <summary>#1422 - false to keep .boosts from naming where the effect came from (a poison's dealer).</summary>
+		protected virtual bool ShowsSource {
+			get {
+				return true;
+			}
+		}
+
 		private string EffectSource(Character holder) {
 			string kind;
 			if ((this.flags & EffectFlag.FromSpellBook) != EffectFlag.None) {
@@ -163,7 +170,7 @@ namespace SteamEngine.CompiledScripts {
 			return new ActiveEffect(section, this.EffectName) {
 				SecondsLeft = this.Timer,
 				Detail = this.EffectDetail,
-				Source = this.EffectSource(holder),
+				Source = this.ShowsSource ? this.EffectSource(holder) : "",
 				Icon = this.EffectIcon
 			};
 		}

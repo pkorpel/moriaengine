@@ -1403,7 +1403,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (!this.Flag_Dead) {
 
-				Poison.RemoveAll(this); //#962 - f_pm_death
 				PolymorphSpellDef.End(this); //#1001 - as Sphere, the spell's memory goes with you
 				IncognitoSpellDef.End(this);
 				Notoriety.RegisterMurder(this, killedBy);

@@ -191,6 +191,14 @@ Musicianship is played by double clicking an instrument, against 0-90. Sounds ar
 
 `Poison` is Erebor's f_poison_doPoison and its poison manager, and the only way anything gets poisoned. Eight kinds: damage, percent of hits, paralysis, fizzling, stamina, and the three stat curses. One poison of each kind runs on a character; a stronger dose replaces the weaker, each hit takes a tenth off (at least 1), and it ends when nothing's left. A cure takes all of them. Poison resist of 1000 or a cure's immunity stops any new one. Hits are every 5 s, paralysis every 11 s (`PoisonEffectSettings` on .settings), and they credit the poisoner by `FightMemory`, as damage_noresponse.
 
+A running poison is its plugin (#1422): `DamagingPoisonEffectPlugin` (`p_poison`), Erebor's i_memory_jed.
+- It sits under its kind's key (`DamagingPoisonEffectPlugin.KeyOf`) and carries its kind, strength and dealer.
+- Its own tick timer does the hits. It has no duration: it ends by weakening.
+- `.boosts` lists it as "Jed" with its strength. It doesn't name the dealer (`ShowsSource`), as before.
+- The green health bar goes through the character's poison counter, which bleeding shares. Before, a poison ending cleared the bar while the character still bled, and a bleed ending cleared it while a poison ran.
+- A death ends it through `EffectDurationPlugin.On_Death`.
+- It isn't a `FadingEffectDurationPlugin`: Erebor's poison doesn't fade over a set time, and doses don't add up.
+
 A bottle is double clicked, the Poisoning button only says so; the cursor gives 20 s. It goes on a weapon with Erebor's `nastaveni_weappoison` numbers (difficulty, percent of the bottle, doses, 5000 being past anyone) or on up to 50 arrows with a poisoned kind (`<arrow>_poison`, at 75 percent). Skill must beat the weapon's difficulty plus 0-100, or 0-1000 for arrows. A blade's dose wears down with use. On a blade or an arrow the percent poison is plain damage, twelve times stronger on monsters. A failure can poison you, and a weapon's bottle can spoil. Nobody gains by use.
 
 A monster with Poisoning has its skill in 1000 of poisoning on a blow, skill / 100 strong. The Poison spell is spell_poison_custom: spell power over 150, or 140 less up to 30 by level on a monster, a point more on a monster or under a curse, plus a point of damage at once.
