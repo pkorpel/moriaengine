@@ -63,6 +63,7 @@ namespace SteamEngine.CompiledScripts {
 			Check("lootHoldRanOut", !LootHoldPlugin.IsHeld(self));
 			Check("entangledHolds", !self.CheckCanMove(false));
 			int swings = 0;
+			vine.Flag_Invulnerable = true; //#1411 - every landed blow counts, also one CauseDamage refuses (@getHit, not @damage)
 			while ((vine.GetPlugin(VineHoldPlugin.key) != null) && (swings < 500)) {
 				DamageManager.ProcessSwing(self, vine);
 				vine.Hits = vine.MaxHits;

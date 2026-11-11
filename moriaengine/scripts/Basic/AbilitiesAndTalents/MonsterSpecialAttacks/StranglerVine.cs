@@ -111,7 +111,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#778, #1409 - on the vine holding someone: it doesn't walk off while the hold is intact, and every landed
-	/// blow on it (its own @damage of a swing) counts toward letting go.</summary>
+	/// blow on it (its own @getHit) counts toward letting go.</summary>
 	public partial class VineHoldPlugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_vineHold_");
 
@@ -163,11 +163,9 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>Was DamageManager.ProcessSwing's CountEntangleHit: a landed blow on the vine.</summary>
-		public void On_Damage(DamageArgs args) {
-			if (!args.isSwing) {
-				return;
-			}
+		/// <summary>Was DamageManager.ProcessSwing's CountEntangleHit: every landed blow on the vine (#1411's @getHit, also one
+		/// CauseDamage then refuses).</summary>
+		public void On_GetHit(WeaponSwingArgs swingArgs) {
 			this.hitsLeft = MonsterSpecialAttacks.HitsLeftAfterHit(this.hitsLeft);
 			if (this.hitsLeft <= 0) {
 				Release((Character) this.Cont, this.victim);
