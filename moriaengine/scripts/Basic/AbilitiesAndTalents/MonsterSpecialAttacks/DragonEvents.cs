@@ -601,7 +601,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				if (stamp > 0) {
 					player.SysMessage("Zeme se pod tebou otrasla !");
-					DamageManager.CauseDamage(dragon, player, DamageType.Physical, stamp);
+					DamageManager.CauseDamageNoResponse(dragon, player, DamageType.Physical, stamp);
 					if (!player.IsDeleted && player.IsAliveAndValid) {
 						ParalyzeEffectPluginDef.Paralyze(player, stampParalysisKey, TimeSpan.FromSeconds((def == null) ? 2 : def.StampParalysis));
 					}

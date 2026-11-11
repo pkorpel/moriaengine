@@ -135,6 +135,13 @@ namespace SteamEngine.CompiledScripts {
 			self.Hits = self.MaxHits;
 			DamageManager.CauseDamage(self, self, DamageType.Irresistable, 20);
 			Check("playerDamageWhole", (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
+			//sourceless damage and damage_noresponse (a bleed tick, dragon fire...) never reached damage_final: whole
+			self.Hits = self.MaxHits;
+			DamageManager.CauseDamage(null, self, DamageType.Irresistable, 20);
+			bool sourceless = (self.Hits == self.MaxHits - 20);
+			self.Hits = self.MaxHits;
+			DamageManager.CauseDamageNoResponse(monster, self, DamageType.Irresistable, 20);
+			Check("noResponseWhole", sourceless && (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
 			Check("standcastRefusedUnderIt", RefusesStandcast(self));
 			//with a mana shield too: the energy shield first (20 -> 15), the mana shield takes the 15 (damage_final's order)
 			self.AddPlugin(DamageManager.manaShieldKey, ((PluginDef) AbstractScript.GetByDefname("p_mana_shield")).Create());

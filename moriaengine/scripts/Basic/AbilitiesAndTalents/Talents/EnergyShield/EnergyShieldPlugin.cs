@@ -165,15 +165,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Erebor's damage_final for a hit on a shielded one: e_energy_shield's @aftergetswing takes any damage
-		/// from anyone but a player (a blow, a spell, a monster's ability, a sourceless blast) while the shield is on,
+		/// from anyone but a player (a blow, a spell, a monster's ability such as a round attack) while the shield is on,
 		/// even at no energy; f_dmgFinal_applyEnergyShield then takes a spell again while energy is left, so a spell
-		/// costs twice and gets through twice reduced, as Erebor ran it. Called by DamageManager after the resists,
+		/// costs twice and gets through twice reduced, as Erebor ran it. Damage with no source never reached damage_final
+		/// (Sphere raises no @GetHit then), nor did damage_noresponse (DamageManager.CauseDamageNoResponse: bleeding,
+		/// dragon fire, hazard tiles, multishot). Called by DamageManager after the resists,
 		/// before the mana shield, armor wear and minimal damage. Fixed from Erebor: its partial absorb divided by the
 		/// covered share (100 damage on 10 energy hit for 790); here the covered part is let through at ShieldPower
 		/// percent and the rest whole.</summary>
 		internal static double Absorb(Character attacker, Character defender, double damage, bool isSpell) {
 			EnergyShieldPlugin shield = Of(defender);
-			if ((shield == null) || shield.resting || ((attacker != null) && attacker.IsPlayer)) {
+			if ((shield == null) || shield.resting || (attacker == null) || attacker.IsPlayer) {
 				return damage;
 			}
 			damage = shield.Take(defender, damage, "Rana pohlcena stitem", "Rana castecne pohlcena stitem");

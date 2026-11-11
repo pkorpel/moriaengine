@@ -129,10 +129,19 @@ namespace SteamEngine.CompiledScripts {
 			return dealt;
 		}
 
-		/// <summary>#872 - a bleed's tick: casting is only sometimes interrupted (chance_to_fizz).</summary>
+		/// <summary>#872 - a bleed's tick: casting is only sometimes interrupted (chance_to_fizz). #1401 - Erebor's
+		/// damage_noresponse (i_krvaceni's tick): no energy shield.</summary>
 		public static int CauseBleedDamage(Character attacker, Character defender, DamageType flags, double damage, bool interruptCasting) {
 			double unused;
-			return CauseDamage(attacker, defender, flags, damage, false, false, out unused, interruptCasting);
+			return CauseDamage(attacker, defender, flags, damage, false, false, out unused, interruptCasting, true);
+		}
+
+		/// <summary>#1401 - Erebor's damage_noresponse with a source (dragon fire and stamp, hazard tiles, multishot):
+		/// straight to the hits, past damage_final, so the energy shield doesn't see it. Sourceless damage never
+		/// reaches it either (Sphere's @GetHit isn't raised without a source).</summary>
+		public static int CauseDamageNoResponse(Character attacker, Character defender, DamageType flags, double damage) {
+			double unused;
+			return CauseDamage(attacker, defender, flags, damage, false, false, out unused, true, true);
 		}
 
 		/// <summary>#860 - Erebor's f_dmgFinal_MvM_minimalDMG and f_dmgFinal_PvX_minimalDMG, after
@@ -164,7 +173,7 @@ namespace SteamEngine.CompiledScripts {
 			return taken;
 		}
 
-		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true) {
+		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true, bool noResponse = false) {
 			reactiveReturn = 0;
 			if (MonsterSpecialAttacks.TryRinald(attacker, defender)) { //#1022 e_rinald: only players hurt him, his invulnerability answers too
 				return 0;
@@ -220,7 +229,9 @@ namespace SteamEngine.CompiledScripts {
 				damage = Math.Max(0, damage);
 				//#1401 - Erebor's damage_final: the energy shield after the resists, before the mana shield (@damage),
 				//armor wear and minimal damage
-				damage = EnergyShieldPlugin.Absorb(attacker, defender, damage, isSpell);
+				if (!noResponse) {
+					damage = EnergyShieldPlugin.Absorb(attacker, defender, damage, isSpell);
+				}
 				if (isSwing || isSpell) {
 					damage = CombatCalculator.RoundLikeSphere(damage);
 					CombatWear.OnDamageTaken(defender, (int) damage, attacker);

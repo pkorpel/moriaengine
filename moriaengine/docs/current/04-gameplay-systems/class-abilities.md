@@ -83,11 +83,14 @@ and exactly 60 does nothing, as Erebor's.
 
 - It holds 45 s and half a second a point, with 5 energy a point. As Erebor's damage_final ran it
   (`EnergyShieldPlugin.Absorb`, called by `DamageManager.CauseDamage` after the resists, before the mana shield, armor
-  wear and minimal damage): any damage whose source isn't a player (a blow, a spell, a monster's ability, a sourceless
-  blast) takes its whole amount off the energy and lets through a share of it: 100 less a tenth of i_energyshield's
+  wear and minimal damage): any damage from a source that isn't a player (a blow, a spell, a monster's ability such as
+  a round attack) takes its whole amount off the energy and lets through a share of it: 100 less a tenth of i_energyshield's
   table (21 a point to 10, 18 to 20, 15 to 30, 12 to 40, 10 to 50), so 79 % at 10 points and 24 % at 50. A spell goes
   through it twice (e_energy_shield's @aftergetswing, then f_dmgFinal_applyEnergyShield while energy is left): 20
-  becomes 15 and then 11 at 10 points, and costs 35 energy. A player's damage, and starving, isn't touched.
+  becomes 15 and then 11 at 10 points, and costs 35 energy. Damage that never reached Erebor's damage_final isn't
+  touched: a player's, damage with no source (traps, bombs, poison ticks, starving, the wraith curse; Sphere raises no
+  @GetHit then), and damage_noresponse (`DamageManager.CauseDamageNoResponse`: bleed ticks, dragon fire and stamp,
+  hazard tiles, multishot).
 - The blow that empties it: the energy left covers that much of the blow at the shield's share, the rest goes through
   whole. The energy stays below zero, so the shield still counts as up for that blow's knockback, bleeding and eye
   drain, until the timer's next tick starts the rest (Erebor's timer=0). Fixed from Erebor, whose formula divided by the
