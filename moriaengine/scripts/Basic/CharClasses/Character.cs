@@ -2246,10 +2246,11 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1386 - @denyMove: whatever holds a character still (a plugin returning Cancel: a cast's freeze,
 		/// paralysis) refuses here, before any step is worked out - as Sphere's immobile flags, so a refused step doesn't
-		/// shove anyone first (#767's collision comes after this and before @step).</summary>
+		/// shove anyone first (#767's collision comes after this and before @step). #1409 - the GM's freeze, flag_immobile,
+		/// a looter's hold and a strangler vine are plugins answering it too; only the stamina rule, for everyone, stays
+		/// here.</summary>
 		public override bool CheckCanMove(bool running) {
-			return GmTools.CheckCanMove(this) && (this.TryCancellableTrigger(tkDenyMove, new ScriptArgs(running)) != TriggerResult.Cancel)
-				&& MonsterSpecialAttacks.CheckEntangledCanMove(this) && MysticMind.CheckCanMove(this) && MovementStamina.CheckCanMove(this) && CorpseLooting.CheckCanMove(this); //#1107 - .freeze, #1023 a looter's hold
+			return (this.TryCancellableTrigger(tkDenyMove, new ScriptArgs(running)) != TriggerResult.Cancel) && MovementStamina.CheckCanMove(this);
 		}
 
 		//#779 walking stamina drain

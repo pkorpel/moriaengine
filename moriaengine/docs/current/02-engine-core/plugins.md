@@ -73,7 +73,8 @@ spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `Monster
 whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. A character's
 `@denyMove` (`Character.CheckCanMove`, #1386) asks whether it may move at all, before the step
 is worked out: a plugin returning Cancel holds it still (`CastFreezePlugin`, the paralysis
-plugin). Refusing in `@step` instead comes too late: #767's collision with other characters
+plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `EntangledPlugin`
+and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `@step` instead comes too late: #767's collision with other characters
 (a shove, its stamina) runs before `@step`.
 
 ## Declaring a plugin

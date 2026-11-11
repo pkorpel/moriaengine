@@ -4,9 +4,11 @@ Every step a character takes goes through `AbstractCharacter.WalkRunOrFly`
 (`GameCore/AbstractCharacter.cs`), whether it's a player's move-request packet
 (`MovementState.Movement`), an NPC AI step (`NPCAiTimer.TryStep`) or an AStar walk. The order is:
 
-1. `CheckCanMove` - can the character take a step at all: a GM's `.freeze`, the character's
-   `@denyMove` (a plugin returning Cancel holds it still: paralysis, a cast under Standcast,
-   #1386), held by a strangler vine, too exhausted, too overloaded (#778/#779, below). GM players
+1. `CheckCanMove` - can the character take a step at all: the character's `@denyMove` (a plugin
+   returning Cancel holds it still: paralysis, a cast under Standcast #1386, and since #1409 a GM's
+   `.freeze` `GmFreezePlugin`, Sphere's flag_immobile `ImmobilePlugin`, a looter's hold
+   `LootHoldPlugin`, a strangler vine's `EntangledPlugin`/`VineHoldPlugin`; with several, the newest
+   answers first and its line shows), then too exhausted, too overloaded (#778/#779, below). GM players
    skip it, so paralysis no longer holds a GM (it refused at `@step` before #1386, after the
    collision below had already shoved).
 2. `Map.CheckMovement` - terrain, statics, items, climb height. Characters are not considered here.

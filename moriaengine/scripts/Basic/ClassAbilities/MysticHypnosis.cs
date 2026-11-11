@@ -271,7 +271,7 @@ namespace SteamEngine.CompiledScripts {
 			ego.Hits = self.Hits;
 			ego.Flag_WarMode = false;
 			ego.SetTag(EgoOfTK, self);
-			ego.SetTag(MysticMind.ImmobileTK, 1);
+			ImmobilePlugin.Set(ego, true);
 			ParalyzeEffectPluginDef.Paralyze(ego, egoParalysisPK, TimeSpan.FromDays(1));
 			if (self.FindLayer(LayerNames.Hair) is Item hair) {
 				Copy(hair, ego, true);
@@ -343,7 +343,7 @@ namespace SteamEngine.CompiledScripts {
 			Archer(self, monster);
 			monster.Flag_WarMode = false;
 			monster.Flag_Invulnerable = true;
-			monster.SetTag(MysticMind.ImmobileTK, 1);
+			ImmobilePlugin.Set(monster, true);
 			monster.P(monster.X, monster.Y, monster.Z, (byte) ParkedPlane);
 
 			if (ball != null) {
@@ -429,7 +429,7 @@ namespace SteamEngine.CompiledScripts {
 				monster.Stam = self.Stam;
 				monster.Mana = self.Mana;
 				monster.Flag_Invulnerable = state.monsterInvulnerable;
-				monster.RemoveTag(MysticMind.ImmobileTK);
+				ImmobilePlugin.Set(monster, false);
 				monster.Flag_WarMode = false;
 				monster.ExperienceReward += Math.Max(state.gained, 0);
 				if (paralyzed) { //Erebor's: forever
