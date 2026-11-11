@@ -114,7 +114,7 @@ Erebor's small icons at the top left (`AbilityIcons.cs`): a charge (magic charge
 strike) as its picture with a small one per charge (`d_charge`), a readied split shot (`d_splitShot`) and a readied
 crushing arrow (`d_crushingArrow`). They stand side by side, 50 apart, each keeping its place while open.
 
-## Mystic's catch, catch field and control (#1455)
+## Mystic's catch, catch field, control and buff steal (#1455, #1457)
 
 Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
 - **`.catch`** is a `CatchPlugin` on the mystic (`i_catchitem`). It ticks every second: the hold starts, then mana and
@@ -128,6 +128,14 @@ Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
   cooldown. As with the other classes, setting the profession again resets it.
 - A monster keeps Erebor's tags after a hold: `_wasCatched_` (a second catch hurts the mystic) and
   `_catchFieldReleasedAt_` (no field again for an hour).
+- **`.buffsteal`** (#1457) is a `BuffStealPlugin` on the mystic (`i_buffSteal`). It goes through 3 s of wind-up, then
+  60 s of the stolen talent (or of the crippling after a fatal failure), then its rest of 50 s + 7 a power. A stolen
+  attack talent (`tag.buffDmgBonus`) adds to blows and spell power against monsters, at the plugin's own `@swingLanding`
+  and `@spellPower`. Its own `@death` ends it, as Erebor's `e_mystik @death` consumes `i_buffSteal`: a held talent goes
+  back and the rest goes with it. Whenever it goes while a talent is held, its `@unAssign` gives the talent back, as
+  Erebor's `@unEquip`.
+- The robbed monster has a `BuffStolenPlugin` (`i_buffStealNPC`) for 60 s. Its blows lose the cut
+  (`tag.changeDmgPercent`) at its own `@swingLanding`, Erebor's `e_npcChangeDmg @AfterSwing`.
 
 ## Mystic hypnosis and the world
 
@@ -199,8 +207,9 @@ The warrior has its own profession plugin, `WarriorProfessionPlugin` (`p_profess
 holds the stance and the cooldowns of round attack, leap, war cry and both taunts. Erebor kept these in tags. It also
 changes the warrior's blows through `@swingLanding` and `@getSwingLanding`: double swing and the stance on its own blow,
 the stance on a monster's. A blow's order is unchanged. The critical blow (the shared counter) runs first, then
-`@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433), then the jagged bolt;
-after the mystic's stolen talents and the magic items' slayers, `@getSwingLanding`, then the dodge. Shield
+`@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433) and the mystic's
+buff steal on either side (#1457), then the jagged bolt; after the magic items' slayers, `@getSwingLanding`, then the
+dodge. Shield
 blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
 The stun blow and the critical blow are shared by several classes and are still plain calls (the counter itself is the
 profession plugin's since #1438). A profession

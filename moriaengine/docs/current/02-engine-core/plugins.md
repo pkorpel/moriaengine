@@ -90,8 +90,10 @@ monster's loot there.
 
 Spells have two more (#1419, [magery-spells.md](../04-gameplay-systems/magery-spells.md)): `@spellPower` on the caster
 (`SpellPowerArgs`, a mutable `SpellPower`), before the target's defense and after the inline pre-defense modifiers;
-and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The profession plugin gives the necromancer's and mage's mana back there (#1440). The pre-defense modifiers (charge,
-Koncentrace, a stolen talent) stay at a fixed point because they multiply in order and plugins run newest first.
+and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The profession plugin gives the necromancer's
+and mage's mana back there (#1440). The charge and Koncentrace stay at a fixed point because they multiply in order and
+plugins run newest first; the mystic's stolen attack talent, which came last of them anyway, answers `@spellPower` on its
+`BuffStealPlugin` (#1457).
 
 `@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow
 that landed, before its damage: a `WeaponSwingArgs` whose `DamageAfterAC` a handler may change (it's what
@@ -106,7 +108,8 @@ Before the dodge, a swing raises `@swingLanding` on the attacker and `@getSwingL
 `@aftergetswing`: armour and the monsters' own modifiers are applied and the dodge is still to come. Erebor rolled its
 dodge first and ran them on a dodged blow and a landed one alike, so they run on both here too. Handlers change
 `DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them, and so do the shaman's
-empathy elixir (`EmpathyPlugin`, #1447) and a monster held by a mystic's catch field (`CaughtPlugin`, #1455).
+empathy elixir (`EmpathyPlugin`, #1447), a monster held by a mystic's catch field (`CaughtPlugin`, #1455) and the
+mystic's buff steal on both sides (`BuffStealPlugin`, `BuffStolenPlugin`, #1457).
 
 Once a landed blow's damage is dealt, a swing raises `@afterHit` on the attacker and `@afterGetHit` on the defender
 (#1445, `DamageManager.Trigger_AfterHit`, args: the `WeaponSwingArgs` and the damage). They come after the damage, the

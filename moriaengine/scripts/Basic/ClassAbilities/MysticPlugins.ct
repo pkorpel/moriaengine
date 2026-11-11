@@ -37,3 +37,19 @@ Vars:
 [PluginTemplate ControlNpcPlugin : TimerPlugin]
 Vars:
 	internal Character target = null
+
+[PluginTemplate BuffStealPlugin : TimerPlugin]
+Vars:
+	internal Character target = null
+	internal int type = 0
+	internal int power = 0
+	internal int changed = 0
+	internal int state = 0
+	internal bool success = false
+	internal int bonus = 0
+
+[PluginTemplate BuffStolenPlugin : TimerPlugin]
+Vars:
+	internal int type = 0
+	internal int changed = 0
+	internal int cut = 0
