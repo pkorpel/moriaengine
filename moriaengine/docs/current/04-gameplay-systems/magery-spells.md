@@ -46,6 +46,16 @@ triggers:
 1. Determines spell power: either mind-power-based (`SpellFlag.UseMindPower`, see
    [Spells in combat.md](combat.md#swing-formulas-860)) or Magery skill
    (`GetSpellPowerAgainstChar`/`GetSpellPowerAgainstNonChar`).
+   - Against a character, the inline modifiers are applied in a fixed order before the target's defense: a mage's
+     charge, the shaman's Koncentrace, a mystic's stolen talent. Then the caster's `@spellPower` is raised (#1419,
+     `SpellPowerArgs`: a handler may change `SpellPower`). Then the defense is taken, and magic items' slayers are
+     applied after it.
+   - Against an item or the ground, `@spellPower` comes after the charge bonus, with that spot as `Target`
+     (`TargetChar` null).
+   - An area spell raises it for every character or item in range, before its friend/foe filter. That includes the
+     caster, who is then skipped. A once-per-cast handler compares `Target` with `MainTarget`.
+   - NPC casts through `NPCAiTimer.TryCastSpell` use a fixed power (`NpcSpellChoice.SpellPower`) and raise neither
+     `@spellPower` nor `@monsterSpellPower`.
 2. Dispatches to `Trigger_EffectChar`/`Trigger_EffectItem`/`Trigger_EffectGround` based on
    what the resolved target actually is and which `SpellFlag.CanEffect*` bits the spell
    declares (lines 472-507) - each is its own cancellable trigger chain
@@ -60,6 +70,19 @@ triggers:
 4. `CheckSpellPowerWithMessage` (line 567) gates the whole thing: `CanEffectDeadChar` must be
    set to affect a dead character at all, and a harmful spell with `SpellPower < 1` (fully
    resisted) sends "You feel yourself resisting magical energy" and does nothing.
+
+After a successful Magery cast, the caster's `@spellSuccess` is raised (#1419, `SpellSuccessArgs`: spell, target,
+fromScroll). It comes at the end of `MagerySkillDef.On_Success`:
+1. the cast is paid;
+2. `SpellDef.Trigger_Success` runs, which may have done nothing: refused at the target, cancelled, or resisted;
+3. the inline after-cast work: combat wear, a mage's charge, the necromancer's bookkeeping;
+4. then `@spellSuccess`.
+
+Notes:
+- The timing is ours. 0.99z8 has no `@spellSuccess`, and later Sphere raises it before the effect.
+- `Target` may be a character the spell just killed, already deleted.
+- NPC casts through `NPCAiTimer.TryCastSpell` skip the skill sequence and don't raise it.
+- A scroll's cast, a custom spell scroll's too, raises it with `fromScroll` set.
 
 Region-based magic blocking (`CheckPermissionOutgoing`/`CheckPermissionIncoming`, lines
 718-771) checks `RegionFlags.NoMagicIn/Out`, `NoBeneficialMagicIn/Out`,

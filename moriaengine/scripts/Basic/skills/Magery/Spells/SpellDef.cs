@@ -666,6 +666,18 @@ namespace SteamEngine.CompiledScripts {
 			return args.LevelBonus;
 		}
 
+		private static readonly TriggerKey tkSpellPower = TriggerKey.Acquire("spellPower");
+
+		/// <summary>#1419 - the caster's @spellPower: a handler may change the power, after the inline modifiers (charge,
+		/// Koncentrace, a stolen talent) and before the target's defense. Plugins run newest first, so a change whose
+		/// result depends on another's order belongs at a fixed point instead. An area spell raises it for everything in
+		/// range, before its friend/foe filter: a once-per-cast handler compares Target with MainTarget.</summary>
+		private int TriggerSpellPower(Character caster, IPoint3D mainTarget, IPoint3D target, int spellPower) {
+			SpellPowerArgs args = new SpellPowerArgs(caster, this, mainTarget, target, spellPower);
+			caster.TryTrigger(tkSpellPower, new ScriptArgs(args));
+			return args.SpellPower;
+		}
+
 		//#962 - evil without spellflag_SM: this roll of the power has to reach the target's defense
 		private int[] resistRoll;
 
@@ -697,6 +709,7 @@ namespace SteamEngine.CompiledScripts {
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower, currentTarget);
 			spellPower = ShamanAbilities.Concentrate(caster, currentTarget, this, spellPower); //#1017 - Koncentrace
 			spellPower = MysticMind.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - a stolen attack talent
+			spellPower = this.TriggerSpellPower(caster, mainTarget, currentTarget, spellPower); //#1419 - @spellPower, before the defense
 			if (usesMindPower) {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
 				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);
@@ -723,6 +736,7 @@ namespace SteamEngine.CompiledScripts {
 		private void GetSpellPowerAgainstNonChar(Character caster, IPoint3D target, IPoint3D currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
 			int spellPower = caster.GetSkill(SkillName.Magery);
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
+			spellPower = this.TriggerSpellPower(caster, target, currentTarget, spellPower); //#1419 - an item or the ground
 			if (sea == null) {
 				sea = SpellEffectArgs.Acquire(caster, target, currentTarget, this, spellPower, effectFlag);
 			} else {
@@ -947,6 +961,49 @@ namespace SteamEngine.CompiledScripts {
 			this.Caster = caster;
 			this.Spell = spell;
 			this.Target = target;
+		}
+	}
+
+	/// <summary>#1419 - the caster's @spellPower: the spell's power on Target (a character before its defense, or an
+	/// item or the ground); a handler may change SpellPower. MainTarget is what the cast was aimed at; an area spell
+	/// raises it for every Target in range, before its friend/foe filter.</summary>
+	public class SpellPowerArgs {
+		public readonly Character Caster;
+		public readonly SpellDef Spell;
+		public readonly IPoint3D MainTarget;
+		public readonly IPoint3D Target;
+		public int SpellPower;
+
+		public SpellPowerArgs(Character caster, SpellDef spell, IPoint3D mainTarget, IPoint3D target, int spellPower) {
+			this.Caster = caster;
+			this.Spell = spell;
+			this.MainTarget = mainTarget;
+			this.Target = target;
+			this.SpellPower = spellPower;
+		}
+
+		/// <summary>The target when it's a character, else null.</summary>
+		public Character TargetChar {
+			get {
+				return this.Target as Character;
+			}
+		}
+	}
+
+	/// <summary>#1419 - the caster's @spellSuccess: a cast through Magery succeeded and was paid, after SpellDef.Trigger_Success
+	/// (which may have done nothing: refused at the target, cancelled, resisted). Not 0.99z8's (it has none); later
+	/// Sphere's fires before the effect. Target may be a character the spell killed (deleted).</summary>
+	public class SpellSuccessArgs {
+		public readonly Character Caster;
+		public readonly SpellDef Spell;
+		public readonly IPoint3D Target;
+		public readonly bool FromScroll;
+
+		public SpellSuccessArgs(Character caster, SpellDef spell, IPoint3D target, bool fromScroll) {
+			this.Caster = caster;
+			this.Spell = spell;
+			this.Target = target;
+			this.FromScroll = fromScroll;
 		}
 	}
 
