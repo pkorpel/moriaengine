@@ -66,7 +66,7 @@ it came from. Plugins hear a trigger newest first, so where the order of two cha
 energy shield, then mana shield) the first is called at a fixed point instead (`EnergyShieldPlugin.Absorb`). Magery
 adds four of its own: `@spellCastTry` (#1401) after mana and reagents and before the casting rules
 (`SpellCastRules`), the cancellable `@denySpellCast` (#1401) right after the rules (the energy shield refuses Recall
-there), and (#1386) `@spellCast` once a player's cast is under way (`MagerySkillDef.On_Start`, after mana,
+there, the shaman's voodoo curses casting or Recall, #1450), and (#1386) `@spellCast` once a player's cast is under way (`MagerySkillDef.On_Start`, after mana,
 reagents, the casting rules and the spell's own `@start`; custom spell scrolls raise it too, NPC
 casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
 spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `MonsterSpellPowerArgs`
@@ -77,7 +77,7 @@ plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `E
 and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `@step` instead comes too late: #767's collision with other characters
 (a shove, its stamina) runs before `@step`. After the step, `@stepTaken` (#1414, `AbstractCharacter.Trigger_StepTaken`,
 with `running`) tells it a step was really taken. It comes before `On_StepTaken`, only for a step (`@newPosition`
-fires for teleports too and has no `running`), and never for a GM.
+fires for teleports too and has no `running`), and never for a GM. A voodoo curse throws its rider there (#1450).
 
 Experience has two (#1416, [leveling-experience.md](../04-gameplay-systems/leveling-experience.md)): `@gainExperience`,
 cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount` a handler may change (`BaseAmount`
