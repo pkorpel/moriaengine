@@ -58,8 +58,18 @@ ranges (`int[]` fields, about 108: stats, experience, every monster ability's nu
 both) into the comma list FieldValue reads an array from, and maps the keywords that differ
 from their field (`str` to `strRange`, `experience` to `experienceWorth`...); a value of another
 shape is warned about and left unset. The dragon, boss, Halda Molle and HCN tomb abilities read
-their numbers by field name through `NPCDef.AbilityTuning`; the rest read the properties. Its lists are still tags until they
-move too (see `CLAUDE.md`).
+their numbers by field name through `NPCDef.AbilityTuning`; the rest read the properties. Its add-up lists are array
+fields since #1405, one element per script line: `spellList` (addspell), `summonList`, `battleSummonList`, `lootList`,
+`equipList` with `equipColorList`/`equipNameList` by index, `resourceList` and `foodTypeList` (the last line),
+`skillRangeList`/`resistRangeList` ("Name min max" each) and the raw `can` text. `NPCDef.LoadScriptLine` gathers a keyword's
+lines and gives the field the whole list each time, so the order is the script's; the old properties (`Spells`, `Loot`,
+`StartingEquipment`, `SkillValueRanges`...) read the fields and build their objects once for the array they came from, so a
+GM's change shows. A list field naming defs must not be named as its keyword: a line named as a field loads at once in
+`AbstractDef.LoadScriptLines`, before the other scripts, and the rest wait until all are loaded (an `addspell` line needs
+its spell loaded). `Tests/Protocol/Data/NpcDefLists.txt` holds what every NPCDef's lists read as, and
+`NpcDefFieldsTests.TheListsReadAsTheyDid` compares with it. A list line holding a quote, `<` or `>` is warned about and
+left out (FieldValue would run it through LScript once, fixing a per-spawn expression). Array fields can't be edited from
+the def info dialog (no simple text loader for arrays, as #1377's ranges).
 
 ### Code that sets a def value while scripts load
 

@@ -18,6 +18,7 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
@@ -123,7 +124,22 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class NPCDef {
-		private static readonly TagKey instanceSpellsTK = TagKey.Acquire("_npcSpells_");
+		//#1405 - the add-up lists are typed fields (NPC.ct); the properties below read them as they did the tags, built once
+		//for the array they were built from, so a GM's change to a field shows
+		private const int SlotSpells = 0, SlotSummons = 1, SlotBattleSummons = 2, SlotLoot = 3, SlotResources = 4, SlotFoodTypes = 5,
+			SlotSkills = 6, SlotResists = 7, SlotCan = 8, SlotEquip = 9, SlotCount = 10;
+		private readonly object[] listSources = new object[SlotCount];
+		private readonly object[] listViews = new object[SlotCount];
+
+		private T Derived<T>(int slot, object source, Func<T> build) where T : class {
+			if (!ReferenceEquals(source, this.listSources[slot])) {
+				this.listViews[slot] = (source == null) ? null : build();
+				this.listSources[slot] = source;
+			}
+			return (T) this.listViews[slot];
+		}
+
+		private Dictionary<string, List<string>> pendingLists; //a section's lines gathered while it loads, by field
 
 		/// <summary>#564 - the full set of spells this NPC species can cast (addspell= in the real
 		/// archive, often 2-4 per mage-type NPC), as opposed to CombatSpell (a single, always-the-
@@ -135,10 +151,11 @@ namespace SteamEngine.CompiledScripts {
 		/// regresses for any existing single-spell-only NPCDef.</summary>
 		public List<SpellDef> Spells {
 			get {
-				return this.GetTag(instanceSpellsTK) as List<SpellDef>;
+				SpellDef[] source = this.SpellList;
+				return this.Derived(SlotSpells, source, () => new List<SpellDef>(source));
 			}
 			set {
-				this.SetTag(instanceSpellsTK, value);
+				this.SpellList = value?.ToArray();
 			}
 		}
 
@@ -170,13 +187,13 @@ namespace SteamEngine.CompiledScripts {
 		public int RollDex() { return RollStatRange(this.DexRange); }
 		public int RollInt() { return RollStatRange(this.IntRange); }
 
-		private static readonly TagKey summonedCreaturesTK = TagKey.Acquire("_npcSummonedCreatures_");
-		private static readonly TagKey battleSummonsTK = TagKey.Acquire("_npcBattleSummons_");
-
 		/// <summary>#1022 - e_npc_summoner's list, tag.npc_summoner_char[N].</summary>
 		public List<NPCDef> BattleSummons {
-			get { return this.GetTag(battleSummonsTK) as List<NPCDef>; }
-			set { this.SetTag(battleSummonsTK, value); }
+			get {
+				NPCDef[] source = this.BattleSummonList;
+				return this.Derived(SlotBattleSummons, source, () => new List<NPCDef>(source));
+			}
+			set { this.BattleSummonList = value?.ToArray(); }
 		}
 
 		/// <summary>e_npc_summoning's own per-species reinforcement list (real archive fields
@@ -185,8 +202,11 @@ namespace SteamEngine.CompiledScripts {
 		/// EVERY entry here per proc (matching the archive's own loop-over-all-indices), not a
 		/// random pick.</summary>
 		public List<NPCDef> SummonedCreatures {
-			get { return this.GetTag(summonedCreaturesTK) as List<NPCDef>; }
-			set { this.SetTag(summonedCreaturesTK, value); }
+			get {
+				NPCDef[] source = this.SummonList;
+				return this.Derived(SlotSummons, source, () => new List<NPCDef>(source));
+			}
+			set { this.SummonList = value?.ToArray(); }
 		}
 
 		/// <summary>Rolls a value in [min, max] (inclusive) from `range`, or null if `range` is
@@ -209,8 +229,6 @@ namespace SteamEngine.CompiledScripts {
 		public int RollMaxStam() { return RollStatRange(this.MaxStamRange); }
 		public int RollMaxMana() { return RollStatRange(this.MaxManaRange); }
 
-		private static readonly TagKey skillValueRangesTK = TagKey.Acquire("_skillValueRanges_");
-
 		/// <summary>Starting skill-value {min, max} ranges for a fresh NPC of this type (#562),
 		/// keyed by SkillName, rolled once at creation by NPC.On_Create via Character.
 		/// SetRealSkillValue. A generic dictionary rather than one property per skill (unlike
@@ -219,8 +237,21 @@ namespace SteamEngine.CompiledScripts {
 		/// member name (e.g. "Wrestling = 700 800"), matched case-insensitively in
 		/// LoadScriptLine's fallback below.</summary>
 		public Dictionary<SkillName, int[]> SkillValueRanges {
-			get { return this.GetTag(skillValueRangesTK) as Dictionary<SkillName, int[]>; }
-			set { this.SetTag(skillValueRangesTK, value); }
+			get {
+				string[] source = this.SkillRangeList;
+				return this.Derived(SlotSkills, source, () => {
+					Dictionary<SkillName, int[]> ranges = new Dictionary<SkillName, int[]>();
+					foreach (string entry in source) {
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							ranges[(SkillName) Enum.Parse(typeof(SkillName), t[0], true)] = new int[] { ConvertTools.ParseInt32(t[1]), ConvertTools.ParseInt32(t[2]) };
+						} catch (Exception e) {
+							this.SkipBadElement("skillRangeList", entry, e);
+						}
+					}
+					return ranges;
+				});
+			}
 		}
 
 		/// <summary>Rolls the configured range for `skill`, or -1 if this NPCDef never
@@ -248,8 +279,6 @@ namespace SteamEngine.CompiledScripts {
 			"ResistDragon", "ResistParalyse", "ResistCurse"
 		};
 
-		private static readonly TagKey resistRangesTK = TagKey.Acquire("_resistRanges_");
-
 		/// <summary>Starting Resist* {min, max} ranges for a fresh NPC of this type, keyed by
 		/// the real Character property name (e.g. "ResistPoison") - same generic-dictionary
 		/// shape as SkillValueRanges above, since there are 17 resist fields, not a small fixed
@@ -259,8 +288,21 @@ namespace SteamEngine.CompiledScripts {
 		/// already store it as a delta against this NPCDef's own (now otherwise-unused) base
 		/// Resist* scalar, exactly like the Str/Dex/Int precedent (#559) above.</summary>
 		public Dictionary<string, int[]> ResistRanges {
-			get { return this.GetTag(resistRangesTK) as Dictionary<string, int[]>; }
-			set { this.SetTag(resistRangesTK, value); }
+			get {
+				string[] source = this.ResistRangeList;
+				return this.Derived(SlotResists, source, () => {
+					Dictionary<string, int[]> ranges = new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase);
+					foreach (string entry in source) {
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							ranges[t[0]] = new int[] { ConvertTools.ParseInt32(t[1]), ConvertTools.ParseInt32(t[2]) };
+						} catch (Exception e) {
+							this.SkipBadElement("resistRangeList", entry, e);
+						}
+					}
+					return ranges;
+				});
+			}
 		}
 
 		/// <summary>One "Equip = defname[, amount or {min max}]" line (#563) - the real archive's
@@ -373,7 +415,6 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		private static readonly TagKey instanceStartingEquipmentTK = TagKey.Acquire("_npcStartingEquipment_");
 
 		/// <summary>Starting-equipment list for a fresh NPC of this type (#563) - each entry
 		/// created and handed to ThingDef.Create(this) once at creation by NPC.On_Create, which
@@ -381,11 +422,27 @@ namespace SteamEngine.CompiledScripts {
 		/// backpack otherwise (ammo like arrows). Multiple entries are normal - a real chardef
 		/// can have several `Equip =` lines (e.g. a ranger's bow THEN its arrows).</summary>
 		public List<StartingEquipmentEntry> StartingEquipment {
-			get { return this.GetTag(instanceStartingEquipmentTK) as List<StartingEquipmentEntry>; }
-			set { this.SetTag(instanceStartingEquipmentTK, value); }
+			get {
+				string[] lines = this.EquipList, colors = this.EquipColorList, names = this.EquipNameList;
+				object source = (lines == null) ? null : new object[] { lines, colors, names };
+				if ((source != null) && (this.listSources[SlotEquip] is object[] was) && ReferenceEquals(was[0], lines)
+						&& ReferenceEquals(was[1], colors) && ReferenceEquals(was[2], names)) {
+					source = was;
+				}
+				return this.Derived(SlotEquip, source, () => {
+					List<StartingEquipmentEntry> entries = new List<StartingEquipmentEntry>();
+					for (int i = 0; i < lines.Length; i++) {
+						StartingEquipmentEntry entry = ParseEquipEntry("NPCDef " + this.PrettyDefname, 0, lines[i]);
+						if (entry != null) {
+							entry.Color = ((colors != null) && (i < colors.Length) && !string.IsNullOrEmpty(colors[i])) ? colors[i] : null;
+							entry.Name = ((names != null) && (i < names.Length) && !string.IsNullOrEmpty(names[i])) ? names[i] : null;
+							entries.Add(entry);
+						}
+					}
+					return entries;
+				});
+			}
 		}
-
-		private static readonly TagKey lootTK = TagKey.Acquire("_npcLoot_");
 
 		/// <summary>#791 - the monster's loot, Erebor's ON=@NPCRestock "ITEM=" lines ("Loot = ..." in
 		/// .def content, see the converter): each "item[,amount]" - an itemdef, a RANDOM_* pick-list
@@ -393,14 +450,17 @@ namespace SteamEngine.CompiledScripts {
 		/// (NPC.On_Create), so it falls to the corpse on death. "Loot = i_gold" is the gold marker
 		/// whose amount MonsterLoot sets from the monster's experience.</summary>
 		public List<string> Loot {
-			get { return this.GetTag(lootTK) as List<string>; }
+			get {
+				string[] source = this.LootList;
+				return this.Derived(SlotLoot, source, () => new List<string>(source));
+			}
 			set {
-				this.SetTag(lootTK, value);
-				this.lootRunners = null;
+				this.LootList = value?.ToArray();
 			}
 		}
 
-		private LScriptHolder[] lootRunners; //compiled "ITEM = <loot line>" scripts, built on first use
+		private LScriptHolder[] lootRunners; //compiled "ITEM = <loot line>" scripts, built on first use for lootRunnersOf
+		private List<string> lootRunnersOf;
 
 		/// <summary>#791 - creates this NPCDef's loot in `container` (the new NPC's backpack), each
 		/// line through the template ITEM op - so random lists, nested templates and "{0 1}"-style
@@ -410,7 +470,8 @@ namespace SteamEngine.CompiledScripts {
 			if (loot == null) {
 				return;
 			}
-			if (this.lootRunners == null) {
+			if ((this.lootRunners == null) || !ReferenceEquals(this.lootRunnersOf, loot)) {
+				this.lootRunnersOf = loot;
 				LScriptHolder[] runners = new LScriptHolder[loot.Count];
 				for (int i = 0; i < loot.Count; i++) {
 					try {
@@ -490,6 +551,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void Unload() {
 			this.startingAbilities = null; //made again from the TEVENTS lines when the scripts are read again
+			this.pendingLists = null; //#1405 - the list lines are gathered again too
 			base.Unload();
 		}
 
@@ -526,13 +588,24 @@ namespace SteamEngine.CompiledScripts {
 			public int Amount;
 		}
 
-		private static readonly TagKey instanceButcherResourcesTK = TagKey.Acquire("_npcButcherResources_");
-
 		/// <summary>Butcher-yield data for a fresh NPC of this type (#586) - defined here,
 		/// consumed nowhere yet. Ready for whenever the corpse-butchering mechanic gets built.</summary>
 		public List<ResourceEntry> ButcherResources {
-			get { return this.GetTag(instanceButcherResourcesTK) as List<ResourceEntry>; }
-			set { this.SetTag(instanceButcherResourcesTK, value); }
+			get {
+				string[] source = this.ResourceList;
+				return this.Derived(SlotResources, source, () => {
+					List<ResourceEntry> entries = new List<ResourceEntry>();
+					foreach (string entry in source) {
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							entries.Add(new ResourceEntry { Amount = ConvertTools.ParseInt32(t[0]), Defname = t[1] });
+						} catch (Exception e) {
+							this.SkipBadElement("resourceList", entry, e);
+						}
+					}
+					return entries;
+				});
+			}
 		}
 
 		/// <summary>One "FoodType = [amount] category-or-itemdef" entry (#593) - the real
@@ -553,16 +626,29 @@ namespace SteamEngine.CompiledScripts {
 		//entry with no explicit leading number (e.g. "FOODTYPE = t_coin,t_ore,t_ingot").
 		private const int DefaultFoodSatiationValue = 10;
 
-		private static readonly TagKey instanceFoodTypesTK = TagKey.Acquire("_npcFoodTypes_");
-
 		/// <summary>Acceptable food list for a fresh NPC of this type (#593). Null (the
 		/// default, most NPCDefs) means this species was never configured with real food
 		/// data - PetHungerSystem deliberately never starts tracking hunger for it at all,
 		/// same "incomplete content defaults permissive" precedent used throughout this
 		/// engine (ExperienceWorth, attr_decay, etc).</summary>
 		public List<FoodTypeEntry> FoodTypes {
-			get { return this.GetTag(instanceFoodTypesTK) as List<FoodTypeEntry>; }
-			set { this.SetTag(instanceFoodTypesTK, value); }
+			get {
+				string[] source = this.FoodTypeList;
+				return this.Derived(SlotFoodTypes, source, () => {
+					List<FoodTypeEntry> entries = new List<FoodTypeEntry>();
+					foreach (string entry in source) {
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							entries.Add((t.Length == 2)
+								? new FoodTypeEntry { SatiationValue = ConvertTools.ParseInt32(t[0]), CategoryOrDefname = t[1] }
+								: new FoodTypeEntry { SatiationValue = DefaultFoodSatiationValue, CategoryOrDefname = t[0] });
+						} catch (Exception e) {
+							this.SkipBadElement("foodTypeList", entry, e);
+						}
+					}
+					return entries;
+				});
+			}
 		}
 
 		/// <summary>Sum of every configured FoodTypes entry's own SatiationValue (0 if
@@ -640,15 +726,11 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		private static readonly TagKey defaultMovementTK = TagKey.Acquire("_defaultMovementCapability_");
-
 		/// <summary>The movement capability template new NPCs of this type get on creation (see NPC.On_Create) - each instance gets its own deep copy, not this shared object, so runtime effects can mutate one NPC's capability without affecting every other NPC of the same type.</summary>
 		public IMovementSettings DefaultMovementSettings {
 			get {
-				return (IMovementSettings) this.GetTag(defaultMovementTK);
-			}
-			set {
-				this.SetTag(defaultMovementTK, value);
+				string source = this.Can;
+				return this.Derived<IMovementSettings>(SlotCan, source, () => ParseMovementCapability(source));
 			}
 		}
 
@@ -663,7 +745,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		protected override void LoadScriptLine(string filename, int line, string param, string args) {
 			if (param == "can") {
-				this.DefaultMovementSettings = ParseMovementCapability(args);
+				base.LoadScriptLine(filename, line, "can", Quoted(args.Trim()));
 				return;
 			}
 			if (param == "mountnpc") { //#1379 - the keyword of the mountCharDef field
@@ -676,10 +758,7 @@ namespace SteamEngine.CompiledScripts {
 					Logger.WriteWarning(filename, line, "addspell '" + args + "' is not a known SpellDef.");
 					return;
 				}
-				if (this.Spells == null) {
-					this.Spells = new List<SpellDef>();
-				}
-				this.Spells.Add(spell);
+				this.AddListLine(filename, line, "spelllist", spell.PrettyDefname);
 				return;
 			}
 			if (rangeKeywords.TryGetValue(param, out string rangeField)) {
@@ -702,10 +781,7 @@ namespace SteamEngine.CompiledScripts {
 					Logger.WriteWarning(filename, line, "addbattlesummon '" + args + "' is not a known NPCDef.");
 					return;
 				}
-				if (this.BattleSummons == null) {
-					this.BattleSummons = new List<NPCDef>();
-				}
-				this.BattleSummons.Add(battleSummonDef);
+				this.AddListLine(filename, line, "battlesummonlist", battleSummonDef.PrettyDefname);
 				return;
 			}
 			if (param == "addsummon") {
@@ -714,53 +790,43 @@ namespace SteamEngine.CompiledScripts {
 					Logger.WriteWarning(filename, line, "addsummon '" + args + "' is not a known NPCDef.");
 					return;
 				}
-				if (this.SummonedCreatures == null) {
-					this.SummonedCreatures = new List<NPCDef>();
-				}
-				this.SummonedCreatures.Add(summonDef);
+				this.AddListLine(filename, line, "summonlist", summonDef.PrettyDefname);
 				return;
 			}
 			if (param == "loot") {
 				//#791 - "Loot = item[,amount]", one line per Erebor @NPCRestock ITEM= line
-				List<string> loot = this.Loot ?? new List<string>();
-				loot.Add(args.Trim());
-				this.Loot = loot;
+				if (ListTextFits(filename, line, args)) {
+					this.AddListLine(filename, line, "lootlist", Quoted(args.Trim()));
+				}
 				return;
 			}
 			if (param == "equip") {
 				//#563 - "Equip = defname" or "Equip = defname, amount" or "Equip = defname, min max"
 				//#775 - defname can also be a Sphere weighted random pick, "{i_bardiche 1 i_halberd 1}"
-				string defname, amountText;
-				SplitEquipLine(args, out defname, out amountText);
-				int[] amountRange = null;
-				if (amountText != null) {
-					amountRange = ParseStatRange(filename, line, "equip amount", amountText);
-				}
-				StartingEquipmentEntry entry = new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange };
-				if (defname.StartsWith("{", StringComparison.Ordinal) &&
-						!TryParseRandomDefnames(defname, out entry.RandomDefnames, out entry.RandomWeights)) {
-					Logger.WriteWarning(filename, line, "equip random list '" + defname + "' must be '{defname weight defname weight ...}'.");
+				if (!ListTextFits(filename, line, args) || (ParseEquipEntry(filename, line, args) == null)) {
 					return;
 				}
-				if (this.StartingEquipment == null) {
-					this.StartingEquipment = new List<StartingEquipmentEntry>();
-				}
-				this.StartingEquipment.Add(entry);
+				this.Pending("equiplist").Add(Quoted(args.Trim()));
+				this.Pending("equipcolor").Add("\"\"");
+				this.Pending("equipname").Add("\"\"");
+				this.LoadEquipFields(filename, line);
 				return;
 			}
-			if (param == "equipcolor") {
-				//the real archive's "COLOR=..." line immediately following an "ITEMNEWBIE="
-				//line colors THAT item, not the character - see StartingEquipmentEntry.Color's
-				//own doc comment. Always belongs to whichever "Equip =" entry was just added.
-				if (this.StartingEquipment != null && this.StartingEquipment.Count > 0) {
-					this.StartingEquipment[this.StartingEquipment.Count - 1].Color = args.Trim();
-				}
-				return;
-			}
-			if (param == "equipname") {
-				//#793 - same pairing as equipcolor, for Erebor's "ITEMNEWBIE=.../NAME=..."
-				if (this.StartingEquipment != null && this.StartingEquipment.Count > 0) {
-					this.StartingEquipment[this.StartingEquipment.Count - 1].Name = args.Trim();
+			if ((param == "equipcolor") || (param == "equipname")) {
+				//the real archive's "COLOR=..." / #793 "NAME=..." line right after an "ITEMNEWBIE=" line colors or names THAT
+				//item, not the character - see StartingEquipmentEntry.Color; always the "Equip =" entry just added.
+				//#1405 - a whole value in Sphere's <...> is that value (EquipColor = <colors_all> is colors_all)
+				List<string> entries = this.Pending(param);
+				if (entries.Count > 0) {
+					string value = args.Trim();
+					if ((param == "equipcolor") && value.StartsWith("<", StringComparison.Ordinal) && value.EndsWith(">", StringComparison.Ordinal)
+							&& (value.IndexOf('<', 1) < 0)) {
+						value = value.Substring(1, value.Length - 2).Trim();
+					}
+					if (ListTextFits(filename, line, value)) {
+						entries[entries.Count - 1] = Quoted(value);
+						this.LoadEquipFields(filename, line);
+					}
 				}
 				return;
 			}
@@ -768,17 +834,18 @@ namespace SteamEngine.CompiledScripts {
 				//#586 - "Resources = amount defname, amount defname, ..." - the real archive's
 				//butcher-yield list (corpse-chopping data, not death loot - the butchering
 				//interaction itself is a separate, not-yet-built mechanic, see #587).
-				List<ResourceEntry> entries = new List<ResourceEntry>();
+				List<string> entries = new List<string>();
 				string[] resourceParts = args.Split(',');
 				foreach (string part in resourceParts) {
 					string[] tokens = part.Trim().Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 					if (tokens.Length == 2) {
-						entries.Add(new ResourceEntry { Amount = ConvertTools.ParseInt32(tokens[0]), Defname = tokens[1] });
+						ConvertTools.ParseInt32(tokens[0]); //as before: a bad amount fails here, at load
+						entries.Add(Quoted(tokens[0] + " " + tokens[1]));
 					} else {
 						Logger.WriteWarning(filename, line, "resources entry '" + part + "' must be 'amount defname'.");
 					}
 				}
-				this.ButcherResources = entries;
+				this.SetListLines(filename, line, "resourcelist", entries); //the last line, as before
 				return;
 			}
 			if (param == "foodtype") {
@@ -786,7 +853,7 @@ namespace SteamEngine.CompiledScripts {
 				//FOODTYPE= field. Unlike "resources" above, an entry's leading amount is
 				//OPTIONAL (bare category entries like "t_coin" are real, confirmed in archive
 				//content) - falls back to DefaultFoodSatiationValue when omitted.
-				List<FoodTypeEntry> entries = new List<FoodTypeEntry>();
+				List<string> entries = new List<string>();
 				foreach (string part in args.Split(',')) {
 					string trimmed = part.Trim();
 					if (trimmed.Length == 0) {
@@ -794,14 +861,15 @@ namespace SteamEngine.CompiledScripts {
 					}
 					string[] tokens = trimmed.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 					if (tokens.Length == 2) {
-						entries.Add(new FoodTypeEntry { SatiationValue = ConvertTools.ParseInt32(tokens[0]), CategoryOrDefname = tokens[1] });
+						ConvertTools.ParseInt32(tokens[0]);
+						entries.Add(Quoted(tokens[0] + " " + tokens[1]));
 					} else if (tokens.Length == 1) {
-						entries.Add(new FoodTypeEntry { SatiationValue = DefaultFoodSatiationValue, CategoryOrDefname = tokens[0] });
+						entries.Add(Quoted(tokens[0]));
 					} else {
 						Logger.WriteWarning(filename, line, "foodtype entry '" + part + "' must be '[amount] category'.");
 					}
 				}
-				this.FoodTypes = entries;
+				this.SetListLines(filename, line, "foodtypelist", entries);
 				return;
 			}
 			//a .def field name matching a real Character ResistX property (case-insensitive)
@@ -813,13 +881,10 @@ namespace SteamEngine.CompiledScripts {
 			if (knownResistFieldNames.Contains(param)) {
 				int[] resistRange = ParseStatRange(filename, line, param, args);
 				if (resistRange != null) {
-					if (this.ResistRanges == null) {
-						this.ResistRanges = new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase);
-					}
 					//stored key may not be in Character's exact PascalCase (the .def parser's
 					//own casing for `param` varies) - NPC.On_Create's roll step below looks the
 					//matching Character property up case-insensitively, so this is fine as-is.
-					this.ResistRanges[param] = resistRange;
+					this.AddListLine(filename, line, "resistrangelist", Quoted(param + " " + resistRange[0] + " " + resistRange[1]));
 				}
 				return;
 			}
@@ -829,14 +894,86 @@ namespace SteamEngine.CompiledScripts {
 			if (Enum.TryParse(param, true, out skillName)) {
 				int[] range = ParseStatRange(filename, line, param, args);
 				if (range != null) {
-					if (this.SkillValueRanges == null) {
-						this.SkillValueRanges = new Dictionary<SkillName, int[]>();
-					}
-					this.SkillValueRanges[skillName] = range;
+					this.AddListLine(filename, line, "skillrangelist", Quoted(skillName + " " + range[0] + " " + range[1]));
 				}
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
+		}
+
+		/// <summary>#1405 - a list element is kept as text between quotes: a quote in it would end it, and FieldValue runs a
+		/// string with '&lt;' or '&gt;' through LScript once, when the field resolves, so a per-spawn expression would be
+		/// fixed for good. No such line exists; one would be warned about and left out.</summary>
+		private static bool ListTextFits(string filename, int line, string text) {
+			if ((text.IndexOf('"') < 0) && (text.IndexOf('<') < 0) && (text.IndexOf('>') < 0)) {
+				return true;
+			}
+			Logger.WriteWarning(filename, line, "'" + text + "': a list line can't hold a quote, '<' or '>' (#1405).");
+			return false;
+		}
+
+		/// <summary>A list element the views can't read (a GM's or a save's malformed text) is warned about and skipped.</summary>
+		private void SkipBadElement(string field, string element, Exception e) {
+			Logger.WriteWarning("NPCDef " + this.PrettyDefname, field + " element '" + element + "' can't be read: " + e.Message);
+		}
+
+		/// <summary>#1405 - the lines gathered while loading aren't needed once the section is loaded.</summary>
+		protected override void On_AfterLoadFromScripts() {
+			this.pendingLists = null;
+			base.On_AfterLoadFromScripts();
+		}
+
+		/// <summary>#1405 - a "quoted" list element: kept whole (commas, spaces) and as text by the field.</summary>
+		private static string Quoted(string text) {
+			return "\"" + text + "\"";
+		}
+
+		private List<string> Pending(string field) {
+			if (this.pendingLists == null) {
+				this.pendingLists = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+			}
+			if (!this.pendingLists.TryGetValue(field, out List<string> lines)) {
+				lines = new List<string>();
+				this.pendingLists[field] = lines;
+			}
+			return lines;
+		}
+
+		/// <summary>#1405 - one more line of a list keyword: the field gets the whole list so far, in script order.</summary>
+		private void AddListLine(string filename, int line, string field, string element) {
+			List<string> lines = this.Pending(field);
+			lines.Add(element);
+			base.LoadScriptLine(filename, line, field, string.Join(", ", lines));
+		}
+
+		/// <summary>#1405 - a keyword whose last line counts (Resources, FoodType): the field gets this line's elements.</summary>
+		private void SetListLines(string filename, int line, string field, List<string> elements) {
+			this.Pending(field).Clear();
+			this.Pending(field).AddRange(elements);
+			base.LoadScriptLine(filename, line, field, string.Join(", ", elements));
+		}
+
+		private void LoadEquipFields(string filename, int line) {
+			base.LoadScriptLine(filename, line, "equiplist", string.Join(", ", this.Pending("equiplist")));
+			base.LoadScriptLine(filename, line, "equipcolorlist", string.Join(", ", this.Pending("equipcolor")));
+			base.LoadScriptLine(filename, line, "equipnamelist", string.Join(", ", this.Pending("equipname")));
+		}
+
+		/// <summary>An "Equip =" line as an entry (no colour or name yet), or null with a warning, as the load did.</summary>
+		private static StartingEquipmentEntry ParseEquipEntry(string filename, int line, string args) {
+			string defname, amountText;
+			SplitEquipLine(args, out defname, out amountText);
+			int[] amountRange = null;
+			if (amountText != null) {
+				amountRange = ParseStatRange(filename, line, "equip amount", amountText);
+			}
+			StartingEquipmentEntry entry = new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange };
+			if (defname.StartsWith("{", StringComparison.Ordinal) &&
+					!TryParseRandomDefnames(defname, out entry.RandomDefnames, out entry.RandomWeights)) {
+				Logger.WriteWarning(filename, line, "equip random list '" + defname + "' must be '{defname weight defname weight ...}'.");
+				return null;
+			}
+			return entry;
 		}
 
 		private static DynamicMovementSettings ParseMovementCapability(string args) {
