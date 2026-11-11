@@ -242,8 +242,12 @@ namespace SteamEngine.CompiledScripts {
 				return this.Derived(SlotSkills, source, () => {
 					Dictionary<SkillName, int[]> ranges = new Dictionary<SkillName, int[]>();
 					foreach (string entry in source) {
-						string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-						ranges[(SkillName) Enum.Parse(typeof(SkillName), t[0], true)] = new int[] { ConvertTools.ParseInt32(t[1]), ConvertTools.ParseInt32(t[2]) };
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							ranges[(SkillName) Enum.Parse(typeof(SkillName), t[0], true)] = new int[] { ConvertTools.ParseInt32(t[1]), ConvertTools.ParseInt32(t[2]) };
+						} catch (Exception e) {
+							this.SkipBadElement("skillRangeList", entry, e);
+						}
 					}
 					return ranges;
 				});
@@ -289,8 +293,12 @@ namespace SteamEngine.CompiledScripts {
 				return this.Derived(SlotResists, source, () => {
 					Dictionary<string, int[]> ranges = new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase);
 					foreach (string entry in source) {
-						string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-						ranges[t[0]] = new int[] { ConvertTools.ParseInt32(t[1]), ConvertTools.ParseInt32(t[2]) };
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							ranges[t[0]] = new int[] { ConvertTools.ParseInt32(t[1]), ConvertTools.ParseInt32(t[2]) };
+						} catch (Exception e) {
+							this.SkipBadElement("resistRangeList", entry, e);
+						}
 					}
 					return ranges;
 				});
@@ -588,8 +596,12 @@ namespace SteamEngine.CompiledScripts {
 				return this.Derived(SlotResources, source, () => {
 					List<ResourceEntry> entries = new List<ResourceEntry>();
 					foreach (string entry in source) {
-						string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-						entries.Add(new ResourceEntry { Amount = ConvertTools.ParseInt32(t[0]), Defname = t[1] });
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							entries.Add(new ResourceEntry { Amount = ConvertTools.ParseInt32(t[0]), Defname = t[1] });
+						} catch (Exception e) {
+							this.SkipBadElement("resourceList", entry, e);
+						}
 					}
 					return entries;
 				});
@@ -625,10 +637,14 @@ namespace SteamEngine.CompiledScripts {
 				return this.Derived(SlotFoodTypes, source, () => {
 					List<FoodTypeEntry> entries = new List<FoodTypeEntry>();
 					foreach (string entry in source) {
-						string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-						entries.Add((t.Length == 2)
-							? new FoodTypeEntry { SatiationValue = ConvertTools.ParseInt32(t[0]), CategoryOrDefname = t[1] }
-							: new FoodTypeEntry { SatiationValue = DefaultFoodSatiationValue, CategoryOrDefname = t[0] });
+						try {
+							string[] t = entry.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+							entries.Add((t.Length == 2)
+								? new FoodTypeEntry { SatiationValue = ConvertTools.ParseInt32(t[0]), CategoryOrDefname = t[1] }
+								: new FoodTypeEntry { SatiationValue = DefaultFoodSatiationValue, CategoryOrDefname = t[0] });
+						} catch (Exception e) {
+							this.SkipBadElement("foodTypeList", entry, e);
+						}
 					}
 					return entries;
 				});
@@ -779,13 +795,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "loot") {
 				//#791 - "Loot = item[,amount]", one line per Erebor @NPCRestock ITEM= line
-				this.AddListLine(filename, line, "lootlist", Quoted(args.Trim()));
+				if (ListTextFits(filename, line, args)) {
+					this.AddListLine(filename, line, "lootlist", Quoted(args.Trim()));
+				}
 				return;
 			}
 			if (param == "equip") {
 				//#563 - "Equip = defname" or "Equip = defname, amount" or "Equip = defname, min max"
 				//#775 - defname can also be a Sphere weighted random pick, "{i_bardiche 1 i_halberd 1}"
-				if (ParseEquipEntry(filename, line, args) == null) {
+				if (!ListTextFits(filename, line, args) || (ParseEquipEntry(filename, line, args) == null)) {
 					return;
 				}
 				this.Pending("equiplist").Add(Quoted(args.Trim()));
@@ -805,8 +823,10 @@ namespace SteamEngine.CompiledScripts {
 							&& (value.IndexOf('<', 1) < 0)) {
 						value = value.Substring(1, value.Length - 2).Trim();
 					}
-					entries[entries.Count - 1] = Quoted(value);
-					this.LoadEquipFields(filename, line);
+					if (ListTextFits(filename, line, value)) {
+						entries[entries.Count - 1] = Quoted(value);
+						this.LoadEquipFields(filename, line);
+					}
 				}
 				return;
 			}
@@ -879,6 +899,28 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
+		}
+
+		/// <summary>#1405 - a list element is kept as text between quotes: a quote in it would end it, and FieldValue runs a
+		/// string with '&lt;' or '&gt;' through LScript once, when the field resolves, so a per-spawn expression would be
+		/// fixed for good. No such line exists; one would be warned about and left out.</summary>
+		private static bool ListTextFits(string filename, int line, string text) {
+			if ((text.IndexOf('"') < 0) && (text.IndexOf('<') < 0) && (text.IndexOf('>') < 0)) {
+				return true;
+			}
+			Logger.WriteWarning(filename, line, "'" + text + "': a list line can't hold a quote, '<' or '>' (#1405).");
+			return false;
+		}
+
+		/// <summary>A list element the views can't read (a GM's or a save's malformed text) is warned about and skipped.</summary>
+		private void SkipBadElement(string field, string element, Exception e) {
+			Logger.WriteWarning("NPCDef " + this.PrettyDefname, field + " element '" + element + "' can't be read: " + e.Message);
+		}
+
+		/// <summary>#1405 - the lines gathered while loading aren't needed once the section is loaded.</summary>
+		protected override void On_AfterLoadFromScripts() {
+			this.pendingLists = null;
+			base.On_AfterLoadFromScripts();
 		}
 
 		/// <summary>#1405 - a "quoted" list element: kept whole (commas, spaces) and as text by the field.</summary>
