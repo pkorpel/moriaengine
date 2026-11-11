@@ -57,10 +57,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static readonly TagKey entangledByTK = TagKey.Acquire("_entangledBy_");        //on the victim: the vine
-		private static readonly TagKey entangledVictimTK = TagKey.Acquire("_entangledVictim_"); //on the vine: the victim
-		private static readonly TagKey entangleHitsLeftTK = TagKey.Acquire("_entangleHitsLeft_");
-
 		/// <summary>From NPC.On_PersonalSpace - `pusher` just shoved past `vine`.</summary>
 		public static void TryEntangle(NPC vine, Character pusher) {
 			StranglerVineAbilityDef def = StranglerVineDef;
@@ -71,57 +67,14 @@ namespace SteamEngine.CompiledScripts {
 			if (vine.Flag_Dead || !pusher.IsPlayer || pusher.Flag_Dead || pusher.Flag_Invulnerable) {
 				return;
 			}
-			Character held = vine.GetTag(entangledVictimTK) as Character;
-			if ((held != null) && IsHoldIntact(vine, held)) {
+			if ((vine.GetPlugin(VineHoldPlugin.key) is VineHoldPlugin holding) && holding.IsIntact()) {
 				return; //already holding someone
 			}
-
-			vine.SetTag(entangledVictimTK, pusher);
-			vine.SetTag(entangleHitsLeftTK, def.HitsToBreak);
-			pusher.SetTag(entangledByTK, vine);
+			VineHoldPlugin.Hold(vine, pusher, (int) def.HitsToBreak);
 			pusher.RedMessage("You have been entangled and cannot move!");
 			NPCAiTimer timer = NPCAiTimer.GetFor(vine);
 			if (timer != null) {
 				timer.EngageTarget(pusher);
-			}
-		}
-
-		/// <summary>From Character.CheckCanMove - false while `self` is held by a vine, or is a vine
-		/// holding someone. A hold that's no longer intact is released here, and the step goes ahead.</summary>
-		public static bool CheckEntangledCanMove(Character self) {
-			Character vine = self.GetTag(entangledByTK) as Character;
-			if (vine != null) {
-				if (IsHoldIntact(vine, self)) {
-					self.SysMessage("You are entangled and cannot move!");
-					return false;
-				}
-				Release(vine, self);
-				return true;
-			}
-			Character victim = self.GetTag(entangledVictimTK) as Character;
-			if (victim != null) {
-				if (IsHoldIntact(self, victim)) {
-					return false; //the vine holds on, it doesn't walk off
-				}
-				Release(self, victim);
-			}
-			return true;
-		}
-
-		/// <summary>From DamageManager.ProcessSwing - `defender` took a landed hit. A vine holding
-		/// someone counts it toward HitsToBreak.</summary>
-		public static void CountEntangleHit(Character defender) {
-			Character victim = defender.GetTag(entangledVictimTK) as Character;
-			if (victim == null) {
-				return;
-			}
-			object tag = defender.GetTag(entangleHitsLeftTK);
-			int hitsLeft = (tag is int) ? (int) tag : 1;
-			hitsLeft = HitsLeftAfterHit(hitsLeft);
-			if (hitsLeft <= 0) {
-				Release(defender, victim);
-			} else {
-				defender.SetTag(entangleHitsLeftTK, hitsLeft);
 			}
 		}
 
@@ -134,28 +87,96 @@ namespace SteamEngine.CompiledScripts {
 		public static bool IsHoldIntact(bool vineAlive, bool victimAlive, int vineX, int vineY, int vineM, int victimX, int victimY, int victimM) {
 			return vineAlive && victimAlive && (vineX == victimX) && (vineY == victimY) && (vineM == victimM);
 		}
+	}
 
-		private static bool IsHoldIntact(Character vine, Character victim) {
-			if (vine.IsDeleted || victim.IsDeleted) {
-				return false;
+	/// <summary>#778, #1409 - on a strangler vine's victim: no step while the hold is intact ("You are entangled"); a hold
+	/// that isn't any more is released at the step and the step goes ahead.</summary>
+	public partial class EntangledPlugin {
+		public static readonly PluginKey key = PluginKey.Acquire("_entangled_");
+
+		public TriggerResult On_DenyMove(bool running) {
+			Character self = (Character) this.Cont;
+			if ((this.vine != null) && (this.vine.GetPlugin(VineHoldPlugin.key) is VineHoldPlugin hold) && (hold.Victim == self) && hold.IsIntact()) {
+				self.SysMessage("You are entangled and cannot move!");
+				return TriggerResult.Cancel;
 			}
-			if (victim.GetTag(entangledByTK) != vine) {
-				return false;
+			VineHoldPlugin.Release(this.vine, self);
+			return TriggerResult.Continue;
+		}
+	}
+
+	public partial class EntangledPluginDef {
+		public static readonly EntangledPluginDef instance =
+			(EntangledPluginDef) new EntangledPluginDef("p_entangled", "C# scripts", -1).Register();
+	}
+
+	/// <summary>#778, #1409 - on the vine holding someone: it doesn't walk off while the hold is intact, and every landed
+	/// blow on it (its own @damage of a swing) counts toward letting go.</summary>
+	public partial class VineHoldPlugin {
+		public static readonly PluginKey key = PluginKey.Acquire("_vineHold_");
+
+		public Character Victim {
+			get {
+				return this.victim;
 			}
-			return IsHoldIntact(!vine.Flag_Dead, !victim.Flag_Dead, vine.X, vine.Y, vine.M, victim.X, victim.Y, victim.M);
 		}
 
-		private static void Release(Character vine, Character victim) {
-			if ((vine != null) && !vine.IsDeleted && (vine.GetTag(entangledVictimTK) == victim)) {
-				vine.RemoveTag(entangledVictimTK);
-				vine.RemoveTag(entangleHitsLeftTK);
+		internal static void Hold(Character vine, Character victim, int hitsToBreak) {
+			VineHoldPlugin hold = (VineHoldPlugin) VineHoldPluginDef.instance.Create();
+			hold.victim = victim;
+			hold.hitsLeft = hitsToBreak;
+			vine.AddPlugin(key, hold);
+			EntangledPlugin entangled = (EntangledPlugin) EntangledPluginDef.instance.Create();
+			entangled.vine = vine;
+			victim.AddPlugin(EntangledPlugin.key, entangled);
+		}
+
+		internal bool IsIntact() {
+			Character vine = (Character) this.Cont;
+			Character victim = this.victim;
+			if ((vine == null) || vine.IsDeleted || (victim == null) || victim.IsDeleted) {
+				return false;
 			}
-			if ((victim != null) && !victim.IsDeleted && (victim.GetTag(entangledByTK) == vine)) {
-				victim.RemoveTag(entangledByTK);
+			if (!(victim.GetPlugin(EntangledPlugin.key) is EntangledPlugin entangled) || (entangled.vine != vine)) {
+				return false;
+			}
+			return MonsterSpecialAttacks.IsHoldIntact(!vine.Flag_Dead, !victim.Flag_Dead, vine.X, vine.Y, vine.M, victim.X, victim.Y, victim.M);
+		}
+
+		internal static void Release(Character vine, Character victim) {
+			if ((vine != null) && !vine.IsDeleted && (vine.GetPlugin(key) is VineHoldPlugin hold) && (hold.victim == victim)) {
+				vine.DeletePlugin(key);
+			}
+			if ((victim != null) && !victim.IsDeleted && (victim.GetPlugin(EntangledPlugin.key) is EntangledPlugin entangled) && (entangled.vine == vine)) {
+				victim.DeletePlugin(EntangledPlugin.key);
 				if (!victim.Flag_Dead) {
 					victim.SysMessage("The grip loosens...");
 				}
 			}
 		}
+
+		public TriggerResult On_DenyMove(bool running) {
+			if (this.IsIntact()) {
+				return TriggerResult.Cancel; //the vine holds on, it doesn't walk off
+			}
+			Release((Character) this.Cont, this.victim);
+			return TriggerResult.Continue;
+		}
+
+		/// <summary>Was DamageManager.ProcessSwing's CountEntangleHit: a landed blow on the vine.</summary>
+		public void On_Damage(DamageArgs args) {
+			if (!args.isSwing) {
+				return;
+			}
+			this.hitsLeft = MonsterSpecialAttacks.HitsLeftAfterHit(this.hitsLeft);
+			if (this.hitsLeft <= 0) {
+				Release((Character) this.Cont, this.victim);
+			}
+		}
+	}
+
+	public partial class VineHoldPluginDef {
+		public static readonly VineHoldPluginDef instance =
+			(VineHoldPluginDef) new VineHoldPluginDef("p_vine_hold", "C# scripts", -1).Register();
 	}
 }

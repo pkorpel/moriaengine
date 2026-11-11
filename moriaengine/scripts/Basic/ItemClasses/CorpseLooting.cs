@@ -9,7 +9,6 @@ namespace SteamEngine.CompiledScripts {
 	/// The numbers are on .settings (Notoriety).</summary>
 	public static class CorpseLooting {
 		private static readonly TagKey nextLootTK = TagKey.Acquire("_nextLoot_");
-		private static readonly TagKey holdUntilTK = TagKey.Acquire("_lootHoldUntil_");
 
 		/// <summary>Why `looter` can't take from `body` now, or null.</summary>
 		public static string Refusal(Character looter, Corpse body) {
@@ -21,7 +20,7 @@ namespace SteamEngine.CompiledScripts {
 				return "Z tohoto tela jeste nemuzes nic brat.";
 			}
 			double now = Globals.TimeInSeconds;
-			looter.SetTag(holdUntilTK, System.Math.Max(now, HoldUntil(looter)) + settings.lootHoldSeconds);
+			LootHoldPlugin.Extend(looter, settings.lootHoldSeconds); //#1409 - the hold refuses steps in its @denyMove
 			if ((looter != owner) && (looter is Player player) && (player.SkillRank < SkillRank.Grandmaster) && LevelingSystem.IsRecentlyDead(player)) {
 				return "Jeste nemuzes obirat cizi mrtvoly.";
 			}
@@ -30,13 +29,9 @@ namespace SteamEngine.CompiledScripts {
 			return tooSoon ? "Ne tak rychle!" : null;
 		}
 
-		private static double HoldUntil(Character ch) {
-			return (ch.GetTag(holdUntilTK) is double until) ? until : 0;
-		}
-
-		/// <summary>Character.CheckCanMove: still held by a pick.</summary>
+		/// <summary>Not held by a pick (LootHoldPlugin).</summary>
 		internal static bool CheckCanMove(Character ch) {
-			return HoldUntil(ch) <= Globals.TimeInSeconds;
+			return !LootHoldPlugin.IsHeld(ch);
 		}
 	}
 }

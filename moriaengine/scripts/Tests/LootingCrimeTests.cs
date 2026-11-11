@@ -76,7 +76,7 @@ namespace SteamEngine.CompiledScripts {
 			Notoriety.ClearCriminal(self);
 			Notoriety.ClearCriminal(owner);
 			self.RemoveTag(TagKey.Acquire("_nextLoot_")); //#1023 - the rate and the hold start afresh
-			self.RemoveTag(TagKey.Acquire("_lootHoldUntil_"));
+			self.DeletePlugin(LootHoldPlugin.key);
 			Console.WriteLine("LOOT_CLEAN: done");
 		}
 

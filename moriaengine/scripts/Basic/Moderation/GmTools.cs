@@ -13,7 +13,6 @@ namespace SteamEngine.CompiledScripts {
 	/// Character.Disconnect would take it, as GM commands look at the GM's own members first. .kick does the same.</summary>
 	public static class GmTools {
 		private static readonly TagKey returnPointTK = TagKey.Acquire("_summonReturnPoint_");
-		private static readonly TagKey frozenTK = TagKey.Acquire("_gmFrozen_");
 
 		internal enum Order { Kick, SummonTo, SummonCage, SummonDismiss, Freeze, Unfreeze }
 
@@ -53,16 +52,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsFrozen(Character ch) {
-			return ch.HasTag(frozenTK);
-		}
-
-		/// <summary>From Character.CheckCanMove: a frozen character doesn't move.</summary>
-		internal static bool CheckCanMove(Character ch) {
-			if (!IsFrozen(ch)) {
-				return true;
-			}
-			ch.SysMessage(Loc<GmToolsLoc>.Get(ch.Language).Frozen);
-			return false;
+			return GmFreezePlugin.IsFrozen(ch); //#1409 - a plugin refusing @denyMove
 		}
 
 		internal static void Carry(Player gm, Character who, Order order) {
@@ -81,12 +71,12 @@ namespace SteamEngine.CompiledScripts {
 				case Order.SummonCage:
 					who.SetTag(returnPointTK, new Point4D(who.X, who.Y, who.Z, who.M));
 					if (order == Order.SummonCage) {
-						who.SetTag(frozenTK, true);
+						GmFreezePlugin.Freeze(who, true);
 					}
 					who.Go(gm.X, gm.Y, gm.Z, gm.M);
 					break;
 				case Order.SummonDismiss:
-					who.RemoveTag(frozenTK);
+					GmFreezePlugin.Freeze(who, false);
 					if (!(who.GetTag(returnPointTK) is Point4D back)) {
 						gm.SysMessage(string.Format(texts.NowhereToReturn, who.Name));
 						return;
@@ -95,11 +85,11 @@ namespace SteamEngine.CompiledScripts {
 					who.Go(back);
 					break;
 				case Order.Freeze:
-					who.SetTag(frozenTK, true);
+					GmFreezePlugin.Freeze(who, true);
 					gm.SysMessage(string.Format(texts.FrozenThem, who.Name));
 					break;
 				case Order.Unfreeze:
-					who.RemoveTag(frozenTK);
+					GmFreezePlugin.Freeze(who, false);
 					gm.SysMessage(string.Format(texts.UnfrozenThem, who.Name));
 					break;
 			}
