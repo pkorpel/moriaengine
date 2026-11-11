@@ -49,6 +49,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestSetNpcDefLists(Character self) {
 			NPCDef def = (NPCDef) ThingDef.GetByDefname(Changed);
+			Console.WriteLine("NPCDEFLISTS_SCRIPTS: " + Report(def)); //read first, as a spawn would: the change must not be hidden by that read
 			def.LootList = new string[] { "i_gold,7", "i_apple" };
 			def.SpellList = new SpellDef[] { SpellDef.GetByDefname("s_fireball"), SpellDef.GetByDefname("s_harm") };
 			def.SummonList = new NPCDef[] { (NPCDef) ThingDef.GetByDefname("c_sheep_woolly") };
