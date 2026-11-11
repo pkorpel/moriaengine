@@ -72,6 +72,33 @@ The body swap itself is in `MysticHypnosis.cs`. While a mystic possesses a monst
 Mind Blast's silence (`silence.scp`) meets a monster's `tag.resist_silence`, `NPCDef.ResistSilence` from the converter:
 it comes off the chance, and at 1000 or more the monster can't be silenced, "Cil odolava umlceni".
 
+## Mage's and necromancer's energy shield (#1401)
+
+`.energyshield` is Erebor's `[function energyshield]` (`EnergyShieldAbilityDef`, `EnergyShieldPlugin`), its points the
+`energyshield` class points (`a_energy_shield`). Its checks, in order, each with Erebor's line: a mage or necromancer
+("Tohle nemuzes pouzivat."), points ("Tohle zatim neumis pouzivat."), not resting ("Tva magicka moc je jeste prilis
+oslabena."), not up ("Jeste stale mas stit kolem sebe vytvoren."), an amethyst in the pack ("Nemas potrebne prisady."),
+then over 60 mana raises it for 59 mana and the amethyst ("Heru Beleg Del Tir"), under 60 says "Nemas dost energie!"
+and exactly 60 does nothing, as Erebor's.
+
+- It holds 45 s and half a second a point, with 5 energy a point. As Erebor's damage_final ran it
+  (`EnergyShieldPlugin.Absorb`, called by `DamageManager.CauseDamage` after the resists, before the mana shield, armor
+  wear and minimal damage): any damage whose source isn't a player (a blow, a spell, a monster's ability, a sourceless
+  blast) takes its whole amount off the energy and lets through a share of it: 100 less a tenth of i_energyshield's
+  table (21 a point to 10, 18 to 20, 15 to 30, 12 to 40, 10 to 50), so 79 % at 10 points and 24 % at 50. A spell goes
+  through it twice (e_energy_shield's @aftergetswing, then f_dmgFinal_applyEnergyShield while energy is left): 20
+  becomes 15 and then 11 at 10 points, and costs 35 energy. A player's damage, and starving, isn't touched.
+- The blow that empties it: the energy left covers that much of the blow at the shield's share, the rest goes through
+  whole. The energy stays below zero, so the shield still counts as up for that blow's knockback, bleeding and eye
+  drain, until the timer's next tick starts the rest (Erebor's timer=0). Fixed from Erebor, whose formula divided by the
+  covered share: a nearly empty shield made the last hit many times stronger (100 damage on 10 energy hit for 790).
+- When it ends, by time, emptied or by `.cancelenergyshield`, "Stit se vycerpal." and 180 s of rest, then "Nyni muzes
+  pouzit stit znovu.". It stays through death, as Erebor's memory item.
+- While it's up: Recall is refused ("Nelze cestovat kouzlem.", the caster's `@denySpellCast`, after the casting
+  rules); Gate isn't, Erebor's `argn==32 || argn==32` typo, kept as it ran. No knockback, eye drain, monster bleeding or wraith curse (q026). Standcast can't be switched on, and
+  raising the shield switches it off. Moving is allowed: Erebor's `flag_immobile` line was commented out (ours used to
+  drop the shield on a step or any travel spell).
+
 ## Priest's and everyone's resurrection
 
 The Resurrection spell on a player who died less than 5 s ago does nothing, "Na oziveni jeste nejsi pripraven."

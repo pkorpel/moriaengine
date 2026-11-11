@@ -40,14 +40,16 @@ namespace SteamEngine.CompiledScripts {
 			int damage = (int) Math.Round(args.damage);
 			int newMana = self.Mana - damage;
 
+			//#1401 - lowers the damage CauseDamage reads back: adding to Hits gave hits back for damage an earlier handler
+			//(or the energy shield) had already taken off
 			if (newMana > 0) {
 				//all damage goes to mana
-				self.Hits += (short) damage; //add to hits what is about to be deducted in the script that calls this trigger
+				args.damage = 0;
 				self.WriteLine(Loc<ManaShieldLoc>.Get(self.Language).shieldSavedYou);
 				self.Mana = (short) newMana;
 			} else {
 				//dmg partially routed to mana (damage + newMana, but the newMana part is negative...)
-				self.Hits += (short) (damage + newMana);
+				args.damage = -newMana;
 				self.WriteLine(Loc<ManaShieldLoc>.Get(self.Language).shieldSavedYouPartially);
 				self.Mana = 0;
 				this.Delete();

@@ -224,8 +224,8 @@ damage, split by armor, with a shield counting double. Items already in a world 
 its first resource and of a second ingot or log, and a point of max durability whether it works or
 not. Blacksmithing, Fletching for bows, Carpentry for staves, against `rand(1025)`.
 
-**Not ported.** Energy shield's strength and voodoo shield: `i_energyshield`, `shield_power` and
-`i_voodooshield` aren't in the archive. `bodypart_layers` isn't either, so wear reads its weights
+**Energy and voodoo shields** are class abilities (class-abilities.md; the energy shield since #1401).
+**Not ported.** `bodypart_layers` isn't either, so wear reads its weights
 as head, neck, torso, arms, hands, legs. A bare-handed player's spell keeps
 its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would
 cap spells of anyone with free hands, so it applies to swings only here. 

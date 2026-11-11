@@ -5,7 +5,7 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// Mage Phase 7 (#491) - the final phase of the Mage combat-system initiative (#483). Covers
-	/// the 5 special abilities: Energy Shield (audit only), Silence (2 confirmed fixes: proc
+	/// the 5 special abilities: Energy Shield (#1401: now in StandcastTests), Silence (2 confirmed fixes: proc
 	/// spell + duration), Concentration/Standcast/Magic Charge (all genuinely missing, built
 	/// here). Dedicated file/account, separate from MagerySpellTests's own account budget
 	/// (Account/AccountB/AccountC are already near their 5-character cap across that file's own
@@ -21,28 +21,6 @@ namespace SteamEngine.Tests.Protocol {
 
 		public MageAbilityTests(GameServerPairFixture servers) {
 			this.fixture = servers;
-		}
-
-		/// <summary>#491 - audit: EnergyShieldPlugin.On_Damage only absorbs damage from a
-		/// non-player attacker (confirmed by reading the existing, unmodified implementation) -
-		/// this proves that path still works as claimed ("essentially done"), not a rebuild.</summary>
-		[Fact]
-		public void EnergyShieldAbsorbsDamageFromNpcAttacker() {
-			using (var client = this.ConnectLoginAndCreateCharacter("MageShieldChecker")) {
-				this.SetAbilityPoints(client, "a_energy_shield", 5); // 5 * 30 = 150 HP buffer
-				this.GrantEnergyShieldResources(client);
-				this.ActivateAbility(client, "a_energy_shield");
-				Assert.True(this.ReportAbilityActive(client, "a_energy_shield"), "Expected Energy Shield to be active after Activate.");
-
-				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestEnergyShieldAbsorbsNpcDamage 20");
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: ENERGYSHIELD", mark, TimeSpan.FromSeconds(10)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: ENERGYSHIELD");
-				int before = ExtractInt(line, "hitsBefore");
-				int after = ExtractInt(line, "hitsAfter");
-
-				Assert.Equal(before, after); // fully absorbed - 150 HP buffer against 20 damage
-			}
 		}
 
 		/// <summary>#1017 - Erebor's f_silence_npc: points * 60, plus Int * staff level / 2, out of 1000,
@@ -166,29 +144,6 @@ namespace SteamEngine.Tests.Protocol {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestSetAbilityPoints " + QuoteIfElevated(defname, elevated) + " " + points);
 			Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: set " + defname, mark, TimeSpan.FromSeconds(10)));
-		}
-
-		/// <summary>Energy Shield's own ActivableAbilityDef.Resources (60 mana, 1 amethyst gem)
-		/// are checked by AbilityDef.On_DenyActivate before activation is even allowed - a fresh
-		/// test character has neither, so Activate silently no-ops without this.</summary>
-		private void GrantEnergyShieldResources(TestGameClient client) {
-			int mark = this.fixture.GameOutputSnapshot().Length;
-			client.SendSpeech(".TestGrantEnergyShieldResources");
-			Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: granted energy shield resources", mark, TimeSpan.FromSeconds(10)));
-		}
-
-		private void ActivateAbility(TestGameClient client, string defname, bool elevated = true) {
-			int mark = this.fixture.GameOutputSnapshot().Length;
-			client.SendSpeech(".TestActivateAbility " + QuoteIfElevated(defname, elevated));
-			Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: activated " + defname, mark, TimeSpan.FromSeconds(10)));
-		}
-
-		private bool ReportAbilityActive(TestGameClient client, string defname, bool elevated = true) {
-			int mark = this.fixture.GameOutputSnapshot().Length;
-			client.SendSpeech(".TestReportAbilityActive " + QuoteIfElevated(defname, elevated));
-			Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: " + defname + " active=", mark, TimeSpan.FromSeconds(10)));
-			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: " + defname + " active=");
-			return line.Contains("active=True");
 		}
 
 		private uint SpawnDummy(TestGameClient client) {

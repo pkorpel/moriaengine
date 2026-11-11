@@ -218,6 +218,9 @@ namespace SteamEngine.CompiledScripts {
 				// this into a heal. Floored here, before the @damage trigger below, so a future
 				// script-level heal-via-negative-damage hook (none exists yet) still has a path.
 				damage = Math.Max(0, damage);
+				//#1401 - Erebor's damage_final: the energy shield after the resists, before the mana shield (@damage),
+				//armor wear and minimal damage
+				damage = EnergyShieldPlugin.Absorb(attacker, defender, damage, isSpell);
 				if (isSwing || isSpell) {
 					damage = CombatCalculator.RoundLikeSphere(damage);
 					CombatWear.OnDamageTaken(defender, (int) damage, attacker);
@@ -231,7 +234,7 @@ namespace SteamEngine.CompiledScripts {
 
 				int previousHits = defender.Hits;
 
-				DamageArgs damageArgs = new DamageArgs(attacker, defender, flags, damage);
+				DamageArgs damageArgs = new DamageArgs(attacker, defender, flags, damage, isSwing, isSpell);
 				Trigger_Damage(damageArgs);
 
 				damage = damageArgs.damage;
@@ -703,14 +706,24 @@ namespace SteamEngine.CompiledScripts {
 		public readonly Character defender;
 		public readonly Character attacker;
 		public readonly DamageType flags;
-		public readonly double damage;
+		/// <summary>#1401 - what the defender loses: CauseDamage reads it back after @damage, so a handler may lower it
+		/// (the energy shield).</summary>
+		public double damage;
+		/// <summary>#1401 - a landed blow or a harmful spell's damage; neither for poison, bleeding, bombs and the like.</summary>
+		public readonly bool isSwing, isSpell;
 
 		public DamageArgs(Character attacker, Character defender, DamageType flags, double damage)
+			: this(attacker, defender, flags, damage, false, false) {
+		}
+
+		public DamageArgs(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell)
 			: base(attacker, defender, flags, damage) {
 			this.defender = defender;
 			this.attacker = attacker;
 			this.flags = flags;
 			this.damage = damage;
+			this.isSwing = isSwing;
+			this.isSpell = isSpell;
 		}
 	}
 
