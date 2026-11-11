@@ -69,7 +69,6 @@ namespace SteamEngine.CompiledScripts {
 		};
 
 		internal const int ClassMessageHue = 0x57;
-		private static readonly TagKey counterTK = TagKey.Acquire("_specAbilityCounter_");
 
 		/// <summary>#1070 - fizzmagictravel: a recall or a gate being cast stops. Erebor's thrown knife and knockback do it
 		/// with a long range running, and so does a mystic's special strike on a player.</summary>
@@ -114,28 +113,31 @@ namespace SteamEngine.CompiledScripts {
 			ch.Stam = (short) Math.Max(0, ch.Stam - amount);
 		}
 
-		/// <summary>f_abilitycheck: true when it was just turned on. A second use turns it off, for free.</summary>
+		/// <summary>f_abilitycheck: true when it was just turned on. A second use turns it off, for free. The counter is
+		/// the profession plugin's since #1438, so a new profession starts without one.</summary>
 		internal static bool ToggleCounter(Player self, ProfessionDef profession) {
+			ProfessionPlugin plugin = ProfessionPlugin.GetInstalledPlugin(self);
 			if (self.Level < 1) {
 				self.RedMessage("Musis byt alespon na prvni urovni.");
-			} else if (self.Profession != profession) {
+			} else if ((plugin == null) || (self.Profession != profession)) {
 				self.RedMessage("Toto umi pouzit pouze " + profession.Name + ".");
-			} else if (self.GetTag(counterTK) != null) {
-				self.RemoveTag(counterTK);
+			} else if (plugin.counterOn) {
+				plugin.counterOn = false;
 			} else if (ReduceStamina(self, 3)) {
-				self.SetTag(counterTK, 1);
+				plugin.counterOn = true;
 				return true;
 			}
 			return false;
 		}
 
 		internal static bool CounterOn(Player self) {
-			return self.GetTag(counterTK) != null;
+			ProfessionPlugin plugin = ProfessionPlugin.GetInstalledPlugin(self);
+			return (plugin != null) && plugin.counterOn;
 		}
 
 		/// <summary>specability: chance out of 100000, by level, while the counter's on.</summary>
 		internal static bool CounterFires(Player self) {
-			return (self.GetTag(counterTK) != null) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(self.EffectiveLevel));
+			return CounterOn(self) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(self.EffectiveLevel));
 		}
 
 		/// <summary>A player's @AfterSwing on a blow that's landing: the critical blow, from the counter the classes share.
@@ -151,9 +153,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Death takes the counter away, sphereevents.scp.</summary>
+		/// <summary>What a death ends for the classes still on direct calls. The counter goes in the profession plugin's
+		/// @death (#1438).</summary>
 		internal static void OnDeath(Character self) {
-			self.RemoveTag(counterTK);
 			PriestAbilities.NoteDeath(self);
 			ShamanAbilities.OnDeath(self);
 			MysticMind.OnDeath(self);

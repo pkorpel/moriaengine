@@ -131,6 +131,12 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		/// <summary>#1438 - death takes the class counter away (sphereevents.scp). Every class's counter is this field: Erebor's
+		/// specability, switched by ClassAbilities.ToggleCounter.</summary>
+		public virtual void On_Death() {
+			this.counterOn = false;
+		}
+
 		/// <summary>#1429 - a blow landing on the player, before the dodge (Erebor's @aftergetswing): the shield block,
 		/// which six classes may learn. A profession's own plugin adds its part and calls this.</summary>
 		public virtual void On_GetSwingLanding(WeaponSwingArgs swing) {
