@@ -24,7 +24,7 @@
 Defname = class_mystic //class_ as alternate prefix
 PvPArmorChange = 10 //nastaveni_global_armorchange_vP
 Name = "mystic"
-professionPluginDef = p_profession_default
+professionPluginDef = p_profession_mystic //#1455 - the catch field's cooldown: MysticProfessionPlugin
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
@@ -81,3 +81,6 @@ titlesFemale="Pilgrim", "Dreamer", "Visionary", "Sensitive", "Soothsayer", "Hypn
 //dropped. Reveal is omitted - not implemented in this engine (unimplementedSpells.def).
 allowedSpells=s_feeblemind, s_magic_arrow, s_heal, s_cunning, s_cure, s_protection, s_harm, s_bless, s_teleport, s_greater_heal, s_recall, s_magic_reflection, s_dispel, s_mark, s_gate_travel, s_mana_drain, s_reveal
 //s_reveal - not implemented in this engine
+
+//#1455 - the mystic's own profession plugin (ClassAbilities/MysticPlugins.cs)
+[MysticProfessionPluginDef p_profession_mystic]
