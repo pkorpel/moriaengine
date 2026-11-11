@@ -475,7 +475,7 @@ namespace SteamEngine {
 				TriggerGroup tg = registeredTGs[i];
 				tg.Run(this, tk, sa);
 			}
-			base.TryTrigger(tk, sa);
+			base.Trigger(tk, sa); //#1372 - was base.TryTrigger: its trigger groups, plugins and def swallowed exceptions
 			if (this.type != null) {
 				this.type.Run(this, tk, sa);
 			}

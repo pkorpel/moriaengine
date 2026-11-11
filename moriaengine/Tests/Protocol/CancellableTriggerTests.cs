@@ -20,6 +20,18 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1372 - an item's and an account's Trigger and CancellableTrigger let a trigger group's exception through;
+		/// their Try versions don't. Server side: TestThrowingTrigger in scripts/Tests/CancellableTriggerTests.cs.</summary>
+		[Fact]
+		public void OnlyTheTryTriggersSwallowAnException() {
+			using (TestGameClient game = this.Login("Hazejici")) {
+				this.Run(game, ".TestThrowingTrigger", "CANCELLABLE_THROW:");
+				string line = this.LastLine("CANCELLABLE_THROW:");
+				Assert.True(line.Contains("itemTrigger=True itemCancellable=True itemTry=False itemTryCancellable=False"), line + "\n" + this.fixture.GameOutputSnapshot());
+				Assert.True(line.Contains("accountTrigger=True accountCancellable=True accountTry=False accountTryCancellable=False"), line + "\n" + this.fixture.GameOutputSnapshot());
+			}
+		}
+
 		/// <summary>#1387 - a plugin removing itself mid-trigger no longer stops the trigger for the plugins after it.
 		/// Server side: scripts/Tests/PluginLoopTests.cs.</summary>
 		[Fact]
