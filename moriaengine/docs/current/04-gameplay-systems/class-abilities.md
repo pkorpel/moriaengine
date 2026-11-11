@@ -114,6 +114,21 @@ Erebor's small icons at the top left (`AbilityIcons.cs`): a charge (magic charge
 strike) as its picture with a small one per charge (`d_charge`), a readied split shot (`d_splitShot`) and a readied
 crushing arrow (`d_crushingArrow`). They stand side by side, 50 apart, each keeping its place while open.
 
+## Mystic's catch, catch field and control (#1455)
+
+Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
+- **`.catch`** is a `CatchPlugin` on the mystic (`i_catchitem`). It ticks every second: the hold starts, then mana and
+  half as much stamina drain, more each second, until 25 ticks or either is under 20. A death lets go at the next tick
+  with "Uz nemas silu monstrum drzet!", as Erebor's @timer saw `statf_dead`.
+- **`.catchfield`** is a `CatchFieldPlugin` on the mystic (`i_memory_catchField`). Its own `@death` ends it, as
+  `e_catchField`'s. Each monster it holds has a `CaughtPlugin` (`e_catchedInField`, with its mystic and power); a blow
+  at it frees it at `@getSwingLanding`, Erebor's `@aftergetswing`.
+- **`.controlnpc`** is a `ControlNpcPlugin` (`i_controlnpc`): in 5 s the creature may become the mystic's.
+- The mystic's own profession plugin, `MysticProfessionPlugin` (`p_profession_mystic`), holds the catch field's
+  cooldown. As with the other classes, setting the profession again resets it.
+- A monster keeps Erebor's tags after a hold: `_wasCatched_` (a second catch hurts the mystic) and
+  `_catchFieldReleasedAt_` (no field again for an hour).
+
 ## Mystic hypnosis and the world
 
 The body swap itself is in `MysticHypnosis.cs`. While a mystic possesses a monster:

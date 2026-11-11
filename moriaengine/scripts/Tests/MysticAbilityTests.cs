@@ -20,6 +20,12 @@ namespace SteamEngine.CompiledScripts {
 			player.Stam = player.MaxStam;
 			ClassAbilities.Reset(player);
 			ClassAbilities.OnDeath(player);
+			if (CatchPlugin.Of(player) is CatchPlugin leftHold) { //#1455 - a run aborted part-way on a reused character
+				MysticMind.ReleaseCatch(player, leftHold, false);
+			}
+			if (CatchFieldPlugin.Of(player) is CatchFieldPlugin leftField) {
+				MysticMind.EndCatchField(player, leftField);
+			}
 			if (!MysticMind.HasBall(player)) {
 				((ItemDef) ThingDef.GetByDefname(MysticMind.BallDef)).Create(player.Backpack);
 			}
@@ -34,21 +40,25 @@ namespace SteamEngine.CompiledScripts {
 			ClassAbilities.SetPoints(player, "controlnpc", 20);
 			NPC wild = ClassAbilityTests.Dummy(self, 2);
 			MysticMind.ControlTarget(player, wild);
-			Report("onlyPetsAndSummonsObey", !player.HasTimer(ControlNpcTimer.Key));
+			Report("onlyPetsAndSummonsObey", ControlNpcPlugin.Of(player) == null);
 			SummonSpellDef.MarkAsSummonedCreature(wild);
 			MysticMind.ControlTarget(player, wild);
-			Report("aSummonCanBeTaken", player.HasTimer(ControlNpcTimer.Key));
-			MysticMind.FinishControl(player, wild);
-			Report("itObeysTheMystic", wild.ControlMaster == player);
+			ControlNpcPlugin control = ControlNpcPlugin.Of(player); //#1455 - i_controlnpc
+			Report("aSummonCanBeTaken", (control != null) && (control.target == wild) && (control.Timer > 4) && (control.Timer <= 5));
+			ClassAbilities.SetPoints(player, "controlnpc", 20);
+			if (control != null) {
+				control.TryRun(TriggerKey.Acquire("timer"), null, out object scripted, out object compiled); //its own @timer, as PluginTimer runs it
+			}
+			Report("itObeysTheMystic", (wild.ControlMaster == player) && (ControlNpcPlugin.Of(player) == null));
 			wild.Delete();
 
 			ClassAbilities.SetPoints(player, "catch", 10);
 			NPC held = ClassAbilityTests.Dummy(self, 2);
 			held.ExperienceReward = 1000;
-			for (int i = 0; (i < 60) && !player.HasTimer(CatchTimer.Key); i++) {
+			for (int i = 0; (i < 60) && (CatchPlugin.Of(player) == null); i++) {
 				MysticMind.CatchTarget(player, held);
 			}
-			CatchTimer catching = player.GetTimer(CatchTimer.Key) as CatchTimer;
+			CatchPlugin catching = CatchPlugin.Of(player); //#1455 - i_catchitem
 			Report("catchTakesHold", catching != null);
 			if (catching != null) {
 				MysticMind.CatchTick(player, catching);
@@ -57,12 +67,12 @@ namespace SteamEngine.CompiledScripts {
 				MysticMind.CatchTick(player, catching);
 				Report("holdingDrainsMana", player.Mana == mana - MysticMind.CatchDrain(1000, 100, 1));
 				MysticMind.Catch(player);
-				Report("catchAgainLetsGo", MysticMind.CheckCanMove(held) && MysticMind.CheckCanMove(player) && !player.HasTimer(CatchTimer.Key));
+				Report("catchAgainLetsGo", MysticMind.CheckCanMove(held) && MysticMind.CheckCanMove(player) && (CatchPlugin.Of(player) == null));
 				int hits = player.Hits;
 				for (int i = 0; (i < 60) && (player.Hits == hits); i++) {
 					MysticMind.CatchTarget(player, held);
 				}
-				Report("aSecondCatchHurts", (player.Hits < hits) && !player.HasTimer(CatchTimer.Key));
+				Report("aSecondCatchHurts", (player.Hits < hits) && (CatchPlugin.Of(player) == null));
 			}
 			held.Delete();
 
@@ -71,15 +81,38 @@ namespace SteamEngine.CompiledScripts {
 			player.Mana = player.MaxMana;
 			player.Stam = player.MaxStam;
 			MysticMind.CatchField(player);
-			Report("theFieldHoldsThoseAround", player.HasTimer(CatchFieldTimer.Key) && (near.GetTag(MysticMind.CatchedByTK) == player) && ParalyzeEffectPluginDef.IsParalyzed(near));
-			MysticMind.OnSwungAt(near);
-			Report("aBlowFreesOne", (near.GetTag(MysticMind.CatchedByTK) == null) && MysticMind.CheckCanMove(near) && !ParalyzeEffectPluginDef.IsParalyzed(near));
+			CatchFieldPlugin field = CatchFieldPlugin.Of(player); //#1455 - i_memory_catchField
+			CaughtPlugin caught = CaughtPlugin.Of(near); //e_catchedInField
+			Report("theFieldHoldsThoseAround", (field != null) && field.held.Contains(near) && (caught != null) && (caught.mystic == player) && ParalyzeEffectPluginDef.IsParalyzed(near));
+			Report("theFieldIsTheMysticsPlugin", (MysticProfessionPlugin.Of(player) is MysticProfessionPlugin mystic) && (mystic.nextCatchField > Globals.TimeInSeconds + 3000));
+			DamageManager.Trigger_GetSwingLanding(DamageManager.GetWeaponSwingArgs(player, near)); //#1455 - a blow at it, as ProcessSwing raises it
+			Report("aBlowFreesOne", (CaughtPlugin.Of(near) == null) && (field != null) && !field.held.Contains(near) && MysticMind.CheckCanMove(near) && !ParalyzeEffectPluginDef.IsParalyzed(near));
 			MysticMind.CatchField(player);
-			Report("theFieldEndsAgain", !player.HasTimer(CatchFieldTimer.Key) && MysticMind.CheckCanMove(player));
+			Report("theFieldEndsAgain", (CatchFieldPlugin.Of(player) == null) && MysticMind.CheckCanMove(player));
 			player.Mana = player.MaxMana;
 			MysticMind.CatchField(player);
-			Report("theFieldCoolsDownAnHour", !player.HasTimer(CatchFieldTimer.Key));
+			Report("theFieldCoolsDownAnHour", CatchFieldPlugin.Of(player) == null);
 			near.Delete();
+
+			MysticProfessionPlugin cooldowns = MysticProfessionPlugin.Of(player); //#1455 - a field ends with its holder's death
+			if (cooldowns != null) {
+				cooldowns.nextCatchField = 0;
+			}
+			NPC second = ClassAbilityTests.Dummy(self, 2);
+			player.Mana = player.MaxMana;
+			player.Stam = player.MaxStam;
+			for (int i = 0; (i < 40) && (CatchFieldPlugin.Of(player) == null); i++) {
+				if (cooldowns != null) {
+					cooldowns.nextCatchField = 0;
+				}
+				player.Mana = player.MaxMana;
+				player.Stam = player.MaxStam;
+				MysticMind.CatchField(player);
+			}
+			bool heldBefore = CaughtPlugin.Of(second) != null;
+			player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //@death alone, nobody dies
+			Report("deathEndsTheField", heldBefore && (CatchFieldPlugin.Of(player) == null) && (CaughtPlugin.Of(second) == null) && MysticMind.CheckCanMove(player));
+			second.Delete();
 
 			ClassAbilities.SetPoints(player, "buffSteal", 20);
 			NPC robbed = ClassAbilityTests.Dummy(self, 2);

@@ -105,8 +105,8 @@ Before the dodge, a swing raises `@swingLanding` on the attacker and `@getSwingL
 `DamageManager.Trigger_SwingLanding`/`Trigger_GetSwingLanding`). They are Erebor's player `@AfterSwing` and
 `@aftergetswing`: armour and the monsters' own modifiers are applied and the dodge is still to come. Erebor rolled its
 dodge first and ran them on a dodged blow and a landed one alike, so they run on both here too. Handlers change
-`DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them, and so does the shaman's
-empathy elixir (`EmpathyPlugin`, #1447).
+`DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them, and so do the shaman's
+empathy elixir (`EmpathyPlugin`, #1447) and a monster held by a mystic's catch field (`CaughtPlugin`, #1455).
 
 Once a landed blow's damage is dealt, a swing raises `@afterHit` on the attacker and `@afterGetHit` on the defender
 (#1445, `DamageManager.Trigger_AfterHit`, args: the `WeaponSwingArgs` and the damage). They come after the damage, the

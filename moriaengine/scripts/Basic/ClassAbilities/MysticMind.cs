@@ -40,11 +40,8 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static readonly TagKey CatchedOnceTK = TagKey.Acquire("_wasCatched_");
 		internal static readonly TagKey FieldReleasedAtTK = TagKey.Acquire("_catchFieldReleasedAt_");
-		internal static readonly TagKey CatchedByTK = TagKey.Acquire("_catchedBy_");
-		internal static readonly TagKey CatchPowerTK = TagKey.Acquire("_catchPower_");
 		internal static readonly TagKey BuffDmgBonusTK = TagKey.Acquire("_buffDmgBonus_");
 		internal static readonly TagKey NpcDamageCutTK = TagKey.Acquire("_changeDmgPercent_");
-		private static readonly TagKey catchFieldNextTK = TagKey.Acquire("_catchFieldNext_");
 		private static readonly PluginKey fieldParalysisPK = PluginKey.Acquire("_catchFieldParalysis_");
 
 		internal static bool IsMystic(Character ch) {
@@ -103,11 +100,14 @@ namespace SteamEngine.CompiledScripts {
 			} else if (Point2D.GetSimpleDistance(self, target) > 5) {
 				self.RedMessage("Cil je prilis daleko.");
 			} else {
-				ControlNpcTimer timer = new ControlNpcTimer();
-				timer.target = target;
-				self.DeleteTimer(ControlNpcTimer.Key);
-				self.AddTimer(ControlNpcTimer.Key, timer);
-				timer.DueInSeconds = 5;
+				ControlNpcPlugin old = ControlNpcPlugin.Of(self);
+				if (old != null) {
+					old.Delete();
+				}
+				ControlNpcPlugin control = (ControlNpcPlugin) ControlNpcPluginDef.instance.Create(); //#1455 - i_controlnpc
+				control.target = target;
+				self.AddPlugin(ControlNpcPlugin.Key, control);
+				control.Timer = 5;
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace SteamEngine.CompiledScripts {
 		#region catch
 		[SteamFunction]
 		public static void Catch(Player self) {
-			CatchTimer held = self.GetTimer(CatchTimer.Key) as CatchTimer;
+			CatchPlugin held = CatchPlugin.Of(self);
 			if (ClassAbilities.Points(self, "catch") <= 0) {
 				self.RedMessage("Tuto schopnost neumis pouzit.");
 			} else if (MysticHypnosis.IsPossessing(self)) {
@@ -138,7 +138,7 @@ namespace SteamEngine.CompiledScripts {
 			} else if (held != null) {
 				self.SysMessage((self.IsFemale ? "Uvolnila" : "Uvolnil") + " jsi svou mysl i mysl nepritele.");
 				ReleaseCatch(self, held, false);
-			} else if (self.HasTimer(CatchFieldTimer.Key)) {
+			} else if (CatchFieldPlugin.Of(self) != null) {
 				self.SysMessage("Tva mysl je jiz plne zaneprazdnena.");
 			} else if (!IsMystic(self)) {
 				self.RedMessage("Tuto abilitu nemuzes pouzit.");
@@ -167,37 +167,37 @@ namespace SteamEngine.CompiledScripts {
 				DamageManager.CauseDamage(null, self, DamageType.MagicMystical, 30);
 			} else {
 				target.SetTag(CatchedOnceTK, 1);
-				CatchTimer timer = new CatchTimer();
-				timer.monster = target;
-				self.AddTimer(CatchTimer.Key, timer);
-				timer.DueInSeconds = 0;
-				timer.PeriodInSeconds = 1;
+				CatchPlugin hold = (CatchPlugin) CatchPluginDef.instance.Create(); //#1455 - i_catchitem
+				hold.monster = target;
+				self.AddPlugin(CatchPlugin.Key, hold);
+				hold.Timer = 0;
 			}
 		}
 
 		/// <summary>i_catchitem's tick: the hold starts, then mana and half as much stamina drain a second, more each
 		/// second, for 25 ticks or until either is under 20.</summary>
-		internal static void CatchTick(Character self, CatchTimer timer) {
-			if (self.Flag_Dead || MysticHypnosis.IsPossessing(self) || (timer.monster == null) || timer.monster.IsDeleted) {
-				ReleaseCatch(self, timer, true);
+		internal static void CatchTick(Character self, CatchPlugin hold) {
+			if (self.Flag_Dead || MysticHypnosis.IsPossessing(self) || (hold.monster == null) || hold.monster.IsDeleted) {
+				ReleaseCatch(self, hold, true);
 				return;
 			}
-			if (timer.ticks == 0) {
-				timer.ticks = 1;
-				timer.monsterExp = MonsterExp(timer.monster);
-				SetImmobile(timer.monster, true);
+			hold.Timer = 1; //the next tick, unless this one lets go
+			if (hold.ticks == 0) {
+				hold.ticks = 1;
+				hold.monsterExp = MonsterExp(hold.monster);
+				SetImmobile(hold.monster, true);
 				SetImmobile(self, true);
 				self.SysMessage("Drzis monstrum svou mysli na miste...");
 				return;
 			}
-			if ((self.Mana < 20) || (self.Stam < 20) || (timer.ticks > 25)) {
-				ReleaseCatch(self, timer, true);
+			if ((self.Mana < 20) || (self.Stam < 20) || (hold.ticks > 25)) {
+				ReleaseCatch(self, hold, true);
 				return;
 			}
-			int drain = CatchDrain(timer.monsterExp, self is Player player ? player.Level : 1, timer.ticks);
+			int drain = CatchDrain(hold.monsterExp, self is Player player ? player.Level : 1, hold.ticks);
 			self.Mana = (short) Math.Max(0, self.Mana - drain);
 			self.Stam = (short) Math.Max(0, self.Stam - (drain / 2));
-			timer.ticks++;
+			hold.ticks++;
 		}
 
 		/// <summary>propocet: the monster's exp over five times the level, and 3 more each second.</summary>
@@ -207,15 +207,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Erebor's message on running out was lost for everyone after the first manual release (a global
 		/// var); here only a manual release skips it.</summary>
-		internal static void ReleaseCatch(Character self, CatchTimer timer, bool tired) {
+		internal static void ReleaseCatch(Character self, CatchPlugin hold, bool tired) {
 			if (tired && !MysticHypnosis.IsPossessing(self)) {
 				self.SysMessage("Uz nemas silu monstrum drzet!");
 			}
-			if (timer.monster != null) {
-				SetImmobile(timer.monster, false);
+			if (hold.monster != null) {
+				SetImmobile(hold.monster, false);
 			}
 			SetImmobile(self, false);
-			timer.Delete();
+			hold.Delete();
 		}
 
 		internal static int MonsterExp(Character ch) {
@@ -227,12 +227,13 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void CatchField(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			CatchFieldTimer field = self.GetTimer(CatchFieldTimer.Key) as CatchFieldTimer;
+			CatchFieldPlugin field = CatchFieldPlugin.Of(self);
+			MysticProfessionPlugin mystic = MysticProfessionPlugin.Of(self);
 			if (ClassAbilities.Points(self, "catch") <= 0) {
 				self.RedMessage("Tuto schopnost neumis pouzit.");
 			} else if (field != null) {
 				EndCatchField(self, field);
-			} else if (self.HasTimer(CatchTimer.Key) || MysticHypnosis.IsPossessing(self)) {
+			} else if ((CatchPlugin.Of(self) != null) || MysticHypnosis.IsPossessing(self)) {
 				self.SysMessage("Tva mysl je jiz plne zaneprazdnena.");
 			} else if (!IsMystic(self)) {
 				self.RedMessage("Tuto abilitu nemuzes pouzit.");
@@ -240,7 +241,7 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage((self.IsFemale ? "Mrtva" : "Mrtvy") + " tuto abilitu nemuzes pouzit.");
 			} else if (!HasBall(self)) {
 				self.RedMessage("Musis mit svou kristalovou kouli!");
-			} else if (ClassAbilities.SecondsTag(self, catchFieldNextTK) > Globals.TimeInSeconds) {
+			} else if ((mystic != null) && (mystic.nextCatchField > Globals.TimeInSeconds)) { //#1455 - the cooldown is the plugin's
 				self.SysMessage("Abilitu jeste nemuzes pouzit.", ClassAbilities.ClassMessageHue);
 			} else if (self.Level < 20) {
 				self.SysMessage("Nejsi jeste dost " + (self.IsFemale ? "zkusena." : "zkuseny."));
@@ -249,44 +250,50 @@ namespace SteamEngine.CompiledScripts {
 			} else if (ClassAbilities.ReduceStamina(self, 10)) {
 				HidingSkillDef.Reveal(self);
 				self.SysMessage("Poutas na sebe monstra ve svem blizkem okoli.", ClassAbilities.ClassMessageHue);
-				StartCatchField(self, settings);
+				StartCatchField(self, mystic, settings);
 			}
 		}
 
 		/// <summary>i_memory_catchField's @Equip. Erebor's 10 mana was charged to the item, so nothing; kept.</summary>
-		private static void StartCatchField(Player self, ClassAbilitySettings settings) {
+		private static void StartCatchField(Player self, MysticProfessionPlugin mystic, ClassAbilitySettings settings) {
 			if (2 * ClassAbilities.Points(self, "catch") < Globals.dice.Next(0, 41)) {
 				self.SysMessage("Nepovedlo se.");
-				self.SetTag(catchFieldNextTK, Globals.TimeInSeconds + 10);
+				if (mystic != null) {
+					mystic.nextCatchField = Globals.TimeInSeconds + 10;
+				}
 				self.SysMessage((self.IsFemale ? "Uvolnila" : "Uvolnil") + " jsi svou mysl i mysl nepritele.");
 				return;
 			}
-			CatchFieldTimer timer = new CatchFieldTimer();
-			timer.effort = 3;
-			self.AddTimer(CatchFieldTimer.Key, timer);
-			timer.DueInSeconds = 1;
-			timer.PeriodInSeconds = 1;
-			CaptureAround(self, timer);
+			CatchFieldPlugin field = (CatchFieldPlugin) CatchFieldPluginDef.instance.Create(); //#1455 - i_memory_catchField
+			field.effort = 3;
+			field.held = new List<NPC>();
+			self.AddPlugin(CatchFieldPlugin.Key, field);
+			field.Timer = 1;
+			CaptureAround(self, field);
 			self.Sound(586);
 			EffectFactory.StationaryEffect(self, 0x373a, 9, 40);
-			self.SetTag(catchFieldNextTK, Globals.TimeInSeconds + settings.catchFieldCooldownSeconds);
+			if (mystic != null) {
+				mystic.nextCatchField = Globals.TimeInSeconds + settings.catchFieldCooldownSeconds;
+			}
 			SetImmobile(self, true);
 		}
 
 		/// <summary>f_catchField_captureNPC over NPCs within 3 tiles. Erebor scanned only its own 64x64 sector, so
 		/// at a sector edge some were missed; here all within reach.</summary>
-		internal static void CaptureAround(Character self, CatchFieldTimer timer) {
+		internal static void CaptureAround(Character self, CatchFieldPlugin field) {
 			int level = (self is Player player) ? player.Level : 1;
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 3)) {
-				if (!(ch is NPC npc) || (npc.GetTag(CatchedByTK) != null) || npc.Flag_Dead ||
+				if (!(ch is NPC npc) || (CaughtPlugin.Of(npc) != null) || npc.Flag_Dead ||
 						((npc.GetTag(FieldReleasedAtTK) != null) && (ClassAbilities.SecondsTag(npc, FieldReleasedAtTK) + 3600 > Globals.TimeInSeconds))) {
 					continue;
 				}
 				int power = MonsterExp(npc) / (400 + (level * 3));
-				npc.SetTag(CatchedByTK, self);
-				npc.SetTag(CatchPowerTK, power);
-				timer.effort += power + 2;
-				timer.held.Add(npc);
+				CaughtPlugin caught = (CaughtPlugin) CaughtPluginDef.instance.Create(); //#1455 - e_catchedInField
+				caught.mystic = self;
+				caught.power = power;
+				npc.AddPlugin(CaughtPlugin.Key, caught);
+				field.effort += power + 2;
+				field.held.Add(npc);
 				npc.Flag_WarMode = false;
 				ParalyzeEffectPluginDef.Paralyze(npc, fieldParalysisPK, TimeSpan.FromHours(10));
 				SetImmobile(npc, true);
@@ -294,51 +301,49 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		internal static void CatchFieldTick(Character self, CatchFieldTimer timer) {
+		internal static void CatchFieldTick(Character self, CatchFieldPlugin field) {
 			if (self.Flag_Dead) {
-				EndCatchField(self, timer);
+				EndCatchField(self, field);
 				return;
 			}
-			CaptureAround(self, timer);
+			field.Timer = 1; //the next tick, unless this one ends it
+			CaptureAround(self, field);
 			self.Flag_WarMode = false;
 			self.AbortSkill();
 			int level = (self is Player player) ? player.Level : 1;
-			int effort = (Globals.dice.Next(0, 450) < level) ? timer.effort / 2 : timer.effort;
+			int effort = (Globals.dice.Next(0, 450) < level) ? field.effort / 2 : field.effort;
 			self.Mana = (short) Math.Max(0, self.Mana - effort);
 			self.Stam = (short) Math.Max(0, self.Stam - (effort / 4));
 			if ((self.Mana == 0) || (self.Stam == 0)) {
-				EndCatchField(self, timer);
+				EndCatchField(self, field);
 			}
 		}
 
-		internal static void EndCatchField(Character self, CatchFieldTimer timer) {
-			foreach (NPC npc in timer.held.ToArray()) {
-				ReleaseFromField(npc, timer);
+		internal static void EndCatchField(Character self, CatchFieldPlugin field) {
+			if (field.held != null) {
+				foreach (NPC npc in field.held.ToArray()) {
+					ReleaseFromField(npc, field);
+				}
 			}
 			self.SysMessage((self.IsFemale ? "Uvolnila" : "Uvolnil") + " jsi svou mysl i mysl nepritele.");
 			SetImmobile(self, false);
-			timer.Delete();
+			field.Delete();
 		}
 
 		/// <summary>f_catchField_releaseNPC: free for catch again, not for a field for an hour.</summary>
-		internal static void ReleaseFromField(NPC npc, CatchFieldTimer timer) {
-			if (timer != null) {
-				timer.effort -= Convert.ToInt32(npc.GetTag(CatchPowerTK) ?? 0);
-				timer.held.Remove(npc);
+		internal static void ReleaseFromField(NPC npc, CatchFieldPlugin field) {
+			CaughtPlugin caught = CaughtPlugin.Of(npc);
+			if ((field != null) && (field.held != null)) {
+				field.effort -= (caught == null) ? 0 : caught.power;
+				field.held.Remove(npc);
 			}
 			npc.SetTag(FieldReleasedAtTK, Globals.TimeInSeconds);
 			npc.RemoveTag(CatchedOnceTK);
-			npc.RemoveTag(CatchPowerTK);
-			npc.RemoveTag(CatchedByTK);
+			if (caught != null) {
+				caught.Delete();
+			}
 			SetImmobile(npc, false);
 			ParalyzeEffectPluginDef.Unparalyze(npc);
-		}
-
-		/// <summary>e_catchedInField's @aftergetswing: a blow frees that one.</summary>
-		internal static void OnSwungAt(Character defender) {
-			if ((defender is NPC npc) && (npc.GetTag(CatchedByTK) is Character mystic)) {
-				ReleaseFromField(npc, mystic.GetTimer(CatchFieldTimer.Key) as CatchFieldTimer);
-			}
 		}
 		#endregion
 
@@ -351,7 +356,7 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage((self.IsFemale ? "Mrtva" : "Mrtvy") + " tuto abilitu nemuzes pouzit!"); //Erebor's typo said nothing
 			} else if (!HasBall(self)) {
 				self.RedMessage("Musis mit svou kristalovou kouli!");
-			} else if (MysticHypnosis.IsPossessing(self) || self.HasTimer(CatchFieldTimer.Key) || self.HasTimer(CatchTimer.Key)) {
+			} else if (MysticHypnosis.IsPossessing(self) || (CatchFieldPlugin.Of(self) != null) || (CatchPlugin.Of(self) != null)) {
 				self.SysMessage("Tva mysl je jiz plne zaneprazdnena.");
 			} else if (self.Mana < 100) {
 				self.SysMessage("Nemas dost many.");
@@ -568,12 +573,6 @@ namespace SteamEngine.CompiledScripts {
 				}
 				timer.Delete();
 			}
-			if (self.GetTimer(CatchTimer.Key) is CatchTimer held) {
-				ReleaseCatch(self, held, false);
-			}
-			if (self.GetTimer(CatchFieldTimer.Key) is CatchFieldTimer field) {
-				EndCatchField(self, field);
-			}
 		}
 
 		/// <summary>magie.scp:176 and e_npcChangeDmg, on blows: a stolen attack talent, and a robbed monster's cut.</summary>
@@ -628,69 +627,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			MysticMind.BuffStealTarget(self, targetted);
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_controlnpc: 5 s, then the roll.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class ControlNpcTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_controlNpc_");
-
-		[SaveableData, CopyableData]
-		public Character target;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public ControlNpcTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character self) {
-				MysticMind.FinishControl(self, this.target);
-			}
-		}
-	}
-
-	/// <summary>i_catchitem.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class CatchTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_catchItem_");
-
-		[SaveableData, CopyableData]
-		public Character monster;
-
-		[SaveableData, CopyableData]
-		public int ticks, monsterExp;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public CatchTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character self) {
-				MysticMind.CatchTick(self, this);
-			}
-		}
-	}
-
-	/// <summary>i_memory_catchField.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class CatchFieldTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_catchField_");
-
-		[SaveableData, CopyableData]
-		public int effort;
-
-		[SaveableData, CopyableData]
-		public List<NPC> held = new List<NPC>();
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public CatchFieldTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character self) {
-				MysticMind.CatchFieldTick(self, this);
-			}
 		}
 	}
 

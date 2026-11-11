@@ -361,8 +361,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				MysticMind.ModifyBlow(attacker, defender, swingArgs); //#1017 - stolen talents
 				MagicCombat.ModifyBlow(attacker, defender, swingArgs); //#1017 - magic items' slayers
-				MysticMind.OnSwungAt(defender); //#1017 - a blow frees one held by catchField
-				MysticHypnosis.OnSwungAt(defender); //#1017 - and breaks a hypnosis
+				MysticHypnosis.OnSwungAt(defender); //#1017 - a blow breaks a hypnosis (catchField's release is CaughtPlugin's @getSwingLanding, #1455)
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
