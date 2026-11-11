@@ -46,8 +46,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool ShieldIsUp(Character ch) {
-			ActivableAbilityDef energyShield = EnergyShieldDef;
-			return (energyShield != null) && energyShield.IsActive(ch);
+			return EnergyShieldPlugin.IsUp(ch); //#1401 - Erebor's tag.energyofshield: not while it rests
 		}
 
 		/// <summary>The standcast command.</summary>

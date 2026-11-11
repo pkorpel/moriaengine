@@ -49,48 +49,6 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGEABILITY_TEST: level set to " + level);
 		}
 
-		/// <summary>#491 - Energy Shield's own ActivableAbilityDef.Resources (60 mana, 1 amethyst
-		/// gem) are checked by AbilityDef.On_DenyActivate before activation is allowed - a fresh
-		/// test character has neither by default.</summary>
-		[SteamFunction]
-		public static void TestGrantEnergyShieldResources(Character self) {
-			self.MaxMana = 1000;
-			self.Mana = 1000;
-			ThingDef.GetByDefname("i_gem_amethyst").Create(self.Backpack);
-			Console.WriteLine("MAGEABILITY_TEST: granted energy shield resources");
-		}
-
-		/// <summary>#491 - Energy Shield audit: a non-player attacker's damage against a
-		/// shielded player should be absorbed (EnergyShieldPlugin.On_Damage only absorbs when
-		/// args.attacker.IsPlayer is false) - spawns a real NPC attacker rather than using self or
-		/// a player as the source, since player-on-player damage deliberately bypasses the
-		/// shield per the existing (unmodified) implementation.</summary>
-		[SteamFunction]
-		public static void TestEnergyShieldAbsorbsNpcDamage(Character self, ScriptArgs sa) {
-			int amount = Convert.ToInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
-			NPCDef attackerDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
-			NPC attacker = (NPC) attackerDef.Create(self.X + 1, self.Y, self.Z, self.M);
-
-			int before = self.Hits;
-			DamageManager.CauseDamage(attacker, self, DamageType.PhysicalBlunt, amount);
-			int after = self.Hits;
-			Console.WriteLine("MAGEABILITY_TEST: ENERGYSHIELD hitsBefore=" + before + " hitsAfter=" + after);
-		}
-
-		[SteamFunction]
-		public static void TestActivateAbility(Character self, ScriptArgs sa) {
-			string defname = SplitArgs(sa)[0];
-			((ActivableAbilityDef) AbilityDef.GetByDefname(defname)).Activate(self);
-			Console.WriteLine("MAGEABILITY_TEST: activated " + defname);
-		}
-
-		[SteamFunction]
-		public static void TestReportAbilityActive(Character self, ScriptArgs sa) {
-			string defname = SplitArgs(sa)[0];
-			bool active = ((ActivableAbilityDef) AbilityDef.GetByDefname(defname)).IsActive(self);
-			Console.WriteLine("MAGEABILITY_TEST: " + defname + " active=" + active);
-		}
-
 		/// <summary>#491 - a dummy tough enough to survive Mind Blast's real EFFECT=0,70 range
 		/// (a plain c_sheep_woolly has far less HP than that and would die before the silence
 		/// effect gets attached to it, same class of issue as other phases' "don't kill the test

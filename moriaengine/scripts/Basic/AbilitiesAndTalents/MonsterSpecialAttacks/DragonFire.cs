@@ -180,7 +180,7 @@ namespace SteamEngine.CompiledScripts {
 		private static void BurnWithDragonTile(DragonTile tile, Character player) {
 			int damage = tile.weak ? (tile.damage / 2) : tile.damage;
 			if (tile.raw) {
-				DamageManager.CauseDamage(tile.owner, player, DamageType.MagicFire, damage);
+				DamageManager.CauseDamageNoResponse(tile.owner, player, DamageType.MagicFire, damage);
 				return;
 			}
 			int resist = PotionEffectPlugin.DragonResist(player);
@@ -189,7 +189,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			player.SysMessage("Byl jsi poranen dracim ohnem.");
-			DamageManager.CauseDamage(tile.owner, player, DamageType.MagicFire, damage - ((damage * resist) / 100));
+			DamageManager.CauseDamageNoResponse(tile.owner, player, DamageType.MagicFire, damage - ((damage * resist) / 100));
 			if (!player.IsDeleted && player.IsAliveAndValid) {
 				ApplyDragonLinger(player, tile.fireType, tile.damage, tile.weak ? DragonLingerWeak : DragonLingerStrong);
 			}

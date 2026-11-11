@@ -28,6 +28,8 @@ namespace SteamEngine.CompiledScripts {
 		//skillParam2: spell param (summoned creature def?)
 
 		private static readonly TriggerKey tkSpellCast = TriggerKey.Acquire("spellCast");
+		private static readonly TriggerKey tkSpellCastTry = TriggerKey.Acquire("spellCastTry");
+		private static readonly TriggerKey tkDenySpellCast = TriggerKey.Acquire("denySpellCast");
 
 		public static void TryCastSpellFromBook(Character ch, int spellid) {
 			SpellDef sd = SpellDef.GetById(spellid);
@@ -138,10 +140,19 @@ namespace SteamEngine.CompiledScripts {
 						}
 					}
 
+					//#1401 - Erebor's @spellcast in two: its first lines (hungryhurts) ran before its own refusals (SpellCastRules)
+					self.TryTrigger(tkSpellCastTry, skillSeqArgs.scriptArgs);
+					if (self.Flag_Dead) {
+						return TriggerResult.Cancel; //starved to death by it
+					}
 					if (!SpellCastRules.Allow(self, spell, skillSeqArgs.Target1, out bool fizzle)) {
 						if (fizzle) {
 							Fizzle(self);
 						}
+						return TriggerResult.Cancel;
+					}
+					//#1401 - the refusals of a caster's other events (the energy shield's Recall), after Erebor's e_allplayers
+					if (TriggerResult.Cancel == self.TryCancellableTrigger(tkDenySpellCast, skillSeqArgs.scriptArgs)) {
 						return TriggerResult.Cancel;
 					}
 					if (skillSeqArgs.Param2 is NPCDef) {
@@ -153,7 +164,7 @@ namespace SteamEngine.CompiledScripts {
 					}
 					self.TryTrigger(tkSpellCast, skillSeqArgs.scriptArgs); //#1386 - Sphere's @spellCast, the cast is under way
 					if (self.Flag_Dead) {
-						return TriggerResult.Cancel; //#1396 - starved to death by it
+						return TriggerResult.Cancel;
 					}
 
 					SpellCastRules.DropManaShield(self, spell, skillSeqArgs.Target1);

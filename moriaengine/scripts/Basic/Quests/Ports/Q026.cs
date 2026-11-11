@@ -98,7 +98,8 @@ namespace SteamEngine.CompiledScripts {
 		public static double WraithBlow(Character attacker, Character defender, double damage) {
 			AbilityDef def = AbilityDef.GetByDefname(CurseAbility);
 			Ability ability;
-			if ((def == null) || !(attacker is NPC) || !attacker.HasAbility(def, out ability) || !(defender is Player player) || player.IsGM || player.Flag_Dead) {
+			if ((def == null) || !(attacker is NPC) || !attacker.HasAbility(def, out ability) || !(defender is Player player) || player.IsGM || player.Flag_Dead
+					|| EnergyShieldPlugin.IsUp(player)) { //#1401 - not through an energy shield
 				return damage;
 			}
 			int stage = GetStage(player);

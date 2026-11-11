@@ -102,7 +102,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#799 e_eye, attacker side after its own landed hit. Returns the hit points leeched.</summary>
 		public static int TryApplyEyeDrain(Character eye, Character target, int landedDamage) {
 			EyeAbilityDef def = EyeDef;
-			if (!HasAbilityDef(eye, def) || !eye.IsAliveAndValid || target.IsDeleted) {
+			if (!HasAbilityDef(eye, def) || !eye.IsAliveAndValid || target.IsDeleted || EnergyShieldPlugin.IsUp(target)) { //#1401 - not through an energy shield
 				return 0;
 			}
 			int stamLoss = (int) Math.Round(ScriptUtil.GetRandInRange(def.StamDrain[0], def.StamDrain[1]));

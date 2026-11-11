@@ -75,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (AbstractCharacter ch in map.GetCharsInRange(x, y, 0)) {
 				Character target = ch as Character;
 				if ((target != null) && (target.X == x) && (target.Y == y) && IsValidHazardTarget(target, owner)) {
-					DamageManager.CauseDamage(owner, target, damageType, damage);
+					DamageManager.CauseDamageNoResponse(owner, target, damageType, damage);
 					return; //the tile went out on its first victim, same as stepping on it
 				}
 			}
@@ -101,7 +101,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			hazardTiles.Remove(key);
-			DamageManager.CauseDamage(tile.owner, stepping, tile.damageType, tile.damage);
+			DamageManager.CauseDamageNoResponse(tile.owner, stepping, tile.damageType, tile.damage);
 		}
 
 		/// <summary>Number of hazard tiles still burning - for tests.</summary>

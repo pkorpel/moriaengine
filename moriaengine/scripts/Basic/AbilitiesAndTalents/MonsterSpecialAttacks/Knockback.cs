@@ -84,7 +84,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			Ability ability;
-			if (!attacker.HasAbility(def, out ability)) {
+			if (!attacker.HasAbility(def, out ability) || EnergyShieldPlugin.IsUp(defender)) { //#1401 - e_npc_knockback skips a shielded one
 				return;
 			}
 

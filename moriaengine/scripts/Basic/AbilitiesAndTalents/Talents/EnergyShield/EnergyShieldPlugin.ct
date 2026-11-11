@@ -14,5 +14,7 @@
 //	Or visit http://www.gnu.org/copyleft/gpl.html
 
 
-[PluginTemplate EnergyShieldPlugin : StatDrainingEffectDurationPlugin]
-
+[PluginTemplate EnergyShieldPlugin : EffectDurationPlugin]
+Vars:
+	int shieldPower = 100
+	bool resting = false

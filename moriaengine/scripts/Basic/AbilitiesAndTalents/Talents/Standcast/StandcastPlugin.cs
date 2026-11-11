@@ -26,7 +26,7 @@ namespace SteamEngine.CompiledScripts {
 	/// three area spells); raising the energy shield switches it off.</summary>
 	[ViewableClass]
 	public partial class StandcastPlugin {
-		private const int spellExplosion = 43, spellChainLightning = 49, spellMeteorSwarm = 55, spellGateTravel = 52;
+		private const int spellExplosion = 43, spellChainLightning = 49, spellMeteorSwarm = 55;
 
 		/// <summary>#860 - dospellcustom_donesrc: what Standcast adds to the multiplier of a spell on a monster. By level,
 		/// up to 200, and half for the spells that hit several targets.</summary>
@@ -50,9 +50,7 @@ namespace SteamEngine.CompiledScripts {
 			this.boost = 0;
 			if ((target != null) && self.CanSeeLOS(target).Allow) {
 				this.boost = IsAreaSpell(spell.Id) ? 2 : 1;
-				if (spell.Id != spellGateTravel) { //#1391 - the gate froze its caster already (FreezeForGate), for this same cast
-					CastFreezePlugin.FreezeFor(self, spell.CastTime);
-				}
+				CastFreezePlugin.FreezeFor(self, spell.CastTime); //#1401 - a gate too: e_standcast ran after e_allplayers' gate freeze
 			}
 		}
 
@@ -85,10 +83,10 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly PluginKey key = PluginKey.Acquire("_castFreeze_");
 
 		/// <summary>Freezes for a cast of castSeconds; a cast while still frozen changes the time left as f_setStandcast
-		/// means to: more than half a second longer than this cast = 1.5 s added as a penalty, under a second left = this
-		/// cast's time, else this cast's time and a second. Fixed from Erebor: its "under a second" test reads a bare
-		/// name (`runningTimer`, not `arg(runningTimer)`), which Sphere reads as 0, so there the last case never happened
-		/// and a recast always got just its own time; its comments say what was meant.</summary>
+		/// did: more than half a second longer than this cast = 1.5 s added as a penalty, else this cast's time. #1401 - as
+		/// Erebor really ran it (the user's call): its "under a second left" test reads a bare name (`runningTimer`, not
+		/// `arg(runningTimer)`), which Sphere reads as 0, so the comments' third case (this cast's time and a second when
+		/// over a second was left) never happened.</summary>
 		public static void FreezeFor(Character ch, double castSeconds) {
 			CastFreezePlugin freeze = ch.GetPlugin(key) as CastFreezePlugin;
 			if (freeze == null) {
@@ -98,23 +96,15 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			double running = freeze.Timer;
-			if (running - 0.5 > castSeconds) {
-				freeze.Timer = running + 1.5;
-			} else if (running < 1.0) {
-				freeze.Timer = castSeconds;
-			} else {
-				freeze.Timer = castSeconds + 1.0;
-			}
+			freeze.Timer = (running - 0.5 > castSeconds) ? (running + 1.5) : castSeconds;
 		}
 
 		/// <summary>#1391 - Erebor's e_allplayers @spellcast for Gate Travel: every player casting a gate stands still for
 		/// the gate's cast time less a second (time to run into the gate). Already frozen: under the gate's time left =
 		/// its time and a second (a penalty for breaking concentration early), else its time less a second. Called at the
 		/// end of the gate's @start, so a cast refused there (no rune, unmarked, no way out or in) isn't frozen; Erebor
-		/// froze first and refused some of those only later, keeping the freeze. Standcast adds nothing to a gate's
-		/// freeze: on Erebor e_standcast ran after it and, through its bare-name bug, left it at the gate's time (9 s);
-		/// its intended recast rule would have made it 10 s, a second past the gate opening; the gate's own 8 s
-		/// is kept.</summary>
+		/// froze first and refused some of those only later, keeping the freeze. #1401 - with Standcast on, its @spellCast
+		/// comes next and its recast rule makes it the gate's whole cast time (9 s), as on Erebor.</summary>
 		public static void FreezeForGate(Character caster) {
 			if (!(caster is Player)) {
 				return;

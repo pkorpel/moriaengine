@@ -86,7 +86,7 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("STANDCAST_BONUS: first=" + first.ToString(CultureInfo.InvariantCulture) + " second=" + second.ToString(CultureInfo.InvariantCulture));
 			Check("firstTargetOnly", Near(first, 2.0) && (second == 0));
 
-			//f_setStandcast's recast times
+			//f_setStandcast's recast times, as Erebor ran them (#1401): its bare-name bug never adds the second
 			freeze.Timer = 5.0;
 			CastFreezePlugin.FreezeFor(self, 2.0);
 			Check("recastLongerPenalty", Near(freeze.Timer, 6.5));
@@ -95,7 +95,7 @@ namespace SteamEngine.CompiledScripts {
 			Check("recastAlmostDone", Near(freeze.Timer, 2.0));
 			freeze.Timer = 2.0;
 			CastFreezePlugin.FreezeFor(self, 2.0);
-			Check("recastEarly", Near(freeze.Timer, 3.0));
+			Check("recastEarly", Near(freeze.Timer, 2.0));
 
 			E_StandcastPowerProbe.target = dummy;
 			E_StandcastPowerProbe.power = 0;
@@ -269,13 +269,13 @@ namespace SteamEngine.CompiledScripts {
 			self.AbortSkill();
 			self.DeletePlugin(CastFreezePlugin.key);
 
-			//a mage with Standcast on: the gate's own time, Standcast's recast rule doesn't stack on it
+			//#1401 - a mage with Standcast on: Standcast's recast rule after the gate's freeze = the gate's whole time (9 s)
 			((Player) self).Profession = Professions.Mage;
 			StandcastAbilityDef standcast = (StandcastAbilityDef) AbilityDef.GetByDefname("a_standcast");
 			standcast.Toggle(self);
 			CastGate(self, rune);
 			freeze = self.GetPlugin(CastFreezePlugin.key) as CastFreezePlugin;
-			Check("gateWithStandcast", standcast.IsActive(self) && (freeze != null) && Near(freeze.Timer, gateSeconds - 1.0));
+			Check("gateWithStandcast", standcast.IsActive(self) && (freeze != null) && Near(freeze.Timer, gateSeconds));
 			self.AbortSkill();
 			self.DeletePlugin(CastFreezePlugin.key);
 			standcast.Toggle(self);
