@@ -373,11 +373,7 @@ namespace SteamEngine.CompiledScripts {
 							return;
 						}
 					}
-					swingArgs.InternalSetFinalDamage(0);
-					MonsterSpecialAttacks.TryDeathBossOwnSwing(attacker); //#1022 e_bomba_boy's @AfterSwing runs on a dodged blow too
-					MonsterSpecialAttacks.TryBalrogSwing(attacker, defender); //#1022 so does e_balrog's
-					MonsterSpecialAttacks.TryHcnMadness(attacker, defender); //#1022 and e_hcn_madnessability's
-					Trigger_AfterSwing(swingArgs);
+					EndAsDodged(swingArgs);
 					return;
 				}
 
@@ -386,7 +382,13 @@ namespace SteamEngine.CompiledScripts {
 				}
 				swingArgs.DamageAfterAC = Q026.WraithBlow(attacker, defender, swingArgs.DamageAfterAC); //#1272 e_q026_hcnPoisoning_NPC: curses, then hits a cursed hero harder
 
-				Trigger_Hit(swingArgs); //#1411 - Sphere's @hit and @getHit: the blow landed
+				//#1411 - Sphere's @hit and @getHit: the blow landed; a cancel ends it as a dodged one
+				if (Trigger_Hit(swingArgs) == TriggerResult.Cancel) {
+					if (!attacker.IsDeleted) {
+						EndAsDodged(swingArgs);
+					}
+					return;
+				}
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
@@ -676,16 +678,41 @@ namespace SteamEngine.CompiledScripts {
 			return result;
 		}
 
+		/// <summary>A blow that does nothing: dodged, or (#1411) cancelled in @hit/@getHit.</summary>
+		private static void EndAsDodged(WeaponSwingArgs swingArgs) {
+			Character attacker = swingArgs.attacker, defender = swingArgs.defender;
+			swingArgs.InternalSetFinalDamage(0);
+			MonsterSpecialAttacks.TryDeathBossOwnSwing(attacker); //#1022 e_bomba_boy's @AfterSwing runs on a dodged blow too
+			MonsterSpecialAttacks.TryBalrogSwing(attacker, defender); //#1022 so does e_balrog's
+			MonsterSpecialAttacks.TryHcnMadness(attacker, defender); //#1022 and e_hcn_madnessability's
+			Trigger_AfterSwing(swingArgs);
+		}
+
 		static TriggerKey hitTK = TriggerKey.Acquire("hit");
 		static TriggerKey getHitTK = TriggerKey.Acquire("getHit");
 
 		/// <summary>#1411 - Sphere's @hit on the attacker, then @getHit on the defender: a blow that wasn't dodged, before its
-		/// damage is applied. A handler may change swingArgs.DamageAfterAC (what CauseDamage gets).</summary>
-		public static void Trigger_Hit(WeaponSwingArgs swingArgs) {
-			swingArgs.attacker.TryTrigger(hitTK, swingArgs);
-			if (!swingArgs.defender.IsDeleted) {
-				swingArgs.defender.TryTrigger(getHitTK, swingArgs);
+		/// damage is applied. A handler may change swingArgs.DamageAfterAC (what CauseDamage gets) or cancel: the blow then
+		/// does nothing, as a dodged one, and @getHit isn't raised after a cancelled @hit. Unlike Sphere's: raised after the
+		/// dodge and the blow's own modifiers (armour, monster shields, class abilities); the damage stage (resists, shields,
+		/// minimum damage, reactive armour) follows in CauseDamage. Only for swings (a mystic's strike too; not spells nor
+		/// ability blows such as backstab or split shot), and SRC isn't set.</summary>
+		public static TriggerResult Trigger_Hit(WeaponSwingArgs swingArgs) {
+			var result = swingArgs.attacker.TryCancellableTrigger(hitTK, swingArgs);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = swingArgs.attacker.On_Hit(swingArgs);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				if ((result != TriggerResult.Cancel) && !swingArgs.defender.IsDeleted) {
+					result = swingArgs.defender.TryCancellableTrigger(getHitTK, swingArgs);
+					if (result != TriggerResult.Cancel) {
+						try {
+							result = swingArgs.defender.On_GetHit(swingArgs);
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					}
+				}
 			}
+			return result;
 		}
 
 		static TriggerKey causeDamageTK = TriggerKey.Acquire("causeDamage");

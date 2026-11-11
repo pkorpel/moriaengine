@@ -116,7 +116,10 @@ In order:
 attack sound and a swing animation picked by weapon type (`GetSwingAnim`, line 167; this
 animation call didn't exist before a documented fix - previously an attacker only made a
 sound, never visibly swung), then runs the deny-able `@beforeSwing`/`@beforeGetSwing`
-trigger pair before calling `CauseDamage` with the pre-computed `DamageAfterAC`.
+trigger pair before calling `CauseDamage` with the pre-computed `DamageAfterAC`. A blow that
+gets past the dodge raises `@hit` on the attacker and `@getHit` on the defender (#1411) just
+before `CauseDamage`: a handler may change `DamageAfterAC` or cancel, which ends the blow as a
+dodged one (see [plugins.md](../02-engine-core/plugins.md)).
 
 ## Fixed bug: NPC spellcasting ignored walls made of real placed items
 

@@ -29,7 +29,7 @@ prefixed (`stunChance`, `npcCurseManaChance`...).
 |---|---|
 | `DamageManager.ProcessSwing`, before `CauseDamage` | summon eater (+ vamp) - swing ends, critic, sniper, magic shield and eye deflect (defender) |
 | `ProcessSwing`, after a landed hit, attacker side | stun, knockback, bleed, life leech, phoenix fire, eye drain, backstab ambush |
-| `ProcessSwing`, after a landed hit, defender side (only if it survived) | reactive armor, stamina drain, mana gain, phoenix rebirth, lightnings, push all, auto reflect, strangler-vine hit count, backstab-hide interrupt, multishot, dispel bomb; and unless reactive armor killed the attacker: craft monster, eye attention, golem retarget, mass leap, duplicator |
+| `ProcessSwing`, after a landed hit, defender side (only if it survived) | reactive armor, stamina drain, mana gain, phoenix rebirth, lightnings, push all, auto reflect, backstab-hide interrupt, multishot, dispel bomb; and unless reactive armor killed the attacker: craft monster, eye attention, golem retarget, mass leap, duplicator |
 | `DamageManager.CauseDamage` | explode records who hurt it; `DamageType.Irresistable` skips resists (Sphere's `dam_god`) |
 | `DamageManager.CauseSpellDamage`, after a caster's damage spell (only if the target survived) | the same `TryReactToHit` reactions as a landed blow, and e_emotedmg (#1022, the user's call: Erebor's @aftergetswing ran for spells too) |
 | `NPCAiTimer.Fight` (once per think-tick while fighting) | roundattack/pull, detect, paralyzing scream, the three curses, summoner, infinite mana, leaper, warcry |
@@ -37,6 +37,7 @@ prefixed (`stunChance`, `npcCurseManaChance`...).
 | `Character.CauseDeath` (position still valid) | self-res, explode |
 | `Character.On_StepTaken` | hazard tiles, inexhaustible |
 | `Corpse.On_Step` / `NPC.On_PersonalSpace` | looter / strangler vine |
+| `@getHit` on the vine (#1411, `VineHoldPlugin`) | strangler-vine hit count |
 
 ## Hazard tiles (#797)
 
