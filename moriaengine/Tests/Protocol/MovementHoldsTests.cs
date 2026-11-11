@@ -34,6 +34,15 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("hitThenGetHit", "cancelledHit");
 			}
 		}
+
+		/// <summary>#1414 - @stepTaken after a real step, heard by trigger groups and plugins.</summary>
+		[Fact]
+		public void AStepTakenIsATrigger() {
+			using (TestGameClient game = this.Login("Krokovy")) {
+				this.Run(game, ".TestStepTaken", "HOLDS_STEP_DONE");
+				this.AssertChecks("stepTakenWalk", "stepTakenRun", "teleportNotAStep", "gmStepNotRaised", "deletedByItsStep");
+			}
+		}
 	}
 
 	[CollectionDefinition(Name)]
