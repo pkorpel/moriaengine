@@ -48,16 +48,11 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>The shaman's pacts (blood, mana, stamina), the life pact and empathy, from specabilities.scp.
-	/// A pact's giver and receiver are tags on both. Erebor's mana and stamina pacts end at half their time, as
+	/// A pact's giver and receiver are each one's PactPlugin since #1445. Erebor's mana and stamina pacts end at half their time, as
 	/// its bonus counts 5 s ticks against tenths; kept. Where Erebor's script was broken a pact ends on death and
 	/// shared blood can kill.</summary>
 	public static class ShamanPacts {
-		internal static readonly TagKey TypeTK = TagKey.Acquire("_pactType_");
-		internal static readonly TagKey ByTK = TagKey.Acquire("_pactBy_");
-		internal static readonly TagKey ToTK = TagKey.Acquire("_pactTo_");
-		private static readonly TagKey bloodOffTK = TagKey.Acquire("_bloodPactOff_");
 		internal static readonly TagKey LifePactByTK = TagKey.Acquire("_lifePactBy_");
-		internal static readonly TimerKey PactTK = TimerKey.Acquire("_pact_");
 		internal static readonly TimerKey SoulTK = TimerKey.Acquire("_soulRemover_");
 		internal static readonly TimerKey EmpathyTK = TimerKey.Acquire("_getPhysResists_");
 
@@ -85,8 +80,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Potrebujes body v abilite Voodoo - pakty ", ClassAbilities.ClassMessageHue);
 			} else if (shaman.nextPact > Globals.TimeInSeconds) {
 				self.SysMessage("Muzes pouzit az za " + (int) (shaman.nextPact - Globals.TimeInSeconds) + " sekund.", ClassAbilities.ClassMessageHue);
-			} else if (self.GetTag(ToTK) != null) {
-				self.SysMessage("Uz pouzivas " + NameOf(self.GetTag(TypeTK) as string), ClassAbilities.ClassMessageHue);
+			} else if ((PactPlugin.Of(self) != null) && PactPlugin.Of(self).Gives) {
+				self.SysMessage("Uz pouzivas " + NameOf(PactPlugin.Of(self).givenType), ClassAbilities.ClassMessageHue);
 			} else {
 				return true;
 			}
@@ -145,12 +140,14 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			int pacts = ClassAbilities.Points(shaman, "woodoo_pacts");
-			target.SetTag(TypeTK, type);
-			target.SetTag(ByTK, shaman);
-			shaman.SetTag(TypeTK, type);
-			shaman.SetTag(ToTK, target);
-			target.RemoveTag(bloodOffTK);
-			shaman.RemoveTag(bloodOffTK);
+			PactPlugin bearer = PactPlugin.Ensure(target);
+			bearer.borneType = type;
+			bearer.giver = shaman;
+			PactPlugin giving = PactPlugin.Ensure(shaman);
+			giving.givenType = type;
+			giving.receiver = target;
+			bearer.bloodOff = false;
+			giving.bloodOff = false;
 			shaman.SysMessage((shaman.IsFemale ? "Dala" : "Dal") + " jsi " + NameOf(type) + " " + target.Name, ClassAbilities.ClassMessageHue);
 			if (target != shaman) {
 				target.SysMessage((target.IsFemale ? "Dostala" : "Dostal") + " jsi " + NameOf(type) + " od " + shaman.Name, ClassAbilities.ClassMessageHue);
@@ -168,50 +165,53 @@ namespace SteamEngine.CompiledScripts {
 			EffectFactory.StationaryEffect(target, 0x376a, 9, 20);
 			shaman.Sound(583);
 			int seconds = (18 * pacts) + (6 * ClassAbilities.Points(shaman, "woodoo_pacts_boost"));
-			PactTimer timer = new PactTimer();
-			timer.regen = (type == "blood") ? 0 : pacts;
-			timer.ticksLeft = seconds / 10;
-			timer.endsAt = Globals.TimeInSeconds + seconds;
-			target.DeleteTimer(PactTK);
-			target.AddTimer(PactTK, timer);
-			timer.DueInSeconds = 5;
-			timer.PeriodInSeconds = 5;
+			bearer.regen = (type == "blood") ? 0 : pacts;
+			bearer.ticksLeft = seconds / 10;
+			bearer.endsAt = Globals.TimeInSeconds + seconds;
+			bearer.Timer = PactPlugin.TickSeconds;
 		}
 
 		/// <summary>f_cancelpact_by, from the receiver's side.</summary>
 		internal static void CancelBy(Character receiver) {
-			Character shaman = receiver.GetTag(ByTK) as Character;
-			string name = NameOf(receiver.GetTag(TypeTK) as string);
+			PactPlugin bearer = PactPlugin.Of(receiver);
+			if (bearer == null) {
+				return;
+			}
+			Character shaman = bearer.giver;
+			string name = NameOf(bearer.borneType);
 			receiver.SysMessage(name + " zrusen", ClassAbilities.ClassMessageHue);
 			if ((shaman != null) && (shaman != receiver)) {
 				shaman.SysMessage(name + " zrusen", ClassAbilities.ClassMessageHue);
 			}
-			if (shaman != null) {
-				shaman.RemoveTag(ToTK);
-				shaman.RemoveTag(TypeTK);
+			PactPlugin giving = PactPlugin.Of(shaman);
+			if (giving != null) {
+				giving.StopGiving(); //on the receiver itself for an own mana pact: it still bears, so it stays for the next line
 			}
-			receiver.RemoveTag(TypeTK);
-			receiver.RemoveTag(ByTK);
-			receiver.DeleteTimer(PactTK);
+			bearer.StopBearing();
 		}
 
 		/// <summary>f_cancelpact_to, from the shaman's side.</summary>
 		internal static void CancelTo(Character shaman) {
-			Character receiver = shaman.GetTag(ToTK) as Character;
-			if ((receiver != null) && (receiver.GetTag(ByTK) == shaman)) {
+			PactPlugin giving = PactPlugin.Of(shaman);
+			if (giving == null) {
+				return;
+			}
+			Character receiver = giving.receiver;
+			PactPlugin bearer = PactPlugin.Of(receiver);
+			if ((bearer != null) && (bearer.giver == shaman)) {
 				CancelBy(receiver);
 			} else {
-				shaman.SysMessage(NameOf(shaman.GetTag(TypeTK) as string) + " zrusen", ClassAbilities.ClassMessageHue);
-				shaman.RemoveTag(ToTK);
-				shaman.RemoveTag(TypeTK);
+				shaman.SysMessage(NameOf(giving.givenType) + " zrusen", ClassAbilities.ClassMessageHue);
+				giving.StopGiving();
 			}
 		}
 
 		[SteamFunction]
 		public static void CancelPact(Character self) {
-			if (self.GetTag(ToTK) != null) {
+			PactPlugin pact = PactPlugin.Of(self);
+			if ((pact != null) && pact.Gives) {
 				CancelTo(self);
-			} else if (self.GetTag(ByTK) != null) {
+			} else if ((pact != null) && pact.Bears) {
 				CancelBy(self);
 			} else {
 				self.SysMessage("Neexistuje ziaden pakt.", ClassAbilities.ClassMessageHue);
@@ -234,7 +234,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static void CancelOfType(Character self, string type) {
-			string own = self.GetTag(TypeTK) as string;
+			PactPlugin pact = PactPlugin.Of(self);
+			string own = (pact == null) ? null : pact.OwnType;
 			if (own == type) {
 				CancelPact(self);
 			} else {
@@ -242,11 +243,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>@death and @Logout: a pact ends with either side gone.</summary>
+		/// <summary>@death and @Logout: a pact ends with either side gone. The PactPlugin's own @death and @logout call it
+		/// since #1445: the borne pact first, otherwise the given one.</summary>
 		internal static void OnGone(Character self) {
-			if (self.GetTag(ByTK) != null) {
+			PactPlugin pact = PactPlugin.Of(self);
+			if ((pact != null) && pact.Bears) {
 				CancelBy(self);
-			} else if (self.GetTag(ToTK) != null) {
+			} else if ((pact != null) && pact.Gives) {
 				CancelTo(self);
 			}
 		}
@@ -254,14 +257,16 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>e_bloodpact's @gethit: 15% of a monster's blow, at most 20, moves from the one hit to the other.
 		/// A player's blow switches the sharing off on that side.</summary>
 		internal static void ShareBlood(Character attacker, Character hit, int damage) {
-			if ((hit.GetTag(TypeTK) as string) != "blood" || (hit.GetTag(bloodOffTK) != null) || (damage <= 0)) {
+			PactPlugin pact = PactPlugin.Of(hit);
+			bool bearsBlood = (pact != null) && (pact.borneType == "blood"), givesBlood = (pact != null) && (pact.givenType == "blood");
+			if ((!bearsBlood && !givesBlood) || pact.bloodOff || (damage <= 0)) {
 				return;
 			}
 			if (attacker.IsPlayer) {
-				hit.SetTag(bloodOffTK, 1);
+				pact.bloodOff = true;
 				return;
 			}
-			Character other = (hit.GetTag(ByTK) as Character) ?? (hit.GetTag(ToTK) as Character);
+			Character other = bearsBlood ? pact.giver : pact.receiver; //the blood pact's other side, whatever else it holds
 			if ((other == null) || (other == hit) || other.Flag_Dead) {
 				return;
 			}
@@ -286,13 +291,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>EarnsNoKillExp without its message (#1416: a kill worth nothing still credits no giver).</summary>
 		internal static bool GivesBloodPact(Player fighter) {
-			return (fighter != null) && ((fighter.GetTag(TypeTK) as string) == "blood") && (fighter.GetTag(ToTK) != null) && !InCity(fighter);
+			PactPlugin pact = PactPlugin.Of(fighter);
+			return (pact != null) && (pact.givenType == "blood") && (pact.receiver != null) && !InCity(fighter);
 		}
 
 		/// <summary>...and earns what the one bearing it earns. The shaman paid (for #1416's @killCredit), or null.</summary>
 		internal static Player ShareKillExp(Player fighter, int share) {
-			Player shaman = (fighter == null) ? null : fighter.GetTag(ByTK) as Player;
-			if ((shaman != null) && ((fighter.GetTag(TypeTK) as string) == "blood") && !InCity(shaman)) {
+			PactPlugin pact = PactPlugin.Of(fighter);
+			Player shaman = (pact == null) ? null : pact.giver as Player;
+			if ((shaman != null) && (pact.borneType == "blood") && !InCity(shaman)) {
 				shaman.SysMessage("Ziskavas zkusenosti za aplikovany pakt na " + fighter.Name + ".");
 				LevelingSystem.AddExperience(shaman, share);
 				return shaman;
@@ -552,44 +559,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			ShamanPacts.ReadMagic(self, targetted, parameter as Item);
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_pact and i_pact_bonus: every 5 s the regen, and the end.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class PactTimer : BoundTimer {
-		[SaveableData, CopyableData]
-		public int regen, ticksLeft;
-
-		[SaveableData, CopyableData]
-		public double endsAt;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public PactTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			Character self = cont as Character;
-			if (self == null) {
-				return;
-			}
-			string type = self.GetTag(ShamanPacts.TypeTK) as string;
-			if (type == "blood") {
-				if (Globals.TimeInSeconds >= this.endsAt) {
-					ShamanPacts.CancelBy(self);
-				}
-				return;
-			}
-			this.ticksLeft--;
-			if (this.ticksLeft < 1) {
-				ShamanPacts.CancelBy(self);
-				return;
-			}
-			if (type == "mana") {
-				self.Mana = (short) Math.Min(self.MaxMana, self.Mana + this.regen);
-			} else if (type == "stamina") {
-				self.Stam = (short) Math.Min(self.MaxStam, self.Stam + this.regen);
-			}
 		}
 	}
 
