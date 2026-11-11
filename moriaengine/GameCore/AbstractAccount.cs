@@ -650,7 +650,7 @@ namespace SteamEngine {
 			for (int i = 0, n = registeredTGs.Count; i < n; i++) {
 				registeredTGs[i].Run(this, tk, sa);
 			}
-			base.TryTrigger(tk, sa);
+			base.Trigger(tk, sa); //#1372 - was base.TryTrigger, which swallowed exceptions
 		}
 
 		public override void TryTrigger(TriggerKey tk, ScriptArgs sa) {
@@ -666,7 +666,7 @@ namespace SteamEngine {
 					return TriggerResult.Cancel;
 				}
 			}
-			return base.TryCancellableTrigger(tk, sa);
+			return base.CancellableTrigger(tk, sa); //#1372 - was base.TryCancellableTrigger
 		}
 
 		public override TriggerResult TryCancellableTrigger(TriggerKey tk, ScriptArgs sa) {

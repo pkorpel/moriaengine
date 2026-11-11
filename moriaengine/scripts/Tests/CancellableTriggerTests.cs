@@ -22,5 +22,46 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("CANCELLABLE_TRIGGER:" + line + " end");
 		}
+
+		private static readonly TriggerKey throwTK = TriggerKey.Acquire("testThrow");
+
+		/// <summary>#1372 - an item's and an account's Trigger and CancellableTrigger let an exception from a trigger group
+		/// through (they called the base's Try versions, which swallow it); TryTrigger and TryCancellableTrigger still don't.</summary>
+		[SteamFunction]
+		public static void TestThrowingTrigger(Character self) {
+			TriggerGroup group = SingletonScript<E_TestThrows>.Instance;
+			Item dagger = (Item) ThingDef.GetByDefname("i_dagger").Create(self.X + 1, self.Y, self.Z, self.M);
+			dagger.AddTriggerGroup(group);
+			AbstractAccount account = self.Account;
+			account.AddTriggerGroup(group);
+			try {
+				Console.WriteLine("CANCELLABLE_THROW: itemTrigger=" + Throws(() => dagger.Trigger(throwTK, (ScriptArgs) null))
+					+ " itemCancellable=" + Throws(() => dagger.CancellableTrigger(throwTK, (ScriptArgs) null))
+					+ " itemTry=" + Throws(() => dagger.TryTrigger(throwTK, (ScriptArgs) null))
+					+ " itemTryCancellable=" + Throws(() => dagger.TryCancellableTrigger(throwTK, (ScriptArgs) null))
+					+ " accountTrigger=" + Throws(() => account.Trigger(throwTK, (ScriptArgs) null))
+					+ " accountCancellable=" + Throws(() => account.CancellableTrigger(throwTK, (ScriptArgs) null))
+					+ " accountTry=" + Throws(() => account.TryTrigger(throwTK, (ScriptArgs) null))
+					+ " accountTryCancellable=" + Throws(() => account.TryCancellableTrigger(throwTK, (ScriptArgs) null)) + " end");
+			} finally {
+				account.RemoveTriggerGroup(group);
+				dagger.Delete();
+			}
+		}
+
+		private static bool Throws(Action call) {
+			try {
+				call();
+				return false;
+			} catch (Exception) {
+				return true;
+			}
+		}
+	}
+
+	public class E_TestThrows : CompiledTriggerGroup {
+		public void On_TestThrow(PluginHolder self) {
+			throw new InvalidOperationException("TESTTHROW from a trigger group");
+		}
 	}
 }
