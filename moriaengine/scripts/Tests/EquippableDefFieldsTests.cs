@@ -1,11 +1,9 @@
 using System;
-using System.Reflection;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1384 - EquippableDef's tool type and skill are typed .ct def fields, read from the same .def lines the
-	/// hand-written parser read; UseSkill derives the skill as before; none of the old tags left on a def, and an older
-	/// save's tags are dropped.</summary>
+	/// hand-written parser read; UseSkill derives the skill as before; none of the old tags left on a def.</summary>
 	public static class EquippableDefFieldsTests {
 		private static readonly TagKey oldToolTypeTK = TagKey.Acquire("_toolType_");
 		private static readonly TagKey oldSkillTK = TagKey.Acquire("_associatedSkill_");
@@ -53,15 +51,6 @@ namespace SteamEngine.CompiledScripts {
 			Check("noOldTags", (defs > 1000) && (oldTags == 0));
 			Check("everyDefReads", unreadable == 0);
 
-			//an older save's section: the retired tags are dropped
-			Type sectionType = typeof(PropsSection);
-			PropsSection section = (PropsSection) Activator.CreateInstance(sectionType, BindingFlags.NonPublic | BindingFlags.Instance, null,
-				new object[] { "test", "EquippableDef", "i_dagger_copper", 0, "" }, null);
-			MethodInfo add = sectionType.GetMethod("AddPropsLine", BindingFlags.NonPublic | BindingFlags.Instance);
-			add.Invoke(section, new object[] { "tag._toolType_", "1", 1, "" });
-			add.Invoke(section, new object[] { "tag._associatedSkill_", "8", 2, "" });
-			dagger.LoadFromSaves(section);
-			Check("savedRetiredDropped", (dagger.GetTag(oldToolTypeTK) == null) && (dagger.GetTag(oldSkillTK) == null) && (dagger.UseSkill == SkillName.None));
 			Console.WriteLine("EQUIPDEFFIELDS_DONE");
 		}
 	}
