@@ -40,6 +40,32 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".standcast");
 				plain.Do(game, ".TestStandcastAfterMage", "STANDCAST_DONE");
 				this.AssertChecks("notForWarrior", "plainCommandOn");
+				plain.Do(game, ".TestEnergyShieldPlain", "STANDCAST_SHIELD_PLAIN");
+				game.SendSpeech(".energyshield");
+				plain.Do(game, ".TestEnergyShieldPlainAfter", "STANDCAST_SHIELD_PLAIN_DONE");
+				this.AssertChecks("plainCommandShield");
+			}
+		}
+
+		/// <summary>#1401 - Erebor's energy shield. Server side: EnergyShieldTests in scripts/Tests/EnergyShieldTests.cs.</summary>
+		[Fact]
+		public void TheEnergyShieldIsErebors() {
+			using (TestGameClient game = this.Login("Stitonos")) {
+				this.Run(game, ".TestEnergyShield", "STANDCAST_SHIELD_DONE");
+				this.AssertChecks("notForWarrior", "needsPoints", "sixtyManaNothing", "upForManaAndAmethyst", "energyAndDuration", "tableEnds",
+					"recallRefused", "gateAllowed", "spellTwice", "monsterDamageOnce", "playerDamageWhole", "noResponseWhole", "standcastRefusedUnderIt",
+					"manaShieldAfterEnergy");
+				game.SendMoveRequest(2, false, 0); //east, shield up
+				var (accepted, _, _, _) = game.ReadMoveResult(System.TimeSpan.FromSeconds(10));
+				Assert.True(accepted, "A step with the energy shield up was refused.");
+				this.Run(game, ".TestEnergyShieldStepped", "STANDCAST_SHIELD_STEPPED");
+				this.AssertChecks("stepKeepsIt", "partialAbsorb");
+				Thread.Sleep(1500);
+				this.Run(game, ".TestEnergyShieldRest", "STANDCAST_SHIELD_RESTING");
+				this.AssertChecks("restsAfterTheTick", "restSpellWhole", "noNewWhileResting", "recallInRest", "standcastInRest", "cancelRests");
+				Thread.Sleep(2500);
+				this.Run(game, ".TestEnergyShieldAfter", "STANDCAST_SHIELD_AFTER");
+				this.AssertChecks("restEnds");
 			}
 		}
 

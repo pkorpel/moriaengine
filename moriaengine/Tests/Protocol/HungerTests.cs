@@ -70,6 +70,8 @@ namespace SteamEngine.Tests.Protocol {
 			string plugin = this.Ask(client, ".TestHungerPlugin", "HUNGER_PLUGIN:");
 			Assert.Contains("onPlugin=True", plugin);
 			Assert.Contains("castLost=10", plugin);
+			Assert.Contains("refused=True", plugin); //#1401 - refused by the casting rules
+			Assert.Contains("refusedLost=10", plugin); //and still hurt, as Erebor's hungryhurts came first
 
 			//the clock, and what it says under 40%
 			this.Ask(client, ".TestHungerFood \"6\"", "HUNGER_FOOD:");

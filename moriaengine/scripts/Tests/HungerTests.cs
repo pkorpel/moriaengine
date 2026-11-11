@@ -104,7 +104,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1396 - the hunger is a plugin on the logged-in player, its food on it, no tag; a spell cast on
-		/// nothing in the stomach costs 10 through its @spellCast.</summary>
+		/// nothing in the stomach costs 10 through its @spellCastTry; #1401 - so does one the casting rules refuse (reactive
+		/// armor on another, for a mage), as Erebor's hungryhurts came before them.</summary>
 		[SteamFunction]
 		public static void TestHungerPlugin(Character self) {
 			HungerPlugin hunger = HungerPlugin.Of(self);
@@ -123,6 +124,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			SpellBook book = (SpellBook) ThingDef.GetByDefname("i_spellbook_3").Create(self.Backpack);
 			book.AddSpell(SpellDef.GetByDefname("s_magic_arrow"));
+			book.AddSpell(SpellDef.GetByDefname("s_reactive_armor"));
 			NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);
 			self.Hits = self.MaxHits;
 			int before = self.Hits;
@@ -130,10 +132,16 @@ namespace SteamEngine.CompiledScripts {
 			SkillSequenceArgs.Acquire(self, SkillName.Magery, rabbit, null, book, SpellDef.GetByDefname("s_magic_arrow"), null).PhaseSelect();
 			int lost = before - self.Hits;
 			self.AbortSkill();
+			self.Hits = self.MaxHits;
+			before = self.Hits;
+			SkillSequenceArgs.Acquire(self, SkillName.Magery, rabbit, null, book, SpellDef.GetByDefname("s_reactive_armor"), null).PhaseSelect();
+			int refusedLost = before - self.Hits;
+			bool refused = self.CurrentSkillName != SkillName.Magery;
+			self.AbortSkill();
 			rabbit.Delete();
 			book.Delete();
 			PlayerHunger.SetFood(self, 10);
-			Console.WriteLine("HUNGER_PLUGIN: onPlugin=" + onPlugin + " castLost=" + lost);
+			Console.WriteLine("HUNGER_PLUGIN: onPlugin=" + onPlugin + " castLost=" + lost + " refused=" + refused + " refusedLost=" + refusedLost);
 		}
 
 		/// <summary>The clock at 1 s a point, as the settings page would set it.</summary>

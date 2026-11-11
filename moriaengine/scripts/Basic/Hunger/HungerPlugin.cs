@@ -54,9 +54,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Erebor's @spellcast: hungryhurts. Not for a custom spell scroll: Erebor's customspellcast never ran
-		/// e_allplayers' @spellcast. Our @spellCast comes once the cast's checks have passed, so a refused cast doesn't
-		/// hurt; on Erebor hungryhurts was @spellcast's first line, before its own refusals.</summary>
-		public void On_SpellCast(SkillSequenceArgs mageryArgs) {
+		/// e_allplayers' @spellcast. #1401 - @spellCastTry, before the casting rules (SpellCastRules): hungryhurts was
+		/// @spellcast's first line, so a cast those rules refuse still hurts, as on Erebor (the user's call).</summary>
+		public void On_SpellCastTry(SkillSequenceArgs mageryArgs) {
 			if (!((SpellDef) mageryArgs.Param1).IsCustom) {
 				PlayerHunger.HurtIfStarving((Character) this.Cont);
 			}

@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 				npcDef.MultishotChance, npcDef.MultishotCooldown, npcDef.MultishotDamage,
 				delegate (Character target, double amount) {
 					EffectFactory.EffectFromTo(self, target, ArrowEffect, 10, 1, false, false);
-					DamageManager.CauseDamage(self, target, DamageType.PhysicalArchery, amount);
+					DamageManager.CauseDamageNoResponse(self, target, DamageType.PhysicalArchery, amount);
 					target.SysMessage("You have been hit by a split shot.");
 				});
 		}

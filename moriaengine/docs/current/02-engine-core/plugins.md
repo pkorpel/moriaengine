@@ -60,8 +60,13 @@ So a plugin on a character hears whatever the character hears without anyone cal
 `@skillSelect`, `@skillStart`, `@skillStroke`, `@skillSuccess` and `@skillFail` (raised on the
 character by `SkillDef`'s `Trigger_Select`, `Trigger_Start`, `Trigger_Stroke`,
 `Trigger_Success` and `Trigger_Fail` before the skill's own code, `SkillDef.cs:233-321`),
-`@beforeSwing`, `@death`, `@logout`, the deny triggers, and so on. Magery adds two of its own
-(#1386): `@spellCast` once a player's cast is under way (`MagerySkillDef.On_Start`, after mana,
+`@beforeSwing`, `@death`, `@logout`, the deny triggers, and so on. `@damage` (`DamageManager`) carries a
+`DamageArgs` whose `damage` a handler may lower (the mana shield does, #1401) and whose `isSwing`/`isSpell` say where
+it came from. Plugins hear a trigger newest first, so where the order of two changes matters (Erebor's damage_final:
+energy shield, then mana shield) the first is called at a fixed point instead (`EnergyShieldPlugin.Absorb`). Magery
+adds four of its own: `@spellCastTry` (#1401) after mana and reagents and before the casting rules
+(`SpellCastRules`), the cancellable `@denySpellCast` (#1401) right after the rules (the energy shield refuses Recall
+there), and (#1386) `@spellCast` once a player's cast is under way (`MagerySkillDef.On_Start`, after mana,
 reagents, the casting rules and the spell's own `@start`; custom spell scrolls raise it too, NPC
 casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
 spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `MonsterSpellPowerArgs`
@@ -203,17 +208,16 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   and switched off by Magery; its freeze is `CastFreezePlugin`, refusing `@denyMove`.
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
-  player's success fails), `@spellCast` and `@hitTry` (starving hurts), as Erebor's player
+  player's success fails), `@spellCastTry` and `@hitTry` (starving hurts), as Erebor's player
   event `e_allplayers` did. `@hitTry` is raised by `WeaponSkillDef` on a player (not a GM) as a
   swing is drawn. Before, those were calls from `Character.On_SkillSuccess`, `Magery.On_Start`
   and `WeaponSkillDef`, the food a tag and the tick a separate timer; and a landed blow hurt a
   second time from `DamageManager.ProcessSwing`, a leftover since #995. A custom spell scroll's
   cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`), and a cast whose caster
-  dies of it at `@spellCast` ends there. The skills whose own Erebor scripts ask about hunger
+  dies of it ends there. The skills whose own Erebor scripts ask about hunger
   (lockpicking, crafting, gathering, taming, the bard skills, healing, the shaman's pacts, the
-  custom scrolls' casting rule) still call `PlayerHunger`, which reads the plugin. One
-  difference from Erebor: a cast refused by the casting rules doesn't hurt, as `@spellCast`
-  comes after them; Erebor's hungryhurts was its `@spellcast`'s first line.
+  custom scrolls' casting rule) still call `PlayerHunger`, which reads the plugin. A cast the
+  casting rules refuse still hurts (#1401): Erebor's hungryhurts was its `@spellcast`'s first line.
 
 ## Related
 

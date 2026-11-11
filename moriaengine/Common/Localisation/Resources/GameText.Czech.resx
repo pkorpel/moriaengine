@@ -1411,21 +1411,6 @@
   <data name="EffectDurationLoc_UnspecifiedEffectEnded" xml:space="preserve">
     <value>Effect of '{0}' ended.</value>
   </data>
-  <data name="EnergyShieldLoc_cantMove" xml:space="preserve">
-    <value>Behem trvani kouzla Energy shield se nemuzes pohybovat</value>
-  </data>
-  <data name="EnergyShieldLoc_cantTeleport" xml:space="preserve">
-    <value>Behem trvani kouzla Energy shield nemuzes pouzivat teleportacni kouzla</value>
-  </data>
-  <data name="EnergyShieldLoc_shieldSavedYou" xml:space="preserve">
-    <value>Energy shield te uchranil pred zranenim</value>
-  </data>
-  <data name="EnergyShieldLoc_shieldSavedYouPartially" xml:space="preserve">
-    <value>Energy shield te castecne ochranil pred zranenim</value>
-  </data>
-  <data name="EnergyShieldLoc_shieldWasted" xml:space="preserve">
-    <value>Tvuj Energy shield se vycerpal</value>
-  </data>
   <data name="GmCommandsLoc_GMModeOff" xml:space="preserve">
     <value>GM mode off (Plevel 1).</value>
   </data>

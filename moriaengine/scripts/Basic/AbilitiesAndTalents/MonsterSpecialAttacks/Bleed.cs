@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 			if (def == null) {
 				return;
 			}
-			if (actualDamage <= 0) {
+			if ((actualDamage <= 0) || EnergyShieldPlugin.IsUp(defender)) { //#1401 - not through an energy shield
 				return;
 			}
 			Ability ability;
