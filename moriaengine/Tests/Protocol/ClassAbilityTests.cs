@@ -64,7 +64,10 @@ namespace SteamEngine.Tests.Protocol {
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "roundAttackHitsWhoIsNear", "roundAttackLeavesTheRest", "warcryTakesOwnMana", "stunWindowsShrink",
 						"stunLimitGrowsWithTheMetal", "plainMaceStunsNothing", "shieldsByMetal", "stanceOnCostsHalfStamina", "stanceOff",
-						"tauntTurnsItOnTheWarrior", "tauntingHardensIt", "aTauntedMonsterIsEvil", "leapNeedsAFight" }) {
+						"tauntTurnsItOnTheWarrior", "tauntingHardensIt", "aTauntedMonsterIsEvil", "leapNeedsAFight",
+						"theWarriorsPluginIsItsProfessionPlugin", "cooldownsAreThePlugins", "theStanceWeakensOwnBlowThroughTheTrigger", //#1429
+						"theStanceSoftensABlowThroughTheTrigger", "theShieldBlocksWithTheStance", "aThiefsShieldBlocksThroughItsPlugin",
+						"aMonstersBlowMeetsTheStanceInTheSwing", "ownBlowMeetsTheStanceInTheSwing" }) {
 					string marker = "CLASS_ABILITY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

@@ -115,7 +115,96 @@ namespace SteamEngine.CompiledScripts {
 			Report("leapNeedsAFight", none == null);
 			player.Stam = player.MaxStam;
 			far.Delete();
+			TestWarriorPlugin(player, sword);
 			Console.WriteLine("WARRIOR_DONE");
+		}
+
+		/// <summary>#1429 - the warrior's state is its profession plugin's, and the blow modifiers reach a blow through
+		/// @swingLanding and @getSwingLanding: the stance both ways, the shield block (any class) on the way in.</summary>
+		private static void TestWarriorPlugin(Player player, Item sword) {
+			WarriorProfessionPlugin war = ProfessionPlugin.GetInstalledPlugin(player) as WarriorProfessionPlugin;
+			Report("theWarriorsPluginIsItsProfessionPlugin", war != null);
+			if (war == null) {
+				return;
+			}
+			Report("cooldownsAreThePlugins", (war.nextCry > Globals.TimeInSeconds) && (war.nextSingleTaunt > Globals.TimeInSeconds) && (war.nextRoundAttack > Globals.TimeInSeconds));
+
+			ClassAbilities.SetPoints(player, "defstance", 10);
+			ClassAbilities.SetPoints(player, "doubleswing", 0);
+			ClassAbilities.SetPoints(player, "vykryti", 0);
+			player.Stam = 200;
+			WarriorAbilities.DefStance(player);
+			NPC monster = Dummy(player, 1);
+			double stance = (100 - ((ClassAbilitySettings.instance.defStanceDamagePercent * 10) / 10)) / 100.0;
+
+			WeaponSwingArgs own = DamageManager.GetWeaponSwingArgs(player, monster);
+			own.DamageAfterAC = 1000;
+			DamageManager.Trigger_SwingLanding(own);
+			Report("theStanceWeakensOwnBlowThroughTheTrigger", Math.Abs(own.DamageAfterAC - (1000 * stance)) < 0.001);
+
+			WeaponSwingArgs incoming = DamageManager.GetWeaponSwingArgs(monster, player);
+			incoming.DamageAfterAC = 1000;
+			DamageManager.Trigger_GetSwingLanding(incoming);
+			Report("theStanceSoftensABlowThroughTheTrigger", Math.Abs(incoming.DamageAfterAC - (1000 * stance)) < 0.001);
+
+			sword.Delete();
+			Item shield = (Item) ((ItemDef) ThingDef.GetByDefname("i_MITHRIL_METAL_SHIELD")).Create(player);
+			player.InvalidateCombatWeaponValues(); //Character.Weapon is a cache a scripted delete leaves stale
+			ClassAbilities.SetPoints(player, "vykryti", 100); //always over the roll of 0-99
+			incoming = DamageManager.GetWeaponSwingArgs(monster, player);
+			incoming.DamageAfterAC = 1000;
+			DamageManager.Trigger_GetSwingLanding(incoming);
+			Report("theShieldBlocksWithTheStance", (player.FindLayer(LayerNames.Hand2) == shield) && (Math.Abs(incoming.DamageAfterAC - (1000 * stance * 0.5)) < 0.001));
+
+			ClassAbilities.SetPoints(player, "vykryti", 0);
+			TestSwingLandingInASwing(player);
+
+			player.Stam = 200;
+			WarriorAbilities.DefStance(player); //off
+			player.Profession = Professions.Thief; //the shield is any class's, on the base profession plugin
+			ClassAbilities.SetPoints(player, "vykryti", 100);
+			incoming = DamageManager.GetWeaponSwingArgs(monster, player);
+			incoming.DamageAfterAC = 1000;
+			DamageManager.Trigger_GetSwingLanding(incoming);
+			Report("aThiefsShieldBlocksThroughItsPlugin", !(ProfessionPlugin.GetInstalledPlugin(player) is WarriorProfessionPlugin) && (Math.Abs(incoming.DamageAfterAC - 500) < 0.001));
+			player.Profession = Professions.Warrior;
+			ClassAbilities.Reset(player);
+			shield.Delete();
+			monster.Delete();
+		}
+
+		internal static bool setTheBlow;
+		internal static double getHitSaw;
+
+		/// <summary>#1429 - the triggers are raised inside a real swing, before @hit: a probe sets the blow to 1000 in the
+		/// attacker's @swingLanding (trigger groups run before plugins), the defender's @getHit sees the stance's 750. Both
+		/// ways, the warrior in its stance hitting and being hit. @getHit zeroes the blow, so nobody gets hurt.</summary>
+		private static void TestSwingLandingInASwing(Player player) {
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			NPCAiTimer.Freeze(orc, 300);
+			orc.AddTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			player.AddTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+			try {
+				Report("aMonstersBlowMeetsTheStanceInTheSwing", Math.Abs(LandOne(orc, player) - 750) < 0.001);
+				Report("ownBlowMeetsTheStanceInTheSwing", Math.Abs(LandOne(player, orc) - 750) < 0.001);
+				Console.WriteLine("CLASS_ABILITY_INFO: getHitSaw=" + getHitSaw);
+			} finally {
+				orc.RemoveTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+				player.RemoveTriggerGroup(SingletonScript<E_SwingLandingProbe>.Instance);
+				orc.Delete();
+				player.Hits = player.MaxHits;
+			}
+		}
+
+		/// <summary>Swings until one blow lands (dodges don't reach @hit); what @getHit saw, -1 if none landed.</summary>
+		private static double LandOne(Character attacker, Character defender) {
+			getHitSaw = -1;
+			setTheBlow = true;
+			for (int i = 0; (i < 300) && (getHitSaw < 0); i++) {
+				DamageManager.ProcessSwing(attacker, defender);
+			}
+			setTheBlow = false;
+			return getHitSaw;
 		}
 
 		[SteamFunction]
@@ -477,6 +566,22 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static void Report(string name, bool ok) {
 			Console.WriteLine("CLASS_ABILITY: " + name + "=" + ok);
+		}
+	}
+
+	/// <summary>#1429 - a probe on both: the attacker's @swingLanding sets the blow, the defender's @getHit reads it.</summary>
+	public class E_SwingLandingProbe : CompiledTriggerGroup {
+		public void On_SwingLanding(Character self, WeaponSwingArgs swingArgs) {
+			if (ClassAbilityTests.setTheBlow) {
+				swingArgs.DamageAfterAC = 1000;
+			}
+		}
+
+		public void On_GetHit(Character self, WeaponSwingArgs swingArgs) {
+			if (ClassAbilityTests.setTheBlow) {
+				ClassAbilityTests.getHitSaw = swingArgs.DamageAfterAC;
+				swingArgs.DamageAfterAC = 0;
+			}
 		}
 	}
 }

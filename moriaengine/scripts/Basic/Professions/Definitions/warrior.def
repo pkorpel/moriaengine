@@ -23,7 +23,7 @@
 Defname = class_warrior //class_ as alternate prefix
 PvPArmorChange = -32 //nastaveni_global_armorchange_vP
 Name = "warrior"
-professionPluginDef = p_profession_default
+professionPluginDef = p_profession_warrior //#1429 - stance, cooldowns and blow modifiers: WarriorProfessionPlugin
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
@@ -82,3 +82,6 @@ titlesFemale="Brawler", "Wrestler", "Shieldbearer", "Recruit", "Cadet", "Swordsw
 
 //list allowed spells, per the wiki - same small utility set as Thief/Craftsman
 allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark
+
+//#1429 - the warrior's own profession plugin (ClassAbilities/WarriorProfessionPlugin.cs)
+[WarriorProfessionPluginDef p_profession_warrior]

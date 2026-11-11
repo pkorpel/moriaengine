@@ -131,6 +131,12 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		/// <summary>#1429 - a blow landing on the player, before the dodge (Erebor's @aftergetswing): the shield block,
+		/// which six classes may learn. A profession's own plugin adds its part and calls this.</summary>
+		public virtual void On_GetSwingLanding(WeaponSwingArgs swing) {
+			WarriorAbilities.ShieldBlock((Character) this.Cont, swing);
+		}
+
 		public static ProfessionPlugin GetInstalledPlugin(Player player) {
 			return (ProfessionPlugin) player.GetPlugin(professionKey);
 		}

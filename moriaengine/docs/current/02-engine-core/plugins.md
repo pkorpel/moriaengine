@@ -101,6 +101,18 @@ differ from Sphere's: raised after the dodge and the blow's own modifiers (armou
 with the damage stage (resists, shields, minimum damage, reactive armour) still to come in `CauseDamage`; only for
 swings (a mystic's strike too, not spells nor ability blows such as backstab or split shot); and SRC isn't set. `VineHoldPlugin` counts the blows on a holding vine there.
 
+Before the dodge, a swing raises `@swingLanding` on the attacker and `@getSwingLanding` on the defender (#1429,
+`DamageManager.Trigger_SwingLanding`/`Trigger_GetSwingLanding`). They are Erebor's player `@AfterSwing` and
+`@aftergetswing`: the blow is landing, armour and the monsters' own modifiers are applied, and the dodge is still to
+come. Handlers change `DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them.
+
+A profession's behaviour lives on its profession plugin. This is the original code's own pattern: each profession .def
+names its `professionPluginDef`, and `ProfessionPlugin.InstallProfessionPlugin` puts that plugin on the player under
+`_profession_`. Mage's `p_profession_mage` adds LScript `@SkillSelect`/`@SkillStart` to the shared `ProfessionPlugin`
+class. A C# subclass works the same way: `[PluginTemplate WarriorProfessionPlugin : ProfessionPlugin]`, whose def
+`[WarriorProfessionPluginDef p_profession_warrior]` warrior.def names (#1429). The base class keeps what every class
+shares (spells and gear by profession, the shield block); a subclass overrides it and calls `base`.
+
 ## Declaring a plugin
 
 ### The class: `.ct` template or by hand

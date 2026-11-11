@@ -138,6 +138,23 @@ namespace SteamEngine.CompiledScripts {
 			return (self.GetTag(counterTK) != null) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(self.EffectiveLevel));
 		}
 
+		/// <summary>A player's @AfterSwing on a blow that's landing: the critical blow and the classes' modifiers that
+		/// aren't on their profession plugins yet. The warrior's own part follows in its @swingLanding (#1429).</summary>
+		internal static void ModifyOwnBlow(Player self, Character target, WeaponSwingArgs swing) {
+			if (CounterFires(self)) {
+				if (RangerAbilities.IsShooting(self)) {
+					RangerAbilities.CriticalShot(self, target, swing);
+				} else {
+					self.SysMessage("Kriticky zasah!", ClassMessageHue);
+					swing.DamageAfterAC = (swing.DamageAfterAC * ClassAbilitySettings.instance.criticalPermille) / 1000;
+				}
+			}
+			RangerAbilities.ApplySpree(self, target, swing);
+			ThiefAbilities.ModifyOwnBlow(self, target, swing);
+			ThiefAbilities.ChargeWarFork(self, target);
+			ThiefAbilities.AfterFencingBlow(self, target, swing);
+		}
+
 		/// <summary>Death takes the counter away, sphereevents.scp.</summary>
 		internal static void OnDeath(Character self) {
 			self.RemoveTag(counterTK);
