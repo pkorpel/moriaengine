@@ -191,13 +191,6 @@ namespace SteamEngine.CompiledScripts {
 				return 0;
 			}
 
-			//#1347 - safe and no-PvP areas, at the damage as Sphere's (not only a player's attack request): the hit glows off
-			if (Notoriety.RegionStopsDamage(attacker, defender, flags)) {
-				if (damage != 0) {
-					EffectFactory.StationaryEffect(defender, 0x37C3, 9, 30); //ITEMID_FX_GLOW
-				}
-				return 0;
-			}
 
 			//Defense in depth: a creature can never damage its own current owner/commander,
 			//however the attack got triggered - target selection (NPC.ShouldAggroOn,

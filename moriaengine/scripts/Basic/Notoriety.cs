@@ -304,25 +304,10 @@ namespace SteamEngine.CompiledScripts {
 			return region.Flag_Safe || (pvp && region.Flag_NoPvp);
 		}
 
-		/// <summary>#1347 - Sphere 0.99z8's damage rule (EreborNext CChar.Damage's fEffectBounce): where the victim stands
-		/// decides, whoever hurts it - a monster, a pet, a spell, a poison tick. A safe area takes all damage; a no-PvP area
-		/// a player's on a player. God damage (Irresistable, Sphere's DAMAGE_GOD: starving, scripted kills) still goes
-		/// through. An arena flag doesn't change it (Sphere's check doesn't read it, and no area here is both).</summary>
-		public static bool RegionStopsDamage(Character attacker, Character defender, DamageType flags) {
-			if (flags == DamageType.Irresistable) {
-				return false;
-			}
-			FlaggedRegion region = defender.Region as FlaggedRegion;
-			if (region == null) {
-				return false;
-			}
-			if (region.Flag_Safe) {
-				return true;
-			}
-			return region.Flag_NoPvp && defender.IsPlayerForCombat && (attacker != null) && attacker.IsPlayerForCombat;
-		}
-
-		/// <summary>#1347 - Sphere's NPC_GetAttackMotivation: nobody standing in a safe area is worth attacking.</summary>
+		/// <summary>#1347 - Sphere's NPC_GetAttackMotivation: nobody standing in a safe area is worth attacking. Sphere's
+		/// own damage rule for safe and no-PvP areas (EreborNext CChar.Damage) never applied on Erebor: every player and
+		/// creature carries e_gethit, whose @GetHit cancels the engine's hit and applies it through damage_final/dmgHits
+		/// as god damage, which the rule lets through. So, as on Erebor, damage lands there.</summary>
 		public static bool IsInSafeArea(Character ch) {
 			return (ch.Region as FlaggedRegion)?.Flag_Safe == true;
 		}

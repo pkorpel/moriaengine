@@ -7,8 +7,9 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>#1019 - where an attack may start, by real attack requests: a guarded town allows it (its guards punish, as
 	/// on Erebor), a no-PvP area allows fighting monsters but not players, a safe zone allows nothing, an arena everything.
-	/// #1347 - and the damage itself, as Sphere: a safe area takes all but god damage and its people are no NPC's target
-	/// nor spell, a no-PvP area takes a player's damage on a player; the areas' lines as one walks in and out.
+	/// #1347 - as on Erebor: damage still lands in safe and no-PvP areas (Erebor's e_gethit applied every hit as god
+	/// damage, past the engine's area rule), but nobody in a safe area is an NPC's target or spell; the areas' lines as
+	/// one walks in and out.
 	/// Server side: scripts/Tests/RegionAttackTests.cs.</summary>
 	[Collection(RegionAttackCollection.Name)]
 	public class RegionAttackTests {
@@ -31,10 +32,10 @@ namespace SteamEngine.Tests.Protocol {
 					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=True casts=True");
 					this.Ask(a, ".TestRegionAttackRestore", "REGION_RESTORED:");
 					this.Check(a, b, "a_Goblin_Labyrint_1", "nopvp=True arena=False", true, false);
-					this.CheckDamage(a, "monsterHurts=True playerHurts=False god=5 targets=True casts=True");
+					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=True casts=True");
 					AssertSystemMessage(a, "You are safe from other players here.");
 					this.Check(a, b, "a_Arena_Lamy", "safe=True nopvp=False arena=False", false, false); //safe only, despite its name
-					this.CheckDamage(a, "monsterHurts=False playerHurts=False god=5 targets=False casts=False");
+					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=False casts=False"); //damage lands, as on Erebor
 					AssertSystemMessage(a, "You have a feeling of complete safety");
 					this.Check(a, b, "a_Arena_Gondor", "arena=True", true, true);
 					this.CheckDamage(a, "monsterHurts=True playerHurts=True god=5 targets=True casts=True");

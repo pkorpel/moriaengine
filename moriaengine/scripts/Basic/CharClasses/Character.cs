@@ -2276,6 +2276,9 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1347 - Sphere's area change lines (EreborNext CChar.Placement), in its English.</summary>
 		private static void AnnounceSafety(Character ch, FlaggedRegion oldRegion, FlaggedRegion newRegion) {
+			if (ch.Flag_Dead) {
+				return; //as Sphere's: nothing for a ghost
+			}
 			bool oldNoPvp = (oldRegion != null) && oldRegion.Flag_NoPvp, newNoPvp = (newRegion != null) && newRegion.Flag_NoPvp;
 			if (oldNoPvp != newNoPvp) {
 				ch.SysMessage(newNoPvp ? "You are safe from other players here." : "You lose your safety from other players.");
