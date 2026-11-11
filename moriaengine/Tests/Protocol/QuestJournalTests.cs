@@ -191,10 +191,12 @@ namespace SteamEngine.Tests.Protocol {
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				this.Ask(client, ".TestWeeklySets", "WEEKLY_SETS_DONE");
 				this.Ask(client, ".TestWeeklyTriggers", "WEEKLY_TRIGGERS_DONE");
+				this.Ask(client, ".TestWeeklyRoutes", "WEEKLY_ROUTES_DONE"); //#1426
 				string output = this.fixture.GameOutputSnapshot().Substring(mark);
 				foreach (string check in new[] { "underTenNothing", "countsByLevel", "blockedNeverDrawn", "noTaskTwice", "slotsByPool", "ereborsWorkedExample", "noSetForACraftsman",
 						"aWeekLong", "expiredIsRenewed", "eatingCountsWhileHungry", "theTeacherGreetsBack", "aWebCountsOnce", "aMonstersGoldCountsSpawnedOrNot", "whatCameLaterDoesnt",
-						"damageDealtCounts", "onlyASpawnedFoesBlowCounts", "aStreakOfTwoCounts", "aTaskAndTheSetPayIntoTheBank" }) {
+						"damageDealtCounts", "onlyASpawnedFoesBlowCounts", "aStreakOfTwoCounts", "aTaskAndTheSetPayIntoTheBank",
+						"theSetIsThePlugins", "aDoubleClickReachesIt", "aStepReachesIt", "aPickUpReachesIt", "aKillCreditReachesIt", "aLoginRenewsAnExpiredSet" }) {
 					string marker = "WEEKLY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

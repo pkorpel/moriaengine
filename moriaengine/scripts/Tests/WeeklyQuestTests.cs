@@ -16,7 +16,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = Professions.Warrior;
 			player.Realm = Realm.Gondor;
 			player.Level = level;
-			player.RemoveTag(TagKey.Acquire("_weekly_"));
+			player.DeletePlugin(WeeklyQuestPlugin.key);
 			return player;
 		}
 
@@ -75,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>A set of level 50 whose tasks are made what a test needs.</summary>
 		private static WeeklySet Fixed(Player player, params WeeklyTask[] tasks) {
 			player.Level = 50;
-			player.RemoveTag(TagKey.Acquire("_weekly_"));
+			player.DeletePlugin(WeeklyQuestPlugin.key);
 			WeeklyQuests.Check(player);
 			WeeklySet set = WeeklyQuests.Of(player);
 			set.Tasks.Clear();
@@ -191,6 +191,62 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Report("aTaskAndTheSetPayIntoTheBank", set.AllDone && (GoldUtils.CountGoldIn(player.Bank) == bankBefore + 1000 + 500) && (bankGold != null));
 			Console.WriteLine("WEEKLY_TRIGGERS_DONE");
+		}
+
+		/// <summary>#1426 - the set is WeeklyQuestPlugin's, and the events reach it as triggers on the player: a real double click,
+		/// a real step onto a web, a real pick-up from a monster's body, a real kill credit, a login.</summary>
+		[SteamFunction]
+		public static void TestWeeklyRoutes(Character self) {
+			Player player = Ready(self, 50);
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			WeeklyTask eat = Task("eatFood", "i_fruit_apple", 5), web = Task("stepOnWeb", null, 2), loot = Task("loot", "i_gold", 1000000), streak = Task("KillStreak", "1", 1);
+			WeeklySet set = Fixed(player, eat, web, loot, streak);
+			Report("theSetIsThePlugins", (player.GetPlugin(WeeklyQuestPlugin.key) is WeeklyQuestPlugin plugin) && (plugin.set == set));
+
+			Item apple = (Item) ((ItemDef) ThingDef.GetByDefname("i_fruit_apple")).Create(player.Backpack);
+			PlayerHunger.SetFood(player, 5);
+			apple.Trigger_DClickFromAfar(player);
+			Report("aDoubleClickReachesIt", eat.Done == 1);
+			if (!apple.IsDeleted) {
+				apple.Delete();
+			}
+
+			Item spiderweb = (Item) ((ItemDef) ThingDef.GetByDefname("i_spider_web")).Create(player.X + 1, player.Y, player.Z, player.M);
+			player.Stam = player.MaxStam;
+			player.Direction = Direction.East;
+			player.WalkRunOrFly(Direction.East, false, true);
+			Report("aStepReachesIt", web.Done == 1);
+			spiderweb.Delete();
+
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			MonsterLoot.FlushCreatureStart(orc);
+			orc.CauseDeath(null);
+			int lifted = 0;
+			foreach (Thing thing in player.GetMap().GetThingsInRectangle(new ImmutableRectangle(player.X, player.Y - 1, player.X + 2, player.Y + 1))) {
+				if (thing is Corpse corpse) {
+					foreach (AbstractItem inside in new List<AbstractItem>(corpse)) {
+						if (inside.Def == ThingDef.GetByDefname("i_gold")) {
+							lifted += inside.Amount;
+							player.PickupItem(inside, inside.Amount);
+							inside.Delete();
+						}
+					}
+					corpse.Delete();
+				}
+			}
+			Report("aPickUpReachesIt", (lifted > 0) && (loot.Done == lifted));
+
+			NPC victim = (NPC) ((NPCDef) ThingDef.GetByDefname("c_wolf")).Create(player.X + 1, player.Y, player.Z, player.M);
+			victim.ExperienceReward = 50; //a share of at least the tasks + 2
+			LevelingSystem.ShareMonsterExperience(victim, player);
+			Report("aKillCreditReachesIt", streak.IsDone);
+			victim.Delete();
+
+			set.ExpiresTicks = DateTime.UtcNow.Ticks - 1;
+			player.TryCancellableTrigger(TriggerKey.login, null);
+			Report("aLoginRenewsAnExpiredSet", (WeeklyQuests.Of(player) != null) && (WeeklyQuests.Of(player) != set));
+			Console.WriteLine("WEEKLY_ROUTES_DONE");
 		}
 
 		/// <summary>For the journal: a fresh level 50 set.</summary>

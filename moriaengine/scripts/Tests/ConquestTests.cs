@@ -294,7 +294,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = Professions.Warrior;
 			player.Level = 50;
 			player.RemoveTag(TagKey.Acquire("_boosters_"));
-			player.RemoveTag(TagKey.Acquire("_weekly_"));
+			player.DeletePlugin(WeeklyQuestPlugin.key);
 			WeeklyQuests.Check(player);
 			WeeklySet set = WeeklyQuests.Of(player);
 			conquerorTask = new WeeklyTask { Kind = WeeklyQuests.Conqueror, Subject = "i_fortress_palantir", Total = 1, Description = "conqueror", RewGold = 1000, RewXP = 10 };

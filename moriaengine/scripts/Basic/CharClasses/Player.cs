@@ -442,7 +442,6 @@ namespace SteamEngine.CompiledScripts {
 				Tavern.OnLogin(this); //#1254 - a night in a tavern's room
 				SkillSequenceArgs.ResumeAfterLogin(this); //#1172 - a skill under way when the player left, or when the server went down
 				CraftingProcessPlugin.ResumeAfterLogin(this); //#1172 - a craft queue between two items then
-				WeeklyQuests.OnLogin(this); //#1090 - e_weekly_quest @login
 				Party.ForgetCanLootMe(this); //#918
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				PlayerRecord.Login(this); //#1011

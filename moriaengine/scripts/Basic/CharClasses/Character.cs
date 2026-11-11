@@ -2221,18 +2221,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Corpse corpse = item.TopObj() as Corpse;
 			if (corpse != null) {
-				Notoriety.OnLooting(this, corpse);
-				if (this is Player looter) {
-					WeeklyQuests.OnLoot(looter, item); //#1090 - e_weekly_itemLoot
-				}
+				Notoriety.OnLooting(this, corpse); //#1426 - the weekly loot count is WeeklyQuestPlugin's @pickingUp
 			}
 		}
 
-		//#1090 - e_weekly_stepOnWeb
+		//#1426 - e_weekly_stepOnWeb is WeeklyQuestPlugin's @itemStep
 		public override void On_ItemStep(AbstractItem i, bool repeated, MovementType movementType) {
 			base.On_ItemStep(i, repeated, movementType);
 			if (!repeated && (this is Player player) && (i is Item item)) {
-				WeeklyQuests.OnStepOnItem(player, item);
 				Arena.OnStep(player, item); //#1116 - the arena's exit gate
 				Q017.OnStep(player, item); //#1268 - Terlak's entry and exit gates
 			}
@@ -2477,10 +2473,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void On_ItemDClick(AbstractItem dClicked) {
-			CraftingProcessPlugin.Stop(this, true); //#962 - @itemuserdclick
-			if (this is Player player) {
-				WeeklyQuests.OnItemDClick(player, dClicked as Item); //#1090 - e_weekly_itemDclick, before the item's own use
-			}
+			CraftingProcessPlugin.Stop(this, true); //#962 - @itemuserdclick; #1426 - e_weekly_itemDclick is WeeklyQuestPlugin's @itemDClick
 			if (DragonCage.TryClick(this, dClicked as Item)) { //#1022 weakening a dragon's fire cage
 				return;
 			}

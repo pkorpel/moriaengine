@@ -1019,6 +1019,9 @@ namespace SteamEngine {
 		}
 
 		private void PickupImpl(AbstractItem item, int amountToPick) {
+			this.TryTrigger(TriggerKey.pickingUp, new ScriptArgs(item, amountToPick)); //#1426 - where the item is still lying, as On_PickingUp
+			this.ThrowIfDeleted(); //a handler may not take the picker or the item away
+			item.ThrowIfDeleted();
 			try {
 				this.On_PickingUp(item);
 			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }

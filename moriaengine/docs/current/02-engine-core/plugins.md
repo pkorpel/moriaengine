@@ -84,6 +84,10 @@ cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount
 is what bonuses take their percent of); and `@killCredit` (`KillCreditArgs`: victim, share) on every fighter credited
 with a death, player or NPC.
 
+A pick-up raises `@pickingUp` on the picker (#1426, GameCore's `PickupImpl`, args: the item, the amount), after the deny
+checks and while the item still lies where it was, beside the virtual `On_PickingUp`. `WeeklyQuestPlugin` counts a
+monster's loot there.
+
 Spells have two more (#1419, [magery-spells.md](../04-gameplay-systems/magery-spells.md)): `@spellPower` on the caster
 (`SpellPowerArgs`, a mutable `SpellPower`), before the target's defense and after the inline pre-defense modifiers;
 and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The pre-defense modifiers (charge,

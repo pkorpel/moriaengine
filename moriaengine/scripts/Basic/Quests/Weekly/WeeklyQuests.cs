@@ -18,7 +18,6 @@ namespace SteamEngine.CompiledScripts {
 			DmgNpc = "dmgNPC", ReceiveDmg = "receiveDmg", StepOnWeb = "stepOnWeb", KillInDung = "killInDung", KillStreak = "KillStreak",
 			Conqueror = "conqueror";
 		private static readonly TimeSpan Week = TimeSpan.FromDays(7), StreakGap = TimeSpan.FromSeconds(15);
-		private static readonly TagKey setTK = TagKey.Acquire("_weekly_");
 		private static readonly TagKey corpseAmountTK = TagKey.Acquire("_weeklyCorpseAmount_");
 		private static readonly TagKey spawnedItemTK = TagKey.Acquire("_weeklySpawnedItem_");
 		private static readonly TagKey steppedByTK = TagKey.Acquire("_weeklySteppedBy_");
@@ -283,7 +282,7 @@ namespace SteamEngine.CompiledScripts {
 
 		#region the set
 		public static WeeklySet Of(Player player) {
-			return player.GetTag(setTK) as WeeklySet;
+			return (player.GetPlugin(WeeklyQuestPlugin.key) as WeeklyQuestPlugin)?.set;
 		}
 
 		private static string Sex(Player player, string male, string female) {
@@ -302,13 +301,12 @@ namespace SteamEngine.CompiledScripts {
 					return false;
 				}
 				player.RedMessage("Cas na plneni questu vyprsel.");
-				player.RemoveTag(setTK);
 			}
 			Generate(player);
 			return true;
 		}
 
-		/// <summary>Erebor's e_weekly_quest @login: only for a player who has had a set.</summary>
+		/// <summary>Erebor's e_weekly_quest @login, from WeeklyQuestPlugin: only for a player who has had a set.</summary>
 		internal static void OnLogin(Player player) {
 			if (Of(player) != null) {
 				Check(player);
@@ -355,7 +353,7 @@ namespace SteamEngine.CompiledScripts {
 			set.RewGold = (int) (prize / 250);
 			set.RewXP = (int) ((level * 2) + (prize / 2200));
 			set.RewMI = (int) ((prize / 850000) + 1);
-			player.SetTag(setTK, set);
+			WeeklyQuestPlugin.Hold(player, set); //#1426
 			player.SysMessage(Sex(player, "Prijal", "Prijala") + " jsi novy seznam ukolu. Pro zobrazeni zadej prikaz .questy", ClassAbilities.ClassMessageHue);
 			Logger.WriteInfo(true, "Weekly: " + player.Name + " (" + player.Account?.Name + ") prijal serii " + qCount + " Weekly questu na levelu " + level);
 			return set;
@@ -586,7 +584,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>@playerKill, for each player a monster's experience was shared to, with their share (W:1045-1132).</summary>
+		/// <summary>@playerKill, for each player a monster's experience was shared to, with their share (W:1045-1132). #1426 - from
+		/// WeeklyQuestPlugin's @killCredit, a blood pact's bearer too, as Erebor's trigger_kill reached it.</summary>
 		internal static void OnKillCredit(Player player, NPC victim, int share) {
 			WeeklySet set = (player == null) ? null : Of(player);
 			if ((set == null) || (victim == null)) {

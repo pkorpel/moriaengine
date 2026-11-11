@@ -417,7 +417,6 @@ namespace SteamEngine.CompiledScripts {
 				AddExperience(fighter as Player, share);
 				LevelingTriggers.KillCredit(fighter, victim, share); //#1416 - Erebor's trigger_kill after the addexp
 				LevelingTriggers.KillCredit(ShamanPacts.ShareKillExp(fighter as Player, share), victim, share); //and on the blood pact's bearer
-				WeeklyQuests.OnKillCredit(fighter as Player, victim, share); //#1090 - @playerKill with added_experience_bydeath
 				Q017.OnKillCredit(fighter as Player, victim); //#1268 - Terlak's gate crystals
 			}
 		}
