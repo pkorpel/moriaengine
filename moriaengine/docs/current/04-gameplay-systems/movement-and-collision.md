@@ -14,7 +14,10 @@ Every step a character takes goes through `AbstractCharacter.WalkRunOrFly`
 2. `Map.CheckMovement` - terrain, statics, items, climb height. Characters are not considered here.
 3. `CheckCharacterObstacles` - other characters on the destination tile (#767, below). GM players skip it.
 4. `@step` / `On_Step`, then region exit/enter.
-5. The actual move and the 0x77 broadcast, then `On_StepTaken` (#779's stamina drain).
+5. The actual move and the 0x77 broadcast, then `@stepTaken` (#1414, with `running`; trigger groups and plugins
+   hear it) and `On_StepTaken` (#779's stamina drain and the other hard-coded after-step calls). Both come after
+   `@newPosition` and the destination items' `@step` (a trap's work is done), only for a real step by a non-GM, never
+   for a teleport, and not for a character that step deleted (an NPC killed by a trap).
 
 A refused player step sends the move-rejection packet (0x21), so the client snaps back.
 
