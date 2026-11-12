@@ -191,9 +191,25 @@ namespace SteamEngine.CompiledScripts {
 			int bodyX = body.X;
 
 			MysticHypnosis.Targeted(player, body);
-			Report("concentrationStarts", player.HasTimer(ConcentrationTimer.Key));
-			MysticHypnosis.OnStep(player);
-			Report("aStepBreaksIt", !player.HasTimer(ConcentrationTimer.Key));
+			ConcentrationPlugin concentration = ConcentrationPlugin.Of(player); //#1461 - i_hypno_timer
+			Report("concentrationStarts", (concentration != null) && (concentration.monster == body) && (concentration.Timer > 0)); //1 to 14 s, read a moment after it's set
+			player.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false)); //@stepTaken, as a real step raises it
+			Report("aStepBreaksIt", ConcentrationPlugin.Of(player) == null);
+			MysticHypnosis.Targeted(player, body);
+			ConcentrationPlugin second = ConcentrationPlugin.Of(player);
+			DamageManager.Trigger_GetSwingLanding(DamageManager.GetWeaponSwingArgs(body, player)); //a blow at the mystic
+			Report("aBlowBreaksIt", (second != null) && (ConcentrationPlugin.Of(player) == null));
+			int bodyExp = body.ExperienceReward;
+			body.ExperienceReward = 0;
+			bool indifferent = !MysticHypnosis.Succeeds(player, body); //"zcela netecne": 2 s before another try
+			body.ExperienceReward = bodyExp;
+			MysticProfessionPlugin mystic = MysticProfessionPlugin.Of(player);
+			Report("theDelayIsTheMysticsPlugin", indifferent && (mystic != null) && (mystic.nextHypnosis > Globals.TimeInSeconds + 1));
+			MysticHypnosis.Targeted(player, body);
+			Report("theDelayRefusesAnotherTry", ConcentrationPlugin.Of(player) == null);
+			if (mystic != null) {
+				mystic.nextHypnosis = 0;
+			}
 
 			player.Hits = 180;
 			MysticHypnosis.Swap(player, body);

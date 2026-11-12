@@ -17,6 +17,11 @@
 [PluginTemplate MysticProfessionPlugin : ProfessionPlugin]
 Vars:
 	internal double nextCatchField = 0
+	internal double nextHypnosis = 0
+
+[PluginTemplate ConcentrationPlugin : TimerPlugin]
+Vars:
+	internal NPC monster = null
 
 [PluginTemplate CatchPlugin : TimerPlugin]
 Vars:

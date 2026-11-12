@@ -125,7 +125,7 @@ Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
   at it frees it at `@getSwingLanding`, Erebor's `@aftergetswing`.
 - **`.controlnpc`** is a `ControlNpcPlugin` (`i_controlnpc`): in 5 s the creature may become the mystic's.
 - The mystic's own profession plugin, `MysticProfessionPlugin` (`p_profession_mystic`), holds the catch field's
-  cooldown. As with the other classes, setting the profession again resets it.
+  cooldown and the hypnosis' retry delay (#1461). As with the other classes, setting the profession again resets them.
 - A monster keeps Erebor's tags after a hold: `_wasCatched_` (a second catch hurts the mystic) and
   `_catchFieldReleasedAt_` (no field again for an hour).
 - **`.buffsteal`** (#1457) is a `BuffStealPlugin` on the mystic (`i_buffSteal`). It goes through 3 s of wind-up, then
@@ -138,6 +138,11 @@ Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
   (`tag.changeDmgPercent`) at its own `@swingLanding`, Erebor's `e_npcChangeDmg @AfterSwing`.
 
 ## Mystic hypnosis and the world
+
+Before the swap, the mystic concentrates for 1 to 14 s: a `ConcentrationPlugin` (Erebor's `i_hypno_timer` with
+`e_hypnotizing`, #1461). A step breaks it at its own `@stepTaken`, a blow at its `@getSwingLanding` (Erebor's `@step`
+and `@aftergetswing`). The retry delay after a failed or impossible try (2 s, or 0.5 s) is `MysticProfessionPlugin`'s,
+so a GM who isn't a mystic has none.
 
 The body swap itself is in `MysticHypnosis.cs`. While a mystic possesses a monster:
 

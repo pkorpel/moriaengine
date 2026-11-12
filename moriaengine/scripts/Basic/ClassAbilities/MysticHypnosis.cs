@@ -13,7 +13,6 @@ namespace SteamEngine.CompiledScripts {
 	/// mystic's PossessionTimer.</summary>
 	public static class MysticHypnosis {
 		internal const int ParkedPlane = 250;
-		private static readonly TagKey delayUntilTK = TagKey.Acquire("_hypnoDelay_");
 		internal static readonly TagKey EgoOfTK = TagKey.Acquire("_hypnoEgoOf_");
 		private static readonly PluginKey egoParalysisPK = PluginKey.Acquire("_hypnoEgoParalysis_");
 		private static readonly HashSet<string> throwers = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
@@ -69,8 +68,12 @@ namespace SteamEngine.CompiledScripts {
 			return (level < 25) ? 1 : (level < 50) ? 2 : (level < 75) ? 3 : (level < 100) ? 4 : 5;
 		}
 
+		/// <summary>#1461 - the retry delay is the mystic's profession plugin's; a GM who isn't a mystic has none.</summary>
 		private static void Delay(Character ch, double seconds) {
-			ch.SetTag(delayUntilTK, Globals.TimeInSeconds + seconds);
+			MysticProfessionPlugin mystic = MysticProfessionPlugin.Of(ch);
+			if (mystic != null) {
+				mystic.nextHypnosis = Globals.TimeInSeconds + seconds;
+			}
 		}
 
 		internal static HypnotizerBall FindBall(Character ch) {
@@ -94,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 				SwapBack(self, 0, false);
 			} else {
 				self.Dismount();
-				if (self.GetTimer(ConcentrationTimer.Key) is ConcentrationTimer concentrating) {
+				if (ConcentrationPlugin.Of(self) is ConcentrationPlugin concentrating) {
 					concentrating.Delete();
 					self.SysMessage((self.IsFemale ? "Prerusila" : "Prerusil") + " jsi koncentraci.");
 				}
@@ -120,33 +123,23 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Zameruj pouze neochocena monstra!");
 			} else if ((MysticMind.Flags(monster) & MysticMind.FlagCanBe) == 0) {
 				self.SysMessage("Jevi se jako hypnoze netecny.");
-			} else if (ClassAbilities.SecondsTag(self, delayUntilTK) > Globals.TimeInSeconds) {
+			} else if ((MysticProfessionPlugin.Of(self) is MysticProfessionPlugin mystic) && (mystic.nextHypnosis > Globals.TimeInSeconds)) {
 				self.SysMessage("Jsi jeste prilis " + (self.IsFemale ? "unavena" : "unaven") + " z predchoziho pokusu", ClassAbilities.ClassMessageHue);
 			} else {
 				int cas = 10 / Koef(self.Level);
-				ConcentrationTimer timer = new ConcentrationTimer();
-				timer.monster = monster;
-				self.AddTimer(ConcentrationTimer.Key, timer);
-				timer.DueInSeconds = Math.Max(1, Globals.dice.Next(cas - 3, cas + 5));
+				ConcentrationPlugin concentration = (ConcentrationPlugin) ConcentrationPluginDef.instance.Create(); //#1461 - i_hypno_timer
+				concentration.monster = monster;
+				self.AddPlugin(ConcentrationPlugin.Key, concentration);
+				concentration.Timer = Math.Max(1, Globals.dice.Next(cas - 3, cas + 5));
 				self.Sound(586);
 				self.Flag_Hidden = false;
 			}
 		}
 
-		/// <summary>e_hypnotizing: a step or a blow breaks the concentration.</summary>
-		internal static void OnStep(Character self) {
-			if (self.GetTimer(ConcentrationTimer.Key) is ConcentrationTimer timer) {
-				self.RedMessage("Prerusil jsi sve soustredeni, hypnoza se nezdarila");
-				timer.Delete();
-			}
-		}
-
-		/// <summary>A blow on a concentrating mystic, or on a possessing mystic's alter ego.</summary>
+		/// <summary>A blow on a possessing mystic's alter ego brings the mystic home. (A blow on a concentrating mystic is
+		/// ConcentrationPlugin's @getSwingLanding, #1461.)</summary>
 		internal static void OnSwungAt(Character defender) {
-			if (defender.GetTimer(ConcentrationTimer.Key) is ConcentrationTimer timer) {
-				defender.RedMessage("Utok prerusil tve soustredeni, hypnoza se nezdarila");
-				timer.Delete();
-			} else if (defender.GetTag(EgoOfTK) is Player mystic) {
+			if (defender.GetTag(EgoOfTK) is Player mystic) {
 				mystic.SysMessage("Tvou mysl zalila rezava bolest");
 				SwapBack(mystic, 2, false);
 			}
@@ -593,25 +586,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
 			self.RedMessage("Tady nic k hypnotizovani neni!");
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_hypno_timer: 1 to 14 s of concentration.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class ConcentrationTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_hypnoConcentration_");
-
-		[SaveableData, CopyableData]
-		public NPC monster;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public ConcentrationTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Player self) {
-				MysticHypnosis.Concentrated(self, this.monster);
-			}
 		}
 	}
 

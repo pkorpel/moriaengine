@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1455 - the mystic's profession plugin (mystic.def's professionPluginDef), on #1429's pattern: the catch
-	/// field's cooldown (Erebor's tag.catchField_nextds).</summary>
+	/// field's cooldown (Erebor's tag.catchField_nextds) and the hypnosis' retry delay (#1461).</summary>
 	[Dialogs.ViewableClass]
 	public partial class MysticProfessionPlugin {
 
@@ -12,6 +12,46 @@ namespace SteamEngine.CompiledScripts {
 		internal static MysticProfessionPlugin Of(Character ch) {
 			return ch.GetPlugin(professionKey) as MysticProfessionPlugin;
 		}
+	}
+
+	/// <summary>#1461 - Erebor's i_hypno_timer with e_hypnotizing: the concentration before the swap. A step (@step, here
+	/// @stepTaken) or a blow (@aftergetswing, here @getSwingLanding) breaks it.</summary>
+	[Dialogs.ViewableClass]
+	public partial class ConcentrationPlugin {
+		internal static readonly PluginKey Key = PluginKey.Acquire("_hypnoConcentration_");
+
+		internal static ConcentrationPlugin Of(Character ch) {
+			return ch.GetPlugin(Key) as ConcentrationPlugin;
+		}
+
+		/// <summary>i_hypno_timer's @timer: the swap is tried.</summary>
+		public void On_Timer() {
+			Player self = this.Cont as Player;
+			NPC target = this.monster;
+			this.Delete();
+			if (self != null) {
+				MysticHypnosis.Concentrated(self, target);
+			}
+		}
+
+		public void On_StepTaken(bool running) {
+			if (this.Cont is Character self) {
+				self.RedMessage("Prerusil jsi sve soustredeni, hypnoza se nezdarila");
+			}
+			this.Delete();
+		}
+
+		public void On_GetSwingLanding(WeaponSwingArgs swing) {
+			if (this.Cont is Character self) {
+				self.RedMessage("Utok prerusil tve soustredeni, hypnoza se nezdarila");
+			}
+			this.Delete();
+		}
+	}
+
+	public partial class ConcentrationPluginDef {
+		public static readonly ConcentrationPluginDef instance =
+			(ConcentrationPluginDef) new ConcentrationPluginDef("p_hypnoConcentration", "C# scripts", -1).Register();
 	}
 
 	/// <summary>#1455 - Erebor's i_catchitem: the mystic holds one monster with the mind, a tick a second. A death lets go
