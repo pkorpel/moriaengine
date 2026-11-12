@@ -257,13 +257,13 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#1090 - Erebor's boosters page: the running one, then the stored ones, three a page, each a button that
 		/// starts it while none runs.</summary>
 		private void AddBoosters(Player player) {
-			BoosterTimer active = Boosters.Active(player);
+			BoosterPlugin active = Boosters.Active(player); //#1471
 			this.AddBackground(80, 128, 225, 80, Background);
 			this.AddLabel(150, 138, TitleHue, "Aktivni booster");
 			if (active != null) {
 				this.AddImage(100, 152, Boosters.Icon);
-				this.AddHtml(135, 158, 140, 20, "<center><basefont color=#00FA55 size=6>" + Boosters.Kinds[active.kind].Description + "</basefont></center>", false, false);
-				this.AddLabel(135, 176, TitleHue, Boosters.TimeText(active.DueInSeconds));
+				this.AddHtml(135, 158, 140, 20, "<center><basefont color=#00FA55 size=6>" + Boosters.Kinds[active.running].Description + "</basefont></center>", false, false);
+				this.AddLabel(135, 176, TitleHue, Boosters.TimeText(active.Timer));
 			} else {
 				this.AddLabel(110, 162, HintHue, "Zadny Booster neni aktivni.");
 			}

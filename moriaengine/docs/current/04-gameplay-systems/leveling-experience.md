@@ -149,7 +149,7 @@ realm, or for killing a craftsman. The level never goes down.
 ## Triggers (#1416)
 
 - `@gainExperience` (cancellable, `GainExperienceArgs`) is raised on the player in `AddExperience`, after the
-  inline bonuses (boosters, RP rank, the beacons). `BaseAmount` is the gain before any bonus, which is what
+  inline bonuses (RP rank, the beacons). A running booster adds its percent there, on its `BoosterPlugin` (#1471). `BaseAmount` is the gain before any bonus, which is what
   bonuses take their percent of. `Amount` is what will be added, and a handler may change it. A cancel adds nothing.
   - A gain diverted by a hypnosis is paid later and raises it then, possibly negative.
   - Compiled handlers only: a scripted one sees the numbers but can't change `Amount`.
@@ -166,7 +166,7 @@ realm, or for killing a craftsman. The level never goes down.
   - `share` is the fighter's share. An NPC fighter is given nothing, and a hypnotized player is given it later.
   - A blood-pact giver still earns on a player's death (Erebor skipped it): #1417.
 - Plugins and trigger groups hear both. Weekly quests count kills through `@killCredit` since #1426. The systems still
-  called inline (Q017, the shaman's pacts, boosters) move onto them with #1399's candidates.
+  called inline (Q017) move onto them with #1399's candidates; the shaman's pacts (#1445) and boosters (#1471) did.
 
 ## Gates and quests - explicitly out of scope
 
