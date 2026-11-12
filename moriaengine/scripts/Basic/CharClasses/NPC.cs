@@ -1167,6 +1167,24 @@ namespace SteamEngine.CompiledScripts {
 			base.On_AfterLoad();
 		}
 
+		/// <summary>#1485 - Sphere's NPC DUPE (CChar's M_Dupe: CreateNPCOwned(GetID()) and MoveNearObj(this, 1)): a new NPC of
+		/// the same def on a free tile beside this one (its own if none), made as any other (its own AI, gear and mount, not
+		/// the spawn gem's), not a copy of this one's state. A deep copy failed on its AI timer, and past that would share
+		/// its mount and lose its plugins' timers.</summary>
+		public override Thing Dupe() {
+			var map = this.GetMap();
+			int x = this.X, y = this.Y;
+			for (int tries = 0; tries < 8; tries++) {
+				int nearX = this.X + Globals.dice.Next(-1, 2), nearY = this.Y + Globals.dice.Next(-1, 2);
+				if (((nearX != this.X) || (nearY != this.Y)) && map.CanFit(nearX, nearY, this.Z, 16, true, true, true)) {
+					x = nearX;
+					y = nearY;
+					break;
+				}
+			}
+			return this.Def.Create(x, y, this.Z, this.M);
+		}
+
 		public override void On_Create() {
 			base.On_Create();
 
