@@ -10,18 +10,18 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - the mystic's hypnosis, specabilities.scp's hypnotize, hypnoswap and hypnoswap_back: the mystic's
 	/// soul goes into a monster's body for a while. The monster waits on plane 250, an alter ego stands in the mystic's
 	/// place, and a blow or spell on it, the mystic's death or a logout bring the mystic home. The state lives on the
-	/// mystic's PossessionTimer.</summary>
+	/// mystic's PossessionPlugin, the alter ego's AlterEgoPlugin answers what reaches it (#1467).</summary>
 	public static class MysticHypnosis {
 		internal const int ParkedPlane = 250;
-		internal static readonly TagKey EgoOfTK = TagKey.Acquire("_hypnoEgoOf_");
 		private static readonly PluginKey egoParalysisPK = PluginKey.Acquire("_hypnoEgoParalysis_");
 		private static readonly HashSet<string> throwers = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
 			"c_ogre", "c_ogre_lord", "c_ettin", "c_cyclops", "c_elem_rock", "c_elem_ice_archer", "c_elem_snow_archer", "c_moria_jeskyni_Obr" };
 		private static readonly HashSet<string> shooters = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
 			"c_skeleton_archer", "c_skeleton_archer_lvl_2", "c_skeleton_archer_lvl_3", "c_skeleton_archer_lvl_4" };
 
-		internal static PossessionTimer Possession(Character ch) {
-			return ch.GetTimer(PossessionTimer.Key) as PossessionTimer;
+		/// <summary>#1467 - the possession is the mystic's PossessionPlugin.</summary>
+		internal static PossessionPlugin Possession(Character ch) {
+			return PossessionPlugin.Of(ch);
 		}
 
 		internal static bool IsPossessing(Character ch) {
@@ -30,7 +30,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The body a possessing mystic is in, or null.</summary>
 		internal static NPC Body(Character ch) {
-			PossessionTimer state = Possession(ch);
+			PossessionPlugin state = Possession(ch);
 			return ((state != null) && (state.monster != null) && !state.monster.IsDeleted) ? state.monster : null;
 		}
 
@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Character.DefForCombat: a possessing mystic fights as the monster.</summary>
 		internal static CharacterDef CombatDef(Character ch) {
-			PossessionTimer state = Possession(ch);
+			PossessionPlugin state = Possession(ch);
 			return ((state != null) && (state.monster != null)) ? state.monster.TypeDef : null;
 		}
 
@@ -136,53 +136,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>A blow on a possessing mystic's alter ego brings the mystic home. (A blow on a concentrating mystic is
-		/// ConcentrationPlugin's @getSwingLanding, #1461.)</summary>
-		internal static void OnSwungAt(Character defender) {
-			if (defender.GetTag(EgoOfTK) is Player mystic) {
-				mystic.SysMessage("Tvou mysl zalila rezava bolest");
-				SwapBack(mystic, 2, false);
-			}
-		}
-
-		/// <summary>A spell landing on the alter ego brings the mystic home.</summary>
-		internal static bool OnSpellEffect(Character target) {
-			if (target.GetTag(EgoOfTK) is Player mystic) {
-				mystic.SysMessage("Tvou mysli projela vlna energie");
-				SwapBack(mystic, 2, false);
-				return true;
-			}
-			return false;
-		}
-
-		/// <summary>Top of CauseDeath: neither the possessing mystic nor the alter ego dies; the mystic comes home.
-		/// A possessing mystic's killers are paid as for the monster.</summary>
-		internal static bool InterceptDeath(Character dying, Character killedBy) {
-			if (dying.GetTag(EgoOfTK) is Player mystic) {
-				SwapBack(mystic, 0, true);
-				return true;
-			}
-			PossessionTimer state = Possession(dying);
-			if (state == null) {
-				return false;
-			}
+		/// <summary>A possessing mystic's death in the body (PossessionPlugin's @denyDeath): the killers are paid as for the
+		/// monster, and the mystic comes home with a fifth of the hits.</summary>
+		internal static void DiedInTheBody(Player self, PossessionPlugin state, Character killedBy) {
 			if (state.monster != null) {
-				int attackers = Math.Max(1, LevelingSystem.FindFighters(dying, killedBy, false).Count);
+				int attackers = Math.Max(1, LevelingSystem.FindFighters(self, killedBy, false).Count);
 				state.gained -= (int) ((state.monster.ExperienceReward * Math.Sqrt(attackers)) / 1000);
 				LevelingSystem.ShareMonsterExperience(state.monster, killedBy);
 			}
-			SwapBack((Player) dying, 5, false);
-			return true;
-		}
-
-		/// <summary>addexp while possessing only counts; it's paid on the way home.</summary>
-		internal static bool CountsExperience(Player player, int amount) {
-			PossessionTimer state = Possession(player);
-			if (state == null) {
-				return false;
-			}
-			state.gained += amount;
-			return true;
+			SwapBack(self, state, 5, false);
 		}
 
 		/// <summary>povedla_se_hypnoza.</summary>
@@ -242,7 +204,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>hypnoswap: the mystic into the monster.</summary>
 		internal static void Swap(Player self, NPC monster) {
-			PossessionTimer state = new PossessionTimer();
+			PossessionPlugin state = (PossessionPlugin) PossessionPluginDef.instance.Create(); //#1467 - i_hypno_delka
 			HypnotizerBall ball = FindBall(self);
 			self.Dismount();
 			ParalyzeEffectPluginDef.Unparalyze(self);
@@ -263,7 +225,9 @@ namespace SteamEngine.CompiledScripts {
 			ego.MaxHits = self.MaxHits;
 			ego.Hits = self.Hits;
 			ego.Flag_WarMode = false;
-			ego.SetTag(EgoOfTK, self);
+			AlterEgoPlugin alterEgo = (AlterEgoPlugin) AlterEgoPluginDef.instance.Create(); //#1467 - the ego's own events and alarm
+			alterEgo.mystic = self;
+			ego.AddPlugin(AlterEgoPlugin.Key, alterEgo);
 			ImmobilePlugin.Set(ego, true);
 			ParalyzeEffectPluginDef.Paralyze(ego, egoParalysisPK, TimeSpan.FromDays(1));
 			if (self.FindLayer(LayerNames.Hair) is Item hair) {
@@ -344,14 +308,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 			int koef = Koef(self.Level);
 			int cas = 100 + (koef * 60);
-			self.AddTimer(PossessionTimer.Key, state);
-			state.DueInSeconds = Globals.dice.Next(cas - 100, cas + 61);
+			self.AddPlugin(PossessionPlugin.Key, state);
+			state.Timer = Globals.dice.Next(cas - 100, cas + 61);
 			self.InvalidateCombatWeaponValues();
 			self.InvalidateCombatArmorValues();
-			AlarmTimer alarm = new AlarmTimer();
-			ego.AddTimer(AlarmTimer.Key, alarm);
-			alarm.DueInSeconds = 1;
-			alarm.PeriodInSeconds = 1;
+			alterEgo.Timer = 1; //the alarm pads' ring, every second
 		}
 
 		/// <summary>strelec: throwers get rocks, archers a bow.</summary>
@@ -398,7 +359,7 @@ namespace SteamEngine.CompiledScripts {
 			SwapBack(self, Possession(self), hitsDivisor, egoDied);
 		}
 
-		internal static void SwapBack(Player self, PossessionTimer state, int hitsDivisor, bool egoDied) {
+		internal static void SwapBack(Player self, PossessionPlugin state, int hitsDivisor, bool egoDied) {
 			if (state == null) {
 				self.SysMessage("Neznama chyba. Pokud ziskas pocit, ze je tvoje postava nejak pokazena, kontaktuj GM");
 				return;
@@ -541,7 +502,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static string RefusesPickup(Character ch, Item item) {
-			PossessionTimer state = Possession(ch);
+			PossessionPlugin state = Possession(ch);
 			if ((state == null) || (item.TopObj() == ch)) {
 				return null;
 			}
@@ -564,12 +525,6 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>e_allplayers' @Logout.</summary>
-		internal static void OnLogout(Player self) {
-			if (IsPossessing(self)) {
-				SwapBack(self, 0, false);
-			}
-		}
 	}
 
 	public class Targ_Hypnosis : CompiledTargetDef {
@@ -586,54 +541,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
 			self.RedMessage("Tady nic k hypnotizovani neni!");
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_hypno_delka, and everything needed to bring the mystic back.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class PossessionTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_hypnoPossession_");
-
-		[SaveableData, CopyableData]
-		public NPC monster, ego;
-
-		[SaveableData, CopyableData]
-		public Container layersBox, packBox;
-
-		[SaveableData, CopyableData]
-		public string name, title, skills;
-
-		[SaveableData, CopyableData]
-		public int model, color, str, dex, intel, vit, hits, stam, mana, x, y, z, m, gained;
-
-		[SaveableData, CopyableData]
-		public bool monsterInvulnerable;
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public PossessionTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Player self) {
-				self.SysMessage("Spojeni s monstrem te jiz prilis vycerpalo");
-				MysticHypnosis.SwapBack(self, this, 0, false);
-			}
-		}
-	}
-
-	/// <summary>The alarm pads' ring, looked at every second.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class AlarmTimer : BoundTimer {
-		internal static readonly TimerKey Key = TimerKey.Acquire("_hypnoAlarm_");
-
-		[DeepCopyImplementation, LoadingInitializer]
-		public AlarmTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is NPC ego) {
-				MysticHypnosis.Alarm(ego);
-			}
 		}
 	}
 }
