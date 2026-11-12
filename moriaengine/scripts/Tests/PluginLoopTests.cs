@@ -7,7 +7,8 @@ namespace SteamEngine.CompiledScripts {
 	/// side: Tests/Protocol/CancellableTriggerTests.cs.</summary>
 	public static class PluginLoopTests {
 		private static readonly TriggerKey tkLoopTest = TriggerKey.Acquire("loopTest");
-		private static readonly PluginKey firstKey = PluginKey.Acquire("_loopTestFirst_"), secondKey = PluginKey.Acquire("_loopTestSecond_");
+		private static readonly PluginKey firstKey = PluginKey.Acquire("_loopTestFirst_"), secondKey = PluginKey.Acquire("_loopTestSecond_"),
+			thirdKey = PluginKey.Acquire("_loopTestThird_");
 
 		private static void Check(string name, bool ok) {
 			Console.WriteLine("CANCELLABLE_CHECK: " + name + "=" + ok);
@@ -39,6 +40,35 @@ namespace SteamEngine.CompiledScripts {
 				Fire(holder, way);
 				Check("otherRemoved" + way, (front.heard == 1) && (back.heard == 0) && (holder.GetPlugin(firstKey) == null));
 				holder.DeletePlugin(secondKey);
+
+				//#1468 - one removing itself and the plugin right after it: the oldest still hears it
+				holder = WithTwo(self, out LoopTestPlugin middle, out back);
+				front = (LoopTestPlugin) LoopTestPluginDef.instance.Create();
+				holder.AddPlugin(thirdKey, front);
+				front.removeSelf = true;
+				front.removeOther = middle;
+				Fire(holder, way);
+				Check("selfAndNextRemoved" + way, (front.heard == 1) && (middle.heard == 0) && (back.heard == 1) &&
+					(holder.GetPlugin(thirdKey) == null) && (holder.GetPlugin(secondKey) == null));
+				holder.DeletePlugin(firstKey);
+
+				//#1468 - a removed plugin keeps its old next: both removed and added again in the other order, the list must be
+				//the two, once each (with the old next kept, newer -> older -> newer would be a cycle and a trigger would hang)
+				NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);
+				int own = System.Linq.Enumerable.Count(rabbit.GetNonSimplePlugins());
+				LoopTestPlugin older = (LoopTestPlugin) LoopTestPluginDef.instance.Create(), newer = (LoopTestPlugin) LoopTestPluginDef.instance.Create();
+				rabbit.AddPlugin(firstKey, older);
+				rabbit.AddPlugin(secondKey, newer);
+				rabbit.RemovePlugin(newer);
+				rabbit.RemovePlugin(older);
+				rabbit.AddPlugin(secondKey, newer);
+				rabbit.AddPlugin(firstKey, older);
+				int listed = System.Linq.Enumerable.Count(System.Linq.Enumerable.Take(rabbit.GetNonSimplePlugins(), own + 10));
+				if (listed == own + 2) { //only fire on a sane list: a cycle would hang the server
+					Fire(rabbit, way);
+				}
+				Check("readdedForgetsItsOldNext" + way, (listed == own + 2) && (newer.heard == 1) && (older.heard == 1));
+				rabbit.Delete();
 			}
 
 			//now every effect plugin hears a death: a timed effect ends, a talent's lasting one stays
@@ -222,11 +252,12 @@ namespace SteamEngine.CompiledScripts {
 
 		public void On_LoopTest() {
 			this.heard++;
+			PluginHolder holder = this.Cont; //#1468 - read before a self-removal clears it
 			if (this.removeSelf) {
 				this.Delete();
 			}
-			if (this.removeOther != null) {
-				this.Cont.RemovePlugin(this.removeOther); //removed, not deleted: a deleted plugin wouldn't run anyway
+			if ((this.removeOther != null) && (holder != null)) {
+				holder.RemovePlugin(this.removeOther); //removed, not deleted: a deleted plugin wouldn't run anyway
 			}
 		}
 	}

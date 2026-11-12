@@ -50,7 +50,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Odchazejici")) {
 				this.Run(game, ".TestPluginLoop", "CANCELLABLE_LOOP_DONE");
 				foreach (string way in new[] { "Trigger", "TryTrigger", "CancellableTrigger", "TryCancellableTrigger" }) {
-					this.AssertChecks("selfRemoved" + way, "otherRemoved" + way);
+					this.AssertChecks("selfRemoved" + way, "otherRemoved" + way, "selfAndNextRemoved" + way, "readdedForgetsItsOldNext" + way); //#1468
 				}
 				this.AssertChecks("talentOutlivesDeath", "effectEndsAtDeath");
 			}
