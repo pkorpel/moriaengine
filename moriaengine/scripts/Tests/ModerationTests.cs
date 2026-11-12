@@ -111,6 +111,58 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static double? altLogoutDelayBefore;
+
+		/// <summary>#1481 - the other character's home is where it stands now. No logout delay until TestCampAltDone, so each
+		/// login of the test is a character that had really left the world.</summary>
+		[SteamFunction]
+		public static void TestCampAltHome(Character self) {
+			altLogoutDelayBefore = altLogoutDelayBefore ?? LogoutSettings.instance.logoutDelaySeconds;
+			LogoutSettings.instance.logoutDelaySeconds = 0;
+			((Player) self).Home = self.P();
+			Console.WriteLine("CAMP_ALT_HOME: " + self.P());
+		}
+
+		/// <summary>#1481 - the convict of the alt test's account.</summary>
+		[SteamFunction]
+		public static void TestCampAltSend(Character self) {
+			Camp.SetLevel(self.Account, false, 0);
+			Camp.Send(self, false);
+			Console.WriteLine("CAMP_ALT_SENT: inCamp=" + Camp.IsInCamp(self) + " convict=" + Camp.IsConvict(self));
+		}
+
+		/// <summary>#1481 - where the account's other character landed at its login.</summary>
+		[SteamFunction]
+		public static void TestCampAltReport(Character self) {
+			Console.WriteLine("CAMP_ALT: inJail=" + Near(self, Jail.JailPoint) + " home=" + Near(self, ((Player) self).Home) +
+				" waits=" + Camp.WaitsInJail(self) + " convict=" + Camp.IsConvict(self) + " |");
+		}
+
+		/// <summary>#1481 - the account's convict released (offline), the levels back to 0.</summary>
+		[SteamFunction]
+		public static void TestCampAltRelease(Character self) {
+			foreach (AbstractCharacter ch in self.Account.Characters) {
+				if ((ch is Character convict) && Camp.IsConvict(convict)) {
+					Camp.Release(convict);
+				}
+			}
+			Camp.SetLevel(self.Account, false, 0);
+			Console.WriteLine("CAMP_ALT_RELEASED: inCamp=" + Camp.IsInCamp(self));
+		}
+
+		[SteamFunction]
+		public static void TestCampAltDone(Character self) {
+			if (altLogoutDelayBefore is double delay) {
+				LogoutSettings.instance.logoutDelaySeconds = delay;
+				altLogoutDelayBefore = null;
+			}
+			Console.WriteLine("CAMP_ALT_DONE: logoutDelay=" + LogoutSettings.instance.logoutDelaySeconds);
+		}
+
+		private static bool Near(Character ch, Point4D point) {
+			return (point != null) && (ch.M == point.M) && (Point2D.GetSimpleDistance(ch, point) <= 1);
+		}
+
 		/// <summary>Past level 7: a recidivist with Lumberjacking 0, nothing to earn.</summary>
 		[SteamFunction]
 		public static void TestCampRecidivist(Character self) {
