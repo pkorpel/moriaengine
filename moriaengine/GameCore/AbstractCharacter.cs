@@ -133,6 +133,15 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1487 - logged out while its account's client is on, playing another character or choosing one. It isn't
+		/// IsLingering then (GameState is the account's), but it's in the world only for its logout delay all the same.</summary>
+		public bool IsLeftByItsAccount {
+			get {
+				GameState state = this.GameState;
+				return this.IsPlayer && !this.Flag_Disconnected && (state != null) && (state.Character != this);
+			}
+		}
+
 		public AbstractAccount Account {
 			get {
 				return this.account;
@@ -379,7 +388,7 @@ namespace SteamEngine {
 		*/
 		public void LogoutFully() {
 			if (this.IsPlayer) {
-				if (this.IsLingering) {
+				if (this.IsLingering || this.IsLeftByItsAccount) { //#1487 - not the account's other character's connection
 					this.SetFlag_Disconnected(true);
 				} else if (!this.Flag_Disconnected) {
 					this.GameState.Conn.Close("LogoutFully called.");
@@ -399,7 +408,7 @@ namespace SteamEngine {
 		*/
 		public void Disconnect() {
 			if (this.IsPlayer) {
-				if (this.IsLingering) {
+				if (this.IsLingering || this.IsLeftByItsAccount) { //#1487 - not the account's other character's connection
 					this.SetFlag_Disconnected(true);
 				} else if (!this.Flag_Disconnected) {
 					this.GameState.Conn.Close("Disconnect called.");

@@ -398,9 +398,10 @@ namespace SteamEngine.CompiledScripts {
 		/// connection's own close sequence hasn't nulled it out yet at this point), so
 		/// IsLingering is still false and Disconnect() would take its "still connected" branch
 		/// and call Conn.Close() a second time, re-entering the very close handler that's
-		/// already running this trigger. CharLingeringTimer.OnTimeout's own IsLingering check
-		/// only sees the correct, already-lingering state because it runs on a LATER tick, once
-		/// that transition has actually completed.</summary>
+		/// already running this trigger. CharLingeringTimer.OnTimeout's own check (IsLingering, or
+		/// #1487 IsLeftByItsAccount once the account plays another character) only sees the
+		/// correct, already-logged-out state because it runs on a LATER tick, once that transition
+		/// has actually completed.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
 			//TODO: In safe/nonsafe areas, settings, etc.
@@ -542,7 +543,7 @@ namespace SteamEngine.CompiledScripts {
 				Logger.WriteDebug("CharLingeringTimer OnTimeout on " + cont);
 				Character self = cont as Character;
 				if (self != null) {
-					if (self.IsLingering) {
+					if (self.IsLingering || self.IsLeftByItsAccount) { //#1487 - also when its account went on with another character
 						self.Disconnect();
 					}
 				}
