@@ -16,13 +16,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey levelTK = TagKey.Acquire("_campLevel_");
 		private static readonly TagKey afkLevelTK = TagKey.Acquire("_campAfkLevel_");
 		private static readonly TagKey inCampTK = TagKey.Acquire("_inCamp_");
-		//on the character: trestanec, lagrlogu, lagrskill, lagrkills, lagrname, lumberpits
-		private static readonly TagKey convictTK = TagKey.Acquire("_convict_");
-		private static readonly TagKey sentenceTK = TagKey.Acquire("_campSentence_");
-		private static readonly TagKey sentenceSkillTK = TagKey.Acquire("_campSentenceSkill_");
-		private static readonly TagKey keptKillsTK = TagKey.Acquire("_campKills_");
-		private static readonly TagKey keptNameTK = TagKey.Acquire("_campName_");
-		private static readonly TagKey keptLumberTK = TagKey.Acquire("_campLumber_");
+		//#1480 - on the character, trestanec and the tags beside it: ConvictPlugin
 
 		internal const string Area = "a_Lagr";
 		private const int LandingMinX = 356, LandingMaxX = 505, LandingMinY = 1177, LandingMaxY = 1270, LandingZ = 0;
@@ -56,33 +50,40 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsConvict(Character ch) {
-			return ch.HasTag(convictTK);
+			return ConvictPlugin.Of(ch) != null;
 		}
 
-		/// <summary>lagrlogu: hundredths of a release coin still owed.</summary>
+		/// <summary>lagrlogu: hundredths of a release coin still owed. A character who isn't a convict owes nothing, and
+		/// the setters leave it alone.</summary>
 		public static int Sentence(Character ch) {
-			return Convert.ToInt32(ch.GetTag(sentenceTK) ?? 0, CultureInfo.InvariantCulture);
+			return ConvictPlugin.Of(ch)?.sentence ?? 0;
 		}
 
 		internal static void SetSentence(Character ch, int hundredths) {
-			ch.SetTag(sentenceTK, hundredths);
+			if (ConvictPlugin.Of(ch) is ConvictPlugin convict) {
+				convict.sentence = hundredths;
+			}
 		}
 
 		/// <summary>lumberpits: the Lumberjacking a convict gets back.</summary>
 		internal static int KeptLumberjacking(Character ch) {
-			return Convert.ToInt32(ch.GetTag(keptLumberTK) ?? 0, CultureInfo.InvariantCulture);
+			return ConvictPlugin.Of(ch)?.keptLumber ?? 0;
 		}
 
 		internal static void SetKeptLumberjacking(Character ch, int value) {
-			ch.SetTag(keptLumberTK, value);
+			if (ConvictPlugin.Of(ch) is ConvictPlugin convict) {
+				convict.keptLumber = value;
+			}
 		}
 
 		internal static int SentenceSkill(Character ch) {
-			return Convert.ToInt32(ch.GetTag(sentenceSkillTK) ?? 0, CultureInfo.InvariantCulture);
+			return ConvictPlugin.Of(ch)?.sentenceSkill ?? 0;
 		}
 
 		internal static void SetSentenceSkill(Character ch, int skill) {
-			ch.SetTag(sentenceSkillTK, skill);
+			if (ConvictPlugin.Of(ch) is ConvictPlugin convict) {
+				convict.sentenceSkill = skill;
+			}
 		}
 
 		/// <summary>The converted tables (trest_N, lumber_N, afk_trest_N, afk_lumber_N, trestu, afk_trestu).</summary>
@@ -111,9 +112,10 @@ namespace SteamEngine.CompiledScripts {
 			CampLoc texts = Loc<CampLoc>.Get(who.Language);
 			if (!IsConvict(who)) {
 				account.SetTag(inCampTK, true);
-				who.SetTag(keptNameTK, who.Name);
-				who.SetTag(keptKillsTK, Notoriety.GetMurderCount(who));
-				who.SetTag(convictTK, true);
+				ConvictPlugin convict = (ConvictPlugin) ConvictPluginDef.instance.Create();
+				convict.keptName = who.Name;
+				convict.keptKills = Notoriety.GetMurderCount(who);
+				who.AddPlugin(ConvictPlugin.Key, convict);
 				Notoriety.SetMurderCount(who, 0);
 				who.Karma = 0;
 				who.Name = texts.ConvictPrefix + " " + who.Name;
@@ -127,7 +129,7 @@ namespace SteamEngine.CompiledScripts {
 			int level = Level(account, afk) + 1;
 			SetLevel(account, afk, level);
 			who.Go(Globals.dice.Next(LandingMinX, LandingMaxX + 1), Globals.dice.Next(LandingMinY, LandingMaxY + 1), LandingZ, LandingPlane);
-			who.SetTag(keptLumberTK, who.GetSkill(SkillName.Lumberjacking));
+			SetKeptLumberjacking(who, who.GetSkill(SkillName.Lumberjacking));
 			string prefix = afk ? "afk_" : "";
 			if (level <= Levels(afk)) {
 				who.SetRealSkillValue((int) SkillName.Lumberjacking, Table(prefix + "lumber_" + level));
@@ -224,17 +226,13 @@ namespace SteamEngine.CompiledScripts {
 			if (who.Account != null) {
 				who.Account.RemoveTag(inCampTK);
 			}
-			if (who.HasTag(keptKillsTK)) {
-				Notoriety.SetMurderCount(who, Convert.ToInt32(who.GetTag(keptKillsTK), CultureInfo.InvariantCulture));
-			}
-			if (who.GetTag(keptNameTK) is string name) {
-				who.Name = name;
-			}
-			if (who.HasTag(keptLumberTK)) {
-				who.SetRealSkillValue((int) SkillName.Lumberjacking, Convert.ToInt32(who.GetTag(keptLumberTK), CultureInfo.InvariantCulture));
-			}
-			foreach (TagKey key in new[] { convictTK, sentenceTK, sentenceSkillTK, keptKillsTK, keptNameTK, keptLumberTK }) {
-				who.RemoveTag(key);
+			if (ConvictPlugin.Of(who) is ConvictPlugin convict) {
+				Notoriety.SetMurderCount(who, convict.keptKills);
+				if (convict.keptName != null) {
+					who.Name = convict.keptName;
+				}
+				who.SetRealSkillValue((int) SkillName.Lumberjacking, convict.keptLumber);
+				convict.Delete();
 			}
 			Consume(who, "i_gold_lagr", int.MaxValue);
 			Jail.Forgive(who, null);
@@ -333,24 +331,6 @@ namespace SteamEngine.CompiledScripts {
 		internal static bool IsInCampArea(Character ch) {
 			FlaggedRegion area = RegionEventSystem.AreaOf(ch.Region);
 			return (area != null) && StringComparer.OrdinalIgnoreCase.Equals(area.Defname, Area);
-		}
-
-		/// <summary>fixresource's convict part, each successful chop: too much to carry ends it with a log taken, and one
-		/// chop in a hundred brings a peasant to nag. False when the chop is off.</summary>
-		internal static bool AllowsChop(Character self) {
-			if (!IsConvict(self)) {
-				return true;
-			}
-			float carried = MovementStamina.CarriedWeight(self);
-			if ((carried > 4 * self.Str) || (carried > 250)) { //Erebor's 40*str and 2500, in tenths of a stone
-				self.SysMessage(Loc<CampLoc>.Get(self.Language).CantCarryMore);
-				ConsumeOne(self, "i_log_lager");
-				return false;
-			}
-			if (Globals.dice.Next(100) == 98) {
-				CampPeasant.Come(self);
-			}
-			return true;
 		}
 
 		/// <summary>The guard, placed by .SetupWorld at the camp's point.</summary>

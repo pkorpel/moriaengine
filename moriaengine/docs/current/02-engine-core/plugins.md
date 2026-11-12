@@ -296,6 +296,10 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   invisible by magic; `Character.Trigger_VisibilityChange` adds and removes it. Its `@stepTaken` runs
   `HidingSkillDef.OnStep` (Stealth's roll, the reveal), which `Character.On_StepTaken` used to call for every step of
   every character.
+- **The labour camp's convict** (#1480): `ConvictPlugin` (`p_convict`) holds what six character tags held (Erebor's
+  `tag.trestanec` and the tags beside it), from `Camp.Send` to `Camp.Release`. Its `@skillSuccess` is the convict's chop
+  rule, which `LumberjackingSkillDef.On_Success` used to call (`Camp.AllowsChop`). The jail (account state, redirected in
+  `Character.Go`, no `@go` trigger) and the camp's no-harm rule (the area's, not a character's) stay as they are.
 
 ## Related
 

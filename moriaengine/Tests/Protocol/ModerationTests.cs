@@ -78,9 +78,9 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendTargetUid(self);
 			Thread.Sleep(500);
 			string sent = this.Ask(client, ".TestCampReport", "CAMP_REPORT:");
-			Assert.Contains("name=Trestanec Camp Tester inCamp=True inArea=True level=1 lumber=200 coinsOwed=10 swordBanked=True hatchet=1", sent);
+			Assert.Contains("name=Trestanec Camp Tester inCamp=True inArea=True level=1 lumber=200 coinsOwed=10 swordBanked=True hatchet=1 convictPlugin=True", sent);
 
-			Assert.Contains("overloadedStops=True free=True", this.Ask(client, ".TestCampLogs", "CAMP_LOGS:"));
+			Assert.Contains("overloadedStops=True miningGoesOn=True free=True", this.Ask(client, ".TestCampLogs", "CAMP_LOGS:"));
 			this.Say(client, "vymena", 3); //the third has no wood left
 			Assert.Contains("coins=2 logs=0 owed=10", this.Ask(client, ".TestCampCoins", "CAMP_COINS:"));
 			this.Say(client, "propustit", 1);
