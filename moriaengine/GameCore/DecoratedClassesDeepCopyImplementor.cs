@@ -282,10 +282,17 @@ namespace SteamEngine {
 							new CodeArgumentReferenceExpression("copiedValue"))));
 					methods.Add(method);
 
+					//#1492 - the member's value is what's copied (it used to be the whole object, so the member stayed null)
+					CodeExpression value;
+					if (isProperty) {
+						value = new CodePropertyReferenceExpression(new CodeVariableReferenceExpression("copyFromConverted"), name);
+					} else {
+						value = new CodeFieldReferenceExpression(new CodeVariableReferenceExpression("copyFromConverted"), name);
+					}
 					return new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						new CodeTypeReferenceExpression(typeof(DeepCopyFactory)),
 						"GetCopyDelayed",
-						new CodeVariableReferenceExpression("copyFromConverted"),
+						value,
 						new CodeDelegateCreateExpression(
 							new CodeTypeReference(typeof(ReturnCopyParam)),
 							new CodeThisReferenceExpression(),

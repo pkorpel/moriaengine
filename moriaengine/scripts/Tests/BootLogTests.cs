@@ -106,6 +106,34 @@ namespace SteamEngine.CompiledScripts {
 			return line;
 		}
 
+		/// <summary>#1492 - a deep copy keeps a [CopyableData] reference field (a copy of it): it used to stay null.</summary>
+		private static bool DeepCopyKeepsFields() {
+			DeepCopyFieldProbe original = new DeepCopyFieldProbe();
+			original.names = new System.Collections.Generic.List<string> { "a", "b" };
+			original.text = "kept";
+			DeepCopyFieldProbe copy;
+			try {
+				copy = (DeepCopyFieldProbe) DeepCopyFactory.GetCopy(original);
+			} catch (Exception) { //the old generator handed the member's callback the whole object
+				return false;
+			}
+			return (copy != original) && (copy.names != null) && (copy.names != original.names) && (copy.names.Count == 2) &&
+				(copy.names[1] == "b") && (copy.text == "kept");
+		}
+
+		/// <summary>#1492 - a reference member and a simple one.</summary>
+		[DeepCopyableClass]
+		public class DeepCopyFieldProbe {
+			[CopyableData]
+			public System.Collections.Generic.List<string> names;
+			[CopyableData]
+			public string text;
+
+			[DeepCopyImplementation]
+			public DeepCopyFieldProbe() {
+			}
+		}
+
 		/// <summary>#1485 - a timer that can be copied.</summary>
 		[SaveableClass, DeepCopyableClass]
 		public class CopiedTimer : BoundTimer {
@@ -184,7 +212,7 @@ namespace SteamEngine.CompiledScripts {
 
 				self.SetTag(preOrderTK, ListOrder(self));
 				Console.WriteLine("BOOT_STATES: setup sheepBefore=" + sheep.GetTag(preStatsTK) + " sheepDiscorded=" + Stats(sheep) +
-					" regenBefore=" + self.GetTag(preRegenTK) + " regenIgnited=" + self.HitsRegenSpeed + " copyKeepsOrder=" + CopyKeepsOrder(self) + " " + DupeTimers(self) +
+					" regenBefore=" + self.GetTag(preRegenTK) + " regenIgnited=" + self.HitsRegenSpeed + " copyKeepsOrder=" + CopyKeepsOrder(self) + " " + DupeTimers(self) + " deepCopyKeepsFields=" + DeepCopyKeepsFields() +
 					" pluginOrder=" + self.GetTag(preOrderTK));
 				return;
 			}
