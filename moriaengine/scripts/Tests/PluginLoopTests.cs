@@ -71,6 +71,64 @@ namespace SteamEngine.CompiledScripts {
 				rabbit.Delete();
 			}
 
+			//#1479 - deleting all of a holder's plugins while an @unAssign changes them. Moved: the first of a pair to go moves
+			//the other to another holder, which keeps it, unassigned once (it used to be removed again from its new holder and
+			//deleted). Re-added: the first re-adds the other under another key, nothing stays (the stale key used to leave the
+			//new one pointing at a deleted plugin). Added: one adds a new plugin as it goes, that goes too (it used to stay).
+			PluginKey movedKey = PluginKey.Acquire("_loopTestMoved_"), readdedKey = PluginKey.Acquire("_loopTestReadded_"),
+				addedKey = PluginKey.Acquire("_loopTestAdded_");
+			NPC hare = Hare(self), hare2 = Hare(self);
+			LoopTestPlugin one = Pair(hare, out LoopTestPlugin two);
+			bool done = false;
+			Action<LoopTestPlugin, PluginHolder> moveOther = (gone, cont) => {
+				if (!done) {
+					done = true;
+					hare2.AddPlugin(movedKey, (gone == one) ? two : one);
+				}
+			};
+			one.atUnAssign = moveOther;
+			two.atUnAssign = moveOther;
+			hare.DeletePlugins();
+			LoopTestPlugin moved = (one.Cont == hare2) ? one : two, left = (moved == one) ? two : one;
+			Check("deletePluginsLeavesAMovedOne", done && (hare2.GetPlugin(movedKey) == moved) && (moved.unassigned == 1) &&
+				(left.Cont == null) && (left.unassigned == 1) && !HasLoopTestPlugin(hare));
+			moved.atUnAssign = null; //hare2's delete at the end mustn't move the next scenario's plugins
+			left.atUnAssign = null;
+
+			NPC hareB = Hare(self);
+			one = Pair(hareB, out two);
+			done = false;
+			Action<LoopTestPlugin, PluginHolder> readdOther = (gone, cont) => {
+				if (!done) {
+					done = true;
+					LoopTestPlugin other = (gone == one) ? two : one;
+					cont.RemovePlugin(other);
+					cont.AddPlugin(readdedKey, other);
+				}
+			};
+			one.atUnAssign = readdOther;
+			two.atUnAssign = readdOther;
+			hareB.DeletePlugins();
+			Check("deletePluginsReaddedGoes", done && (hareB.GetPlugin(readdedKey) == null) && (one.Cont == null) && (two.Cont == null) &&
+				!HasLoopTestPlugin(hareB));
+
+			NPC hareC = Hare(self);
+			LoopTestPlugin adder = (LoopTestPlugin) LoopTestPluginDef.instance.Create(), added = null;
+			hareC.AddPlugin(firstKey, adder);
+			adder.atUnAssign = (gone, cont) => {
+				if (added == null) {
+					added = (LoopTestPlugin) LoopTestPluginDef.instance.Create();
+					cont.AddPlugin(addedKey, added);
+				}
+			};
+			hareC.DeletePlugins();
+			Check("deletePluginsAddedGoes", (added != null) && (hareC.GetPlugin(addedKey) == null) && (added.Cont == null) && !HasLoopTestPlugin(hareC));
+			Console.WriteLine("PLUGIN_DELETE_ALL: moved=" + (moved.Cont == hare2) + "," + moved.unassigned + " left=" + (left.Cont == null) + "," + left.unassigned +
+				" readded=" + (hareB.GetPlugin(readdedKey) != null) + " added=" + (hareC.GetPlugin(addedKey) != null));
+			foreach (NPC used in new[] { hare, hare2, hareB, hareC }) {
+				used.Delete();
+			}
+
 			//now every effect plugin hears a death: a timed effect ends, a talent's lasting one stays
 			AbilityDef talent = AbilityDef.GetByDefname("a_cunning_bonus");
 			self.SetRealAbilityPoints(talent, 1);
@@ -85,6 +143,27 @@ namespace SteamEngine.CompiledScripts {
 			self.Resurrect();
 			self.SetRealAbilityPoints(talent, 0);
 			Console.WriteLine("CANCELLABLE_LOOP_DONE");
+		}
+
+		private static NPC Hare(Character self) {
+			return (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y + 1, self.Z, self.M);
+		}
+
+		private static LoopTestPlugin Pair(PluginHolder holder, out LoopTestPlugin second) {
+			LoopTestPlugin first = (LoopTestPlugin) LoopTestPluginDef.instance.Create();
+			second = (LoopTestPlugin) LoopTestPluginDef.instance.Create();
+			holder.AddPlugin(firstKey, first);
+			holder.AddPlugin(secondKey, second);
+			return first;
+		}
+
+		private static bool HasLoopTestPlugin(PluginHolder holder) {
+			foreach (Plugin plugin in holder.GetAllPlugins()) {
+				if (plugin is LoopTestPlugin) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private static void Fire(Character holder, string way) {
@@ -240,6 +319,8 @@ namespace SteamEngine.CompiledScripts {
 		internal int heard;
 		internal bool removeSelf;
 		internal Plugin removeOther;
+		internal Action<LoopTestPlugin, PluginHolder> atUnAssign;
+		internal int unassigned;
 
 		[DeepCopyImplementation]
 		public LoopTestPlugin(LoopTestPlugin copyFrom)
@@ -248,6 +329,12 @@ namespace SteamEngine.CompiledScripts {
 
 		[LoadingInitializer]
 		public LoopTestPlugin() {
+		}
+
+		/// <summary>#1479 - may change its former holder's plugins as it goes.</summary>
+		public void On_UnAssign(PluginHolder formerCont) {
+			this.unassigned++;
+			this.atUnAssign?.Invoke(this, formerCont);
 		}
 
 		public void On_LoopTest() {

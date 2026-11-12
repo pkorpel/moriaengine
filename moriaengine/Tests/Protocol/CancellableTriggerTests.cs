@@ -52,7 +52,7 @@ namespace SteamEngine.Tests.Protocol {
 				foreach (string way in new[] { "Trigger", "TryTrigger", "CancellableTrigger", "TryCancellableTrigger" }) {
 					this.AssertChecks("selfRemoved" + way, "otherRemoved" + way, "selfAndNextRemoved" + way, "readdedForgetsItsOldNext" + way); //#1468
 				}
-				this.AssertChecks("talentOutlivesDeath", "effectEndsAtDeath");
+				this.AssertChecks("talentOutlivesDeath", "effectEndsAtDeath", "deletePluginsLeavesAMovedOne", "deletePluginsReaddedGoes", "deletePluginsAddedGoes"); //#1479
 			}
 		}
 
