@@ -1,4 +1,6 @@
 using System;
+using SteamEngine.Timers;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#937 - what a clean boot must not have cost: defs that shared a model number or were a dupe with a
@@ -56,6 +58,80 @@ namespace SteamEngine.CompiledScripts {
 			return same;
 		}
 
+		/// <summary>#1485 - an NPC's dupe is a new NPC of its def beside it, as Sphere's (a deep copy failed on its AI
+		/// timer): it thinks with its own AI, and has none of the original's state (frozen, timers, the spawn gem's link).
+		/// An item's dupe copies no timers either, as Sphere's, so one that can't be copied no longer fails it.</summary>
+		private static string DupeTimers(Character self) {
+			NPC original = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + 2, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(original, 600);
+			original.AddTimer(UncopiedTimer.Key, new UncopiedTimer()).DueInSeconds = 600;
+			original.AddTimer(CopiedTimer.Key, new CopiedTimer()).DueInSeconds = 600;
+			Item gem = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+			original.SetTag(TagKey.Acquire("spawnGem"), gem);
+			original.AddTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char"));
+			string line;
+			NPC copy = null;
+			bool itemDupe = false;
+			try {
+				copy = (NPC) original.Dupe();
+				NPCAiTimer ai = NPCAiTimer.GetFor(copy);
+				line = "npcDupe=" + ((copy != original) && (copy.Def == original.Def) && (Point2D.GetSimpleDistance(copy, original) <= 1) && (copy.M == original.M)) +
+					" npcCopyThinks=" + ((ai != null) && (ai != NPCAiTimer.GetFor(original)) && !ai.IsPaused) +
+					" npcCopyFresh=" + (!NPCAiTimer.IsFrozen(copy) && NPCAiTimer.IsFrozen(original)) +
+					" timersStayBehind=" + (!copy.HasTimer(UncopiedTimer.Key) && !copy.HasTimer(CopiedTimer.Key) && original.HasTimer(CopiedTimer.Key)) +
+					" spawnLinkDropped=" + (!copy.HasTag(TagKey.Acquire("spawnGem")) && !copy.HasTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char")) &&
+						original.HasTag(TagKey.Acquire("spawnGem")));
+			} catch (Exception e) {
+				line = "npcDupe=False(" + e.GetType().Name + ")";
+			} finally {
+				if (copy != null) {
+					copy.Delete();
+				}
+			}
+			Item withUncopied = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+			withUncopied.AddTimer(UncopiedTimer.Key, new UncopiedTimer()).DueInSeconds = 600;
+			try {
+				Item itemCopy = (Item) withUncopied.Dupe();
+				itemDupe = !itemCopy.HasTimer(UncopiedTimer.Key);
+				itemCopy.Delete();
+			} catch (SEException) {
+				itemDupe = false;
+			}
+			withUncopied.Delete();
+			line += " itemDupeWithUncopiedTimer=" + itemDupe;
+			original.RemoveTag(TagKey.Acquire("spawnGem")); //before the delete: the gem's count isn't this test's
+			original.RemoveTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char"));
+			original.Delete();
+			gem.Delete();
+			return line;
+		}
+
+		/// <summary>#1485 - a timer that can be copied.</summary>
+		[SaveableClass, DeepCopyableClass]
+		public class CopiedTimer : BoundTimer {
+			internal static readonly TimerKey Key = TimerKey.Acquire("_bootCopied_");
+
+			[LoadingInitializer, DeepCopyImplementation]
+			public CopiedTimer() {
+			}
+
+			protected override void OnTimeout(TagHolder cont) {
+			}
+		}
+
+		/// <summary>#1485 - a timer with no copy implementation.</summary>
+		[SaveableClass]
+		public class UncopiedTimer : BoundTimer {
+			internal static readonly TimerKey Key = TimerKey.Acquire("_bootUncopied_");
+
+			[LoadingInitializer]
+			public UncopiedTimer() {
+			}
+
+			protected override void OnTimeout(TagHolder cont) {
+			}
+		}
+
 		private static string Stats(Character ch) {
 			return ch.Str + "," + ch.Dex + "," + ch.Int + "," + ch.MaxHits + "," + ch.MaxMana + "," + ch.MaxStam;
 		}
@@ -108,7 +184,7 @@ namespace SteamEngine.CompiledScripts {
 
 				self.SetTag(preOrderTK, ListOrder(self));
 				Console.WriteLine("BOOT_STATES: setup sheepBefore=" + sheep.GetTag(preStatsTK) + " sheepDiscorded=" + Stats(sheep) +
-					" regenBefore=" + self.GetTag(preRegenTK) + " regenIgnited=" + self.HitsRegenSpeed + " copyKeepsOrder=" + CopyKeepsOrder(self) +
+					" regenBefore=" + self.GetTag(preRegenTK) + " regenIgnited=" + self.HitsRegenSpeed + " copyKeepsOrder=" + CopyKeepsOrder(self) + " " + DupeTimers(self) +
 					" pluginOrder=" + self.GetTag(preOrderTK));
 				return;
 			}

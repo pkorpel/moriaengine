@@ -60,22 +60,16 @@ namespace SteamEngine {
 					TagKey tagK = entry.Key as TagKey;
 					if (tagK != null) {
 						DeepCopyFactory.GetCopyDelayed(entry.Value, this.DelayedGetCopy_Tag, tagK);
-					} else {
-						TimerKey timerK = entry.Key as TimerKey;
-						if (timerK != null) {
-							DeepCopyFactory.GetCopyDelayed(entry.Value, this.DelayedGetCopy_Timer);
-						}
 					}
+					//#1485 - timers aren't copied, as Sphere's dupe copies no TIMER (CreateDupeItem/DupeCopy). A copied one was
+					//never put on the copy anyway, and one that couldn't be copied (an NPC's AI) failed the whole dupe. A Thing
+					//that needs one on its copy gives it in On_Dupe; a copied plugin gets none (#1493).
 				}
 			}
 		}
 
 		private void DelayedGetCopy_Tag(object copy, object paramTagKey) {
 			this.SetTag((TagKey) paramTagKey, copy);
-		}
-
-		private void DelayedGetCopy_Timer(object copy) {
-			//it should enqueue itself
 		}
 
 		#endregion DeepCopy implementation

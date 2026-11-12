@@ -30,7 +30,8 @@ namespace SteamEngine {
 			original.InvalidateAosToolTips();
 		}
 
-		public Thing Dupe() {
+		/// <summary>A copy of this thing beside it. #1485 - virtual: an NPC is made afresh from its def (Sphere's NPC DUPE).</summary>
+		public virtual Thing Dupe() {
 			if (this.IsPlayer) {
 				throw new SEException("You can not dupe a PC!");
 			}
