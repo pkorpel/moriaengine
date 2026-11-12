@@ -95,22 +95,41 @@ namespace SteamEngine {
 				}
 
 				//now set nondelayed ones. If all works well, they shouldn't be copied twice
+				//#1483 - each by its place in the original's list, so the copy runs them in the same order
 				Plugin curPlugin = copyFrom.firstPlugin;
+				int order = 0;
 				while (curPlugin != null) {
-					DeepCopyFactory.GetCopyDelayed(curPlugin, this.DelayedGetCopy_SetPluginAsNonSimple);
+					DeepCopyFactory.GetCopyDelayed(curPlugin, this.DelayedGetCopy_SetPluginAsNonSimple, order++);
 					curPlugin = curPlugin.nextInList;
 				}
 			}
 		}
 
-		private void DelayedGetCopy_SetPluginAsNonSimple(object resolvedObject) {
-			Plugin plugin = (Plugin) resolvedObject;
-			plugin.prevInList = null; //#1468 - both links, always, as AddPlugin
-			plugin.nextInList = this.firstPlugin;
-			if (this.firstPlugin != null) {
-				this.firstPlugin.prevInList = plugin;
+		private void DelayedGetCopy_SetPluginAsNonSimple(object resolvedObject, object order) {
+			this.InsertByListOrder((Plugin) resolvedObject, (int) order);
+		}
+
+		/// <summary>#1483 - a loaded or copied plugin goes where it stood in the list it came from, whatever order the
+		/// references resolve in: after those that stood before it (and those added live meanwhile), before the rest.
+		/// Both links are set, always, as AddPlugin (#1468).</summary>
+		private void InsertByListOrder(Plugin plugin, int order) {
+			plugin.listOrder = order;
+			Plugin before = null;
+			Plugin after = this.firstPlugin;
+			while ((after != null) && (after.listOrder <= order)) {
+				before = after;
+				after = after.nextInList;
 			}
-			this.firstPlugin = plugin;
+			plugin.prevInList = before;
+			plugin.nextInList = after;
+			if (before == null) {
+				this.firstPlugin = plugin;
+			} else {
+				before.nextInList = plugin;
+			}
+			if (after != null) {
+				after.prevInList = plugin;
+			}
 		}
 
 		private void DelayedGetCopy_Plugin(object resolvedObject, object pluginKey) {
@@ -356,16 +375,26 @@ namespace SteamEngine {
 				curNode = curNode.nextNode;
 			}
 			if (this.tags != null) {
+				//#1483 - the list's plugins in list order (head first): a load puts each back by its line, so they run
+				//in the same order after a restart. The tags Hashtable's order is its hashes'.
+				Plugin listed = this.firstPlugin;
+				int steps = 0;
+				while (listed != null) {
+					if (++steps > this.tags.Count) { //a list can't be longer than the tags holding it: a cycle, don't hang the save
+						Common.Logger.WriteError("The plugin list of " + this + " loops; the rest of it isn't saved.");
+						break;
+					}
+					if (!listed.IsDeleted) {
+						output.WriteValue("@@" + this.tags[listed], listed);
+					}
+					listed = listed.nextInList;
+				}
 				foreach (DictionaryEntry entry in this.tags) {
 					object key = entry.Key;
 					if (key is PluginKey) {
 						Plugin value = (Plugin) entry.Value;
-						if (!value.IsDeleted) {
-							if ((value == this.firstPlugin) || (value.prevInList != null) || (value.nextInList != null)) {
-								output.WriteValue("@@" + key, value);
-							} else {
-								output.WriteValue("@@" + key + "*", value);
-							}
+						if (!value.IsDeleted && (value != this.firstPlugin) && (value.prevInList == null) && (value.nextInList == null)) {
+							output.WriteValue("@@" + key + "*", value);
 						}
 					}
 				}
@@ -414,12 +443,7 @@ namespace SteamEngine {
 		private void DelayedLoad_Plugin(object resolvedObject, string filename, int line, object pluginKey) {
 			Plugin plugin = (Plugin) resolvedObject;
 			this.AddPluginImpl((PluginKey) pluginKey, plugin);
-			plugin.prevInList = null; //#1468 - both links, always, as AddPlugin
-			plugin.nextInList = this.firstPlugin;
-			if (this.firstPlugin != null) {
-				this.firstPlugin.prevInList = plugin;
-			}
-			this.firstPlugin = plugin;
+			this.InsertByListOrder(plugin, line); //#1483 - the lines are in list order (Save)
 		}
 
 		private void DelayedLoad_SimplePlugin(object resolvedObject, string filename, int line, object pluginKey) {
@@ -441,6 +465,7 @@ namespace SteamEngine {
 		#region IPluginHolder Members
 		public Plugin AddPlugin(PluginKey pk, Plugin plugin) {
 			this.AddPluginImpl(pk, plugin);
+			plugin.listOrder = int.MinValue; //#1483 - added live: the newest, ahead of any still being loaded or copied
 			plugin.prevInList = null; //#1468 - a plugin removed before keeps its old next: set both
 			plugin.nextInList = this.firstPlugin;
 			if (this.firstPlugin != null) {
