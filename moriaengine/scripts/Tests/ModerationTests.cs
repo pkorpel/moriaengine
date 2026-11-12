@@ -58,24 +58,33 @@ namespace SteamEngine.CompiledScripts {
 			bool inArea = Camp.IsInCampArea(self) && (self.M == 1);
 			Console.WriteLine("CAMP_REPORT: name=" + self.Name + " inCamp=" + Camp.IsInCamp(self) + " inArea=" + inArea +
 				" level=" + Camp.Level(self.Account, false) + " lumber=" + self.GetSkill(SkillName.Lumberjacking) + " coinsOwed=" + (Camp.Sentence(self) / Camp.CoinValue) +
-				" swordBanked=" + (kept.TopObj() == self && kept.Cont == self.Bank) + " hatchet=" + (Camp.Count(self, "i_hatchet") + ((self.FindLayer(LayerNames.Hand1) ?? self.FindLayer(LayerNames.Hand2)) is Item hand && hand.Def == ThingDef.GetByDefname("i_hatchet") ? 1 : 0)));
+				" swordBanked=" + (kept.TopObj() == self && kept.Cont == self.Bank) + " hatchet=" + (Camp.Count(self, "i_hatchet") + ((self.FindLayer(LayerNames.Hand1) ?? self.FindLayer(LayerNames.Hand2)) is Item hand && hand.Def == ThingDef.GetByDefname("i_hatchet") ? 1 : 0)) +
+				" convictPlugin=" + (ConvictPlugin.Of(self) != null));
 			guard = (NPC) ThingDef.GetByDefname("c_h_strazce_lagru").Create(self.X + 1, self.Y, self.Z, self.M);
 			guard.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
 		}
 
-		/// <summary>Too much to carry stops a chop and takes a log (Erebor's 250 stones; a camp log is 1, nastaveni_cm_weight_i_log_lager=10);
-		/// then 200 camp logs, enough for two exchanges.</summary>
+		/// <summary>Too much to carry stops a chop and takes a log (Erebor's 250 stones; a camp log is 1, nastaveni_cm_weight_i_log_lager=10):
+		/// #1480 - the convict's own @skillSuccess (ConvictPlugin), raised here as a chop's success raises it; another skill's
+		/// success goes on. Then 200 camp logs, enough for two exchanges.</summary>
 		[SteamFunction]
 		public static void TestCampLogs(Character self) {
+			PlayerHunger.SetFood(self, PlayerHunger.MaxFood); //hunger answers @skillSuccess too
 			self.Str = 100;
 			Item heavy = (Item) ThingDef.GetByDefname("i_ingot_iron").Create(self.Backpack);
 			heavy.Amount = 5000;
 			ThingDef.GetByDefname("i_log_lager").Create(self.Backpack);
-			bool overloadedStops = !Camp.AllowsChop(self) && (Camp.Count(self, "i_log_lager") == 0);
+			bool overloadedStops = (SuccessOf(self, SkillName.Lumberjacking) == TriggerResult.Cancel) && (Camp.Count(self, "i_log_lager") == 0);
+			bool miningGoesOn = SuccessOf(self, SkillName.Mining) != TriggerResult.Cancel;
 			heavy.Delete();
+			bool free = SuccessOf(self, SkillName.Lumberjacking) != TriggerResult.Cancel;
 			Item logs = (Item) ThingDef.GetByDefname("i_log_lager").Create(self.Backpack);
 			logs.Amount = 200;
-			Console.WriteLine("CAMP_LOGS: overloadedStops=" + overloadedStops + " free=" + Camp.AllowsChop(self));
+			Console.WriteLine("CAMP_LOGS: overloadedStops=" + overloadedStops + " miningGoesOn=" + miningGoesOn + " free=" + free);
+		}
+
+		private static TriggerResult SuccessOf(Character self, SkillName skill) {
+			return self.TryCancellableTrigger(SkillDef.tkSkillSuccess, SkillSequenceArgs.Acquire(self, skill).scriptArgs);
 		}
 
 		/// <summary>The rest of the coins, as if chopped and exchanged.</summary>

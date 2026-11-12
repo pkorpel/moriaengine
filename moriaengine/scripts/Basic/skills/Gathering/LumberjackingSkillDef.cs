@@ -91,10 +91,6 @@ namespace SteamEngine.CompiledScripts {
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			IPoint3D targetted = skillSeqArgs.Target1;
-			if (!Camp.AllowsChop(self)) {
-				return; //#1107 - fixresource's convict part
-			}
-
 			//#422 - real per-tile wood-tier vein system (lazy per-tile veins, weighted roll on
 			//an untouched vein, skill-gated downgrade to copper, depletion/regen). Replaces the
 			//old hardcoded i_log_lager placeholder, which was never the real default to begin
