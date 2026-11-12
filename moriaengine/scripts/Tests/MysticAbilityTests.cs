@@ -213,15 +213,23 @@ namespace SteamEngine.CompiledScripts {
 
 			player.Hits = 180;
 			MysticHypnosis.Swap(player, body);
-			PossessionTimer state = MysticHypnosis.Possession(player);
+			PossessionPlugin state = MysticHypnosis.Possession(player); //#1467 - i_hypno_delka
 			NPC ego = (state == null) ? null : state.ego;
+			AlterEgoPlugin alterEgo = AlterEgoPlugin.Of(ego);
+			Report("thePossessionIsAPlugin", (state != null) && (state.monster == body) && (state.Timer > 0));
+			Report("theEgoIsAPlugin", (alterEgo != null) && (alterEgo.mystic == player) && (alterEgo.Timer > 0));
 			Report("theMysticIsTheMonster", (state != null) && (player.Model == body.Model) && (player.X == bodyX) && (player.Name == body.Name));
 			Report("theMonsterWaitsAway", body.M == MysticHypnosis.ParkedPlane);
 			Report("anAlterEgoStandsInPlace", (ego != null) && (ego.X == x) && (ego.Y == y) && (ego.Name == name) && (ego.Model == model));
 			Report("theGearWaitsInTheBank", shirt.TopObj() == player && (shirt.Cont is Container));
 			Report("itFightsAsTheMonster", !player.IsPlayerForCombat && (player.DefForCombat == body.TypeDef));
+			player.DeleteTimer(BoosterTimer.Key); //#1467 - a running booster: the possession counts the base, bonused once at home
+			Boosters.Add(player, 0);
+			bool boosted = Boosters.Use(player, Boosters.Stored(player).FindIndex(row => row.Key == 0));
 			LevelingSystem.AddExperience(player, 100);
 			Report("experienceWaits", player.Experience == experience);
+			Report("onlyTheBaseIsCounted", boosted && (state != null) && (state.gained == 100));
+			player.DeleteTimer(BoosterTimer.Key);
 
 			//#1070 - what the world makes of a possessing mystic
 			NPC guard = (NPC) ThingDef.GetByDefname("c_vguard_mordor_hala_jezdec").Create((ushort) (player.X + 4), player.Y, player.Z, player.M);
@@ -253,7 +261,7 @@ namespace SteamEngine.CompiledScripts {
 			Report("noAbsorptionWhilePossessing", !ClassAbilities.TryAbsorbSpell(player, body));
 			ClassAbilities.SetPoints(player, "speldodge", 0);
 
-			MysticHypnosis.OnSwungAt(ego);
+			DamageManager.Trigger_GetSwingLanding(DamageManager.GetWeaponSwingArgs(player, ego)); //#1467 - its @getSwingLanding
 			Report("aBlowOnTheEgoBringsItHome", !MysticHypnosis.IsPossessing(player) && (player.Model == model) && (player.X == x) && (player.Name == name) && ego.IsDeleted);
 			Report("withHalfItsHits", player.Hits == 90);
 			Report("theGearIsBack", shirt.Cont == player);
@@ -269,6 +277,18 @@ namespace SteamEngine.CompiledScripts {
 			ego = MysticHypnosis.Possession(player).ego;
 			ego.CauseDeath(null);
 			Report("theEgosDeathBringsItHomeHurt", !MysticHypnosis.IsPossessing(player) && (player.Hits == 1) && ego.IsDeleted);
+
+			player.Hits = 100; //#1467 - a spell on the ego, through its @spellEffect
+			MysticHypnosis.Swap(player, body);
+			ego = MysticHypnosis.Possession(player).ego;
+			SpellDef heal = (SpellDef) SpellDef.GetByDefname("s_heal");
+			heal.Trigger_EffectChar(ego, SpellEffectArgs.Acquire(player, ego, ego, heal, 100, EffectFlag.BeneficialEffect));
+			Report("aSpellOnTheEgoBringsItHome", !MysticHypnosis.IsPossessing(player) && (player.Hits == 50) && ego.IsDeleted);
+
+			MysticHypnosis.Swap(player, body); //#1467 - @logout
+			ego = MysticHypnosis.Possession(player).ego;
+			player.TryTrigger(TriggerKey.logout, null);
+			Report("aLogoutBringsItHome", !MysticHypnosis.IsPossessing(player) && (player.Name == name) && ego.IsDeleted);
 
 			//#1070 - speldodge on a player at home: a monster's spell is swallowed, a player's never
 			ClassAbilities.SetPoints(player, "speldodge", 100);

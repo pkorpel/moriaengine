@@ -121,7 +121,8 @@ pact answers `@afterGetHit`; the profession plugin's stun blow and the thief's s
 
 Before a death, `@denyDeath` (#1463, args: the killer) is raised on a living character at the top of
 `Character.CauseDeath`; a handler returning Cancel keeps it alive, and `@death` isn't raised then (see
-[triggers-and-deny-chains.md](triggers-and-deny-chains.md)).
+[triggers-and-deny-chains.md](triggers-and-deny-chains.md)). A possessing mystic's `PossessionPlugin` and the alter
+ego's `AlterEgoPlugin` answer it (#1467).
 
 A death raises `@kill` on the killer (#1431, Sphere's `@Kill`, args: the victim), in `Character.CauseDeath` after
 `@death`, unless there's no killer, it killed itself or it's deleted. The ranger's plugin charges its killing spree there.
