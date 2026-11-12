@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using SteamEngine.Common;
-using SteamEngine.Persistence;
-using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -25,13 +23,11 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static readonly Kind[] Kinds = { new Kind(25, 1), new Kind(25, 2), new Kind(25, 4), new Kind(50, 1), new Kind(50, 2), new Kind(50, 4) };
 		public const int Icon = 0x3300;
-		private static readonly TagKey storedTK = TagKey.Acquire("_boosters_");
-		private static readonly TagKey pausedTK = TagKey.Acquire("_boosterPaused_");
-
-		/// <summary>The stored boosters, in the order they were first had: (kind, count).</summary>
+		/// <summary>The stored boosters, in the order they were first had: (kind, count). #1471 - kept on BoosterPlugin.</summary>
 		internal static List<KeyValuePair<int, int>> Stored(Player player) {
 			List<KeyValuePair<int, int>> stored = new List<KeyValuePair<int, int>>();
-			if (player.GetTag(storedTK) is string text) {
+			BoosterPlugin plugin = BoosterPlugin.Of(player);
+			if ((plugin != null) && (plugin.stored is string text)) {
 				foreach (string part in text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
 					string[] pair = part.Split(':');
 					stored.Add(new KeyValuePair<int, int>(int.Parse(pair[0], CultureInfo.InvariantCulture), int.Parse(pair[1], CultureInfo.InvariantCulture)));
@@ -46,9 +42,13 @@ namespace SteamEngine.CompiledScripts {
 				parts.Add(row.Key.ToString(CultureInfo.InvariantCulture) + ":" + row.Value.ToString(CultureInfo.InvariantCulture));
 			}
 			if (parts.Count == 0) {
-				player.RemoveTag(storedTK);
+				BoosterPlugin plugin = BoosterPlugin.Of(player);
+				if (plugin != null) {
+					plugin.stored = null;
+					plugin.DropIfEmpty();
+				}
 			} else {
-				player.SetTag(storedTK, string.Join(",", parts));
+				BoosterPlugin.Ensure(player).stored = string.Join(",", parts);
 			}
 		}
 
@@ -67,14 +67,22 @@ namespace SteamEngine.CompiledScripts {
 			SetStored(player, stored);
 		}
 
-		internal static BoosterTimer Active(Player player) {
-			return player.GetTimer(BoosterTimer.Key) as BoosterTimer;
+		/// <summary>The running booster (BoosterPlugin.running, its time the plugin's Timer), or null.</summary>
+		internal static BoosterPlugin Active(Player player) {
+			BoosterPlugin plugin = BoosterPlugin.Of(player);
+			return ((plugin != null) && plugin.IsRunning) ? plugin : null;
+		}
+
+		/// <summary>For tests and GMs: every booster of a player gone, stored, running or paused.</summary>
+		internal static void Clear(Player player) {
+			player.DeletePlugin(BoosterPlugin.Key);
 		}
 
 		/// <summary>playerBooster_use: refused, silently, while one runs; else it starts and the row loses one.</summary>
 		internal static bool Use(Player player, int row) {
 			List<KeyValuePair<int, int>> stored = Stored(player);
-			if ((Active(player) != null) || (player.GetTag(pausedTK) != null) || (row < 0) || (row >= stored.Count)) {
+			BoosterPlugin plugin = BoosterPlugin.Of(player);
+			if ((Active(player) != null) || ((plugin != null) && (plugin.pausedLeft > 0)) || (row < 0) || (row >= stored.Count)) {
 				return false;
 			}
 			int kind = stored[row].Key;
@@ -91,32 +99,27 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static void Start(Player player, int kind, double seconds) {
-			BoosterTimer timer = new BoosterTimer();
-			timer.kind = kind;
-			player.AddTimer(BoosterTimer.Key, timer).DueInSeconds = seconds;
+			BoosterPlugin plugin = BoosterPlugin.Ensure(player);
+			plugin.running = kind;
+			plugin.pausedLeft = 0;
+			plugin.Timer = seconds;
 		}
 
-		/// <summary>funkce.scp's addexp: the running booster's percent of a gain, never of a loss.</summary>
-		internal static int Bonus(Player player, int amount) {
-			BoosterTimer active = Active(player);
-			return ((active == null) || (amount <= 0)) ? 0 : (amount * Kinds[active.kind].Percent) / 100;
-		}
-
-		/// <summary>Sphere doesn't tick an offline character, so a booster's hours count only while its player plays.</summary>
+		/// <summary>Sphere doesn't tick an offline character, so a booster's hours count only while its player plays
+		/// (BoosterPlugin's @logout).</summary>
 		internal static void Pause(Player player) {
-			BoosterTimer active = Active(player);
+			BoosterPlugin active = Active(player);
 			if (active != null) {
-				player.SetTag(pausedTK, active.kind.ToString(CultureInfo.InvariantCulture) + ":" +
-					Math.Max(1, (int) active.DueInSeconds).ToString(CultureInfo.InvariantCulture));
-				player.DeleteTimer(BoosterTimer.Key);
+				active.pausedLeft = Math.Max(1, (int) active.Timer);
+				active.TimerObject.Delete();
 			}
 		}
 
+		/// <summary>BoosterPlugin's @login.</summary>
 		internal static void Resume(Player player) {
-			if ((player.GetTag(pausedTK) is string paused) && (Active(player) == null)) {
-				string[] pair = paused.Split(':');
-				player.RemoveTag(pausedTK);
-				Start(player, int.Parse(pair[0], CultureInfo.InvariantCulture), int.Parse(pair[1], CultureInfo.InvariantCulture));
+			BoosterPlugin plugin = BoosterPlugin.Of(player);
+			if ((plugin != null) && (plugin.running >= 0) && (plugin.pausedLeft > 0) && (Active(player) == null)) {
+				Start(player, plugin.running, plugin.pausedLeft);
 			}
 		}
 
@@ -159,25 +162,6 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(player.Name + " dostal booster " + Boosters.Kinds[kind].Description + ".");
 			}
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_booster: the running one. Its end: "Tvuj bonus do zkusenosti vyprsel!".</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class BoosterTimer : BoundTimer {
-		public static readonly TimerKey Key = TimerKey.Acquire("_booster_");
-
-		[SaveableData, CopyableData]
-		public int kind;
-
-		[LoadingInitializer, DeepCopyImplementation]
-		public BoosterTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (cont is Character ch) {
-				ch.SysMessage("Tvuj bonus do zkusenosti vyprsel!", ClassAbilities.ClassMessageHue);
-			}
 		}
 	}
 }

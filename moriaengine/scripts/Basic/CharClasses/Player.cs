@@ -403,7 +403,6 @@ namespace SteamEngine.CompiledScripts {
 		/// that transition has actually completed.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
-			Boosters.Pause(this); //#1090 - a booster's hours count only online
 			AfkCheck.OnLogout(this); //#1107 - e_afk_controlled @logout
 			//TODO: In safe/nonsafe areas, settings, etc.
 
@@ -436,7 +435,6 @@ namespace SteamEngine.CompiledScripts {
 			this.DeleteTimer(charLingeringTimerTK); //cancel any pending logout-delay removal - reconnecting resumes this body in place
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
-				Boosters.Resume(this); //#1090
 				Tavern.OnLogin(this); //#1254 - a night in a tavern's room
 				SkillSequenceArgs.ResumeAfterLogin(this); //#1172 - a skill under way when the player left, or when the server went down
 				CraftingProcessPlugin.ResumeAfterLogin(this); //#1172 - a craft queue between two items then

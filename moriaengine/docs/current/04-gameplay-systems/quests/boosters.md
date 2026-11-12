@@ -18,11 +18,15 @@ A booster gives more experience for a while. Erebor had six, all for experience:
 - **Using one**: in `.questy`, the Boostery tab shows the running booster with its time left, and the stored ones three to a
   page. A stored booster's icon starts it; while one runs, the icons are greyed and nothing else starts (Erebor refused
   silently). Nothing stacks. The log gets `pouzil Booster <kind> na pozici <spot> (<region>)`.
-- **The bonus**: every experience gain gets the running booster's percent of it on top (`LevelingSystem.AddExperience`,
-  Erebor's `addexp`): kills, quests, weekly quests, everything. Losses get nothing.
+- **The bonus**: every experience gain gets the running booster's percent of it on top (`BoosterPlugin`'s
+  `@gainExperience`, raised in `LevelingSystem.AddExperience`; Erebor's `addexp`): kills, quests, weekly quests, everything. Losses get nothing.
 - **The end**: "Tvuj bonus do zkusenosti vyprsel!" when its hours are over.
 - **Offline**: a running booster's hours count only while its player is logged in; logging out pauses it with its time left,
   and logging in resumes it. Sphere doesn't tick an offline character.
+- **Where it lives** (#1471): a `BoosterPlugin` on the player (`BoosterPlugin.cs`) holds the stored rows, the running kind
+  (Erebor's `i_booster`, the plugin's timer) and the seconds left while offline. Its own `@logout` pauses, its `@login`
+  resumes, and its `@gainExperience` adds the running one's percent of the gain's base. A player without boosters has no
+  plugin.
 
 ## Where boosters come from
 
