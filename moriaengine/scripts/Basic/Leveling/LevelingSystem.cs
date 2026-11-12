@@ -70,9 +70,6 @@ namespace SteamEngine.CompiledScripts {
 			if (player == null || player.IsDeleted || amount == 0) { //#1416 - @gainExperience can't be raised on a deleted one
 				return;
 			}
-			if (MysticHypnosis.CountsExperience(player, amount)) { //#1017 - paid on the way home from a hypnosis
-				return;
-			}
 			int baseAmount = amount;
 			amount += Boosters.Bonus(player, baseAmount); //#1090 - Erebor's addexp: a running booster's percent of a gain
 			amount += RpRanks.Bonus(player, baseAmount); //#1116 - and the RP rank's, both of the base, added

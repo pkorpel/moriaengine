@@ -144,7 +144,21 @@ Before the swap, the mystic concentrates for 1 to 14 s: a `ConcentrationPlugin` 
 and `@aftergetswing`). The retry delay after a failed or impossible try (2 s, or 0.5 s) is `MysticProfessionPlugin`'s,
 so a GM who isn't a mystic has none.
 
-The body swap itself is in `MysticHypnosis.cs`. While a mystic possesses a monster:
+The body swap itself is in `MysticHypnosis.cs` (#1467):
+- **The mystic's `PossessionPlugin`** (Erebor's `i_hypno_delka`) holds everything needed to come home, and its timer ends
+  the possession.
+  - At its `@denyDeath` the mystic doesn't die: the killers are paid as for the monster, and the mystic comes home with
+    a fifth of the hits.
+  - At its `@logout` the mystic comes home.
+  - At its `@gainExperience` a gain only counts, its base before bonuses; it is paid, with its bonuses, at home.
+- **The alter ego's `AlterEgoPlugin`** rings the alarm pads every second.
+  - A blow at it (`@getSwingLanding`) or a spell on it (`@spellEffect`, which then does nothing) brings the mystic home
+    with half the hits.
+  - Its death (`@denyDeath`) brings the mystic home hurt, and the ego doesn't die.
+- **Asked twice:** a caller that sets `Hits = 0` and then calls `CauseDeath` again asks twice. The first ask brings the
+  mystic home, so the second meets them at home, as with the old direct call.
+
+While a mystic possesses a monster:
 
 - Guards leave it alone unless the body is evil (karma -800 or less), as hypnoswap's karma (-10000 for an evil body)
   against `e_guard`'s "karma above -10000". It is never a murderer to them: hypnoswap sets kills to 0.

@@ -1401,11 +1401,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public void CauseDeath(Character killedBy) {
 			//#1463 - Sphere's @death RETURN 1, before anything of the death happens: the first handler to cancel keeps this
-			//character alive (and @death isn't raised). Only a living character asks.
+			//character alive (and @death isn't raised). Only a living character asks. #1467 - a possessing mystic and its
+			//alter ego come home this way.
 			if (!this.Flag_Dead && (this.TryCancellableTrigger(denyDeathTK, new ScriptArgs(killedBy)) == TriggerResult.Cancel)) {
-				return;
-			}
-			if (MysticHypnosis.InterceptDeath(this, killedBy)) { //#1017 - a possessing mystic or its alter ego comes home instead
 				return;
 			}
 			if (!this.Flag_Dead) {
@@ -2092,9 +2090,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SpellEffect(SpellEffectArgs spellEffectArgs) {
-			if (MysticHypnosis.OnSpellEffect(this)) { //#1017 - e_hypnotising_mystic_ego's @spelleffect
-				return TriggerResult.Cancel;
-			}
 			if (PriestAbilities.TooSoonToRise(this, spellEffectArgs.SpellDef)) { //#1070 - 5 s after a death
 				return TriggerResult.Cancel;
 			}

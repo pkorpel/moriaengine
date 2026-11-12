@@ -360,10 +360,6 @@ namespace SteamEngine.CompiledScripts {
 					RangerAbilities.TryBleedBolt(bolter, defender, swingArgs); //#1070 - e_bleed_bolt
 				}
 				MagicCombat.ModifyBlow(attacker, defender, swingArgs); //#1017 - magic items' slayers
-				MysticHypnosis.OnSwungAt(defender); //#1017 - a blow at an alter ego ends a hypnosis (catchField's release and the concentration are plugins' @getSwingLanding, #1455, #1461)
-				if (defender.IsDeleted || attacker.IsDeleted) {
-					return;
-				}
 				Trigger_GetSwingLanding(swingArgs); //#1429 - the stance and the shield, on the profession plugin
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
