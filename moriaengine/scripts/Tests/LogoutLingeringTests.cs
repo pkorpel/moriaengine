@@ -35,5 +35,23 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("LINGER_STATE: uid=" + targetUid + " isLingering=" + target.IsLingering +
 				" flagDisconnected=" + target.Flag_Disconnected);
 		}
+
+		private static double? logoutDelayBefore;
+
+		/// <summary>#1487 - the ordinary logout delay, in seconds; "restore" puts back the one before the first change.</summary>
+		[SteamFunction]
+		public static void TestSetLogoutDelay(Character self, ScriptArgs sa) {
+			string arg = string.Concat(sa.Argv[0]);
+			if (arg == "restore") {
+				if (logoutDelayBefore is double before) {
+					LogoutSettings.instance.logoutDelaySeconds = before;
+					logoutDelayBefore = null;
+				}
+			} else {
+				logoutDelayBefore = logoutDelayBefore ?? LogoutSettings.instance.logoutDelaySeconds;
+				LogoutSettings.instance.logoutDelaySeconds = Convert.ToDouble(arg, CultureInfo.InvariantCulture);
+			}
+			Console.WriteLine("LOGOUT_DELAY: " + LogoutSettings.instance.logoutDelaySeconds);
+		}
 	}
 }

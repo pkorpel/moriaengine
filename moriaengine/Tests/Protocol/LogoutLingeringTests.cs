@@ -70,6 +70,50 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1487 - a player logs out and, within the delay, plays another character of the account: the first still
+		/// leaves the world when its delay ends (it used to stay for good, as it wasn't IsLingering with the account online).</summary>
+		[Fact]
+		public void ALoggedOutCharacterLeavesWhileItsAccountPlaysAnother() {
+			using (var observer = this.ConnectLoginAndCreateCharacter(ObserverAccount, "LingerWatcher")) {
+				observer.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutput("AUTO_ACCOUNT_TEST: ENABLED", TimeSpan.FromSeconds(10)));
+				int markDelay = this.fixture.GameOutputSnapshot().Length;
+				observer.SendSpeech(".TestSetLogoutDelay 8");
+				Assert.True(this.fixture.WaitForGameOutputSince("LOGOUT_DELAY:", markDelay, TimeSpan.FromSeconds(10)));
+				try {
+					uint firstUid;
+					using (var first = this.ConnectLoginAndCreateCharacter(SwitchAccount, "LingerFirst")) {
+						int mark = this.fixture.GameOutputSnapshot().Length;
+						first.SendSpeech(".TestReportMyUid");
+						Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+						firstUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark);
+					}
+					using (var second = this.ConnectLoginAndCreateCharacter(SwitchAccount, "LingerSecond")) {
+						//the case itself: the account plays the second while the first still stands (not IsLingering then)
+						int markBefore = this.fixture.GameOutputSnapshot().Length;
+						observer.SendSpeech(".TestReportLingerState " + firstUid);
+						Assert.True(this.fixture.WaitForGameOutputSince("LINGER_STATE: uid=" + firstUid, markBefore, TimeSpan.FromSeconds(10)));
+						Assert.Contains("isLingering=False flagDisconnected=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "LINGER_STATE: uid=" + firstUid));
+						Thread.Sleep(10000); //past the delay
+						int markCheck = this.fixture.GameOutputSnapshot().Length;
+						observer.SendSpeech(".TestReportLingerState " + firstUid);
+						Assert.True(this.fixture.WaitForGameOutputSince("LINGER_STATE: uid=" + firstUid, markCheck, TimeSpan.FromSeconds(10)));
+						string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LINGER_STATE: uid=" + firstUid);
+						Assert.Contains("flagDisconnected=True", line);
+						int markSecond = this.fixture.GameOutputSnapshot().Length;
+						second.SendSpeech(".TestReportMyUid"); //the second's connection wasn't closed by the first's leaving
+						Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", markSecond, TimeSpan.FromSeconds(10)), "The second character's client stopped answering.");
+					}
+				} finally {
+					int markRestore = this.fixture.GameOutputSnapshot().Length;
+					observer.SendSpeech(".TestSetLogoutDelay restore");
+					this.fixture.WaitForGameOutputSince("LOGOUT_DELAY:", markRestore, TimeSpan.FromSeconds(10));
+				}
+			}
+		}
+
+		private const string SwitchAccount = "logoutlingertest4";
+
 		private static uint ExtractUid(string output, int since) {
 			int idx = output.IndexOf("MY_UID: ", since, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find MY_UID after position " + since + " in:\n" + output);
