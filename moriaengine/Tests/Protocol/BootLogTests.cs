@@ -28,7 +28,7 @@ namespace SteamEngine.Tests.Protocol {
 					Assert.NotEqual(Value(setup, "regenBefore"), Value(setup, "regenIgnited"));
 					Assert.True(Value(setup, "copyKeepsOrder") == "True", "A dupe's plugins changed order (#1483): " + setup);
 					Assert.True(Value(setup, "pluginOrder").Split(',').Length >= 6, "Too few plugins for the order check: " + setup);
-					foreach (string dupe in new[] { "npcDupe", "npcCopyThinks", "npcCopyFresh", "timersStayBehind", "spawnLinkDropped", "itemDupeWithUncopiedTimer" }) { //#1485
+					foreach (string dupe in new[] { "npcDupe", "npcCopyThinks", "npcCopyFresh", "timersStayBehind", "spawnLinkDropped", "itemDupeWithUncopiedTimer", "deepCopyKeepsFields" }) { //#1485
 						Assert.True(Value(setup, dupe) == "True", dupe + " (#1485): " + setup);
 					}
 					Ask(fixture1, client, ".TestTriggerGlobalSave", "TEST_SAVE: done");
