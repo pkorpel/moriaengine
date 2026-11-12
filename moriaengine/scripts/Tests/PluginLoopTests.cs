@@ -129,6 +129,15 @@ namespace SteamEngine.CompiledScripts {
 				used.Delete();
 			}
 
+			//#1489 - a deleted plugin says so, a live one doesn't
+			LoopTestPlugin alive = (LoopTestPlugin) LoopTestPluginDef.instance.Create(), gone = (LoopTestPlugin) LoopTestPluginDef.instance.Create();
+			self.AddPlugin(firstKey, alive);
+			self.AddPlugin(secondKey, gone);
+			gone.Delete();
+			Check("deletedPluginIsDeleted", gone.IsDeleted && !alive.IsDeleted && (self.GetPlugin(secondKey) == null));
+			self.DeletePlugin(firstKey);
+			Check("deletePluginMarksIt", alive.IsDeleted);
+
 			//now every effect plugin hears a death: a timed effect ends, a talent's lasting one stays
 			AbilityDef talent = AbilityDef.GetByDefname("a_cunning_bonus");
 			self.SetRealAbilityPoints(talent, 1);
