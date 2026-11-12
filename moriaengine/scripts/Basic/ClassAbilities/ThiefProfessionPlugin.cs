@@ -12,6 +12,14 @@ namespace SteamEngine.CompiledScripts {
 			return ch.GetPlugin(professionKey) as ThiefProfessionPlugin;
 		}
 
+		/// <summary>#1459 - the shared stun blow (the base's), then the shield strike, once a blow's damage is dealt.</summary>
+		public override void On_AfterHit(WeaponSwingArgs swing, int damage) {
+			base.On_AfterHit(swing, damage);
+			if ((this.Cont is Player self) && (swing.defender is NPC target) && !target.IsDeleted) {
+				ThiefAbilities.TryShieldStrike(self, target);
+			}
+		}
+
 		/// <summary>e_thief's @AfterSwing, in its order: from behind and the throat slit, the war fork's charge, then its
 		/// double swing, which spends the slit.</summary>
 		public void On_SwingLanding(WeaponSwingArgs swing) {

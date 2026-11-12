@@ -223,8 +223,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>f_thief_shieldStrike, after a blow lands. Still a direct call beside the shared stun blow; its state is
-		/// the thief's plugin's (#1433).</summary>
+		/// <summary>f_thief_shieldStrike, after a blow lands: from the thief's plugin's @afterHit (#1459), after the shared
+		/// stun blow as before; its state is the plugin's (#1433).</summary>
 		internal static void TryShieldStrike(Player self, NPC target) {
 			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);
 			if ((thief == null) || !IsFencing(self) || !thief.shieldReady) {

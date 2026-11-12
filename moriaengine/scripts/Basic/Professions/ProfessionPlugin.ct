@@ -19,3 +19,5 @@ Var:
 	private ProfessionDef profession = null
 	private SkillRank skillRank = SkillRank.Novice
 	internal bool counterOn = false
+	internal bool stunReady = false
+	internal double nextStun = 0

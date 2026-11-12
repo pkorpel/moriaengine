@@ -89,6 +89,8 @@ namespace SteamEngine.CompiledScripts {
 
 			ClassAbilities.SetPoints(player, "stuntattack", 10);
 			WarriorAbilities.Omraceni(player);
+			ProfessionPlugin stunPlugin = ProfessionPlugin.GetInstalledPlugin(player); //#1459 - Erebor's tag.zmrazeni, tag.omraceni_next
+			Report("theStunIsTheProfessionPlugins", (stunPlugin != null) && stunPlugin.stunReady && (stunPlugin.nextStun > Globals.TimeInSeconds));
 			Report("stunWindowsShrink", (WarriorAbilities.StunWindowSeconds(0) == 20) && (WarriorAbilities.StunWindowSeconds(30) == 11));
 			Report("stunLimitGrowsWithTheMetal", (WarriorAbilities.StunLimit(Material.Copper, false, 0) == 51) && (WarriorAbilities.StunLimit(Material.Mithril, false, 30) == 901 + (901 * 20 / 100)));
 			Report("plainMaceStunsNothing", WarriorAbilities.StunLimit(Material.None, false, 0) == 0);
@@ -158,6 +160,32 @@ namespace SteamEngine.CompiledScripts {
 
 			ClassAbilities.SetPoints(player, "vykryti", 0);
 			TestSwingLandingInASwing(player);
+
+			Item mace = (Item) ((ItemDef) ThingDef.GetByDefname("i_mace_mithril")).Create(player); //#1459 - the stun blow at @afterHit
+			player.InvalidateCombatWeaponValues();
+			NPC stunned = Dummy(player, 2);
+			stunned.ExperienceReward = 0;
+			war.stunReady = true;
+			war.nextStun = Globals.TimeInSeconds + 20;
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, stunned), 10);
+			Report("theStunLandsAtAfterHit", ParalyzeEffectPluginDef.IsParalyzed(stunned) && !war.stunReady);
+			stunned.Delete();
+
+			player.Profession = Professions.Craftsman; //the plain profession plugin (craftsman, necromancer) stuns too
+			ProfessionPlugin plain = ProfessionPlugin.GetInstalledPlugin(player);
+			NPC stunnedByCraftsman = Dummy(player, 2);
+			stunnedByCraftsman.ExperienceReward = 0;
+			if (plain != null) {
+				plain.stunReady = true;
+				plain.nextStun = Globals.TimeInSeconds + 20;
+			}
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, stunnedByCraftsman), 10);
+			Report("aCraftsmansStunLandsToo", (plain != null) && (plain.GetType() == typeof(ProfessionPlugin)) && ParalyzeEffectPluginDef.IsParalyzed(stunnedByCraftsman) && !plain.stunReady);
+			stunnedByCraftsman.Delete();
+			player.Profession = Professions.Warrior;
+			war = ProfessionPlugin.GetInstalledPlugin(player) as WarriorProfessionPlugin;
+			mace.Delete();
+			player.InvalidateCombatWeaponValues();
 
 			player.Stam = 200;
 			WarriorAbilities.DefStance(player); //off
@@ -558,6 +586,18 @@ namespace SteamEngine.CompiledScripts {
 				player.SetRealSkillValue((int) skill, 1000);
 			}
 			((ItemDef) ThingDef.GetByDefname("i_kryss")).Create(player);
+			Item thiefShield = (Item) ((ItemDef) ThingDef.GetByDefname("i_MITHRIL_METAL_SHIELD")).Create(player); //#1459 - at @afterHit
+			player.InvalidateCombatWeaponValues();
+			int victimExp = victim.ExperienceReward;
+			victim.ExperienceReward = 0;
+			thief.shieldReady = true;
+			thief.nextShield = Globals.TimeInSeconds + 100;
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, victim), 10);
+			Report("theShieldStrikeLandsAtAfterHit", ParalyzeEffectPluginDef.IsParalyzed(victim) && !thief.shieldReady);
+			ParalyzeEffectPluginDef.Unparalyze(victim);
+			victim.ExperienceReward = victimExp;
+			thiefShield.Delete();
+			player.InvalidateCombatWeaponValues();
 			double weapAttack = CombatSettings.instance.weapAttack;
 			CombatSettings.instance.weapAttack = weapAttack * 100;
 			ClassAbilities.SetPoints(player, "backstab", 30);
