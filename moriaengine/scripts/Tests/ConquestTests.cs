@@ -293,7 +293,7 @@ namespace SteamEngine.CompiledScripts {
 			MakeAttacker(player);
 			player.Profession = Professions.Warrior;
 			player.Level = 50;
-			player.RemoveTag(TagKey.Acquire("_boosters_"));
+			Boosters.Clear(player); //#1471
 			player.DeletePlugin(WeeklyQuestPlugin.key);
 			WeeklyQuests.Check(player);
 			WeeklySet set = WeeklyQuests.Of(player);

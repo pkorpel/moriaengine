@@ -119,7 +119,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestLeagueSeasonReward(Character self) {
 			Player player = (Player) self;
 			PvpLeague.Reset();
-			player.RemoveTag(TagKey.Acquire("_boosters_"));
+			Boosters.Clear(player); //#1471
 			self.Account.PLevel = 1;
 			PvpLeague.AddPoints(player, 100);
 			self.Account.PLevel = 7;

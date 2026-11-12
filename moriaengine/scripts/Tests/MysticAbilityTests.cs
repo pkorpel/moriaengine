@@ -223,13 +223,13 @@ namespace SteamEngine.CompiledScripts {
 			Report("anAlterEgoStandsInPlace", (ego != null) && (ego.X == x) && (ego.Y == y) && (ego.Name == name) && (ego.Model == model));
 			Report("theGearWaitsInTheBank", shirt.TopObj() == player && (shirt.Cont is Container));
 			Report("itFightsAsTheMonster", !player.IsPlayerForCombat && (player.DefForCombat == body.TypeDef));
-			player.DeleteTimer(BoosterTimer.Key); //#1467 - a running booster: the possession counts the base, bonused once at home
+			Boosters.Clear(player); //#1467 - a running booster: the possession counts the base, bonused once at home
 			Boosters.Add(player, 0);
 			bool boosted = Boosters.Use(player, Boosters.Stored(player).FindIndex(row => row.Key == 0));
 			LevelingSystem.AddExperience(player, 100);
 			Report("experienceWaits", player.Experience == experience);
 			Report("onlyTheBaseIsCounted", boosted && (state != null) && (state.gained == 100));
-			player.DeleteTimer(BoosterTimer.Key);
+			Boosters.Clear(player);
 
 			//#1070 - what the world makes of a possessing mystic
 			NPC guard = (NPC) ThingDef.GetByDefname("c_vguard_mordor_hala_jezdec").Create((ushort) (player.X + 4), player.Y, player.Z, player.M);

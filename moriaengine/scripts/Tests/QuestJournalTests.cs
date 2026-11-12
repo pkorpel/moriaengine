@@ -74,8 +74,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestBoostersGive(Character self) {
 			Player player = (Player) self;
-			player.DeleteTimer(BoosterTimer.Key);
-			player.RemoveTag(TagKey.Acquire("_boosters_"));
+			Boosters.Clear(player); //#1471 - all of it on BoosterPlugin
 			Boosters.Add(player, 0);
 			Boosters.Add(player, 3);
 			Boosters.Add(player, 0);
@@ -87,23 +86,23 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestBoostersReport(Character self) {
 			Player player = (Player) self;
-			BoosterTimer active = Boosters.Active(player);
+			BoosterPlugin active = Boosters.Active(player);
 			long before = player.Experience;
 			int level = player.Level;
 			LevelingSystem.AddExperience(player, 4);
 			bool bonus = (player.Level == level) && (player.Experience == before + 5); //4 + 25% of 4, rounded down: 5
 			bool noSecond = !Boosters.Use(player, 0);
 			List<KeyValuePair<int, int>> left = Boosters.Stored(player);
-			double due = (active == null) ? 0 : active.DueInSeconds;
-			Boosters.Pause(player);
+			double due = (active == null) ? 0 : active.Timer;
+			player.TryTrigger(TriggerKey.logout, null); //#1471 - BoosterPlugin's own @logout and @login
 			bool paused = Boosters.Active(player) == null;
-			Boosters.Resume(player);
-			BoosterTimer resumed = Boosters.Active(player);
-			bool sameTime = (resumed != null) && (Math.Abs(resumed.DueInSeconds - due) < 5);
-			Console.WriteLine("BOOSTERS_REPORT: kind=" + ((active == null) ? -1 : active.kind) + " due=" + ((due > 3500) && (due <= 3600)) + " bonus=" + bonus +
+			player.TryCancellableTrigger(TriggerKey.login, null);
+			BoosterPlugin resumed = Boosters.Active(player);
+			bool sameTime = (resumed != null) && (Math.Abs(resumed.Timer - due) < 5);
+			Console.WriteLine("BOOSTERS_REPORT: kind=" + ((active == null) ? -1 : active.running) + " due=" + ((due > 3500) && (due <= 3600)) + " bonus=" + bonus +
 				" noSecond=" + noSecond + " left=" + string.Join(",", left.ConvertAll(row => row.Key + "x" + row.Value)) +
 				" paused=" + paused + " resumed=" + sameTime + " end");
-			player.DeleteTimer(BoosterTimer.Key);
+			Boosters.Clear(player);
 		}
 	}
 }
