@@ -100,6 +100,57 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendGumpResponse(gumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 101, "3" }, { 102, "2" }, { 103, "0" }, { 104, "0" } });
 			client.ReadGumpDialog(TimeSpan.FromSeconds(10)); //OK opens it again, as Erebor's
 			Assert.Contains("level=3 afk=2", this.Ask(client, ".TestCampLevels", "CAMP_LEVELS:"));
+
+			//#1481 - Erebor's login rule, on an account of its own (this one's five characters are taken): while it's in
+			//the camp, its other character waits in the jail at a login; the first login after, it goes home
+			this.Ask(client, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST:");
+			try {
+				using (var other = CommandPermissionTests.Connect(AltAccount, "Alt Other")) {
+					this.Ask(other, ".TestCampAltHome", "CAMP_ALT_HOME:"); //and no logout delay: each login below is a real one
+					Assert.Contains("inJail=False home=True waits=False", this.Ask(other, ".TestCampAltReport", "CAMP_ALT:"));
+				}
+				using (var convict = CommandPermissionTests.Connect(AltAccount, "Alt Convict")) {
+					Assert.Contains("inCamp=True convict=True", this.Ask(convict, ".TestCampAltSend", "CAMP_ALT_SENT:"));
+				}
+				using (var other = SelectExisting(AltAccount, "Alt Other")) {
+					Assert.Contains("inJail=True home=False waits=True convict=False", this.Ask(other, ".TestCampAltReport", "CAMP_ALT:"));
+					Assert.Contains("inCamp=False", this.Ask(other, ".TestCampAltRelease", "CAMP_ALT_RELEASED:"));
+				}
+				using (var other = SelectExisting(AltAccount, "Alt Other")) {
+					Assert.Contains("inJail=False home=True waits=False", this.Ask(other, ".TestCampAltReport", "CAMP_ALT:"));
+				}
+			} finally {
+				this.Ask(client, ".TestCampAltDone", "CAMP_ALT_DONE:");
+			}
+		}
+
+		private const string AltAccount = "campalt";
+
+		/// <summary>Logs in as a character the account already has (CommandPermissionTests.Connect always makes a new one).</summary>
+		private static TestGameClient SelectExisting(string account, string charName) {
+			for (int attempt = 0; ; attempt++) {
+				TestGameClient client = null;
+				try {
+					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
+						login.SendLogin(account, account);
+						if (login.ReadServersList() < 1) {
+							throw new InvalidOperationException("No identified game server yet (server count 0).");
+						}
+						login.SendServerSelect(0);
+						var (redirectPort, _) = login.ReadRedirect();
+						client = new TestGameClient("127.0.0.1", redirectPort);
+						client.SendLogin(account, account);
+						int slot = Array.IndexOf(client.ReadCharacterList(), charName);
+						Assert.True(slot >= 0, "Expected '" + charName + "' on " + account + ".");
+						client.SendSelectCharacter(slot);
+						Thread.Sleep(500);
+						return client;
+					}
+				} catch (InvalidOperationException) when (attempt < 40) {
+					client?.Dispose();
+					Thread.Sleep(300);
+				}
+			}
 		}
 	}
 
