@@ -36,20 +36,28 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestHideSteps(Character self) {
 			int stayed = 0, ran = 0;
+			bool pluginFollows = true;
 			for (int i = 0; i < 100; i++) {
 				self.Flag_Hidden = true;
-				HidingSkillDef.OnStep(self, false);
+				pluginFollows &= HiddenPlugin.Of(self) != null; //#1478 - on while hidden
+				self.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false)); //its @stepTaken, as a real step raises it
 				if (self.Flag_Hidden) {
 					stayed++;
+				} else {
+					pluginFollows &= HiddenPlugin.Of(self) == null; //off once seen
 				}
 				self.Flag_Hidden = true;
-				HidingSkillDef.OnStep(self, true);
+				self.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(true));
 				if (self.Flag_Hidden) {
 					ran++;
 				}
 			}
 			self.Flag_Hidden = false;
-			Console.WriteLine("HIDE_STEPS: stayed=" + stayed + " ran=" + ran);
+			self.Flag_InvisByMagic = true; //the Invisibility spell's flag too, and a step ends it
+			bool invisible = HiddenPlugin.Of(self) != null;
+			self.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false));
+			bool invisibilityEnds = !self.Flag_InvisByMagic && (HiddenPlugin.Of(self) == null);
+			Console.WriteLine("HIDE_STEPS: stayed=" + stayed + " ran=" + ran + " pluginFollows=" + (pluginFollows && invisible && invisibilityEnds) + " |");
 		}
 
 		/// <summary>Hidden again, then one thing that gives you away.</summary>
