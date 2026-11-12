@@ -403,11 +403,7 @@ namespace SteamEngine.CompiledScripts {
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
-				MonsterSpecialAttacks.TryApplyStun(attacker, defender);
-				if ((attacker is Player stunner) && (defender is NPC stunned) && !stunned.IsDeleted) {
-					WarriorAbilities.TryStun(stunner, stunned, actualDamage); //#1017
-					ThiefAbilities.TryShieldStrike(stunner, stunned);
-				}
+				MonsterSpecialAttacks.TryApplyStun(attacker, defender); //a player's stun blow and shield strike are @afterHit's (#1459)
 
 				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback
 				//(if the attacker has it) can also push the defender back on a landed hit.
@@ -715,9 +711,10 @@ namespace SteamEngine.CompiledScripts {
 		static TriggerKey afterGetHitTK = TriggerKey.Acquire("afterGetHit");
 
 		/// <summary>#1445 - a landed blow's damage is dealt (args: the swing, the damage): @afterHit on the attacker, then
-		/// @afterGetHit on the defender. Raised in ProcessSwing after the damage, the stun, the knockback, the bleeding and
-		/// the magic items' leech and paralysis, before the monsters' after-swing reactions; not on a dodged or cancelled
-		/// blow (those end in @afterSwing). The blood pact (PactPlugin) answers @afterGetHit.</summary>
+		/// @afterGetHit on the defender. Raised in ProcessSwing after the damage, the monsters' stun, the knockback, the
+		/// bleeding and the magic items' leech and paralysis, before the monsters' after-swing reactions; not on a dodged or
+		/// cancelled blow (those end in @afterSwing). The blood pact (PactPlugin) answers @afterGetHit; the profession
+		/// plugin's stun blow and the thief's shield strike answer @afterHit (#1459).</summary>
 		public static void Trigger_AfterHit(WeaponSwingArgs swingArgs, int damage) {
 			ScriptArgs args = new ScriptArgs(swingArgs, damage);
 			if (!swingArgs.attacker.IsDeleted) {
