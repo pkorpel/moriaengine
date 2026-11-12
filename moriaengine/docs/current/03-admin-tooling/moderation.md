@@ -101,7 +101,8 @@ payment, the release, a recidivist, the menu's gump). The no-harm rule between p
 
 ## AFK check
 
-Erebor's `systems/administrace/afk.scp`. Code: `AfkCheck.cs`, `AfkSettings.cs` (`.settings` -> AFK), `AfkLog.cs`.
+Erebor's `systems/administrace/afk.scp`. Code: `AfkCheck.cs`, `AfkPlugins.cs`, `AfkSettings.cs` (`.settings` -> AFK),
+`AfkLog.cs`.
 
 **The check.**
 - The dialog shows four random letters drawn as red dots, from Erebor's own dot font (the converted
@@ -120,6 +121,11 @@ Erebor's `systems/administrace/afk.scp`. Code: `AfkCheck.cs`, `AfkSettings.cs` (
 
 **Logging out** doesn't help: a check or its warning carries on at login, and a check whose time ran out offline gets
 one second.
+
+**Where it lives** (#1473): the warning is an `AfkCountdownPlugin` on the player (Erebor's `i_afk_countdown`), the check an
+`AfkCheckPlugin` (`i_afk_dialog`). The check's own `@login` and `@logout` are `e_afk_controlled`'s (the catch-up second,
+a log line); the warning's `@logout` is `e_afk_countdowned`'s (a log line, unless a check runs too). The player's record (fails, correct answers, the period's end, times caught) stays in Erebor's tags, as it
+outlasts a check.
 
 **Who gets checked.**
 - `.afk [seconds]` (cursor) starts a check now, optionally with a shorter time.
@@ -141,8 +147,8 @@ Every step goes to the AFK log (the server log too), as Erebor's messages to the
 
 Test: `AfkCheckTests.TheCheckItsFailuresAndTheCamp` (protocol, the real `.afk`/`.runafk` cursors and the dialog: the
 dots match the font, a wrong answer brings the dialog back, a right one ends it, two failures are let go and the third
-sends to the camp, three more in the camp double what's owed, the warning leads to the check). The automatic round and
-the login resume aren't covered by a test.
+sends to the camp, three more in the camp double what's owed, the warning leads to the check, and the check's own
+`@login` catch-up and its `@logout` log lines, raised directly). The automatic round isn't covered by a test.
 
 ## AFK log
 

@@ -174,6 +174,7 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("check=False countdown=True", this.Ask(client, ".TestAfkState", "AFK_STATE:"));
 			Thread.Sleep(3500);
 			Assert.Contains("check=True countdown=False", this.Ask(client, ".TestAfkState", "AFK_STATE:"));
+			Assert.Contains("catchUp=True loggedIn=True loggedOut=True", this.Ask(client, ".TestAfkLogInOut", "AFK_INOUT:")); //#1473
 			this.Ask(client, ".TestAfkRestore", "AFK_RESTORED");
 		}
 
