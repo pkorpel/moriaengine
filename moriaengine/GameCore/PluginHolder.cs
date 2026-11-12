@@ -508,19 +508,35 @@ namespace SteamEngine {
 			plugin.cont = this;
 		}
 
+		/// <summary>#1479 - an @unAssign may remove, move, re-add or add other plugins as they go: each round takes the plugins
+		/// on the holder then and removes each still here by its current key, until none is left. One that another's @unAssign
+		/// took away (moved, or only removed) is left to whoever took it; one that moves itself in its own @unAssign is still
+		/// deleted, as before.</summary>
 		public void DeletePlugins() {
-			if (this.tags != null) {
-				List<DictionaryEntry> allPlugins = new List<DictionaryEntry>();
+			for (int round = 0; this.tags != null; round++) {
+				List<Plugin> allPlugins = new List<Plugin>();
 				foreach (DictionaryEntry entry in this.tags) {
 					if (entry.Key is PluginKey) {
-						allPlugins.Add(entry);
+						allPlugins.Add((Plugin) entry.Value);
 					}
 				}
-				foreach (DictionaryEntry entry in allPlugins) {
-					this.RemovePluginImpl((PluginKey) entry.Key, (Plugin) entry.Value).Delete();
+				if (allPlugins.Count == 0) {
+					return;
+				}
+				if (round == MaxDeletePluginsRounds) {
+					Common.Logger.WriteError("Plugins of " + this + " keep adding plugins as they're deleted; " + allPlugins.Count + " left on it.");
+					return;
+				}
+				foreach (Plugin plugin in allPlugins) {
+					PluginKey key = (this.tags == null) ? null : this.tags[plugin] as PluginKey;
+					if (key != null) {
+						this.RemovePluginImpl(key, plugin).Delete();
+					}
 				}
 			}
 		}
+
+		private const int MaxDeletePluginsRounds = 100;
 
 		public bool HasPlugin(PluginKey pk) {
 			if (this.tags != null) {
