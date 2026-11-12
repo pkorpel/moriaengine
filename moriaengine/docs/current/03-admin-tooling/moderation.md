@@ -72,10 +72,15 @@ skirt, lands at a random spot of 356-505, 1177-1270 on plane 1, and is told how 
 **In the camp.**
 - Trees there give camp logs (`i_log_lager`, `r_lagr_tree`, #813), fixed in the pack. Convicts carry at most 250
   stones (40 x Str in tenths, Erebor's) and a log is 1 stone (`nastaveni_cm_weight_i_log_lager`). A chop over that says
-  "Vic toho nepoberes" and takes a log.
+  "Vic toho nepoberes" and takes a log; it is cancelled without a failure or a gain, as Erebor's `skill(-1)`.
 - One chop in 100 brings a peasant who nags five times, five seconds apart, then leaves.
 - No monster ambushes on plane 1 (Erebor's `randompotvora` skips it).
 - A player's blows and spells don't hurt another player there (`e_lagr_nodmg`).
+
+**The convict** is a `ConvictPlugin` (`p_convict`, #1480) on the character from the sentence to the release: Erebor's
+`tag.trestanec`, with the tags beside it as its fields (coins owed in hundredths, a GM's sentence Lumberjacking, and
+the murders, name and Lumberjacking given back). Its `@skillSuccess` is the chop rule above and the peasant
+(fixresource's convict part). The camp levels and "in the camp" stay on the account; the jail's state too.
 
 **The guard** (`c_h_strazce_lagru`), in Erebor's order:
 - *hi/ahoj/buy*: how many coins are still needed, or the recidivist's line.
