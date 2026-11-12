@@ -30,8 +30,8 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Cancel;
 		}
 
-		/// <remarks>The swap back removes this plugin and the mystic's paralysis, poison and bleeding inside @logout's loop: if
-		/// one of those sat right after this plugin, the older plugins miss @logout (#1468, the loop's gap to fix).</remarks>
+		/// <remarks>The swap back removes this plugin and the mystic's paralysis, poison and bleeding inside @logout's loop;
+		/// the older plugins still hear @logout (#1468).</remarks>
 		public void On_LogOut() {
 			if (this.Cont is Player self) {
 				MysticHypnosis.SwapBack(self, this, 0, false);

@@ -5,8 +5,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1445 - a character's shaman pacts (blood, mana, stamina): the one it gives (type, bearer), the one it bears
 	/// (type, giver, and i_pact's regen every 5 s and end) and the blood sharing's switch, Erebor's tags on both sides. One
-	/// plugin a character, whichever sides it holds: a mana pact may be the shaman's own, and a death never deletes another
-	/// plugin of its own holder this way (#1387's loop). It goes when it holds neither side.</summary>
+	/// plugin a character, whichever sides it holds: a mana pact may be the shaman's own. It goes when it holds neither
+	/// side.</summary>
 	[Dialogs.ViewableClass]
 	public partial class PactPlugin {
 		internal static readonly PluginKey Key = PluginKey.Acquire("_shamanPact_");

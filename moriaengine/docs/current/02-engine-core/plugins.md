@@ -46,6 +46,12 @@ plugin, `Plugin.Run` (`Plugin.cs:60`) runs:
 In a cancellable trigger, a plugin returning `1`/`true` (or `TriggerResult.Cancel`) cancels
 the action, exactly as a trigger group would.
 
+A handler may remove plugins of its holder, its own and others, during the trigger (#1387, #1468). A removed plugin
+doesn't run; the trigger goes on to the next plugin still on the holder, as a removed plugin keeps the link it had to
+the one after it. A plugin added during the trigger goes in at the front, behind the walk, so it hears the next trigger;
+but one removed and added again during the trigger runs when the walk reaches it, and the walk then goes on from the
+front, so the plugins newer than it hear the trigger twice (as before #1468).
+
 For a thing the full order of a trigger is (`Thing.TryCancellableTrigger`, `Thing.cs:542`;
 `AbstractItem.TryCancellableTrigger`, `AbstractItem.cs:517`):
 

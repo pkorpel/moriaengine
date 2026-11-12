@@ -115,8 +115,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <remarks>Inside its holder's @getSwingLanding this also removes the NPC's ImmobilePlugin and every paralysis
-		/// (Erebor's paralyze_remove). Safe while no other NPC plugin answers @getSwingLanding: a plugin removed right
-		/// after this one would end the loop (#1387).</remarks>
+		/// (Erebor's paralyze_remove); the trigger still reaches the NPC's other plugins (#1468).</remarks>
 		public void On_GetSwingLanding(WeaponSwingArgs swing) {
 			if (this.Cont is NPC npc) {
 				MysticMind.ReleaseFromField(npc, CatchFieldPlugin.Of(this.mystic));
