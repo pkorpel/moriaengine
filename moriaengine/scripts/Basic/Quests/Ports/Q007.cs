@@ -79,6 +79,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			QuestNpc.Attach(ChestDef, SingletonScript<E_Q007Chest>.Instance);
 			QuestNpc.Attach("i_rune_tinker", SingletonScript<E_Q007BlankRune>.Instance);
+			QuestNpc.Attach(HammerDef, SingletonScript<E_Q007Hammer>.Instance); //#1475
 			QuestItems.Register(Bow, "luk dryady");
 			QuestItems.Register(Piglet, "selatko");
 			QuestItems.Register(Stones[0], "mesicni kamen");
@@ -340,6 +341,21 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return TriggerResult.Cancel;
+		}
+	}
+
+	/// <summary>#1475 - i_adamantinum_kladivko's own @equip and @unequip.</summary>
+	public class E_Q007Hammer : CompiledTriggerGroup {
+		public void On_Equip(Item self, ItemInCharArgs args) {
+			if (args.Cont is Character ch) {
+				Q007.OnEquip(ch, self);
+			}
+		}
+
+		public void On_UnEquip(Item self, ItemInCharArgs args) {
+			if (args.Cont is Character ch) {
+				Q007.OnUnequip(ch, self);
+			}
 		}
 	}
 
