@@ -15,8 +15,6 @@ namespace SteamEngine.CompiledScripts {
 		private const string Frozen = "You are frozen and cannot move.";
 		private const double StunSeconds = 2;
 
-		private static readonly TagKey nextStunTK = TagKey.Acquire("_omraceniNext_");
-		private static readonly TagKey stunReadyTK = TagKey.Acquire("_zmrazeni_");
 		internal static readonly TimerKey roundAttackTK = TimerKey.Acquire("_roundAttack_");
 		private static readonly PluginKey stunKey = PluginKey.Acquire("_warriorStun_");
 
@@ -110,7 +108,12 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Tohle neni pro tebe");
 				return;
 			}
-			if (ClassAbilities.SecondsTag(self, nextStunTK) > Globals.TimeInSeconds) {
+			ProfessionPlugin plugin = ProfessionPlugin.GetInstalledPlugin(self); //#1459 - the stun's state is the profession plugin's
+			if (plugin == null) {
+				self.SysMessage("Tohle neni pro tebe");
+				return;
+			}
+			if (plugin.nextStun > Globals.TimeInSeconds) {
 				self.SysMessage("Abilitu jeste nemuzes pouzit.", ClassAbilities.ClassMessageHue);
 				return;
 			}
@@ -125,11 +128,11 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (ClassAbilities.ReduceStamina(self, 40)) {
-				self.SetTag(stunReadyTK, 1);
+				plugin.stunReady = true;
 				self.SysMessage("Muzes zasadit omracujici uder!");
-				self.SetTag(nextStunTK, Globals.TimeInSeconds + StunWindowSeconds(ClassAbilities.Points(self, "stuntattack_prodleva")));
+				plugin.nextStun = Globals.TimeInSeconds + StunWindowSeconds(ClassAbilities.Points(self, "stuntattack_prodleva"));
 			} else {
-				self.SetTag(nextStunTK, Globals.TimeInSeconds + 5);
+				plugin.nextStun = Globals.TimeInSeconds + 5;
 			}
 		}
 
@@ -178,17 +181,17 @@ namespace SteamEngine.CompiledScripts {
 			return limit + ((limit * koeficient) / 100);
 		}
 
-		/// <summary>e_stunattack's @AfterSwing.</summary>
-		internal static void TryStun(Player self, NPC target, int damage) {
-			if (self.GetTag(stunReadyTK) == null) {
+		/// <summary>e_stunattack's @AfterSwing, from the profession plugin's @afterHit (#1459).</summary>
+		internal static void TryStun(Player self, ProfessionPlugin plugin, NPC target, int damage) {
+			if (!plugin.stunReady) {
 				return;
 			}
-			self.RemoveTag(stunReadyTK);
+			plugin.stunReady = false;
 			Weapon weapon = self.Weapon;
 			if ((damage <= 0) || !CraftingSkillDef.IsOfType(weapon, "t_weapon_mace_smith")) {
 				return;
 			}
-			if (ClassAbilities.SecondsTag(self, nextStunTK) < Globals.TimeInSeconds) {
+			if (plugin.nextStun < Globals.TimeInSeconds) {
 				self.SysMessage("Prilis dlouho jsi " + (self.IsFemale ? "cekala" : "cekal") + " a rana ti nevysla.");
 				return;
 			}

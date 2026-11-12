@@ -211,8 +211,10 @@ the stance on a monster's. A blow's order is unchanged. The critical blow (the s
 buff steal on either side (#1457), then the jagged bolt; after the magic items' slayers, `@getSwingLanding`, then the
 dodge. Shield
 blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
-The stun blow and the critical blow are shared by several classes and are still plain calls (the counter itself is the
-profession plugin's since #1438). A profession
+The critical blow is shared by several classes and is still a plain call (the counter itself is the profession plugin's
+since #1438). The stun blow (`.omraceni`, warriors, priests and craftsmen, Erebor's `e_stunattack`) is the base profession
+plugin's since #1459: its readiness and window are its fields, and the blow lands in its `@afterHit`, once the damage is
+dealt. A profession
 change starts a fresh plugin: a stance and cooldowns don't carry over.
 
 ## Ranger
@@ -249,8 +251,8 @@ warrior's pattern. It holds what Erebor kept in the thief's tags:
 e_thief's @AfterSwing is its `@swingLanding`, in Erebor's order: the blow from behind and the throat slit, the war fork's
 charge, then the war fork's double swing, which spends the slit. Only a thief charges a war fork or strikes from behind
 now. Before, anyone fencing a war fork with a class counter could charge it, and stray `utok_do_zad` points struck from
-behind; on Erebor both were the thief's own event. The shield strike still runs
-from a direct call after the damage, beside the stun blow other classes share, with its state on the plugin. The mask
+behind; on Erebor both were the thief's own event. The shield strike lands in the thief's plugin's `@afterHit` (#1459), after
+the shared stun blow, with its state on the plugin. The mask
 and the knife immunity stay tags: the mask swaps the character's own identity and must outlast a profession change, and
 the immunity belongs to the target.
 

@@ -151,6 +151,14 @@ namespace SteamEngine.CompiledScripts {
 			WarriorAbilities.ShieldBlock((Character) this.Cont, swing);
 		}
 
+		/// <summary>#1459 - the stun blow (omraceni: warriors, priests, craftsmen) lands once a blow's damage is dealt; its
+		/// readiness and window are this plugin's (Erebor's tag.zmrazeni, tag.omraceni_next).</summary>
+		public virtual void On_AfterHit(WeaponSwingArgs swing, int damage) {
+			if ((this.Cont is Player self) && (swing.defender is NPC target) && !target.IsDeleted) {
+				WarriorAbilities.TryStun(self, this, target, damage);
+			}
+		}
+
 		public static ProfessionPlugin GetInstalledPlugin(Player player) {
 			return (ProfessionPlugin) player.GetPlugin(professionKey);
 		}

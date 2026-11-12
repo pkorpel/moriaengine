@@ -62,7 +62,7 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".TestWarriorAbilities");
 				Assert.True(this.fixture.WaitForGameOutput("WARRIOR_DONE", Wait), this.fixture.GameOutputSnapshot());
 				string output = this.fixture.GameOutputSnapshot();
-				foreach (string check in new[] { "roundAttackHitsWhoIsNear", "roundAttackLeavesTheRest", "warcryTakesOwnMana", "stunWindowsShrink",
+				foreach (string check in new[] { "roundAttackHitsWhoIsNear", "roundAttackLeavesTheRest", "warcryTakesOwnMana", "stunWindowsShrink", "theStunIsTheProfessionPlugins", "theStunLandsAtAfterHit", "aCraftsmansStunLandsToo", /*#1459*/
 						"stunLimitGrowsWithTheMetal", "plainMaceStunsNothing", "shieldsByMetal", "stanceOnCostsHalfStamina", "stanceOff",
 						"tauntTurnsItOnTheWarrior", "tauntingHardensIt", "aTauntedMonsterIsEvil", "leapNeedsAFight",
 						"theWarriorsPluginIsItsProfessionPlugin", "cooldownsAreThePlugins", "theStanceWeakensOwnBlowThroughTheTrigger", //#1429
@@ -112,7 +112,7 @@ namespace SteamEngine.Tests.Protocol {
 						"aKillChargesTheSpreeThroughTheTrigger", "theSpreeAddsThroughTheTrigger",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter", "theCounterIsTheProfessionPlugins", "deathTakesTheCounter", "aNewProfessionDropsTheCounter", //#1438
 						"theCounterIsOffAgain", "anAreaHoldsTheProbe", "theProbeWandersRoundItsPoint", "ebonyTurnsElvenNearTheProbe", "oneElvenLogOnly", "anElvenTreeHasNothingThere", "onlyCraftsmenMeetTheProbe", "farFromTheProbeEbonyStays",
-						"theThiefsPluginIsItsProfessionPlugin", "thiefStateIsThePlugins", "fromBehindWithASlitInTheSwing", "hidingIsNotedOnThePlugin", //#1433
+						"theThiefsPluginIsItsProfessionPlugin", "thiefStateIsThePlugins", "theShieldStrikeLandsAtAfterHit", /*#1459*/ "fromBehindWithASlitInTheSwing", "hidingIsNotedOnThePlugin", //#1433
 						"aStabIsUnderWay", "aVanishedTargetFreesTheBackstab", //#1436
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
 						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "theMaskSuggestsAName", "rentalInfoShowsTheOtherIdentity", "underIncognitoTheRuneIsRenamed", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "aPoisonedKnifePoisons", "strikeSpendsChargesOnThoseAround", "aWarForkSwingsTwice", "aFencingBlowSpendsTheSlit", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "aScrollGivesHalfBack", "noManaBackForOtherClasses", "notForRecall", //#1440
