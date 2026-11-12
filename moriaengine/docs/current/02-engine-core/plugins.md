@@ -77,7 +77,8 @@ plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `E
 and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `@step` instead comes too late: #767's collision with other characters
 (a shove, its stamina) runs before `@step`. After the step, `@stepTaken` (#1414, `AbstractCharacter.Trigger_StepTaken`,
 with `running`) tells it a step was really taken. It comes before `On_StepTaken`, only for a step (`@newPosition`
-fires for teleports too and has no `running`), and never for a GM. A voodoo curse throws its rider there (#1450).
+fires for teleports too and has no `running`), and never for a GM. A voodoo curse throws its rider there (#1450), and a
+mystic's concentration on a hypnosis breaks there (#1461).
 
 Experience has two (#1416, [leveling-experience.md](../04-gameplay-systems/leveling-experience.md)): `@gainExperience`,
 cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount` a handler may change (`BaseAmount`
