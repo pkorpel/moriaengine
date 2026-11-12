@@ -40,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool HasCheck(Character ch) {
-			return ch.HasTimer(AfkCheckTimer.Key) || ch.HasTimer(AfkCountdownTimer.Key);
+			return (AfkCheckPlugin.Of(ch) != null) || (AfkCountdownPlugin.Of(ch) != null); //#1473
 		}
 
 		private static long Now {
@@ -52,30 +52,28 @@ namespace SteamEngine.CompiledScripts {
 			if (HasCheck(player)) {
 				return;
 			}
-			AfkCountdownTimer timer = new AfkCountdownTimer();
-			timer.endsAt = Now + TimeSpan.FromSeconds(AfkSettings.instance.countdownSeconds).Ticks;
-			timer.action = ActionOf(player);
-			player.AddTimer(AfkCountdownTimer.Key, timer);
-			timer.PeriodInSeconds = 1;
-			timer.DueInSeconds = 0.1;
+			AfkCountdownPlugin countdown = (AfkCountdownPlugin) AfkCountdownPluginDef.instance.Create(); //#1473 - i_afk_countdown
+			countdown.endsAt = Now + TimeSpan.FromSeconds(AfkSettings.instance.countdownSeconds).Ticks;
+			countdown.action = ActionOf(player);
+			player.AddPlugin(AfkCountdownPlugin.Key, countdown);
+			countdown.Timer = 0.1;
 			AfkLogBook.Add(player, "odpocet pred AFK kontrolou", null);
 		}
 
 		/// <summary>userafk: the check now, with `seconds` to answer (0 = AfkSettings.answerSeconds).</summary>
 		public static void Start(Player player, int seconds, string action) {
-			if (player.HasTimer(AfkCheckTimer.Key)) {
+			if (AfkCheckPlugin.Of(player) != null) {
 				return;
 			}
 			if (seconds <= 0) {
 				seconds = AfkSettings.instance.answerSeconds;
 			}
-			AfkCheckTimer timer = new AfkCheckTimer();
+			AfkCheckPlugin timer = (AfkCheckPlugin) AfkCheckPluginDef.instance.Create(); //#1473 - i_afk_dialog
 			timer.letters = RandomLetters();
 			timer.endsAt = Now + TimeSpan.FromSeconds(seconds).Ticks;
 			timer.action = action ?? ActionOf(player);
-			player.AddTimer(AfkCheckTimer.Key, timer);
-			timer.PeriodInSeconds = 1;
-			timer.DueInSeconds = 1;
+			player.AddPlugin(AfkCheckPlugin.Key, timer);
+			timer.Timer = 1;
 			player.RedMessage(Loc<AfkLoc>.Get(player.Language).Check);
 			player.Sound(1153);
 			AfkLogBook.Add(player, "zacala AFK kontrola (" + seconds + " s)", null);
@@ -90,19 +88,19 @@ namespace SteamEngine.CompiledScripts {
 			return new string(letters);
 		}
 
-		internal static void Show(Player player, AfkCheckTimer timer) {
+		internal static void Show(Player player, AfkCheckPlugin timer) {
 			timer.shown = true;
 			player.Dialog(player, SingletonScript<D_AfkCheck>.Instance, new DialogArgs(timer.letters));
 		}
 
-		internal static int SecondsLeft(AfkCheckTimer timer) {
+		internal static int SecondsLeft(AfkCheckPlugin timer) {
 			return (int) Math.Ceiling((timer.endsAt - Now) / (double) TimeSpan.TicksPerSecond);
 		}
 
 		/// <summary>The dialog's OK: the letters anywhere in what was typed, in any case, as Erebor's strmatch.</summary>
 		internal static void Answer(Player player, string written) {
 			AfkLoc texts = Loc<AfkLoc>.Get(player.Language);
-			if (!(player.GetTimer(AfkCheckTimer.Key) is AfkCheckTimer timer)) {
+			if (!(AfkCheckPlugin.Of(player) is AfkCheckPlugin timer)) {
 				AfkLogBook.Add(player, "chyba pri AFK kontrole - chybel kontrolni item", null);
 				return;
 			}
@@ -111,7 +109,7 @@ namespace SteamEngine.CompiledScripts {
 					AfkLogBook.Add(player, "byl podezrele rychly pri AFK - zbyl cas " + SecondsLeft(timer) + "s", null);
 				}
 				player.SysMessage(texts.Correct);
-				player.DeleteTimer(AfkCheckTimer.Key);
+				timer.Delete();
 				WipeExpiredPeriods(player);
 				if (player.HasTag(failsTK)) {
 					CountCorrect(player);
@@ -126,8 +124,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>The time ran out.</summary>
-		internal static void TimedOut(Player player, AfkCheckTimer timer) {
-			player.DeleteTimer(AfkCheckTimer.Key);
+		internal static void TimedOut(Player player, AfkCheckPlugin timer) {
+			timer.Delete();
 			player.DialogClose(SingletonScript<D_AfkCheck>.Instance, 0);
 			player.SysMessage(Loc<AfkLoc>.Get(player.Language).TimeUp);
 			if (!DeservesCamp(player, timer)) {
@@ -151,7 +149,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>deservesLager: a failure within the period is counted and let go while there are some left; the one past
 		/// AfkSettings.allowedFailures ends the period and sends to the camp.</summary>
-		private static bool DeservesCamp(Player player, AfkCheckTimer timer) {
+		private static bool DeservesCamp(Player player, AfkCheckPlugin timer) {
 			AfkLoc texts = Loc<AfkLoc>.Get(player.Language);
 			AfkSettings settings = AfkSettings.instance;
 			if (!(player.GetTag(periodEndTK) is long end)) {
@@ -247,29 +245,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>e_afk_controlled's @login: a check whose time ran out while offline gets one more second.</summary>
-		internal static void OnLogin(Player player) {
-			AfkTrigger.EnsureRunning();
-			if (player.GetTimer(AfkCheckTimer.Key) is AfkCheckTimer timer) {
-				if (timer.endsAt < Now) {
-					AfkLogBook.Add(player, "se lognul " + (-SecondsLeft(timer)) + "s po konci AFK kontroly", null);
-					timer.endsAt = Now + TimeSpan.TicksPerSecond;
-				} else {
-					AfkLogBook.Add(player, "po lognuti zbyva " + SecondsLeft(timer) + "s do konce AFK kontroly", null);
-				}
-				timer.shown = false;
-			}
-		}
-
-		/// <summary>e_afk_controlled's @logout.</summary>
-		internal static void OnLogout(Player player) {
-			if (player.HasTimer(AfkCheckTimer.Key)) {
-				AfkLogBook.Add(player, "se odlogoval pri AFK kontrole", null);
-			} else if (player.HasTimer(AfkCountdownTimer.Key)) {
-				AfkLogBook.Add(player, "se odlogoval pri odpocitavani AFK kontroly", null);
-			}
-		}
-
 		/// <summary>One automatic round: every gathering or crafting player gets the warning.</summary>
 		internal static void Round() {
 			foreach (AbstractCharacter ch in new List<AbstractCharacter>(SteamEngine.Networking.GameServer.GetAllPlayers())) {
@@ -325,77 +300,6 @@ namespace SteamEngine.CompiledScripts {
 				AfkLogBook.Add(player, "AFK kontrolu pustil " + self.Name + ((seconds > 0) ? (" s limitem " + seconds + "s") : " s default limitem"), null);
 			}
 			return TargetResult.Done;
-		}
-	}
-
-	/// <summary>i_afk_dialog: the check, ticking each second. The red count every other second; a dialog that was answered
-	/// wrong or closed comes back.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class AfkCheckTimer : BoundTimer {
-		public static readonly TimerKey Key = TimerKey.Acquire("_afkCheck_");
-
-		[SaveableData, CopyableData]
-		public string letters;
-
-		[SaveableData, CopyableData]
-		public long endsAt;
-
-		[SaveableData, CopyableData]
-		public string action;
-
-		//not saved: after a restart or a login the dialog has to be sent again
-		internal bool shown;
-
-		[LoadingInitializer, DeepCopyImplementation]
-		public AfkCheckTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (!(cont is Player player) || player.IsDeleted || !player.IsOnline) {
-				return;
-			}
-			int left = AfkCheck.SecondsLeft(this);
-			if (left <= 0) {
-				AfkCheck.TimedOut(player, this);
-				return;
-			}
-			if (!this.shown) {
-				AfkCheck.Show(player, this);
-			} else if ((left % 2) == 1) {
-				player.RedMessage(string.Format(Loc<AfkLoc>.Get(player.Language).SecondsToCamp, left));
-			}
-		}
-	}
-
-	/// <summary>i_afk_countdown: the warning, a red line each second, then the check with what's left of its time.</summary>
-	[SaveableClass, DeepCopyableClass]
-	public class AfkCountdownTimer : BoundTimer {
-		public static readonly TimerKey Key = TimerKey.Acquire("_afkCountdown_");
-
-		[SaveableData, CopyableData]
-		public long endsAt;
-
-		[SaveableData, CopyableData]
-		public string action;
-
-		[LoadingInitializer, DeepCopyImplementation]
-		public AfkCountdownTimer() {
-		}
-
-		protected override void OnTimeout(TagHolder cont) {
-			if (!(cont is Player player) || player.IsDeleted || !player.IsOnline) {
-				return;
-			}
-			long now = DateTime.UtcNow.Ticks;
-			if (now < this.endsAt) {
-				int left = (int) Math.Ceiling((this.endsAt - now) / (double) TimeSpan.TicksPerSecond);
-				player.RedMessage(string.Format(Loc<AfkLoc>.Get(player.Language).CheckIn, left));
-				return;
-			}
-			player.DeleteTimer(Key);
-			long late = (now - this.endsAt) / TimeSpan.TicksPerSecond;
-			int seconds = (int) Math.Max(1, AfkSettings.instance.answerSeconds - late);
-			AfkCheck.Start(player, seconds, this.action);
 		}
 	}
 
@@ -492,7 +396,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!(gi.Cont is Player player)) {
 				return;
 			}
-			if (player.GetTimer(AfkCheckTimer.Key) is AfkCheckTimer timer) {
+			if (AfkCheckPlugin.Of(player) is AfkCheckPlugin timer) {
 				timer.shown = false; //an answer closes it on the client; the next tick shows it again if the check goes on
 			}
 			if (gr.PressedButton == OkButton) {

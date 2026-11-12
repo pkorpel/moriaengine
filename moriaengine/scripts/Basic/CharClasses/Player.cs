@@ -403,7 +403,6 @@ namespace SteamEngine.CompiledScripts {
 		/// that transition has actually completed.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
-			AfkCheck.OnLogout(this); //#1107 - e_afk_controlled @logout
 			//TODO: In safe/nonsafe areas, settings, etc.
 
 			if (LogoutSettings.instance.showLogoutEffect) {
@@ -446,7 +445,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				PowerBadge.PutBackOn(this); //#1037
 				Jail.OnLogin(this); //#1107
-				AfkCheck.OnLogin(this); //#1107 - e_afk_controlled @login
+				AfkTrigger.EnsureRunning(); //#1107 - the automatic rounds (a running check's own @login is AfkCheckPlugin's, #1473)
 				DelayedMessages.ShowAtLogin(this); //#901 - redmessage_me, message_me
 				WorldEvents.EnsureRunning(); //#1284 - the world events' clock
 				this.RefreshTitle();

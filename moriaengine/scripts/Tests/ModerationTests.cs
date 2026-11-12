@@ -134,14 +134,38 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestAfkState(Character self) {
-			string letters = (self.GetTimer(AfkCheckTimer.Key) as AfkCheckTimer)?.letters ?? "";
+			string letters = AfkCheckPlugin.Of(self)?.letters ?? ""; //#1473
 			int dots = 0;
 			foreach (char letter in letters) {
 				dots += D_AfkCheck.Points(letter).Count;
 			}
-			Console.WriteLine("AFK_STATE: check=" + self.HasTimer(AfkCheckTimer.Key) + " countdown=" + self.HasTimer(AfkCountdownTimer.Key) + " letters=" + letters + " dots=" + dots +
+			Console.WriteLine("AFK_STATE: check=" + (AfkCheckPlugin.Of(self) != null) + " countdown=" + (AfkCountdownPlugin.Of(self) != null) + " letters=" + letters + " dots=" + dots +
 				" fails=" + AfkCheck.Failures(self) + " inCamp=" + Camp.IsInCamp(self) + " afkLevel=" + Camp.Level(self.Account, true) + " owed=" + Camp.Sentence(self) +
 				" logged=" + AfkLogBook.Lines.Count + " |");
+		}
+
+		/// <summary>#1473 - a running check's own @login (a check that ran out offline gets one more second, the log notes it)
+		/// and @logout (the log notes it); then the check is dropped.</summary>
+		[SteamFunction]
+		public static void TestAfkLogInOut(Character self) {
+			AfkCheckPlugin check = AfkCheckPlugin.Of(self);
+			bool catchUp = false, loggedIn = false, loggedOut = false;
+			if (check != null) {
+				check.endsAt = DateTime.UtcNow.Ticks - (10 * TimeSpan.TicksPerSecond);
+				check.shown = true;
+				int lines = AfkLogBook.Lines.Count;
+				self.TryCancellableTrigger(TriggerKey.login, null);
+				long left = check.endsAt - DateTime.UtcNow.Ticks;
+				catchUp = (left > 0) && (left <= 2 * TimeSpan.TicksPerSecond) && !check.shown;
+				loggedIn = (AfkLogBook.Lines.Count == lines + 1) && AfkLogBook.Lines[lines].text.Contains("se lognul");
+				AfkCountdownPlugin warning = (AfkCountdownPlugin) AfkCountdownPluginDef.instance.Create(); //with a warning too: one line
+				self.AddPlugin(AfkCountdownPlugin.Key, warning);
+				self.TryTrigger(TriggerKey.logout, null);
+				warning.Delete();
+				loggedOut = (AfkLogBook.Lines.Count == lines + 2) && AfkLogBook.Lines[lines + 1].text.Contains("pri AFK kontrole");
+				check.Delete();
+			}
+			Console.WriteLine("AFK_INOUT: catchUp=" + catchUp + " loggedIn=" + loggedIn + " loggedOut=" + loggedOut + " |");
 		}
 
 		[SteamFunction]
