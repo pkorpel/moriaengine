@@ -1397,8 +1397,14 @@ namespace SteamEngine.CompiledScripts {
 
 		private static TriggerKey deathTK = TriggerKey.Acquire("death");
 		private static TriggerKey killTK = TriggerKey.Acquire("kill"); //#1431
+		private static TriggerKey denyDeathTK = TriggerKey.Acquire("denyDeath"); //#1463
 
 		public void CauseDeath(Character killedBy) {
+			//#1463 - Sphere's @death RETURN 1, before anything of the death happens: the first handler to cancel keeps this
+			//character alive (and @death isn't raised). Only a living character asks.
+			if (!this.Flag_Dead && (this.TryCancellableTrigger(denyDeathTK, new ScriptArgs(killedBy)) == TriggerResult.Cancel)) {
+				return;
+			}
 			if (MysticHypnosis.InterceptDeath(this, killedBy)) { //#1017 - a possessing mystic or its alter ego comes home instead
 				return;
 			}

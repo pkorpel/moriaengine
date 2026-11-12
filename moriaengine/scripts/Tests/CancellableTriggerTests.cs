@@ -7,6 +7,28 @@ namespace SteamEngine.CompiledScripts {
 	public static class CancellableTriggerTests {
 		private static readonly TriggerKey testTK = TriggerKey.Acquire("testcancellable");
 
+		/// <summary>#1463 - a trigger group cancelling @denyDeath keeps a rabbit alive through CauseDeath, with the killer as
+		/// the argument and no @death; without it the rabbit dies.</summary>
+		[SteamFunction]
+		public static void TestDenyDeath(Character self) {
+			NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);
+			E_DenyDeathProbe.denied = 0;
+			E_DenyDeathProbe.died = 0;
+			E_DenyDeathProbe.hostile = 0;
+			E_DenyDeathProbe.killer = null;
+			rabbit.AddTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance);
+			rabbit.CauseDeath((Character) self); //(Hits = 0 would call CauseDeath itself)
+			bool kept = !rabbit.IsDeleted && !rabbit.Flag_Dead;
+			string line = "CANCELLABLE_DENYDEATH: kept=" + kept + " asked=" + (E_DenyDeathProbe.denied == 1) +
+				" killer=" + (E_DenyDeathProbe.killer == self) + " noDeath=" + (E_DenyDeathProbe.died == 0) +
+				" beforeAnyStep=" + (E_DenyDeathProbe.hostile == 0);
+			if (!rabbit.IsDeleted) {
+				rabbit.RemoveTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance);
+				rabbit.CauseDeath((Character) self);
+			}
+			Console.WriteLine(line + " diesWithout=" + rabbit.IsDeleted + " |");
+		}
+
 		[SteamFunction]
 		public static void TestCancellableTrigger(Character self) {
 			TriggerGroup group = TriggerGroup.GetByDefname("e_test_cancellable");
@@ -64,6 +86,27 @@ namespace SteamEngine.CompiledScripts {
 				Console.WriteLine("CANCELLABLE_THROW_OTHER: " + e);
 				return false;
 			}
+		}
+	}
+
+	/// <summary>#1463 - @denyDeath: a probe that keeps its holder alive and counts @death.</summary>
+	public class E_DenyDeathProbe : CompiledTriggerGroup {
+		internal static int denied, died, hostile;
+		internal static Character killer;
+
+		public TriggerResult On_DenyDeath(Character self, Character killedBy) {
+			denied++;
+			killer = killedBy;
+			return TriggerResult.Cancel;
+		}
+
+		public void On_Death(Character self, Character killedBy) {
+			died++;
+		}
+
+		/// <summary>The death's first step raises it: a denial must come before.</summary>
+		public void On_HostileAction(Character self, Character enemy) {
+			hostile++;
 		}
 	}
 

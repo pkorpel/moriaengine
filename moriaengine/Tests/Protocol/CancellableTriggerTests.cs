@@ -20,6 +20,17 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1463 - a cancellable @denyDeath at the top of CauseDeath. Server side: TestDenyDeath in
+		/// scripts/Tests/CancellableTriggerTests.cs. The account's fifth character: the next Fact needs another account.</summary>
+		[Fact]
+		public void DenyDeathKeepsACharacterAlive() {
+			using (TestGameClient game = this.Login("Umirajici")) {
+				this.Run(game, ".TestDenyDeath", "CANCELLABLE_DENYDEATH:");
+				string line = this.LastLine("CANCELLABLE_DENYDEATH:");
+				Assert.True(line.Contains("kept=True asked=True killer=True noDeath=True beforeAnyStep=True diesWithout=True"), line + "\n" + this.fixture.GameOutputSnapshot());
+			}
+		}
+
 		/// <summary>#1372 - an item's and an account's Trigger and CancellableTrigger let a trigger group's exception through;
 		/// their Try versions don't. Server side: TestThrowingTrigger in scripts/Tests/CancellableTriggerTests.cs.</summary>
 		[Fact]

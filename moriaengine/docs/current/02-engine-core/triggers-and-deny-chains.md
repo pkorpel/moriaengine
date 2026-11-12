@@ -19,6 +19,17 @@ A character's `@denyMove` (#1386, `Character.CheckCanMove`) is a plain cancellab
 such a chain: it has no `DenyResult`, whatever returns Cancel holds the character still and
 sends its own message, if any (see [movement-and-collision.md](../04-gameplay-systems/movement-and-collision.md)).
 
+`@denyDeath` (#1463, args: the killer) is another: it is raised at the very top of `Character.CauseDeath`, only for a
+living character, and the first handler to return Cancel keeps the character alive. Nothing in `CauseDeath` happens
+then, and `@death` isn't raised; what a caller did before calling it (a blow's damage number, a blast on others) still
+happened. It is Sphere's `@death` RETURN 1; our `@death` itself stays where it was, partway through the death and not
+cancellable, so its handlers keep their order.
+- The character keeps the hits it had before the lethal change: the `Hits` setter asks for the death instead of writing
+  0, so a handler needn't restore them. A handler must not hurt or kill its own holder, which would come back here.
+- The killer argument is `Globals.SrcCharacter` for a death through the `Hits` setter (every blow, spell, poison and
+  bleed): on a timer that is whoever last sent a packet, or null (#1464). Some callers set `Hits = 0` and then call
+  `CauseDeath` again with the right killer, so a handler can be asked twice for one death: it must answer the same.
+
 ## DenyResult
 
 `DenyResult` (`GameCore/DenyResult.cs`) is an abstract base with an `Allow` bool and a
