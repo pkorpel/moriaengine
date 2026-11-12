@@ -26,9 +26,35 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey stateHolderTK = TagKey.Acquire("_bootStateHolder_");
 		private static readonly TagKey preStatsTK = TagKey.Acquire("_bootStatePreStats_");
 		private static readonly TagKey preRegenTK = TagKey.Acquire("_bootStatePreRegen_");
+		private static readonly TagKey preOrderTK = TagKey.Acquire("_bootStatePreOrder_");
 		private static readonly PluginKey paralyzeKey = PluginKey.Acquire("_bootTestParalyze_");
 		private static readonly PluginKey ignitionKey = PluginKey.Acquire("_bootTestIgnition_");
 		private static readonly PluginKey craftingKey = PluginKey.Acquire("_bootTestCrafting_");
+
+		/// <summary>#1483 - the order the holder's plugins hear its triggers in.</summary>
+		private static string ListOrder(PluginHolder holder) {
+			string order = "";
+			foreach (Plugin plugin in holder.GetNonSimplePlugins()) {
+				order += ((order.Length == 0) ? "" : ",") + plugin.Def.PrettyDefname;
+			}
+			return "[" + order + "]";
+		}
+
+		/// <summary>#1483 - a dupe's plugins hear its triggers in the original's order (an item: an NPC's AI timer can't be
+		/// copied).</summary>
+		private static bool CopyKeepsOrder(Character self) {
+			Item original = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+			int n = 0;
+			foreach (PluginDef def in new PluginDef[] { ConvictPluginDef.instance, CraftingProcessPluginDef.instance, HiddenPluginDef.instance, HungerPluginDef.instance }) {
+				original.AddNewPlugin(PluginKey.Acquire("_bootOrder" + (n++) + "_"), def);
+			}
+			Thing copy = original.Dupe();
+			bool same = (ListOrder(original) == ListOrder((PluginHolder) copy)) && (ListOrder(original).Split(',').Length >= 4);
+			Console.WriteLine("BOOT_ORDER: original=" + ListOrder(original) + " copy=" + ListOrder((PluginHolder) copy));
+			copy.Delete();
+			original.Delete();
+			return same;
+		}
 
 		private static string Stats(Character ch) {
 			return ch.Str + "," + ch.Dex + "," + ch.Int + "," + ch.MaxHits + "," + ch.MaxMana + "," + ch.MaxStam;
@@ -80,8 +106,10 @@ namespace SteamEngine.CompiledScripts {
 				SnoopingPlugin snoop = (SnoopingPlugin) self.AddNewPlugin(SnoopingPlugin.snoopedPluginKey, SnoopingPluginDef.instance);
 				snoop.Timer = 7200;
 
+				self.SetTag(preOrderTK, ListOrder(self));
 				Console.WriteLine("BOOT_STATES: setup sheepBefore=" + sheep.GetTag(preStatsTK) + " sheepDiscorded=" + Stats(sheep) +
-					" regenBefore=" + self.GetTag(preRegenTK) + " regenIgnited=" + self.HitsRegenSpeed);
+					" regenBefore=" + self.GetTag(preRegenTK) + " regenIgnited=" + self.HitsRegenSpeed + " copyKeepsOrder=" + CopyKeepsOrder(self) +
+					" pluginOrder=" + self.GetTag(preOrderTK));
 				return;
 			}
 
@@ -102,6 +130,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			string line = "found=" + (player != null) + "," + (sheepAgain != null) + "," + (daggerAgain != null);
 			if ((player != null) && (sheepAgain != null) && (daggerAgain != null)) {
+				//#1483 - the player's plugins hear its triggers in the order they did before the save
+				line += " sameOrder=" + (ListOrder(player) == (player.GetTag(preOrderTK) as string)) + " orderNow=" + ListOrder(player)
+					+ " orderBefore=" + player.GetTag(preOrderTK);
 				line += " queue=" + (sheepAgain.GetPlugin(PluginKey.Acquire("_combatPlugin_")) is WeaponSkillTargetQueuePlugin)
 					+ " tracker=" + (player.GetPlugin(PluginKey.Acquire("_weaponSkillTarget_")) is WeaponSkillTargetTrackerPlugin)
 					+ " paralyze=" + (player.GetPlugin(paralyzeKey) is ParalyzeEffectPlugin)

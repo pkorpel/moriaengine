@@ -25,6 +25,9 @@ namespace SteamEngine {
 		internal PluginHolder cont;
 		internal Plugin prevInList;
 		internal Plugin nextInList;
+		//#1483 - set as its holder is loaded or copied: where it stood in the list it came from (lower = nearer the head),
+		//read only by the inserts then. int.MinValue for one added live, the newest, ahead of those still coming in.
+		internal int listOrder = int.MinValue;
 
 		internal PluginDef def;
 
