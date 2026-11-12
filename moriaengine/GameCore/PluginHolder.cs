@@ -105,9 +105,10 @@ namespace SteamEngine {
 
 		private void DelayedGetCopy_SetPluginAsNonSimple(object resolvedObject) {
 			Plugin plugin = (Plugin) resolvedObject;
+			plugin.prevInList = null; //#1468 - both links, always, as AddPlugin
+			plugin.nextInList = this.firstPlugin;
 			if (this.firstPlugin != null) {
 				this.firstPlugin.prevInList = plugin;
-				plugin.nextInList = this.firstPlugin;
 			}
 			this.firstPlugin = plugin;
 		}
@@ -319,16 +320,30 @@ namespace SteamEngine {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>#1387 - the plugin a trigger goes on to after running one: the one after it, but a plugin that left
-		/// this holder while it ran has no next any more (RemovePluginImpl), so then the one that was after it before
-		/// it ran, if that one is still here. A plugin that removes itself and the one after it stops the trigger, as
-		/// the rest of the list can't be found from either.</summary>
+		/// <summary>#1387, #1468 - the plugin a trigger goes on to after running one: the first still on this holder after
+		/// it. A removed plugin keeps the next it had (RemovePluginImpl), as a removed trigger group's node does (#1389),
+		/// so the walk goes on past any number of plugins its handler removed, itself and those after it included.
+		/// (nextBefore, read before it ran, is where to start if it has left without a next.) A walk that somehow doesn't
+		/// end within the cap stops the trigger rather than hang the server.</summary>
 		private Plugin NextPluginAfter(Plugin ran, Plugin nextBefore) {
+			Plugin candidate;
 			if (ran.cont == this) {
-				return ran.nextInList;
+				candidate = ran.nextInList;
+			} else if (ran.cont == null) {
+				candidate = ran.nextInList ?? nextBefore;
+			} else {
+				candidate = nextBefore; //it moved to another holder: its next is in that one's list
 			}
-			return ((nextBefore != null) && (nextBefore.cont == this)) ? nextBefore : null;
+			for (int steps = 0; (candidate != null) && (candidate.cont != this); steps++) {
+				if ((candidate.cont != null) || (steps >= MaxDetachedWalk)) {
+					return null; //on another holder now (its next is in that list), or a walk that doesn't end
+				}
+				candidate = candidate.nextInList;
+			}
+			return candidate;
 		}
+
+		private const int MaxDetachedWalk = 10000;
 
 		#endregion Trigger() methods
 
@@ -399,9 +414,10 @@ namespace SteamEngine {
 		private void DelayedLoad_Plugin(object resolvedObject, string filename, int line, object pluginKey) {
 			Plugin plugin = (Plugin) resolvedObject;
 			this.AddPluginImpl((PluginKey) pluginKey, plugin);
+			plugin.prevInList = null; //#1468 - both links, always, as AddPlugin
+			plugin.nextInList = this.firstPlugin;
 			if (this.firstPlugin != null) {
 				this.firstPlugin.prevInList = plugin;
-				plugin.nextInList = this.firstPlugin;
 			}
 			this.firstPlugin = plugin;
 		}
@@ -425,9 +441,10 @@ namespace SteamEngine {
 		#region IPluginHolder Members
 		public Plugin AddPlugin(PluginKey pk, Plugin plugin) {
 			this.AddPluginImpl(pk, plugin);
+			plugin.prevInList = null; //#1468 - a plugin removed before keeps its old next: set both
+			plugin.nextInList = this.firstPlugin;
 			if (this.firstPlugin != null) {
 				this.firstPlugin.prevInList = plugin;
-				plugin.nextInList = this.firstPlugin;
 			}
 			this.firstPlugin = plugin;
 			object scriptedRetVal, compiledRetVal;
@@ -437,6 +454,8 @@ namespace SteamEngine {
 
 		public Plugin AddPluginAsSimple(PluginKey pk, Plugin plugin) {
 			this.AddPluginImpl(pk, plugin);
+			plugin.prevInList = null; //#1468 - not in the list: no links, even if it was in one before (the save tells by them)
+			plugin.nextInList = null;
 			object scriptedRetVal, compiledRetVal;
 			plugin.TryRun(TriggerKey.assign, null, out scriptedRetVal, out compiledRetVal);
 			return plugin;
@@ -539,7 +558,8 @@ namespace SteamEngine {
 			}
 			plugin.cont = null;
 			plugin.prevInList = null;
-			plugin.nextInList = null;
+			//#1468 - its nextInList stays: a trigger loop that ran it (or reached it) walks on from there to the first one still
+			//here (NextPluginAfter). AddPlugin/AddPluginAsSimple and the load and copy paths set both links again.
 			object scriptedRetVal, compiledRetVal;
 			plugin.TryRun(TriggerKey.unAssign, new ScriptArgs(this), out scriptedRetVal, out compiledRetVal);
 			return plugin;
