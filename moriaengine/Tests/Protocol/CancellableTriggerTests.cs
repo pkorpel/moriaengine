@@ -53,6 +53,7 @@ namespace SteamEngine.Tests.Protocol {
 					this.AssertChecks("selfRemoved" + way, "otherRemoved" + way, "selfAndNextRemoved" + way, "readdedForgetsItsOldNext" + way); //#1468
 				}
 				this.AssertChecks("talentOutlivesDeath", "effectEndsAtDeath", "deletePluginsLeavesAMovedOne", "deletePluginsReaddedGoes", "deletePluginsAddedGoes"); //#1479
+				this.AssertChecks("deletedPluginIsDeleted", "deletePluginMarksIt"); //#1489
 			}
 		}
 

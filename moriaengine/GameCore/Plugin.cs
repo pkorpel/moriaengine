@@ -99,6 +99,15 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1489 - its own flag, set as it's deleted. TagHolder's is false for anything that doesn't override it, so
+		/// a deleted plugin used to read as alive: to scripts, and to a save, which kept one a tag or field still referred to
+		/// and brought it back after a load.</summary>
+		public override bool IsDeleted {
+			get {
+				return this.isDeleted;
+			}
+		}
+
 		public override void Delete() {
 			if (this.cont != null) {
 				this.cont.RemovePlugin(this);
@@ -140,6 +149,7 @@ namespace SteamEngine {
 				if (this.cont != null) {
 					this.cont.RemovePlugin(this);
 				}
+				this.isDeleted = true; //#1489
 				base.Delete();
 
 				throw new SEException("No PluginDef reference loaded for this "+this.GetType().Name+". Deleting.");
