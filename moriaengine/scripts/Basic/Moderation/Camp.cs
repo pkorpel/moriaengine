@@ -16,6 +16,8 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey levelTK = TagKey.Acquire("_campLevel_");
 		private static readonly TagKey afkLevelTK = TagKey.Acquire("_campAfkLevel_");
 		private static readonly TagKey inCampTK = TagKey.Acquire("_inCamp_");
+		//#1481 - on a character of an account in the camp that isn't the convict, Erebor's tag.lagrjail
+		private static readonly TagKey waitsInJailTK = TagKey.Acquire("_campWaitsInJail_");
 		//#1480 - on the character, trestanec and the tags beside it: ConvictPlugin
 
 		internal const string Area = "a_Lagr";
@@ -240,6 +242,25 @@ namespace SteamEngine.CompiledScripts {
 			who.SysMessage(Loc<CampLoc>.Get(who.Language).Released);
 			Point4D home = (who as Player)?.Home ?? PlayerCreation.startingPosition;
 			who.Go(home);
+		}
+
+		/// <summary>#1481 - the player login's lagr part (sphereevents.scp): while the account is in the camp, its other
+		/// characters wait in the jail; the first login after the account is out sends such a one home.</summary>
+		internal static void OnLogin(Character who) {
+			if (IsInCamp(who) && !IsConvict(who)) {
+				who.SetTag(waitsInJailTK, true);
+				Point4D jail = Jail.JailPoint;
+				if (jail != null) {
+					who.Go(jail);
+				}
+			} else if (!IsInCamp(who) && who.HasTag(waitsInJailTK)) {
+				who.RemoveTag(waitsInJailTK);
+				who.Go((who as Player)?.Home ?? PlayerCreation.startingPosition);
+			}
+		}
+
+		internal static bool WaitsInJail(Character who) {
+			return who.HasTag(waitsInJailTK);
 		}
 
 		/// <summary>lagrodvolat / afklagrodvolat: a GM lowers a level; one in the camp is released first.</summary>

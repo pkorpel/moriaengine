@@ -90,6 +90,11 @@ the murders, name and Lumberjacking given back). Its `@skillSuccess` is the chop
 - *jidlo*: fed.
 - *propustit*: enough coins release the convict; fewer are paid in and the rest is said.
 
+**The account's other characters** (#1481, Erebor's player login): while the account is in the camp, any other of its
+characters that logs in is sent to the jail point and marked (Erebor's `tag.lagrjail`); the first login after the
+account is out sends it home. It isn't jailed (no redirect of its moves), as on Erebor. One still online when the
+account comes out stays in the jail until its next login, and a release doesn't clear the mark, as on Erebor.
+
 **Release.** The tools, up to 10000 camp logs and all coins go. Name, murders and Lumberjacking come back, and the
 character goes to their home. What went to the bank stays there.
 

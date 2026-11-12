@@ -445,6 +445,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				PowerBadge.PutBackOn(this); //#1037
 				Jail.OnLogin(this); //#1107
+				Camp.OnLogin(this); //#1481 - the account's other characters wait in the jail while it's in the camp
 				AfkTrigger.EnsureRunning(); //#1107 - the automatic rounds (a running check's own @login is AfkCheckPlugin's, #1473)
 				DelayedMessages.ShowAtLogin(this); //#901 - redmessage_me, message_me
 				WorldEvents.EnsureRunning(); //#1284 - the world events' clock
