@@ -84,7 +84,8 @@ and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `
 (a shove, its stamina) runs before `@step`. After the step, `@stepTaken` (#1414, `AbstractCharacter.Trigger_StepTaken`,
 with `running`) tells it a step was really taken. It comes before `On_StepTaken`, only for a step (`@newPosition`
 fires for teleports too and has no `running`), and never for a GM. A voodoo curse throws its rider there (#1450), and a
-mystic's concentration on a hypnosis breaks there (#1461).
+mystic's concentration on a hypnosis breaks there (#1461). A hidden character's step
+reveals it there (#1478, `HiddenPlugin`).
 
 Experience has two (#1416, [leveling-experience.md](../04-gameplay-systems/leveling-experience.md)): `@gainExperience`,
 cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount` a handler may change (`BaseAmount`
@@ -291,6 +292,10 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   (lockpicking, crafting, gathering, taming, the bard skills, healing, the shaman's pacts, the
   custom scrolls' casting rule) still call `PlayerHunger`, which reads the plugin. A cast the
   casting rules refuse still hurts (#1401): Erebor's hungryhurts was its `@spellcast`'s first line.
+- **Hiding's step reveal** (#1478): `HiddenPlugin` (`p_hidden`) is on a character while it is hidden or
+  invisible by magic; `Character.Trigger_VisibilityChange` adds and removes it. Its `@stepTaken` runs
+  `HidingSkillDef.OnStep` (Stealth's roll, the reveal), which `Character.On_StepTaken` used to call for every step of
+  every character.
 
 ## Related
 

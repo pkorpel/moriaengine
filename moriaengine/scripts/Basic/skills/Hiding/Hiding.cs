@@ -77,8 +77,8 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void Hide(Character self) {
+			self.Flag_Hidden = true; //#1478 - first, so someone invisible keeps one p_hidden
 			self.Flag_InvisByMagic = false;
-			self.Flag_Hidden = true;
 			ThiefAbilities.NoteHidden(self); //#1017 - when the backstab's wait starts
 		}
 

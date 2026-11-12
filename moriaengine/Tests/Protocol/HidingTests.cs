@@ -39,6 +39,7 @@ namespace SteamEngine.Tests.Protocol {
 			string skilled = this.Ask(client, ".TestHideSteps", "HIDE_STEPS:");
 			Assert.Contains("ran=0", skilled);
 			Assert.Contains("stayed=100", skilled);
+			Assert.Contains("pluginFollows=True", skilled); //#1478
 
 			//none is caught at once, dark or not
 			this.Ask(client, ".TestHideReady \"0\"", "HIDE_READY:");

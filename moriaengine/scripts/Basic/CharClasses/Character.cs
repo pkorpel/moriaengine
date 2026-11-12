@@ -561,6 +561,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private static TriggerKey visibilityChangeTK = TriggerKey.Acquire("visibilityChange");
 		public void Trigger_VisibilityChange() {
+			if (!this.IsDeleted) {
+				HiddenPlugin.Sync(this); //#1478 - while hidden or invisible by magic
+			}
 			this.TryTrigger(visibilityChangeTK, null);
 			this.On_VisibilityChange();
 		}
@@ -2250,7 +2253,6 @@ namespace SteamEngine.CompiledScripts {
 
 		//#779 walking stamina drain
 		public override void On_StepTaken(bool running) {
-			HidingSkillDef.OnStep(this, running); //#962 - Sphere's CheckRevealOnMove
 			if (this.GetTag(EreborVendor.SessionTK) != null) {
 				EreborVendors.EndSession(this); //#1017 - e_vendor_check: a step ends dealing with a vendor
 			}
