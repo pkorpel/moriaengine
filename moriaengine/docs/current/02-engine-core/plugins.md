@@ -31,10 +31,10 @@ holder's trigger list, so it hears none of the holder's triggers. It still gets 
 
 ## How triggers reach a plugin
 
-`PluginHolder.Trigger`, `TryTrigger`, `CancellableTrigger` and `TryCancellableTrigger`
-(`PluginHolder.cs:225-308`) run the holder's own trigger groups (its `EVENTS`), then each
-plugin in the trigger list, newest first (`AddPlugin` puts a plugin at the front). For each
-plugin, `Plugin.Run` (`Plugin.cs:60`) runs:
+`PluginHolder.Trigger`, `TryTrigger`, `CancellableTrigger` and `TryCancellableTrigger` run
+the holder's own trigger groups (its `EVENTS`), then each plugin in the trigger list, newest
+first (`AddPlugin` puts a plugin at the front; a save and load and a dupe keep the order,
+#1483). For each plugin, `Plugin.Run` runs:
 
 1. the scripted triggers of its def: the `on=@x` lines in the def's script section;
 2. the compiled triggers of its class: every public method named `On_x`. These are collected
@@ -249,6 +249,10 @@ section with its def and fields:
 def=#p_regenerations
 ...
 ```
+
+The list's plugins are saved head first and loaded back by the line each was read from
+(`InsertByListOrder`), so after a restart they hear triggers in the order they did before (#1483: the save used to
+follow the tags Hashtable and the load put each at the front, an arbitrary order). A dupe keeps the order the same way.
 
 On load, a plugin whose def can't be found is deleted with an error
 (`Plugin.LoadingFinished`). So a plugin def must be registered before the world loads,

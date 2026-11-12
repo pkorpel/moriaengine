@@ -26,6 +26,8 @@ namespace SteamEngine.Tests.Protocol {
 					string setup = Ask(fixture1, client, ".TestBootStates \"setup\"", "BOOT_STATES: setup");
 					Assert.NotEqual(Value(setup, "sheepBefore"), Value(setup, "sheepDiscorded"));
 					Assert.NotEqual(Value(setup, "regenBefore"), Value(setup, "regenIgnited"));
+					Assert.True(Value(setup, "copyKeepsOrder") == "True", "A dupe's plugins changed order (#1483): " + setup);
+					Assert.True(Value(setup, "pluginOrder").Split(',').Length >= 6, "Too few plugins for the order check: " + setup);
 					Ask(fixture1, client, ".TestTriggerGlobalSave", "TEST_SAVE: done");
 				}
 			}
@@ -37,6 +39,7 @@ namespace SteamEngine.Tests.Protocol {
 				}
 				Assert.True(problems.Count == 0, problems.Count + " at boot:\n" + string.Join("\n", problems) + "\n" + check);
 				Assert.Contains("found=True,True,True", check);
+				Assert.True(Value(check, "sameOrder") == "True", "The plugins' order didn't survive the restart (#1483): " + check);
 				foreach (string state in new[] { "queue", "tracker", "paralyze", "discord", "warcry", "charge", "ignition", "poison", "crafting", "snoop" }) {
 					Assert.True(Value(check, state) == "True", state + " didn't survive the restart: " + check);
 				}
