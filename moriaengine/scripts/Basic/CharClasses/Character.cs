@@ -2250,7 +2250,6 @@ namespace SteamEngine.CompiledScripts {
 		//#779 walking stamina drain
 		public override void On_StepTaken(bool running) {
 			HidingSkillDef.OnStep(this, running); //#962 - Sphere's CheckRevealOnMove
-			MysticHypnosis.OnStep(this); //#1017 - a step breaks the hypnosis' concentration
 			if (this.GetTag(EreborVendor.SessionTK) != null) {
 				EreborVendors.EndSession(this); //#1017 - e_vendor_check: a step ends dealing with a vendor
 			}
