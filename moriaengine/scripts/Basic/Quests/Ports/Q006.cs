@@ -279,8 +279,21 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1264 - i_roba_alchemisty's @UserClick. Its @equip/@unequip run from Character.On_ItemEquip.</summary>
+	/// <summary>#1264 - i_roba_alchemisty's click line, and (#1475) its own @equip and @unequip.</summary>
 	public class E_Q006Robe : CompiledTriggerGroup {
+		/// <summary>#1475 - i_roba_alchemisty's own @equip and @unequip.</summary>
+		public void On_Equip(Item self, ItemInCharArgs args) {
+			if (args.Cont is Character ch) {
+				Q006.OnEquip(ch, self);
+			}
+		}
+
+		public void On_UnEquip(Item self, ItemInCharArgs args) {
+			if (args.Cont is Character ch) {
+				Q006.OnUnequip(ch, self);
+			}
+		}
+
 		public TriggerResult On_Click(Item self, Character clicker) {
 			if (clicker is Player player) {
 				self.ClickMessage(player, "+ 10% ke skillu Alchemy");

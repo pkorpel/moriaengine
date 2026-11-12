@@ -50,6 +50,7 @@ namespace SteamEngine.CompiledScripts {
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
 			QuestNpc.Attach(TailorDef, SingletonScript<E_Q009Tailor>.Instance);
+			QuestNpc.Attach(RingDef, SingletonScript<E_Q009Ring>.Instance); //#1475
 		}
 
 		public static int GetStage(Player player) {
@@ -168,6 +169,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 		#endregion the ring
+	}
+
+	/// <summary>#1475 - i_q009_ring_tailor's own @equip and @unequip.</summary>
+	public class E_Q009Ring : CompiledTriggerGroup {
+		public void On_Equip(Item self, ItemInCharArgs args) {
+			if (args.Cont is Character ch) {
+				Q009.OnEquip(ch, self);
+			}
+		}
+
+		public void On_UnEquip(Item self, ItemInCharArgs args) {
+			if (args.Cont is Character ch) {
+				Q009.OnUnequip(ch, self);
+			}
+		}
 	}
 
 	/// <summary>#1270 - Talathwen, Erebor's f_q009_krejci and d_q009_krejci_1..6.</summary>
