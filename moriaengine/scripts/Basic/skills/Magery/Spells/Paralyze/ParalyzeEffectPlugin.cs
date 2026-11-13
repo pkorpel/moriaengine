@@ -45,6 +45,22 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#1507 - s_paralyze: Erebor has no custom effect for spell 38, so dospell_final runs its else branch,
+	/// paralyze({200 300}): 20 to 30 s at random, whatever the power and nastaveni_spellduration (the power only decides
+	/// whether it lands, by the resist roll).</summary>
+	[ViewableClass]
+	public class ParalyzeDurableSpellDef : DurableCharEffectSpellDef {
+		private const int ShortestTenths = 200, LongestTenths = 300;
+
+		public ParalyzeDurableSpellDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+		}
+
+		protected override TimeSpan EffectDuration(SpellEffectArgs spellEffectArgs) {
+			return TimeSpan.FromSeconds(Globals.dice.Next(ShortestTenths, LongestTenths + 1) / 10.0);
+		}
+	}
+
 	[ViewableClass]
 	public partial class ParalyzeEffectPluginDef {
 		public static readonly ParalyzeEffectPluginDef instance = (ParalyzeEffectPluginDef)

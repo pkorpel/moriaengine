@@ -34,6 +34,7 @@ namespace SteamEngine.CompiledScripts {
 				SummonsReallyAppear(self);
 				ACastTakesTheCastersPower(self); //#1420
 				AReflectionGoesBackFromTheReflector(self); //#1420
+				AParalyzeRollsAgainstTheDefense(self); //#1507
 			} finally {
 				VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			}
@@ -263,6 +264,54 @@ namespace SteamEngine.CompiledScripts {
 					left.Delete(); //never used up: the check failed
 				}
 				self.Account.PLevel = (byte) plevel;
+			}
+		}
+
+		/// <summary>#1507 - Paralyze rolls its power (cut by the target's ResistParalyse) against the defense, as Erebor's
+		/// dospellcustom_donesrc does for a spell without spellflag_SM, instead of subtracting it; and it lasts 20-30 s
+		/// (dospell_final's paralyze({200 300})), not 10 + 50 s per 1000 of power. On an NPC target the defense is its
+		/// Magic Resist; the caster's Eval Int puts the power between the defense and twice it, where the roll (47.5-52.5 %
+		/// of the power) never reaches the defense but power - defense is still above 0.</summary>
+		private static void AParalyzeRollsAgainstTheDefense(Character self) {
+			DurableCharEffectSpellDef paralyze = (DurableCharEffectSpellDef) SpellDef.GetByDefname("s_paralyze");
+			NPC caster = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_power_caster")).Create(self.X + 1, self.Y, self.Z, self.M);
+			NPC guarded = Dummy(self);
+			NPC open = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y + 1, self.Z, self.M);
+			try {
+				guarded.SetRealSkillValue((int) SkillName.MagicResist, 1000);
+				guarded.InvalidateCombatWeaponValues();
+				open.SetRealSkillValue((int) SkillName.MagicResist, 0);
+				open.InvalidateCombatWeaponValues();
+				int defense = CombatCalculator.GetSpellDefense(caster, guarded);
+				double kept = 1 - (guarded.ResistParalyse / 1000.0);
+				MagerySettings settings = MagerySettings.instance;
+				int evalInt = (int) Math.Ceiling((defense * 1.5) / (10 * settings.spellPowerMonster * settings.spellPowerVsM * Math.Max(kept, 0.01)));
+				caster.SetRealSkillValue((int) SkillName.EvalInt, evalInt);
+				caster.InvalidateCombatWeaponValues();
+				int power = (int) ((caster.MindPowerVsM * 10) * settings.spellPowerMonster * settings.spellPowerVsM);
+				int afterResist = power - ((power * guarded.ResistParalyse) / 1000);
+				bool window = (defense > 0) && ((afterResist * 525) / 1000 < defense) && (afterResist > defense);
+
+				int landed = 0;
+				for (int i = 0; i < 20; i++) {
+					paralyze.EffectChar(caster, guarded, EffectFlag.FromSpellBook);
+					if (ParalyzeEffectPluginDef.IsParalyzed(guarded)) {
+						landed++;
+						ParalyzeEffectPluginDef.Unparalyze(guarded);
+					}
+				}
+
+				paralyze.EffectChar(caster, open, EffectFlag.FromSpellBook);
+				TimerPlugin onOpen = open.GetPlugin(paralyze.EffectPluginKey_Spell) as TimerPlugin;
+				double seconds = (onOpen == null) ? -1 : onOpen.Timer;
+				Console.WriteLine("SPELL_CHOICE_INFO: paralyze defense=" + defense + " power=" + power + " afterResist=" + afterResist + " window=" + window
+					+ " landedOf20=" + landed + " openSeconds=" + seconds);
+				Report("aParalyzeRollsAgainstTheDefense", window && (landed == 0));
+				Report("aParalyzeLastsTwentyToThirty", (seconds >= 19.5) && (seconds <= 30.01));
+			} finally {
+				caster.Delete();
+				guarded.Delete();
+				open.Delete();
 			}
 		}
 

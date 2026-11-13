@@ -1,4 +1,4 @@
-[DurableCharEffectSpellDef 38]
+[ParalyzeDurableSpellDef 38]
 DEFNAME=s_paralyze
 NAME=Paralyze
 SOUND=0x204
