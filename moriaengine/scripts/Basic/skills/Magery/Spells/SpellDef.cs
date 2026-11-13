@@ -764,11 +764,13 @@ namespace SteamEngine.CompiledScripts {
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower, currentTarget);
 			spellPower = ShamanAbilities.Concentrate(caster, currentTarget, this, spellPower); //#1017 - Koncentrace
 			spellPower = this.TriggerSpellPower(caster, mainTarget, currentTarget, spellPower); //#1419 - @spellPower, before the defense
-			if (usesMindPower) {
+			if (this.resistRoll != null) {
+				//#1507 - Erebor's ismpdepend is false for paralyze and poison (no spellflag_SM): they roll against the defense,
+				//whatever our UseMindPower flag says (it picks the mind power, which they take either way)
+				spellPower = this.RollAgainstDefense(caster, currentTarget, spellPower);
+			} else if (usesMindPower) {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
 				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);
-			} else if (this.resistRoll != null) {
-				spellPower = this.RollAgainstDefense(caster, currentTarget, spellPower);
 			}
 			return MagicCombat.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - magic items' slayers, after the defense
 		}
@@ -779,7 +781,8 @@ namespace SteamEngine.CompiledScripts {
 			int basePower = this.BasePowerAgainst(caster, target);
 			if (this.UsesMindPowerOrRoll) {
 				int spellPower = (int) (basePower * this.GetMindPowerMultiplier(caster, target, false));
-				return ((this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower) ? (spellPower - CombatCalculator.GetSpellDefense(caster, target)) : spellPower;
+				return ((this.resistRoll == null) && ((this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower)) ?
+					(spellPower - CombatCalculator.GetSpellDefense(caster, target)) : spellPower; //#1507 - a rolled spell keeps its power
 			}
 			return basePower;
 		}
