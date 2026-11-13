@@ -171,9 +171,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1412 - a harmful spell's damage counts too: Erebor raised the vine's @aftergetswing in damage_final, which
-		/// damagecust (spells) went through as well as a blow. A blow counts at @getHit above, not here.</summary>
+		/// damagecust (spells) went through as well as a blow; #1511 - so did an ability's damagecust/damage hit. A blow
+		/// counts at @getHit above, not here.</summary>
 		public void On_Damage(DamageArgs args) {
-			if (args.isSpell) {
+			if (args.isSpell || args.isCustom) {
 				this.CountHit();
 			}
 		}

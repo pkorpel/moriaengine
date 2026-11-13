@@ -187,7 +187,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, range)) {
 				Character target = ch as Character;
 				if (IsValidRoundattackTarget(self, target)) {
-					DamageManager.CauseDamage(self, target, self.WeaponDamageType, damage);
+					DamageManager.CauseCustomDamage(self, target, self.WeaponDamageType, damage); //#1511 - the native damage(), e_gethit
 				}
 			}
 		}

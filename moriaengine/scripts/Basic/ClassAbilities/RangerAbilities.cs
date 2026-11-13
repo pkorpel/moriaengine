@@ -301,7 +301,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Character victim in hit) {
 				int permille = SplitPermille(points, victim.IsPlayer ? settings.splitShotDamageVsP : settings.splitShotDamageVsM, Point2D.GetSimpleDistance(victim, target));
 				double damage = (DamageManager.GetWeaponSwingArgs(self, victim).DamageAfterAC * permille) / 1000;
-				DamageManager.CauseDamage(self, victim, self.WeaponDamageType, damage);
+				DamageManager.CauseCustomDamage(self, victim, self.WeaponDamageType, damage); //#1511 - damagecust
 			}
 		}
 

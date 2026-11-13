@@ -327,7 +327,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The mad player's own blow on a friend, scaled.</summary>
 		private static double MadBlow(Player player, Character victim, double factor) {
 			double damage = DamageManager.GetWeaponSwingArgs(player, victim).DamageAfterAC * factor;
-			DamageManager.CauseDamage(player, victim, DamageType.Physical, damage);
+			DamageManager.CauseCustomDamage(player, victim, DamageType.Physical, damage); //#1511 - doDmg, damagecust
 			return damage;
 		}
 		#endregion
