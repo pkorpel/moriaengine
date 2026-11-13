@@ -36,10 +36,11 @@ namespace SteamEngine.CompiledScripts {
 
 		public StranglerVineAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
-			this.hitsToBreak = this.InitTypedField("vineHitsToBreak", 5, typeof(int));
+			this.hitsToBreak = this.InitTypedField("vineHitsToBreak", 6, typeof(int));
 		}
 
-		/// <summary>Landed hits the vine has to take before it lets go - Erebor counted 1 + 4.</summary>
+		/// <summary>Hits the vine has to take before it lets go - #1412: Erebor's first hit sets kolik_ran to 4, each later one
+		/// takes one off while it's above 0, and the next releases: 6.</summary>
 		public int HitsToBreak {
 			get { return (int) this.hitsToBreak.CurrentValue; }
 			set { this.hitsToBreak.CurrentValue = value; }
@@ -71,7 +72,7 @@ namespace SteamEngine.CompiledScripts {
 				return; //already holding someone
 			}
 			VineHoldPlugin.Hold(vine, pusher, (int) def.HitsToBreak);
-			pusher.RedMessage("You have been entangled and cannot move!");
+			pusher.RedMessage("Byl jsi omotan a nemuzes se hnout!"); //#1412 - Erebor's e_ovinovac
 			NPCAiTimer timer = NPCAiTimer.GetFor(vine);
 			if (timer != null) {
 				timer.EngageTarget(pusher);
@@ -111,7 +112,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#778, #1409 - on the vine holding someone: it doesn't walk off while the hold is intact, and every landed
-	/// blow on it (its own @getHit) counts toward letting go.</summary>
+	/// blow on it (its own @getHit) and every spell's damage (@damage, #1412) counts toward letting go.</summary>
 	public partial class VineHoldPlugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_vineHold_");
 
@@ -150,7 +151,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((victim != null) && !victim.IsDeleted && (victim.GetPlugin(EntangledPlugin.key) is EntangledPlugin entangled) && (entangled.vine == vine)) {
 				victim.DeletePlugin(EntangledPlugin.key);
 				if (!victim.Flag_Dead) {
-					victim.SysMessage("The grip loosens...");
+					victim.SysMessage("Sevreni povolilo..."); //#1412 - Erebor's e_ovinovac
 				}
 			}
 		}
@@ -166,6 +167,18 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Was DamageManager.ProcessSwing's CountEntangleHit: every landed blow on the vine (#1411's @getHit, also one
 		/// CauseDamage then refuses).</summary>
 		public void On_GetHit(WeaponSwingArgs swingArgs) {
+			this.CountHit();
+		}
+
+		/// <summary>#1412 - a harmful spell's damage counts too: Erebor raised the vine's @aftergetswing in damage_final, which
+		/// damagecust (spells) went through as well as a blow. A blow counts at @getHit above, not here.</summary>
+		public void On_Damage(DamageArgs args) {
+			if (args.isSpell) {
+				this.CountHit();
+			}
+		}
+
+		private void CountHit() {
 			this.hitsLeft = MonsterSpecialAttacks.HitsLeftAfterHit(this.hitsLeft);
 			if (this.hitsLeft <= 0) {
 				Release((Character) this.Cont, this.victim);
