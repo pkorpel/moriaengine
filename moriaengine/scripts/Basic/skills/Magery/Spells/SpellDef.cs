@@ -569,18 +569,21 @@ namespace SteamEngine.CompiledScripts {
 						Character ch = t as Character;
 						if (ch != null) {
 							if (canEffectChar) {
+								//#1518 - who's spared first, as Erebor's dospellcustom_donesrc returns for friends before its multipliers:
+								//the power and what it spends (Standcast, Koncentrace, a mystic's crushing blow, the roll, @spellPower)
+								//only for those the spell reaches
+								CharRelation mainRelation = (sea != null) ? sea.CasterToMainTargetRelation : this.RelationToMainTarget(caster, target);
+								if ((flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
+									if (Notoriety.GetCharRelation(caster, ch) < mainRelation) { //target "more enemy" than main target, we don't wanna benefit him.
+										continue;
+									}
+								} else if ((flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
+									if (Notoriety.GetCharRelation(caster, ch) > mainRelation) { //target "more friendly" than main target, we don't wanna hurt him.
+										continue;
+									}
+								}
 								this.GetSpellPowerAgainstChar(caster, target, ch, effectFlag, ref sea);
 								if (this.CheckSpellPowerWithMessage(sea)) {
-									if ((flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
-										if (Notoriety.GetCharRelation(caster, ch) < sea.CasterToMainTargetRelation) { //target "more enemy" than main target, we don't wanna benefit him.
-											continue;
-										}
-									} else if ((flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
-										if (Notoriety.GetCharRelation(caster, ch) > sea.CasterToMainTargetRelation) { //target "more friendly" than main target, we don't wanna hurt him.
-											continue;
-										}
-									}
-
 									this.Trigger_EffectChar(ch, sea);
 									if (!singleEffectDone) {
 										singleEffectDone = true;
@@ -682,8 +685,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1419 - the caster's @spellPower: a handler may change the power, after the inline modifiers (charge,
 		/// Koncentrace, a stolen talent) and before the target's defense. Plugins run newest first, so a change whose
-		/// result depends on another's order belongs at a fixed point instead. An area spell raises it for everything in
-		/// range, before its friend/foe filter: a once-per-cast handler compares Target with MainTarget.</summary>
+		/// result depends on another's order belongs at a fixed point instead. An area spell raises it for everyone in range
+		/// it reaches (after its friend/foe filter since #1518): a once-per-cast handler compares Target with MainTarget.</summary>
 		private int TriggerSpellPower(Character caster, IPoint3D mainTarget, IPoint3D target, int spellPower) {
 			SpellPowerArgs args = new SpellPowerArgs(caster, this, mainTarget, target, spellPower);
 			caster.TryTrigger(tkSpellPower, new ScriptArgs(args));
@@ -731,6 +734,18 @@ namespace SteamEngine.CompiledScripts {
 				sea.SpellPower = spellPower;
 			}
 			sea.BasePower = basePower;
+		}
+
+		/// <summary>#1518 - SpellEffectArgs.CasterToMainTargetRelation before there's a sea: the main target's relation, or
+		/// for a spell on the ground the one GetSpellPowerAgainstChar gives it.</summary>
+		private CharRelation RelationToMainTarget(Character caster, IPoint3D mainTarget) {
+			if (mainTarget is Character mainChar) {
+				return Notoriety.GetCharRelation(caster, mainChar);
+			}
+			if ((this.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
+				return CharRelation.Allied;
+			}
+			return ((this.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) ? CharRelation.TempHostile : CharRelation.AlwaysHostile;
 		}
 
 		private bool GoesToAReflection(Character caster, Character target) {
@@ -1053,7 +1068,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1419 - the caster's @spellPower: the spell's power on Target (a character before its defense, or an
 	/// item or the ground); a handler may change SpellPower. MainTarget is what the cast was aimed at; an area spell
-	/// raises it for every Target in range, before its friend/foe filter.</summary>
+	/// raises it for every Target in range it reaches (after its friend/foe filter since #1518).</summary>
 	public class SpellPowerArgs {
 		public readonly Character Caster;
 		public readonly SpellDef Spell;
