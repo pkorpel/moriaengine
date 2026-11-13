@@ -16,7 +16,7 @@ namespace SteamEngine.Tests.Protocol {
 			"fireResistantTargetGetsNoFire", "shockResistantTargetGetsNoLightning",
 			"freshTargetMixesControlSpells", "hurtTargetIsNotCursed", "targetIsParalyzed", "paralyzedTargetIsNotParalyzedAgain",
 			"poisonedTargetIsNotPoisonedAgain", "summonIsDispelled", "targetReflects", "reflectionGetsTheWeakestDamage",
-			"noDrainOnANonMage", "mageGetsDrained", "emptyMageIsLeftAlone", "twoSummonsAppeared", "noThirdSummon", "aCastTakesTheCastersPower", /*#1420*/
+			"noDrainOnANonMage", "mageGetsDrained", "emptyMageIsLeftAlone", "twoSummonsAppeared", "noThirdSummon", "aCastTakesTheCastersPower", "aReflectionGoesBackFromTheReflector", "theCastersLegSpendsNothing", /*#1420*/
 		};
 
 		private readonly GameServerPairFixture fixture;
