@@ -1,6 +1,7 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - the shaman: rituals, sacrifice, weakening, concentration, voodoo shield, pacts, the life pact.
@@ -160,6 +161,10 @@ namespace SteamEngine.CompiledScripts {
 			Report("aLifePactGivesASoul", (ShamanAbilities.FindInPack(partner, "i_soul") != null) && soulCase.IsDeleted && (player.Stam == 45) && (player.Mana == 35));
 			LifePactPlugin lifePact = LifePactPlugin.Of(partner); //#1447 - i_soul_remover, 1200 s + 60 s a point
 			Report("theLifePactIsAPluginOnTheReceiver", (lifePact != null) && (lifePact.giver == player) && (lifePact.Timer > 1490) && (lifePact.Timer <= 1500));
+			Item givenSoul = ShamanAbilities.FindInPack(partner, "i_soul"); //#1448 - its own end, the pact's
+			BoundTimer soulEnd = (givenSoul == null) ? null : givenSoul.GetTimer(SoulEndTimer.Key);
+			Report("theSoulHasItsOwnEnd", (soulEnd != null) && (soulEnd.DueInSeconds > 1490) && (soulEnd.DueInSeconds <= 1500));
+			Report("theSoulCannotBeMoved", (givenSoul != null) && givenSoul.HasAttribute(ItemAttributes.attr_move_never) && givenSoul.HasAttribute(ItemAttributes.attr_newbie)); //Erebor's attr=010 is hex
 
 			Report("resistsRead", (ShamanPacts.ResistText(-500, "ohnem", null) == "je smrtelne nachylny na utok ohnem.") && (ShamanPacts.ResistText(999, "ohnem", null) == "je prakticky nezranitelny ohnem."));
 			Item bottle = Give(player, "i_empathy_bottle", 1);
@@ -323,8 +328,14 @@ namespace SteamEngine.CompiledScripts {
 			if (ending != null) {
 				ending.Timer = 1;
 			}
+			//#1448 - a soul dropped on the ground, its end in a second: TestShamanSoulGone finds it gone
+			looseSoul = ShamanPacts.NewSoul(player.Backpack, 600);
+			looseSoul.P(new Point4D(player.X + 1, player.Y, player.Z, player.M));
+			looseSoul.GetTimer(SoulEndTimer.Key).DueInSeconds = 1;
 			Console.WriteLine("SHAMAN_EMPATHY_READ");
 		}
+
+		private static Item looseSoul;
 
 		[SteamFunction]
 		public static void TestShamanSoulGone(Character self) {
@@ -336,6 +347,10 @@ namespace SteamEngine.CompiledScripts {
 			Report("aBlessingGoesAtItsTick", VoodooEffectPlugin.BlessingOf(partner) == null);
 			VoodooEffectPlugin.RemoveAll(partner);
 			Report("theSoulGoesWhenThePactEnds", (LifePactPlugin.Of(partner) == null) && (ShamanAbilities.FindInPack(partner, "i_soul") == null));
+			Report("aDroppedSoulEndsItself", (looseSoul != null) && looseSoul.IsDeleted); //#1448
+			if ((looseSoul != null) && !looseSoul.IsDeleted) {
+				looseSoul.Delete();
+			}
 			Report("theElixirEndsItself", EmpathyPlugin.Of(player) == null);
 
 			player.Stam = 100;

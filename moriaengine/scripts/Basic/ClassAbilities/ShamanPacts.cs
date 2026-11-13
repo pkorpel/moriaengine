@@ -374,8 +374,8 @@ namespace SteamEngine.CompiledScripts {
 				EffectFactory.StationaryEffect(shaman, 0x376a, 9, 20);
 				EffectFactory.StationaryEffect(target, 0x376a, 9, 20);
 				shaman.Sound(583);
-				Item soul = (Item) ((ItemDef) ThingDef.GetByDefname("i_soul")).Create(target.Backpack);
-				soul.SetAttribute(ItemAttributes.attr_newbie, true); //attr 010: it stays on its holder through death
+				int seconds = 1200 + (60 * lifepact);
+				NewSoul(target.Backpack, seconds);
 				LifePactPlugin old = LifePactPlugin.Of(target);
 				if (old != null) {
 					old.Delete();
@@ -384,8 +384,19 @@ namespace SteamEngine.CompiledScripts {
 				pact.giver = shaman;
 				pact.createdAt = Globals.TimeInSeconds;
 				target.AddPlugin(LifePactPlugin.Key, pact);
-				pact.Timer = 1200 + (60 * lifepact);
+				pact.Timer = seconds;
 			}
+		}
+
+		/// <summary>#1448 - i_soul, with its own end: i_soul_remover's @Equip sets the soul's timer to the pact's, and the soul's
+		/// @timer removes it wherever it is. attr=010 is Sphere's hex 0x10, attr_move_never: its holder can't take it out of
+		/// the pack, so it can't be dropped or passed on; newbie too, as our corpse keeps only those (Sphere's kept both).</summary>
+		internal static Item NewSoul(Thing cont, double seconds) {
+			Item soul = (Item) ((ItemDef) ThingDef.GetByDefname("i_soul")).Create(cont);
+			soul.SetAttribute(ItemAttributes.attr_move_never, true);
+			soul.SetAttribute(ItemAttributes.attr_newbie, true);
+			soul.AddTimer(SoulEndTimer.Key, new SoulEndTimer()).DueInSeconds = seconds;
+			return soul;
 		}
 
 		/// <summary>i_soul_remover's end: the soul goes from its holder.</summary>
@@ -570,6 +581,22 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			ShamanPacts.ReadMagic(self, targetted, parameter as Item);
 			return TargetResult.Done;
+		}
+	}
+
+	/// <summary>#1448 - i_soul's @timer: remove, wherever it is.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class SoulEndTimer : BoundTimer {
+		internal static readonly TimerKey Key = TimerKey.Acquire("_soulEnd_");
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public SoulEndTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			if ((cont is Item soul) && !soul.IsDeleted) {
+				soul.Delete();
+			}
 		}
 	}
 }
