@@ -29,7 +29,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("immobile", "lootHeld", "entangled");
 				Thread.Sleep(1500);
 				this.Run(game, ".TestHoldsAfter", "HOLDS_DONE");
-				this.AssertChecks("lootHoldRanOut", "entangledHolds", "blowsFree", "leavingTheTileFrees", "spellsFreeAfterSix");
+				this.AssertChecks("lootHoldRanOut", "entangledHolds", "blowsFree", "leavingTheTileFrees", "spellsFreeAfterSix", "abilityHitsFreeAfterSix");
 				this.Run(game, ".TestHitTriggers", "HOLDS_HIT_DONE"); //#1411
 				this.AssertChecks("hitThenGetHit", "cancelledHit");
 			}

@@ -113,6 +113,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1511 - an ability's hit that Erebor dealt through damagecust or the native damage() on a character with
+		/// e_gethit (warrior's hit around, split shot, backstab, a monster's round attack): its damage_final raised
+		/// @aftergetswing as for a blow, so a strangler vine counts it. Otherwise as CauseDamage.</summary>
+		public static int CauseCustomDamage(Character attacker, Character defender, DamageType flags, double damage) {
+			double unused;
+			return CauseDamage(attacker, defender, flags, damage, false, false, out unused, isCustom: true);
+		}
+
 		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5. #1022 - the
 		/// target's hit reactions run on it too, as Erebor's @aftergetswing did for spells (the user's call).</summary>
 		public static int CauseSpellDamage(Character attacker, Character defender, DamageType flags, double damage) {
@@ -173,7 +181,7 @@ namespace SteamEngine.CompiledScripts {
 			return taken;
 		}
 
-		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true, bool noResponse = false) {
+		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true, bool noResponse = false, bool isCustom = false) {
 			reactiveReturn = 0;
 			if (MonsterSpecialAttacks.TryRinald(attacker, defender)) { //#1022 e_rinald: only players hurt him, his invulnerability answers too
 				return 0;
@@ -245,7 +253,7 @@ namespace SteamEngine.CompiledScripts {
 
 				int previousHits = defender.Hits;
 
-				DamageArgs damageArgs = new DamageArgs(attacker, defender, flags, damage, isSwing, isSpell);
+				DamageArgs damageArgs = new DamageArgs(attacker, defender, flags, damage, isSwing, isSpell, isCustom);
 				Trigger_Damage(damageArgs);
 
 				damage = damageArgs.damage;
@@ -796,13 +804,16 @@ namespace SteamEngine.CompiledScripts {
 		public double damage;
 		/// <summary>#1401 - a landed blow or a harmful spell's damage; neither for poison, bleeding, bombs and the like.</summary>
 		public readonly bool isSwing, isSpell;
+		/// <summary>#1511 - an ability's hit through Erebor's damagecust/damage path (CauseCustomDamage).</summary>
+		public readonly bool isCustom;
 
 		public DamageArgs(Character attacker, Character defender, DamageType flags, double damage)
 			: this(attacker, defender, flags, damage, false, false) {
 		}
 
-		public DamageArgs(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell)
+		public DamageArgs(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, bool isCustom = false)
 			: base(attacker, defender, flags, damage) {
+			this.isCustom = isCustom;
 			this.defender = defender;
 			this.attacker = attacker;
 			this.flags = flags;

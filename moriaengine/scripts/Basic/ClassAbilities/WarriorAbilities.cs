@@ -97,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			foreach (Character victim in around) {
 				double damage = DamageManager.GetWeaponSwingArgs(self, victim).DamageAfterAC * percent / 100;
-				DamageManager.CauseDamage(self, victim, self.WeaponDamageType, damage);
+				DamageManager.CauseCustomDamage(self, victim, self.WeaponDamageType, damage); //#1511 - damagecust
 			}
 		}
 
