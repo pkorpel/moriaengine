@@ -85,8 +85,9 @@ namespace SteamEngine.CompiledScripts {
 			return ClassAbilities.Points(ch, ability) + (2 * MagicItems.WearerValue(ch, property));
 		}
 
-		/// <summary>e_hitsleech, e_manaleech, e_stamleech and e_paralysing after a landed blow on a monster.</summary>
-		internal static void AfterSwing(Character attacker, Character defender, int damage) {
+		/// <summary>e_hitsleech, e_manaleech and e_stamleech after a landed blow on a monster: class points and items together, so
+		/// a direct call for every player (MagicWearerPlugin exists only while magic is worn).</summary>
+		internal static void Leech(Character attacker, Character defender, int damage) {
 			if (!attacker.IsPlayer || (damage <= 0) || defender.IsDeleted || attacker.IsDeleted) {
 				return;
 			}
@@ -110,6 +111,13 @@ namespace SteamEngine.CompiledScripts {
 					attacker.SysMessage("Vysavas staminu");
 					attacker.Stam = (short) Math.Min(attacker.MaxStam, attacker.Stam + stam);
 				}
+			}
+		}
+
+		/// <summary>e_paralysing after a landed blow (MagicWearerPlugin's @afterHit).</summary>
+		internal static void TryFreeze(Character attacker, Character defender, int damage) {
+			if (!attacker.IsPlayer || (damage <= 0) || defender.IsDeleted || attacker.IsDeleted) {
+				return;
 			}
 			int paralysis = MagicItems.WearerValue(attacker, 121);
 			if ((paralysis > 0) && !(defender.IsPlayer && (attacker.FindLayer(LayerNames.Hand2) is ColoredStaff)) &&

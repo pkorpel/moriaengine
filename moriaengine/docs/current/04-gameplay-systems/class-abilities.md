@@ -226,9 +226,10 @@ The warrior has its own profession plugin, `WarriorProfessionPlugin` (`p_profess
 holds the stance and the cooldowns of round attack, leap, war cry and both taunts. Erebor kept these in tags. It also
 changes the warrior's blows through `@swingLanding` and `@getSwingLanding`: double swing and the stance on its own blow,
 the stance on a monster's. A blow's order is unchanged. The critical blow (the shared counter) runs first, then
-`@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433) and the mystic's
-buff steal on either side (#1457), then the jagged bolt; after the magic items' slayers, `@getSwingLanding`, then the
-dodge. Shield
+`@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433), the mystic's
+buff steal on either side (#1457) and the magic items' slayers (`MagicWearerPlugin`, #1476; all of them multiply, so
+their order doesn't matter), then the jagged bolt (which since #1476 reads the slayed damage), `@getSwingLanding`, then
+the dodge. Shield
 blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
 The critical blow is shared by several classes and is still a plain call (the counter itself is the profession plugin's
 since #1438). The stun blow (`.omraceni`, warriors, priests and craftsmen, Erebor's `e_stunattack`) is the base profession

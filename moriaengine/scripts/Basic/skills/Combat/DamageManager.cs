@@ -374,7 +374,6 @@ namespace SteamEngine.CompiledScripts {
 				if (attacker is Player bolter) {
 					RangerAbilities.TryBleedBolt(bolter, defender, swingArgs); //#1070 - e_bleed_bolt
 				}
-				MagicCombat.ModifyBlow(attacker, defender, swingArgs); //#1017 - magic items' slayers
 				Trigger_GetSwingLanding(swingArgs); //#1429 - the stance and the shield, on the profession plugin
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
@@ -425,7 +424,7 @@ namespace SteamEngine.CompiledScripts {
 				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
 				//the pre-armor swing value, so this must run after CauseDamage above.
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
-				MagicCombat.AfterSwing(attacker, defender, actualDamage); //#1017 - leech, paralysis
+				MagicCombat.Leech(attacker, defender, actualDamage); //#1017 - leech (#1476: the slayers and the freezing blow are MagicWearerPlugin's)
 				if (!defender.IsDeleted) {
 					Trigger_AfterHit(swingArgs, actualDamage); //#1445 - the blow and its damage are done: the blood pact shares it
 				}
@@ -723,7 +722,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1445 - a landed blow's damage is dealt (args: the swing, the damage): @afterHit on the attacker, then
 		/// @afterGetHit on the defender. Raised in ProcessSwing after the damage, the monsters' stun, the knockback, the
-		/// bleeding and the magic items' leech and paralysis, before the monsters' after-swing reactions; not on a dodged or
+		/// bleeding and the leech (a magic item's freezing blow is a handler: MagicWearerPlugin, #1476), before the monsters' after-swing reactions; not on a dodged or
 		/// cancelled blow (those end in @afterSwing). The blood pact (PactPlugin) answers @afterGetHit; the profession
 		/// plugin's stun blow and the thief's shield strike answer @afterHit (#1459).</summary>
 		public static void Trigger_AfterHit(WeaponSwingArgs swingArgs, int damage) {

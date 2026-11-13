@@ -121,10 +121,18 @@ mystic's buff steal on both sides (`BuffStealPlugin`, `BuffStolenPlugin`, #1457)
 
 Once a landed blow's damage is dealt, a swing raises `@afterHit` on the attacker and `@afterGetHit` on the defender
 (#1445, `DamageManager.Trigger_AfterHit`, args: the `WeaponSwingArgs` and the damage). They come after the damage, the
-monsters' stun, the knockback, the bleeding and the magic items, and before the monsters' after-swing reactions. They are not
+monsters' stun, the knockback, the bleeding and the leech, and before the monsters' after-swing reactions; a magic item's
+freezing blow is one of its handlers (`MagicWearerPlugin`, #1476). They are not
 raised for a dodged or cancelled blow, which ends in `@afterSwing`, nor for a blow that killed and deleted the defender
 (an NPC), so a handler must not count kills here; `@kill` is for that. A blow of 0 still raises them. The shaman's blood
 pact answers `@afterGetHit`; the profession plugin's stun blow and the thief's shield strike answer `@afterHit` (#1459).
+
+Two spell triggers have Sphere's names (#1476): `@beforeDoEffect` on the caster, after the target's defense (or resist
+roll) with a `SpellPowerArgs` whose `SpellPower` a handler may still change (the magic items' spell slayers), and
+`@beforeGetEffect` on the target, cancellable, before the spell's effect reaches it (the items' reflex and block; a
+cancel means the spell doesn't land there). `MagicWearerPlugin` is on a character while anything magic is worn (items or
+a magic mount) and answers both, plus `@swingLanding` (slayers) and `@afterHit` (the freezing blow). Leech isn't on it:
+class points and items count together, for every player, as a direct call.
 
 Before a death, `@denyDeath` (#1463, args: the killer) is raised on a living character at the top of
 `Character.CauseDeath`; a handler returning Cancel keeps it alive, and `@death` isn't raised then (see
