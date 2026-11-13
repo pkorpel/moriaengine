@@ -890,14 +890,12 @@ namespace SteamEngine.CompiledScripts {
 			//threw "Undefined source type" and silently never installed its effect plugin at all,
 			//even once correctly targeted. FromSpellBook matches the same "no other real source"
 			//assumption the normal player-cast flow already makes (SpellDef.cs's own On_Start).
-			EffectFlag effectFlag = EffectFlag.FromSpellBook | (isBeneficial ? EffectFlag.BeneficialEffect : EffectFlag.HarmfulEffect);
+			//#1420 - the power as a player's cast works it out (Erebor's e_spelleffect: the NPC's own calcspelleffect - Eval Int
+			//as its mind power, or its Magery - through dospellcustom's multipliers and the target's defense), not a fixed one
 			if ((spell.Flags & SpellFlag.CanEffectChar) == SpellFlag.CanEffectChar) {
-				SpellEffectArgs args = SpellEffectArgs.Acquire(self, effectTarget, effectTarget, spell, NpcSpellChoice.SpellPower, effectFlag);
-				spell.Trigger_EffectChar(effectTarget, args);
+				spell.EffectChar(self, effectTarget, EffectFlag.FromSpellBook);
 			} else { //#1033 - summons and fields land on the ground, the character path does nothing for them
-				Point4D ground = new Point4D(effectTarget.X, effectTarget.Y, effectTarget.Z, effectTarget.M);
-				SpellEffectArgs args = SpellEffectArgs.Acquire(self, ground, ground, spell, NpcSpellChoice.SpellPower, effectFlag);
-				spell.Trigger_EffectGround(ground, args);
+				spell.EffectGround(self, new Point4D(effectTarget.X, effectTarget.Y, effectTarget.Z, effectTarget.M), EffectFlag.FromSpellBook);
 			}
 			return true;
 		}

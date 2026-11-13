@@ -5,6 +5,9 @@
 [NPCDef npc_test_beneficial_caster]
 NAME = "Beneficial Spell Test Caster"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 CombatSpell = s_magic_reflection
 MaxMana = 1000
 CAN = MT_WALK|MT_USEHANDS|MT_RUN

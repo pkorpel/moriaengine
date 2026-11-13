@@ -640,7 +640,7 @@ namespace SteamEngine.CompiledScripts {
 		private const int spellParalyze = 38, spellFireField = 28, spellPoisonField = 39, spellParalyzeField = 47;
 
 		/// <summary>#860 - dospellcustom_donesrc, Mystic's strike has its own in DamageManager.</summary>
-		private double GetMindPowerMultiplier(Character caster, Character target) {
+		private double GetMindPowerMultiplier(Character caster, Character target, bool withLevelBonus = true) {
 			MagerySettings settings = MagerySettings.instance;
 			double multiplier = caster.IsPlayerForCombat ? 1 : settings.spellPowerMonster;
 			if (target.IsPlayerForCombat) {
@@ -650,7 +650,7 @@ namespace SteamEngine.CompiledScripts {
 			Player player = caster as Player;
 			if ((player != null) && ((this.Id == spellFireField) || (this.Id == spellPoisonField) || (this.Id == spellParalyzeField))) {
 				vsMonster += System.Math.Min(player.Level / 4, 50) * settings.fieldSpellPowerPerLevel;
-			} else {
+			} else if (withLevelBonus) {
 				vsMonster += this.MonsterLevelBonus(caster, target);
 			}
 			return multiplier * vsMonster;
@@ -730,6 +730,18 @@ namespace SteamEngine.CompiledScripts {
 				sea.CurrentTarget = currentTarget;
 				sea.SpellPower = spellPower;
 			}
+		}
+
+		/// <summary>#1420 - about what GetSpellPowerAgainstChar gives `caster` against `target`, for an NPC choosing a spell:
+		/// without the triggers (a plugin may spend its bonus on a real cast), Koncentrace's roll or the resist roll.</summary>
+		internal int EstimatePower(Character caster, Character target) {
+			bool usesMindPower = (this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
+			if (usesMindPower || (this.resistRoll != null)) {
+				int mindPower = target.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM;
+				int spellPower = (int) ((mindPower * 10) * this.GetMindPowerMultiplier(caster, target, false));
+				return usesMindPower ? (spellPower - CombatCalculator.GetSpellDefense(caster, target)) : spellPower;
+			}
+			return caster.GetSkill(SkillName.Magery);
 		}
 
 		private void GetSpellPowerAgainstNonChar(Character caster, IPoint3D target, IPoint3D currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
@@ -918,7 +930,7 @@ namespace SteamEngine.CompiledScripts {
 		#endregion Trigger methods
 
 		#region Methods for usage outside normal magery sequence
-		public void EffectChar(Character caster, Character target, EffectFlag sourceType) {
+		private EffectFlag WithSpellsSide(EffectFlag sourceType) {
 			SpellFlag flags = this.Flags;
 			if ((flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
 				sourceType &= ~EffectFlag.HarmfulEffect;
@@ -927,13 +939,32 @@ namespace SteamEngine.CompiledScripts {
 				sourceType &= ~EffectFlag.BeneficialEffect;
 				sourceType |= EffectFlag.HarmfulEffect;
 			}
+			return sourceType;
+		}
 
+		/// <summary>This spell's effect on `target`, its power worked out as a cast's (an NPC's cast goes this way since #1420,
+		/// as Erebor's e_spelleffect ran dospellcustom with the NPC's own calcspelleffect), without targeting, region rules or
+		/// payment.</summary>
+		public void EffectChar(Character caster, Character target, EffectFlag sourceType) {
+			sourceType = this.WithSpellsSide(sourceType);
 			SpellEffectArgs sea = null;
 			this.GetSpellPowerAgainstChar(caster, target, target, sourceType, ref sea);
 			this.MakeSound(target);
 			if (this.CheckSpellPowerWithMessage(sea)) {
 				this.Trigger_EffectChar(target, sea);
 			}
+		}
+
+		/// <summary>#1420 - EffectChar for a spell landing on the ground (a field, a summon): its power from the caster's
+		/// Magery, as a cast's.</summary>
+		public void EffectGround(Character caster, Point4D ground, EffectFlag sourceType) {
+			sourceType = this.WithSpellsSide(sourceType);
+			SpellEffectArgs sea = null;
+			this.GetSpellPowerAgainstNonChar(caster, ground, ground, sourceType, ref sea);
+			if (this.CheckSpellPowerWithMessage(sea)) {
+				this.Trigger_EffectGround(ground, sea);
+			}
+			this.MakeSound(ground);
 		}
 
 		/// <summary>#827 - Sphere's SPELLEFFECT: this spell's effect on `target` at a fixed power, without casting
