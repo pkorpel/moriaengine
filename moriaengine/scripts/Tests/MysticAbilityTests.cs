@@ -172,6 +172,7 @@ namespace SteamEngine.CompiledScripts {
 			robbed.Delete();
 
 			TestLightningPastReflection(player); //#1509
+			TestMysticSpellPower(player); //#1515
 
 			MysticHypnosis.FindBall(player).On_DClick(player);
 			Console.WriteLine("MYSTIC_DONE");
@@ -196,6 +197,27 @@ namespace SteamEngine.CompiledScripts {
 			} finally {
 				monster.Delete();
 				player.Hits = player.MaxHits;
+			}
+		}
+
+		/// <summary>#1515 - a mystic's spell on a monster takes Erebor's mystic multiplier, mystikvM * (vMSM + mysticLvL_sm *
+		/// level), not plain vMSM. No double swing points here, so no crushing roll.</summary>
+		private static void TestMysticSpellPower(Player player) {
+			NPC monster = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			NPCAiTimer.Freeze(monster, 300);
+			monster.AddTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+			try {
+				E_SpellPowerProbe.power = int.MinValue;
+				SpellDef.GetByDefname("s_magic_arrow").EffectChar(player, monster, EffectFlag.FromSpellBook);
+				MagerySettings settings = MagerySettings.instance;
+				double mystic = settings.mysticPowerVsM * (settings.spellPowerVsM + (Math.Min(player.Level, 200) * settings.mysticPowerPerLevel));
+				int expected = (int) ((player.MindPowerVsM * 10) * (1 * mystic)) - CombatCalculator.GetSpellDefense(player, monster); //the engine's order
+				Console.WriteLine("MYSTIC_SPELL_POWER: power=" + E_SpellPowerProbe.power + " expected=" + expected + " level=" + player.Level
+					+ " mindPower=" + player.MindPowerVsM);
+				Report("aMysticsSpellTakesTheMysticMultiplier", E_SpellPowerProbe.power == expected);
+			} finally {
+				monster.RemoveTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+				monster.Delete();
 			}
 		}
 
