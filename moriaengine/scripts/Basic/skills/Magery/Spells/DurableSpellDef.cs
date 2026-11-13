@@ -86,6 +86,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>How long the effect lasts: the Duration range by the spell's power, unless a spell has its own rule.</summary>
+		protected virtual TimeSpan EffectDuration(SpellEffectArgs spellEffectArgs) {
+			return TimeSpan.FromSeconds(this.GetDurationForValue(spellEffectArgs.SpellPower));
+		}
+
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectChar(target, spellEffectArgs);
 
@@ -105,7 +110,7 @@ namespace SteamEngine.CompiledScripts {
 			if (durationPlugin != null) {
 				int spellPower = spellEffectArgs.SpellPower;
 				durationPlugin.Init(spellEffectArgs.Caster, effectFlag, this.GetEffectForValue(spellPower), 
-					TimeSpan.FromSeconds(this.GetDurationForValue(spellPower)), this);
+					this.EffectDuration(spellEffectArgs), this);
 			}
 			target.AddPlugin(key, plugin);
 		}
