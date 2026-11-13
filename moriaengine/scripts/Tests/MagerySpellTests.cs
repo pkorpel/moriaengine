@@ -544,6 +544,8 @@ namespace SteamEngine.CompiledScripts {
 			// variable that would otherwise make a result racy" pattern (e.g. TestGrantFullSpellbook
 			// maxing Magery skill for exactly this reason).
 			dummy.DeletePlugin(RegenerationPlugin.regenerationsPluginKey);
+			NPCAiTimer.Freeze(dummy, 300); //#1512 - it stays put for a recast after a fizzle
+			lastManaDrainTarget = dummy;
 
 			SpellBook book = FindBook(self);
 			int startCasterMana = self.Mana;
@@ -556,11 +558,22 @@ namespace SteamEngine.CompiledScripts {
 				" startCasterMana=" + startCasterMana + " startTargetMana=" + startTargetMana);
 		}
 
+		private static NPC lastManaDrainTarget;
+
+		/// <summary>#1512 - Mana Drain again at the same dummy, for a cast that fizzled (Erebor's circle 4 at 40.0 still fizzles
+		/// now and then at 100.0).</summary>
+		[SteamFunction]
+		public static void TestRecastManaDrain(Character self) {
+			SkillSequenceArgs.Acquire(self, SkillName.Magery, lastManaDrainTarget, null, FindBook(self), SpellDef.GetByDefname("s_mana_drain"), null).PhaseSelect();
+			Console.WriteLine("MAGERY_MANADRAIN_TEST: RECAST");
+		}
+
 		[SteamFunction]
 		public static void TestReportManaDrainResult(Character self, ScriptArgs sa) {
 			uint targetUid = Convert.ToUInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
 			Character target = (Character) Thing.UidGetCharacter(targetUid);
-			Console.WriteLine("MAGERY_MANADRAIN_TEST: RESULT casterMana=" + self.Mana + " targetMana=" + target.Mana);
+			Console.WriteLine("MAGERY_MANADRAIN_TEST: RESULT casterMana=" + self.Mana + " targetMana=" + target.Mana
+				+ " drained=" + (target.Mana < target.MaxMana)); //#1512 - the dummy starts full, without regeneration
 		}
 
 		/// <summary>Same ScriptArgs dual-shape handling already established elsewhere this
