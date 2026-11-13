@@ -1011,9 +1011,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#827 - Sphere's SPELLEFFECT: this spell's effect on `target` at a fixed power, without casting
-		/// it - no region rules, no power check (e.g. a healer NPC resurrecting a ghost with s_resurrection).</summary>
-		public void ApplyEffectChar(Character source, Character target, int spellPower, EffectFlag sourceType) {
+		/// it - no region rules, no power check (e.g. a healer NPC resurrecting a ghost with s_resurrection).
+		/// `unreflectable` (#1509): past a magic reflection, as Erebor's dospell_final.</summary>
+		public void ApplyEffectChar(Character source, Character target, int spellPower, EffectFlag sourceType, bool unreflectable = false) {
 			SpellEffectArgs sea = SpellEffectArgs.Acquire(source, target, target, this, spellPower, sourceType);
+			sea.Unreflectable = unreflectable;
 			this.MakeSound(target);
 			this.RunEffectChar(target, sea);
 		}
@@ -1153,6 +1155,10 @@ namespace SteamEngine.CompiledScripts {
 				this.spellPower = value;
 			}
 		}
+
+		/// <summary>#1509 - Erebor's dospell_final with e_spelleffect off: straight to the effect, past a magic reflection
+		/// (the mystic strike's lightning). The target's other @spellEffect handlers still run.</summary>
+		public bool Unreflectable { get; set; }
 
 		/// <summary>#1420 - what the caster brought before any multiplier or defense (Erebor's calcspelleffect); a reflection
 		/// sends this back.</summary>

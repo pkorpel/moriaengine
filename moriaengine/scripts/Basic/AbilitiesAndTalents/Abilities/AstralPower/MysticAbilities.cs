@@ -93,6 +93,14 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>#1509 - f_effect_a_mystic_strike's lightning: dospell_final(30, mystikBleskDmg + SM*{8 16}) with
+		/// e_spelleffect off, straight to the effect. Spell 30 has no SPELLFLAG_RESIST in spheretable_x.scp, so Sphere's
+		/// own OnSpellEffect doesn't reflect it either: a magic reflection lets it through and stays.</summary>
+		internal static void StrikeWithLightning(Character attacker, Character defender) {
+			int power = (int) MagerySettings.instance.mysticLightningPower + (attacker.MindPowerVsM * Globals.dice.Next(8, 17));
+			((SpellDef) SpellDef.GetByDefname("s_lightning")).ApplyEffectChar(attacker, defender, power, EffectFlag.FromAbility | EffectFlag.HarmfulEffect, true);
+		}
+
 		/// <summary>The rest of f_effect_a_mystic_strike after the damage of a special strike.</summary>
 		internal static void ApplySpecialStrike(Character attacker, Character defender, bool lightning) {
 			MagerySettings settings = MagerySettings.instance;
@@ -102,8 +110,7 @@ namespace SteamEngine.CompiledScripts {
 				if ((player == null) || (Globals.dice.Next(10001) > (CombatCalculator.CalculateClassAbility(player.EffectiveLevel) / 23))) {
 					return;
 				}
-				int power = (int) settings.mysticLightningPower + (attacker.MindPowerVsM * Globals.dice.Next(8, 17));
-				((SpellDef) SpellDef.GetByDefname("s_lightning")).ApplyEffectChar(attacker, defender, power, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
+				StrikeWithLightning(attacker, defender);
 				attacker.SysMessage(loc.TargetStruck);
 				return;
 			}

@@ -31,7 +31,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public virtual TriggerResult On_SpellEffect(SpellEffectArgs effectArgs) {
 			SpellDef spell = effectArgs.SpellDef;
-			if ((spell.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
+			if (((spell.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) && !effectArgs.Unreflectable) { //#1509
 				this.Delete(); //delete the reflection plugin, it's work is done
 
 				Character origTarget = (Character) effectArgs.CurrentTarget;
