@@ -394,7 +394,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (reward == 0) { //#1416 - Erebor's loop credits a kill worth nothing too, with 0
 				foreach (Character fighter in fighters) {
-					if (!ShamanPacts.GivesBloodPact(fighter as Player)) {
+					if (!ShamanPacts.EarnsNoKillExp(fighter as Player)) { //#1417 - with its message, as Erebor's loop
 						LevelingTriggers.KillCredit(fighter, victim, 0);
 					}
 				}
@@ -442,6 +442,9 @@ namespace SteamEngine.CompiledScripts {
 			int share = (int) ((long) lost * settings.deathExpPaidPercent / 100) / fighters.Count;
 			bool craftsman = Professions.HasProfession(victim, Professions.Craftsman);
 			foreach (Character fighter in fighters) {
+				if (ShamanPacts.EarnsNoKillExp(fighter as Player)) { //#1417 - a blood pact's giver earns nothing here either, as Erebor's loop
+					continue;
+				}
 				int paid = (craftsman || ((fighter is Player) && (fighter.Realm == victim.Realm))) ? 0 : share; //own realm: player kills only, as Erebor
 				AddExperience(fighter as Player, paid);
 				LevelingTriggers.KillCredit(fighter, victim, paid);

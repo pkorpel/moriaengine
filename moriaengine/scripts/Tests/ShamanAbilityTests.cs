@@ -44,6 +44,34 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1417 - a player's death, an enemy's, pays a blood pact's giver nothing and credits it nothing: Erebor's
+		/// death loop skips the giver for every victim. The bearer stands in as the victim, of the other realm for the
+		/// moment and beside the giver, so the giver would be paid.</summary>
+		private static void TestGiverAtAPlayersDeath(Player giver, Player victim) {
+			int victimExp = victim.Experience, giverExp = giver.Experience;
+			Point4D victimWas = new Point4D(victim.X, victim.Y, victim.Z, victim.M);
+			victim.P(giver.X + 1, giver.Y, giver.Z, giver.M); //a fighter counts only near the victim
+			victim.Realm = Realm.Mordor;
+			victim.Experience = 5000;
+			LevelingTriggersTests.credits = 0;
+			giver.AddTriggerGroup(SingletonScript<E_KillCreditProbe>.Instance);
+			try {
+				bool fought = LevelingSystem.FindFighters(victim, giver, false).Contains(giver);
+				LevelingSystem.ApplyDeathExperienceLoss(victim, giver);
+				Console.WriteLine("PACT_GIVER_DEATH: fought=" + fought + " distance=" + Point2D.GetSimpleDistance(victim, giver) + " victimExp="
+					+ victim.Experience + " giverGot=" + (giver.Experience - giverExp) + " credits=" + LevelingTriggersTests.credits);
+				Report("aPlayersDeathPaysTheGiverNothing", fought && (victim.Experience < 5000) && (giver.Experience == giverExp)
+					&& (LevelingTriggersTests.credits == 0));
+			} finally {
+				giver.RemoveTriggerGroup(SingletonScript<E_KillCreditProbe>.Instance);
+				victim.Realm = Realm.Gondor;
+				victim.Experience = victimExp;
+				victim.RemoveTag(TagKey.Acquire("_levelingLastDeathTime_")); //the death above starts its immunity
+				giver.Experience = giverExp;
+				victim.P(victimWas.X, victimWas.Y, victimWas.Z, victimWas.M);
+			}
+		}
+
 		[SteamFunction]
 		public static void TestShamanAbilities(Character self) {
 			Player player = (Player) self;
@@ -137,6 +165,7 @@ namespace SteamEngine.CompiledScripts {
 			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(monster, partner), 100); //#1445 - as ProcessSwing raises it
 			Report("aMonstersBlowIsShared", (partner.Hits == 65) && (player.Hits == shamanHits - 15));
 			Report("theGiverEarnsThroughTheBearer", ShamanPacts.EarnsNoKillExp(player) && !ShamanPacts.EarnsNoKillExp(partner));
+			TestGiverAtAPlayersDeath(player, partner); //#1417
 			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, partner), 100);
 			partner.Hits = 50;
 			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(monster, partner), 100);
