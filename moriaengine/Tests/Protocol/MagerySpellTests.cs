@@ -459,12 +459,14 @@ namespace SteamEngine.Tests.Protocol {
 				int startCasterMana = ExtractInt(startLine, "startCasterMana");
 				int startTargetMana = ExtractInt(startLine, "startTargetMana");
 
-				Thread.Sleep(8000); // s_mana_drain's live cast time is 7.0 s
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportManaDrainResult " + dummyUid);
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_MANADRAIN_TEST: RESULT", mark, TimeSpan.FromSeconds(10)));
-				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_MANADRAIN_TEST: RESULT");
+				//#1512 - was a fixed 8 s sleep for the 7 s cast, once: polled now, and cast again after a fizzle (as #1499)
+				string resultLine = this.PollUntil(client, ".TestReportManaDrainResult " + dummyUid, "MAGERY_MANADRAIN_TEST: RESULT", "drained=True", 15);
+				if (!resultLine.Contains("drained=True")) {
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestRecastManaDrain");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_MANADRAIN_TEST: RECAST", mark, TimeSpan.FromSeconds(10)));
+					resultLine = this.PollUntil(client, ".TestReportManaDrainResult " + dummyUid, "MAGERY_MANADRAIN_TEST: RESULT", "drained=True", 15);
+				}
 				int casterMana = ExtractInt(resultLine, "casterMana");
 				int targetMana = ExtractInt(resultLine, "targetMana");
 
