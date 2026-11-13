@@ -171,8 +171,32 @@ namespace SteamEngine.CompiledScripts {
 			def.Hypnotizable = flags;
 			robbed.Delete();
 
+			TestLightningPastReflection(player); //#1509
+
 			MysticHypnosis.FindBall(player).On_DClick(player);
 			Console.WriteLine("MYSTIC_DONE");
+		}
+
+		/// <summary>#1509 - the special strike's lightning goes straight to the effect, as Erebor's dospell_final: a monster
+		/// holding a magic reflection is struck and keeps its reflection; nothing comes back at the mystic.</summary>
+		private static void TestLightningPastReflection(Player player) {
+			NPC monster = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			NPCAiTimer.Freeze(monster, 300);
+			try {
+				monster.MaxHits = 30000;
+				monster.Hits = 30000;
+				SpellDef.GetByDefname("s_magic_reflection").ApplyEffectChar(monster, monster, 700, EffectFlag.FromSpellBook | EffectFlag.BeneficialEffect);
+				bool reflecting = MagicReflectionPluginDef.HasMagicReflection(monster);
+				player.Hits = player.MaxHits;
+				MysticAbilities.StrikeWithLightning(player, monster);
+				Console.WriteLine("MYSTIC_LIGHTNING: reflecting=" + reflecting + " monsterHits=" + monster.Hits + " stillReflecting="
+					+ MagicReflectionPluginDef.HasMagicReflection(monster) + " mysticHurt=" + (player.Hits < player.MaxHits));
+				Report("theLightningPassesAReflection", reflecting && (monster.Hits < 30000) && MagicReflectionPluginDef.HasMagicReflection(monster)
+					&& (player.Hits == player.MaxHits));
+			} finally {
+				monster.Delete();
+				player.Hits = player.MaxHits;
+			}
 		}
 
 		[SteamFunction]
