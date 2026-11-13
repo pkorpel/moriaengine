@@ -151,7 +151,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			GatheringLoc texts = Loc<GatheringLoc>.Get(self.Language);
-			self.Message(self.IsFemale ? texts.MiningFailFemale : texts.MiningFailMale);
+			self.MessageTo(self, self.IsFemale ? texts.MiningFailFemale : texts.MiningFailMale); //#1502 - a stroke: no Globals.Src
 			MonsterAmbushSystem.TryAmbush(self.P()); //#335 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Mining, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}

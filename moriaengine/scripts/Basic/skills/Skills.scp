@@ -12,7 +12,7 @@ StartByMacroEnabled = true
 DELAY=3, 1
 
 ON=@Fail
-	src.message "You can't think of anything off hand"
+	sysmessage("You can't think of anything off hand") //#1502 - to the skill's user: a stroke has no src
 
 [ITEMIDSKILLDEF 3]
 DEFNAME=Skill_Appraise
@@ -53,7 +53,7 @@ DELAY=6.0
 ADVRATE=2.5,50.0,200.0
 
 ON=@Fail
-	src.message "You fail to ignite the campfire."
+	sysmessage("You fail to ignite the campfire.") //#1502 - to the skill's user: a stroke has no src
 
 [CARTOGRAPHYSKILLDEF 12]
 DEFNAME=Skill_CARTOGRAPHY
@@ -95,7 +95,7 @@ ADVRATE=10.0,250.0,800.0 //Erebor's own
 //VALUES=1,30,200
 
 ON=@Fail
-	src.message "You fish a while, but fail to catch anything."
+	sysmessage("You fish a while, but fail to catch anything.") //#1502 - to the skill's user: a stroke has no src
 
 [FORENSICSSKILLDEF 19]
 DEFNAME=Skill_Forensics
@@ -163,7 +163,7 @@ DELAY=3.0
 ADVRATE=2.5,50.0,200.0
 
 ON=@Fail
-	src.message "You are unable to pick the lock."
+	sysmessage("You are unable to pick the lock.") //#1502 - to the skill's user: a stroke has no src
 
 [SCRIPTEDSKILLDEF 26]
 DEFNAME=Skill_MagicResist
@@ -256,7 +256,7 @@ EFFECT=5,50
 ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 ON=@Fail
-	src.message "You apply the bandages, but they barely help."
+	sysmessage("You apply the bandages, but they barely help.") //#1502 - to the skill's user: a stroke has no src
 
 [LumberjackingSkillDef 44]
 DEFNAME=Skill_Lumberjack
@@ -309,7 +309,7 @@ KEY="RemoveTrap"
 ADVRATE=2.5,50.0,200.0
 
 ON=@Fail
-	src.message "You fail to disarm the trap."
+	sysmessage("You fail to disarm the trap.") //#1502 - to the skill's user: a stroke has no src
 
 [SCRIPTEDSKILLDEF 49]
 DEFNAME=Skill_Necromancy

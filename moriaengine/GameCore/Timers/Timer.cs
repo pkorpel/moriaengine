@@ -193,12 +193,19 @@ namespace SteamEngine.Timers {
 											QueueChange(timer); //the timer thread itself: the next round takes it, no signal needed
 										}
 										currentTimer = timer;
+										//#1502 - a timer has no sender: Globals.Src was the last packet's (a random, maybe long gone player),
+										//which killers, messages and LScript's src read. Null while it runs, as Sphere's timers (and
+										//TriggerTimer), then back for whatever runs on this thread next.
+										ISrc packetSrc = Globals.Src;
+										Globals.SetSrc(null);
 										try {
 											timer.OnTimeout();
 										} catch (FatalException) {
 											throw;
 										} catch (Exception e) {
 											Logger.WriteError(e);
+										} finally {
+											Globals.SetSrc(packetSrc);
 										}
 									}
 								}

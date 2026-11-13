@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			self.Message(Loc<GatheringLoc>.Get(self.Language).LumberjackingFail);
+			self.MessageTo(self, Loc<GatheringLoc>.Get(self.Language).LumberjackingFail); //#1502 - a stroke: no Globals.Src
 			LumberjackingAmbushSystem.TryAmbush(self.P(), null); //#431 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}

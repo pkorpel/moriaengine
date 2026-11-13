@@ -1300,6 +1300,25 @@ namespace SteamEngine {
 			PacketSequences.SendOverheadMessageFrom(Globals.SrcTcpConnection, this, arg, color);
 		}
 
+		/// <summary>#1502 - Message for `viewer` only. Message goes to Globals.Src, the packet's sender; a timer has none
+		/// (null while it runs), so timer code names who sees the line.</summary>
+		public void MessageTo(AbstractCharacter viewer, string arg, int color = 0) {
+			this.ThrowIfDeleted();
+			GameState state = (viewer == null) ? null : viewer.GameState;
+			if (state != null) {
+				PacketSequences.SendOverheadMessageFrom(state.Conn, this, arg, color);
+			}
+		}
+
+		/// <summary>#1502 - ClilocMessage for `viewer` only, as MessageTo.</summary>
+		public void ClilocMessageTo(AbstractCharacter viewer, int msg, params string[] args) {
+			this.ThrowIfDeleted();
+			GameState state = (viewer == null) ? null : viewer.GameState;
+			if (state != null) {
+				PacketSequences.SendClilocMessageFrom(state.Conn, this, msg, 0, args);
+			}
+		}
+
 		public void ClilocMessage(int msg, string args) {
 			this.ThrowIfDeleted();
 			PacketSequences.SendClilocMessageFrom(Globals.SrcTcpConnection, this, msg, 0, args);

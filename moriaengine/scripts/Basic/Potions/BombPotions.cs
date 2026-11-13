@@ -149,7 +149,14 @@ namespace SteamEngine.CompiledScripts {
 				this.Delete();
 				return;
 			}
-			potion.Message(this.count.ToString(System.Globalization.CultureInfo.InvariantCulture));
+			//#1502 - Sphere's explosion potion tick: its top-level object Speaks the count to all near (Message went to the
+			//last packet's sender, who a timer doesn't have). Only shown, not spoken: a holder's Say would run his speech
+			//triggers and every NPC's hearing, which Sphere's tick doesn't
+			Thing top = potion.TopObj();
+			string count = this.count.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			foreach (SteamEngine.Communication.TCP.TcpConnection<SteamEngine.Networking.GameState> viewer in top.GetMap().GetConnectionsWhoCanSee(top)) {
+				SteamEngine.Networking.PacketSequences.SendOverheadMessageFrom(viewer, top, count, 0);
+			}
 			this.count--;
 			if (this.count <= 0) {
 				this.Delete();
