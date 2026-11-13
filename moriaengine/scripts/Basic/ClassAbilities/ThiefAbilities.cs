@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 			double damage = (DamageManager.GetWeaponSwingArgs(self, target).DamageAfterAC * bonus) / 1000;
 			HidingSkillDef.Reveal(self);
 			thief.hiddenAt = 0;
-			DamageManager.CauseDamage(self, target, self.WeaponDamageType, damage);
+			DamageManager.CauseCustomDamage(self, target, self.WeaponDamageType, damage); //#1511 - damagecust
 		}
 
 		/// <summary>f_isBackslash: the target looks the same way the thief does, give or take one direction.</summary>

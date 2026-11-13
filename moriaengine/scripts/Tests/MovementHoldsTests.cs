@@ -99,6 +99,20 @@ namespace SteamEngine.CompiledScripts {
 			Check("spellsFreeAfterSix", (def.HitsToBreak == 6) && heldAfterFive && (vine.GetPlugin(VineHoldPlugin.key) == null)
 				&& (self.GetPlugin(EntangledPlugin.key) == null) && self.CheckCanMove(false));
 			mage.Delete();
+
+			//#1511 - an ability's hit through Erebor's damagecust counts too: a warrior's hit around, 6 of them
+			MonsterSpecialAttacks.TryEntangle(vine, self);
+			bool heldAfterFiveHits = true;
+			for (int i = 0; i < 6; i++) {
+				if (i == 5) {
+					heldAfterFiveHits = (vine.GetPlugin(VineHoldPlugin.key) != null) && !self.CheckCanMove(false);
+				}
+				WarriorAbilities.HitAround((Player) self, 100, false);
+				vine.Hits = vine.MaxHits;
+			}
+			Console.WriteLine("HOLDS_ABILITY: heldAfterFive=" + heldAfterFiveHits);
+			Check("abilityHitsFreeAfterSix", heldAfterFiveHits && (vine.GetPlugin(VineHoldPlugin.key) == null)
+				&& (self.GetPlugin(EntangledPlugin.key) == null) && self.CheckCanMove(false));
 			vine.Delete();
 			Console.WriteLine("HOLDS_DONE");
 		}
