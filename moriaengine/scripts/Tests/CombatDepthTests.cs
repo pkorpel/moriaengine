@@ -174,6 +174,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>
+		/// NOTE (#1465, #1504): c_dragon_lord has no breath (no e_fire_dragon) and the breath burns only players, so both sheep
+		/// can only be hurt by the dragon's melee: the answer says whether it swung at the second one too, not the breath's.
 		/// Dragon breath (#58's open question): does the AOE spell bypass actually fan out to a
 		/// second target standing right next to the explicitly engaged one, or does it only ever
 		/// land on the one target passed to SpellEffectArgs? Answers it either way rather than
@@ -192,9 +194,10 @@ namespace SteamEngine.CompiledScripts {
 			int startingHits1 = dummy1.Hits;
 			int startingHits2 = dummy2.Hits;
 			NPCAiTimer.GetFor(dragon).EngageTarget(dummy1);
-			self.AddTimer(DragonAoeCheckTimer.TimerKey,
-				new DragonAoeCheckTimer(dummy1, dummy2, startingHits1, startingHits2))
-				.DueInSeconds = CheckDelaySeconds;
+			BoundTimer check = self.AddTimer(DragonAoeCheckTimer.TimerKey,
+				new DragonAoeCheckTimer(dummy1, dummy2, startingHits1, startingHits2, CheckDelaySeconds));
+			check.DueInSeconds = 1; //#1465 - looks every second: the answer as soon as it's known, not after a fixed 45 s
+			check.PeriodInSeconds = 1;
 			Console.WriteLine("DRAGON_AOE_TEST: STARTED");
 		}
 
@@ -377,22 +380,35 @@ namespace SteamEngine.CompiledScripts {
 
 		private NPC dummy1, dummy2;
 		private int startingHits1, startingHits2;
+		private double secondsLeft;
 
 		[LoadingInitializer]
 		public DragonAoeCheckTimer() {
 		}
 
-		public DragonAoeCheckTimer(NPC dummy1, NPC dummy2, int startingHits1, int startingHits2) {
+		public DragonAoeCheckTimer(NPC dummy1, NPC dummy2, int startingHits1, int startingHits2, double seconds) {
 			this.dummy1 = dummy1;
 			this.dummy2 = dummy2;
 			this.startingHits1 = startingHits1;
 			this.startingHits2 = startingHits2;
+			this.secondsLeft = seconds;
 		}
 
+		/// <summary>#1465 - every second: the adjacent dummy hurt answers AOE at once; "single target" and "no damage" can
+		/// only be told when the time is up.</summary>
 		protected override void OnTimeout(TagHolder cont) {
+			if ((this.dummy1 == null) || (this.dummy2 == null)) { //not saved: after a reload there's nothing to answer
+				this.Delete();
+				return;
+			}
 			bool hit1 = this.dummy1.IsDeleted || (this.dummy1.Hits < this.startingHits1);
 			bool hit2 = this.dummy2.IsDeleted || (this.dummy2.Hits < this.startingHits2);
+			this.secondsLeft--;
+			if (!(hit1 && hit2) && (this.secondsLeft > 0)) {
+				return;
+			}
 
+			this.Delete();
 			if (!hit1) {
 				Console.WriteLine("DRAGON_AOE_TEST: NO_DAMAGE (engaged target itself was never hit - test setup issue, not an AOE answer)");
 			} else if (hit2) {
