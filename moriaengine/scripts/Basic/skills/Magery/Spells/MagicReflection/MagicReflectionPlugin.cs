@@ -41,10 +41,9 @@ namespace SteamEngine.CompiledScripts {
 
 				if (castersReflection == null) { //caster doesn't have reflection active himself
 					//this.EffectPower = given by Effect setting of s_magic_reflection and reflection caster's magery
-					//#962 - it goes back as Erebor's dospellcustom: the power as it was cast, against the caster's own defense
-					bool usesMind = (spell.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
-					int power = effectArgs.SpellPower + (usesMind ? CombatCalculator.GetSpellDefense(origCaster, origTarget) : 0);
-					effectArgs.SpellPower = (int) (power * this.EffectPower) - (usesMind ? CombatCalculator.GetSpellDefense(origTarget, origCaster) : 0);
+					//#1420 - it goes back as Erebor's dospellcustom: what the caster brought (calcspelleffect), lowered, with the
+					//reflector as its source - the reflector's multipliers, then the caster's own defense or resist roll
+					effectArgs.SpellPower = spell.ReflectedPower(origTarget, origCaster, (int) (effectArgs.BasePower * this.EffectPower));
 					effectArgs.CurrentTarget = origCaster;
 					//effectArgs.Caster = origTarget; //should we enable this?
 
@@ -57,7 +56,8 @@ namespace SteamEngine.CompiledScripts {
 					return TriggerResult.Cancel; //cancel the harmful spelleffect
 				}
 				//caster has reflection too. We optimize here and let the spell go on, just weaker
-				effectArgs.SpellPower = (int) (effectArgs.SpellPower * this.EffectPower * this.EffectPower);
+				//#1420 - Erebor's two dospellcustom calls: lowered twice, from the caster again (its multipliers, this one's defense)
+				effectArgs.SpellPower = spell.ReflectedPower(origCaster, origTarget, (int) (effectArgs.BasePower * this.EffectPower * this.EffectPower));
 				castersReflection.Delete();
 
 				ReflectionEyeCandy(origTarget);

@@ -694,14 +694,69 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void GetSpellPowerAgainstChar(Character caster, IPoint3D mainTarget, Character currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
+			int basePower = this.BasePowerAgainst(caster, currentTarget);
 			int spellPower;
-			SpellFlag flags = this.Flags;
-			bool usesMindPower = (flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
-			if (usesMindPower || (this.resistRoll != null)) {
-				int mindPower = currentTarget.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM;
-				spellPower = (int) ((mindPower * 10) * GetMindPowerMultiplier(caster, currentTarget)); //*10 because we need to be in thousands, like it is with skills
+			if (this.GoesToAReflection(caster, currentTarget)) {
+				//#1420 - Erebor turns the spell back before dospellcustom_donesrc's multipliers and the defense: the reflection
+				//works the power out once, with itself as the source. This leg spends nothing (no Standcast boost, Koncentrace,
+				//resist roll or @spellPower) and can't be resisted before it gets there.
+				spellPower = System.Math.Max(1, this.EstimatePower(caster, currentTarget));
 			} else {
-				spellPower = caster.GetSkill(SkillName.Magery);
+				spellPower = this.PowerFromBase(caster, mainTarget, currentTarget, basePower);
+			}
+
+			if (sea == null) {
+				sea = SpellEffectArgs.Acquire(caster, mainTarget, currentTarget, this, spellPower, effectFlag);
+				if (!(mainTarget is Character)) {
+					if ((this.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
+						sea.CasterToMainTargetRelation = CharRelation.Allied;
+					} else if ((this.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
+						sea.CasterToMainTargetRelation = CharRelation.TempHostile;
+					}
+				}
+			} else {
+				sea.CurrentTarget = currentTarget;
+				sea.SpellPower = spellPower;
+			}
+			sea.BasePower = basePower;
+		}
+
+		private bool GoesToAReflection(Character caster, Character target) {
+			return ((this.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) && (caster != target) &&
+				(MagicReflectionPluginDef.GetMagicReflectionPlugin(target) != null);
+		}
+
+		private bool UsesMindPowerOrRoll {
+			get {
+				return ((this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower) || (this.resistRoll != null);
+			}
+		}
+
+		/// <summary>#1420 - what the caster brings against `target` before any multiplier or defense, Erebor's
+		/// calcspelleffect: the mind power for a mind or evil spell (*10 to be in thousands, like a skill), else Magery.</summary>
+		private int BasePowerAgainst(Character caster, Character target) {
+			if (this.UsesMindPowerOrRoll) {
+				return (target.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM) * 10;
+			}
+			return caster.GetSkill(SkillName.Magery);
+		}
+
+		/// <summary>#1420 - a reflected spell's power, as Erebor's reflection called dospellcustom again: what the caster
+		/// brought, lowered by the reflection, goes through the multipliers with the reflector as its source and the
+		/// caster's own defense.</summary>
+		internal int ReflectedPower(Character reflector, Character caster, int basePower) {
+			return this.PowerFromBase(reflector, caster, caster, basePower);
+		}
+
+		/// <summary>Erebor's dospellcustom_donesrc from the base power on: the multipliers, the inline modifiers, @spellPower,
+		/// then the target's defense (or the resist roll) and the slayers.</summary>
+		private int PowerFromBase(Character caster, IPoint3D mainTarget, Character currentTarget, int basePower) {
+			int spellPower;
+			bool usesMindPower = (this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
+			if (this.UsesMindPowerOrRoll) {
+				spellPower = (int) (basePower * GetMindPowerMultiplier(caster, currentTarget));
+			} else {
+				spellPower = basePower;
 				if (!currentTarget.IsPlayerForCombat) {
 					spellPower = (int) System.Math.Round(spellPower * (1.0 + this.MonsterLevelBonus(caster, currentTarget)));
 				}
@@ -715,33 +770,18 @@ namespace SteamEngine.CompiledScripts {
 			} else if (this.resistRoll != null) {
 				spellPower = this.RollAgainstDefense(caster, currentTarget, spellPower);
 			}
-			spellPower = MagicCombat.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - magic items' slayers, after the defense
-
-			if (sea == null) {
-				sea = SpellEffectArgs.Acquire(caster, mainTarget, currentTarget, this, spellPower, effectFlag);
-				if (!(mainTarget is Character)) {
-					if ((flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
-						sea.CasterToMainTargetRelation = CharRelation.Allied;
-					} else if ((flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
-						sea.CasterToMainTargetRelation = CharRelation.TempHostile;
-					}
-				}
-			} else {
-				sea.CurrentTarget = currentTarget;
-				sea.SpellPower = spellPower;
-			}
+			return MagicCombat.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - magic items' slayers, after the defense
 		}
 
 		/// <summary>#1420 - about what GetSpellPowerAgainstChar gives `caster` against `target`, for an NPC choosing a spell:
 		/// without the triggers (a plugin may spend its bonus on a real cast), Koncentrace's roll or the resist roll.</summary>
 		internal int EstimatePower(Character caster, Character target) {
-			bool usesMindPower = (this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
-			if (usesMindPower || (this.resistRoll != null)) {
-				int mindPower = target.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM;
-				int spellPower = (int) ((mindPower * 10) * this.GetMindPowerMultiplier(caster, target, false));
-				return usesMindPower ? (spellPower - CombatCalculator.GetSpellDefense(caster, target)) : spellPower;
+			int basePower = this.BasePowerAgainst(caster, target);
+			if (this.UsesMindPowerOrRoll) {
+				int spellPower = (int) (basePower * this.GetMindPowerMultiplier(caster, target, false));
+				return ((this.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower) ? (spellPower - CombatCalculator.GetSpellDefense(caster, target)) : spellPower;
 			}
-			return caster.GetSkill(SkillName.Magery);
+			return basePower;
 		}
 
 		private void GetSpellPowerAgainstNonChar(Character caster, IPoint3D target, IPoint3D currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
@@ -1043,6 +1083,7 @@ namespace SteamEngine.CompiledScripts {
 		private IPoint3D mainTarget;
 		private SpellDef spellDef;
 		private int spellPower;
+		private int basePower;
 		private CharRelation relation;
 		private bool relationFoundOut;
 		private EffectFlag effectFlag = EffectFlag.FromSpellBook;
@@ -1061,6 +1102,7 @@ namespace SteamEngine.CompiledScripts {
 			retVal.currentTarget = currentTarget;
 			retVal.spellDef = spellDef;
 			retVal.spellPower = spellPower;
+			retVal.basePower = spellPower; //a fixed power is its own base; a cast's is set apart
 			retVal.effectFlag = effectFlag;
 			return retVal;
 		}
@@ -1106,6 +1148,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 			set {
 				this.spellPower = value;
+			}
+		}
+
+		/// <summary>#1420 - what the caster brought before any multiplier or defense (Erebor's calcspelleffect); a reflection
+		/// sends this back.</summary>
+		public int BasePower {
+			get {
+				return this.basePower;
+			}
+			set {
+				this.basePower = value;
 			}
 		}
 
