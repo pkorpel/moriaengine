@@ -80,6 +80,25 @@ namespace SteamEngine.CompiledScripts {
 			bool vineGoes = vine.CheckCanMove(false); //the vine's own check finds the hold broken and lets go
 			Check("leavingTheTileFrees", heldAgain && vineGoes && (vine.GetPlugin(VineHoldPlugin.key) == null)
 				&& (self.GetPlugin(EntangledPlugin.key) == null) && self.CheckCanMove(false));
+
+			//#1412 - a spell's damage counts as a blow does (Erebor's damage_final raised @aftergetswing for both), 6 in all
+			vine.Flag_Invulnerable = false;
+			vine.P(self.X, self.Y, self.Z, self.M);
+			MonsterSpecialAttacks.TryEntangle(vine, self);
+			NPC mage = (NPC) ((NPCDef) ThingDef.GetByDefname("c_sheep_woolly")).Create(self.X + 2, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(mage, 300);
+			bool heldAfterFive = true;
+			for (int i = 0; i < 6; i++) {
+				if (i == 5) {
+					heldAfterFive = (vine.GetPlugin(VineHoldPlugin.key) != null) && !self.CheckCanMove(false);
+				}
+				DamageManager.CauseSpellDamage(mage, vine, DamageType.MagicFire, 1);
+				vine.Hits = vine.MaxHits;
+			}
+			Console.WriteLine("HOLDS_SPELLS: hitsToBreak=" + def.HitsToBreak + " heldAfterFive=" + heldAfterFive);
+			Check("spellsFreeAfterSix", (def.HitsToBreak == 6) && heldAfterFive && (vine.GetPlugin(VineHoldPlugin.key) == null)
+				&& (self.GetPlugin(EntangledPlugin.key) == null) && self.CheckCanMove(false));
+			mage.Delete();
 			vine.Delete();
 			Console.WriteLine("HOLDS_DONE");
 		}
