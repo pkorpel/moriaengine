@@ -285,7 +285,7 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>EarnsNoKillExp without its message (#1416: a kill worth nothing still credits no giver).</summary>
+		/// <summary>EarnsNoKillExp without its message: this fighter gives a blood pact, outside a city.</summary>
 		internal static bool GivesBloodPact(Player fighter) {
 			PactPlugin pact = PactPlugin.Of(fighter);
 			return (pact != null) && (pact.givenType == "blood") && (pact.receiver != null) && !InCity(fighter);
