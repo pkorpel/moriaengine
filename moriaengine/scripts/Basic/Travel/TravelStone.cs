@@ -112,7 +112,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (this.countLeft > 0) {
-				self.Message(TravelStops.Count(this.countLeft));
+				self.MessageTo(self, TravelStops.Count(this.countLeft)); //#1502 - a timer: to the traveller, not Globals.Src
 				this.countLeft--;
 				return;
 			}

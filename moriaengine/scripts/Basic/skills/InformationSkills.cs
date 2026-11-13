@@ -72,7 +72,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			self.Message(this.FailMessage(self, Loc<InformationLoc>.Get(self.Language)));
+			self.MessageTo(self, this.FailMessage(self, Loc<InformationLoc>.Get(self.Language))); //#1502 - a stroke: no Globals.Src
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
@@ -130,9 +130,9 @@ namespace SteamEngine.CompiledScripts {
 		protected override void Show(Character self, Thing target) {
 			Character ch = target as Character;
 			if (ch != null) {
-				ch.Message(ch.Name + " looks " + strengths[Index(ch.Str)] + " and " + dexterities[Index(ch.Dex)] + ".");
+				ch.MessageTo(self, ch.Name + " looks " + strengths[Index(ch.Str)] + " and " + dexterities[Index(ch.Dex)] + "."); //#1502 - to the one asking
 				if (SummonSpellDef.IsSummonedCreature(ch)) {
-					ch.Message("This is a magical creature");
+					ch.MessageTo(self, "This is a magical creature");
 				}
 			}
 		}
