@@ -828,7 +828,7 @@ namespace SteamEngine.CompiledScripts {
 			set {
 				if (value != this.hitpoints) {
 					if (!this.Flag_Dead && value < 1) {
-						this.CauseDeath((Character) Globals.SrcCharacter);
+						this.CauseDeath(((killerGiven) && (givenFor == this)) ? givenKiller : (Character) Globals.SrcCharacter); //#1464
 					} else {
 						CharSyncQueue.AboutToChangeHitpoints(this);
 						this.hitpoints = value;
@@ -837,6 +837,30 @@ namespace SteamEngine.CompiledScripts {
 						RegenerationPlugin.TryInstallPlugin(this, this.hitpoints, this.MaxHits, this.hitsRegenSpeed);
 					}
 				}
+			}
+		}
+
+		//#1464 - the killer a Hits change under 1 names, given by SetHitsBy for that one character (a death inside it - a blast
+		//of the dying - doesn't take it over); without it, Globals.SrcCharacter as before (right for a change a client's
+		//packet or command made, stale for one a timer made: the last packet's sender)
+		[ThreadStatic] private static bool killerGiven;
+		[ThreadStatic] private static Character givenKiller;
+		[ThreadStatic] private static Character givenFor;
+
+		/// <summary>#1464 - sets the hits, and if they fall under 1, the death names `killer` (null: nobody) instead of
+		/// Globals.SrcCharacter. DamageManager.CauseDamage passes its attacker.</summary>
+		public static void SetHitsBy(Character self, short value, Character killer) {
+			bool wasGiven = killerGiven;
+			Character wasKiller = givenKiller, wasFor = givenFor;
+			killerGiven = true;
+			givenKiller = killer;
+			givenFor = self;
+			try {
+				self.Hits = value;
+			} finally {
+				killerGiven = wasGiven;
+				givenKiller = wasKiller;
+				givenFor = wasFor;
 			}
 		}
 

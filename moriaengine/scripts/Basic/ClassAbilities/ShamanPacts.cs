@@ -270,8 +270,7 @@ namespace SteamEngine.CompiledScripts {
 			int share = Math.Min((damage * ClassAbilitySettings.instance.bloodPactPercent) / 100, 20);
 			hit.Hits = (short) Math.Min(hit.MaxHits, hit.Hits + share);
 			if (other.Hits - share <= 0) {
-				other.Hits = 0;
-				other.CauseDeath(attacker);
+				Character.SetHitsBy(other, 0, attacker); //#1464 - one death, by the attacker
 			} else {
 				other.Hits = (short) (other.Hits - share);
 			}
