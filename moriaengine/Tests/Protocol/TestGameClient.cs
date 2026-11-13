@@ -67,6 +67,7 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0xa2, 8 },  // UpdateCurrentManaOutPacket
 			{ 0xa3, 8 },  // UpdateCurrentStaminaOutPacket
 			{ 0x1d, 4 },  // DeleteObjectOutPacket
+			{ 0x85, 1 },  // RejectDeleteCharacterOutPacket (#1487)
 			{ 0x25, 19 }, // AddItemToContainerOutPacket (#807 - a refused item going back into the pack)
 			{ 0x2e, 14 }, // WornItemOutPacket
 			{ 0x6c, 18 }, // TargetCursorCommandsOutPacket (server->client "pick a target" prompt)
@@ -101,6 +102,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// all share that one wire id with a sub-command byte inside the payload).</summary>
 		private static readonly HashSet<byte> DynamicPacketIds = new HashSet<byte> {
 			0xA9, // CharactersListOutPacket
+			0x86, // ResendCharactersAfterDeleteOutPacket (#1487)
 			0x78, // DrawObjectOutPacket
 			0xb0, // SendGumpMenuDialogPacket
 			0x7C, // OpenDialogBoxPacket
@@ -342,6 +344,18 @@ namespace SteamEngine.Tests.Protocol {
 			// bytes 1-67: unused/pattern, left zero (not validated by Handle beyond charIndex).
 			packet[68] = (byte) charIndex;
 			// bytes 69-72: unused, left zero.
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>#1487 - DeleteCharacterInPacket (0x83): 30 bytes of password, the slot, 4 bytes of IP. The server answers
+		/// 0x85 (refused, the reason byte) or 0x86 (the list again).</summary>
+		public void SendDeleteCharacter(int charIndex) {
+			byte[] packet = new byte[39];
+			packet[0] = 0x83;
+			packet[31] = (byte) (charIndex >> 24);
+			packet[32] = (byte) (charIndex >> 16);
+			packet[33] = (byte) (charIndex >> 8);
+			packet[34] = (byte) charIndex;
 			this.stream.Write(packet, 0, packet.Length);
 		}
 

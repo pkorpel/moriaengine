@@ -539,7 +539,7 @@ namespace SteamEngine {
 			if (cre == null) {
 				return DeleteCharacterResult.Deny_NonexistantCharacter;
 			}
-			if (!cre.Flag_Disconnected && !cre.IsLingering) {
+			if (!cre.Flag_Disconnected) { //#1487 - in the world, played or standing out its logout delay: the user's call
 				return DeleteCharacterResult.Deny_CharacterIsBeingPlayedRightNow;
 			}
 			//TODO: Trigger on=@deleteCharacter or something (someone else can decide what to put it on)

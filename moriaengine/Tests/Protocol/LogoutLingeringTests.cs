@@ -114,6 +114,69 @@ namespace SteamEngine.Tests.Protocol {
 
 		private const string SwitchAccount = "logoutlingertest4";
 
+		/// <summary>#1487 - the user's call: a character still standing in the world (its logout delay) can't be deleted from
+		/// the selection screen; once it has left, it can.</summary>
+		[Fact]
+		public void AStandingCharacterCannotBeDeleted() {
+			using (var observer = this.ConnectLoginAndCreateCharacter(ObserverAccount, "LingerJudge")) {
+				observer.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutput("AUTO_ACCOUNT_TEST: ENABLED", TimeSpan.FromSeconds(10)));
+				int markDelay = this.fixture.GameOutputSnapshot().Length;
+				observer.SendSpeech(".TestSetLogoutDelay 15");
+				Assert.True(this.fixture.WaitForGameOutputSince("LOGOUT_DELAY:", markDelay, TimeSpan.FromSeconds(10)));
+				try {
+					uint standingUid;
+					using (var standing = this.ConnectLoginAndCreateCharacter(DeleteAccount, "LingerStanding")) {
+						int mark = this.fixture.GameOutputSnapshot().Length;
+						standing.SendSpeech(".TestReportMyUid");
+						Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+						standingUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark);
+					}
+					using (var chooser = this.ConnectAndLogin(DeleteAccount)) {
+						chooser.SendDeleteCharacter(0);
+						byte[] refusal = chooser.ReadPacketPayload(0x85, TimeSpan.FromSeconds(10));
+						Assert.Equal(2, refusal[0]); //Deny_CharacterIsBeingPlayedRightNow
+						int markStill = this.fixture.GameOutputSnapshot().Length;
+						observer.SendSpeech(".TestReportLingerState " + standingUid);
+						Assert.True(this.fixture.WaitForGameOutputSince("LINGER_STATE: uid=" + standingUid, markStill, TimeSpan.FromSeconds(10)));
+						Assert.Contains("flagDisconnected=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "LINGER_STATE: uid=" + standingUid));
+
+						Thread.Sleep(17000); //past the delay: it has left the world
+						int markGone = this.fixture.GameOutputSnapshot().Length;
+						observer.SendSpeech(".TestReportLingerState " + standingUid);
+						Assert.True(this.fixture.WaitForGameOutputSince("LINGER_STATE: uid=" + standingUid, markGone, TimeSpan.FromSeconds(10)));
+						Assert.Contains("flagDisconnected=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "LINGER_STATE: uid=" + standingUid));
+						chooser.SendDeleteCharacter(0);
+						chooser.ReadPacketPayload(0x86, TimeSpan.FromSeconds(10)); //the list again: deleted
+					}
+				} finally {
+					int markRestore = this.fixture.GameOutputSnapshot().Length;
+					observer.SendSpeech(".TestSetLogoutDelay restore");
+					this.fixture.WaitForGameOutputSince("LOGOUT_DELAY:", markRestore, TimeSpan.FromSeconds(10));
+				}
+			}
+		}
+
+		private const string DeleteAccount = "logoutlingertest5";
+
+		private TestGameClient ConnectAndLogin(string account) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
+			InvalidOperationException lastFailure = null;
+			for (int attempt = 0; attempt < 40; attempt++) {
+				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
+				try {
+					game.SendLogin(account, Password);
+					game.ReadCharacterList();
+					return game;
+				} catch (InvalidOperationException e) {
+					game.Dispose();
+					lastFailure = e;
+					Thread.Sleep(300);
+				}
+			}
+			throw new TimeoutException("Could not log in to '" + account + "' after retrying.", lastFailure);
+		}
+
 		private static uint ExtractUid(string output, int since) {
 			int idx = output.IndexOf("MY_UID: ", since, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find MY_UID after position " + since + " in:\n" + output);
