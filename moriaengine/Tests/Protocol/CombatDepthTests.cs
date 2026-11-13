@@ -153,7 +153,7 @@ namespace SteamEngine.Tests.Protocol {
 			// this check. Either concrete answer is a pass for this test; only "no damage at
 			// all" (a test-setup problem, not an AOE answer) would leave both unseen and time out.
 			bool sawAoe = this.RunScenarioExpectEither("DragonWatcher", ".TestDragonBreathAoe",
-				"DRAGON_AOE_TEST: AOE_CONFIRMED", "DRAGON_AOE_TEST: SINGLE_TARGET_ONLY", TimeSpan.FromSeconds(65));
+				"DRAGON_AOE_TEST: AOE_CONFIRMED", "DRAGON_AOE_TEST: SINGLE_TARGET_ONLY", TimeSpan.FromSeconds(110)); //#1465 - the login counts too: 45 s at most after it
 			Assert.True(sawAoe, "Expected the dragon breath test to resolve to one definite answer (see test output/log for which).");
 		}
 
