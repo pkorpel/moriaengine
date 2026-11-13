@@ -152,7 +152,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			self.Message(Loc<SmallSkillsLoc>.Get(self.Language).WordsMakeNoSense);
+			self.MessageTo(self, Loc<SmallSkillsLoc>.Get(self.Language).WordsMakeNoSense); //#1502 - a stroke: no Globals.Src
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
@@ -225,7 +225,7 @@ namespace SteamEngine.CompiledScripts {
 				} else if (target is NPC npc) {
 					npc.PetGoalPoint = new Point4D(where.X, where.Y, where.Z, self.M);
 				}
-				target.ClilocMessage(Convinced, "");
+				target.ClilocMessageTo(self, Convinced, ""); //#1502 - to the herder: a stroke has no Globals.Src
 			}
 		}
 

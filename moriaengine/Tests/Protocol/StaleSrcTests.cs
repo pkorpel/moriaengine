@@ -38,6 +38,18 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.DoesNotContain("get_SrcTcpConnection", log); //first: a #1156 regression throws before the push, so no hit line either
 			Assert.True(hit, "no hurting, pushing blow within 20 s after the logout; then: " + after);
 			Assert.True(after.Contains("rabbitHurt=True knockedBack=True noClientSrc=True"), after);
+
+			//#1502 - a timer runs with no Globals.Src (it was this client, the last sender), and MessageTo still reaches it
+			int timerMark = this.fixture.GameOutputSnapshot().Length;
+			this.Do(back, "timersrc");
+			Assert.True(this.fixture.WaitForGameOutputSince("STALESRC_TIMER: srcNull=", timerMark, TimeSpan.FromSeconds(10)));
+			string timerOutput = this.fixture.GameOutputSnapshot().Substring(timerMark);
+			Assert.Contains("STALESRC_TIMER: srcNull=True", timerOutput);
+			bool heard = false;
+			for (int i = 0; (i < 20) && !heard; i++) {
+				heard = back.ReadSystemMessage(TimeSpan.FromSeconds(10)).Contains("Casovac te vidi");
+			}
+			Assert.True(heard, "the timer's MessageTo line never reached its holder's client");
 		}
 	}
 }

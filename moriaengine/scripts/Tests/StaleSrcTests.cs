@@ -84,6 +84,12 @@ namespace SteamEngine.CompiledScripts {
 					rabbit.Delete();
 					break;
 				}
+				case "timersrc":
+					//#1502 - a timer armed right after this client's own command: its OnTimeout must see no Globals.Src (this
+					//client sent the last packet), and a MessageTo line still reaches the client
+					self.AddTimer(TimerKey.Acquire("_timerSrcProbe_"), new TimerSrcProbe()).DueInSeconds = 0.3;
+					line = "armed";
+					break;
 				default:
 					line = "unknown";
 					break;
@@ -106,6 +112,19 @@ namespace SteamEngine.CompiledScripts {
 				reported = true; //the client waits for this line instead of a fixed time; no client is logged in meanwhile
 				Console.WriteLine("STALESRC_TEST: hit |");
 			}
+		}
+	}
+
+	/// <summary>#1502 - reports what Globals.Src is while a timer runs, and sends its holder a line with MessageTo.</summary>
+	public class TimerSrcProbe : BoundTimer {
+		protected override void OnTimeout(TagHolder cont) {
+			Character ch = cont as Character;
+			bool srcNull = Globals.Src == null;
+			if ((ch != null) && !ch.IsDeleted) {
+				ch.MessageTo(ch, "Casovac te vidi");
+			}
+			Console.WriteLine("STALESRC_TIMER: srcNull=" + srcNull);
+			this.Delete();
 		}
 	}
 

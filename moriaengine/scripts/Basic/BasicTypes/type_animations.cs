@@ -63,10 +63,9 @@ namespace SteamEngine.CompiledScripts {
 	public class t_fire : CompiledTriggerGroup {
 
 		public void on_step(TagHolder self, Character steppingChar) {
-			//if (Globals.src.IsAlive) {
-			//todo ;)
-			steppingChar.Hits -= 2;
-			//}
+			//#1502 - no killer, as Sphere's scripted hits change: a step runs on a timer (an NPC's) or the movement thread,
+			//neither with a sender of its own, so the Hits setter's fallback would name the last packet's sender
+			Character.SetHitsBy(steppingChar, (short) (steppingChar.Hits - 2), null);
 		}
 	}
 

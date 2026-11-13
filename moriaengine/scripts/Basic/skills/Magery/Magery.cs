@@ -316,7 +316,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static void Fizzle(Character self) {
 			EffectFactory.StationaryEffect(self, 0x3735, 6, 30);
 			self.Sound((int) SoundNames.Fizzle);
-			self.ClilocMessage(502632); // The spell fizzles.
+			self.ClilocMessageTo(self, 502632); // The spell fizzles. #1502 - to the caster: a stroke is a timer, with no Globals.Src
 		}
 	}
 }
