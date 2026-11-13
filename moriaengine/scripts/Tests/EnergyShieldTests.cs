@@ -142,6 +142,15 @@ namespace SteamEngine.CompiledScripts {
 			self.Hits = self.MaxHits;
 			DamageManager.CauseDamageNoResponse(monster, self, DamageType.Irresistable, 20);
 			Check("noResponseWhole", sourceless && (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
+			//#1519 - an NPC's curse and a blow sent back (thief's rebound, melee reflex) are damage_noresponse on Erebor: whole
+			self.Hits = self.MaxHits;
+			MonsterSpecialAttacks.NpcCurseHit(monster, self, 20);
+			bool curseWhole = (self.Hits < self.MaxHits) && Near(up.EffectPower, 30); //its magic resist may cut it; the shield doesn't
+			self.Hits = self.MaxHits;
+			DamageManager.SendBlowBack(monster, self, DamageType.Irresistable, 20);
+			Console.WriteLine("STANDCAST_SHIELD: curseWhole=" + curseWhole + " blowBackHits=" + self.Hits + "/" + self.MaxHits + " energy=" + up.EffectPower);
+			Check("curseAndBlowBackWhole", curseWhole && (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
+			self.Hits = self.MaxHits;
 			Check("standcastRefusedUnderIt", RefusesStandcast(self));
 			//with a mana shield too: the energy shield first (20 -> 15), the mana shield takes the 15 (damage_final's order)
 			self.AddPlugin(DamageManager.manaShieldKey, ((PluginDef) AbstractScript.GetByDefname("p_mana_shield")).Create());

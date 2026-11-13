@@ -89,7 +89,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				int distance = Point2D.GetSimpleDistance(dying, foe);
 				EffectFactory.StationaryEffect(foe, ExplosionEffect, 6, 15);
-				DamageManager.CauseDamage(dying, foe, DamageType.Irresistable, (distance == 0) ? damage : damage / distance);
+				DamageManager.CauseDamageNoResponse(dying, foe, DamageType.Irresistable, (distance == 0) ? damage : damage / distance); //#1519 - BlowUp.scp's damage_noresponse
 				hit++;
 			}
 			return hit;

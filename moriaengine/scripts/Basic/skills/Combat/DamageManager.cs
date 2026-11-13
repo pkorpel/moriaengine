@@ -113,6 +113,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1519 - a blow sent back (a thief's rebound, a magic item's melee/ranged reflex, reactive armor's return, a
+		/// monster's reactive armor): Erebor's f_dmgFinal_thief_rebound / _melee_reflex / _applyReactiveAR and
+		/// e_npc_reactivearmor use damage_noresponse, so the energy shield of the one it comes back to doesn't see it.</summary>
+		internal static int SendBlowBack(Character from, Character to, DamageType flags, double damage) {
+			return CauseDamageNoResponse(from, to, flags, damage);
+		}
+
 		/// <summary>#1511 - an ability's hit that Erebor dealt through damagecust or the native damage() on a character with
 		/// e_gethit (warrior's hit around, split shot, backstab, a monster's round attack): its damage_final raised
 		/// @aftergetswing as for a blow, so a strangler vine counts it. Otherwise as CauseDamage.</summary>
@@ -378,7 +385,7 @@ namespace SteamEngine.CompiledScripts {
 				if (ThiefDefence.TryAvoid(attacker, defender, damageType, swingArgs.DamageAfterAC, out reflected) ||
 						TryDodge(attacker, defender, damageType)) {
 					if (reflected > 0) {
-						CauseDamage(defender, attacker, damageType, reflected);
+						SendBlowBack(defender, attacker, damageType, reflected);
 						if (attacker.IsDeleted) {
 							return;
 						}
@@ -439,7 +446,7 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
 				MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799
 				if (reactiveReturn > 0) {
-					CauseDamage(defender, attacker, damageType, reactiveReturn);
+					SendBlowBack(defender, attacker, damageType, reactiveReturn); //#1519 - f_dmgFinal_applyReactiveAR's src.damage_noresponse
 				}
 				if (attacker.IsDeleted) {
 					return;
