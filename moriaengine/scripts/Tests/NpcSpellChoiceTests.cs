@@ -35,6 +35,7 @@ namespace SteamEngine.CompiledScripts {
 				ACastTakesTheCastersPower(self); //#1420
 				AReflectionGoesBackFromTheReflector(self); //#1420
 				AParalyzeRollsAgainstTheDefense(self); //#1507
+				AnAreaSpellSparesFriendsBeforeThePower(self); //#1518
 			} finally {
 				VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			}
@@ -315,6 +316,43 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1518 - an area spell decides whom it spares before working out the power, as Erebor returns for friends
+		/// before its multipliers: the caster's @spellPower runs for the two monsters it hits, never for a friend beside them
+		/// (one of the caster's realm: Notoriety has no pet relation, #1522).</summary>
+		private static void AnAreaSpellSparesFriendsBeforeThePower(Character self) {
+			int plevel = self.Account.PLevel;
+			self.Account.PLevel = 1;
+			Realm realm = self.Realm;
+			self.Realm = Realm.Gondor;
+			NPC main = Dummy(self);
+			NPC other = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y + 1, self.Z, self.M);
+			NPC pet = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 3, self.Y, self.Z, self.M);
+			try {
+				other.MaxHits = 10000;
+				other.Hits = 10000;
+				pet.ControlMaster = self;
+				pet.Realm = Realm.Gondor;
+				foreach (NPC npc in new[] { main, other, pet }) {
+					NPCAiTimer.Freeze(npc, 300);
+				}
+				E_AreaPowerProbe.reached.Clear();
+				self.AddTriggerGroup(SingletonScript<E_AreaPowerProbe>.Instance);
+				SpellDef explosion = SpellDef.GetByDefname("s_explosion");
+				explosion.Trigger_Success(SkillSequenceArgs.Acquire(self, SkillName.Magery, main, null, null, explosion, null));
+				Console.WriteLine("SPELL_CHOICE_INFO: area power for main=" + E_AreaPowerProbe.reached.Contains(main) + " other="
+					+ E_AreaPowerProbe.reached.Contains(other) + " pet=" + E_AreaPowerProbe.reached.Contains(pet) + " petHits=" + pet.Hits + "/" + pet.MaxHits);
+				Report("anAreaSpellSparesFriendsBeforeThePower", E_AreaPowerProbe.reached.Contains(main) && E_AreaPowerProbe.reached.Contains(other)
+					&& !E_AreaPowerProbe.reached.Contains(pet) && (pet.Hits == pet.MaxHits));
+			} finally {
+				self.RemoveTriggerGroup(SingletonScript<E_AreaPowerProbe>.Instance);
+				main.Delete();
+				other.Delete();
+				pet.Delete();
+				self.Realm = realm;
+				self.Account.PLevel = (byte) plevel;
+			}
+		}
+
 		private static NPC Dummy(Character self) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y, self.Z, self.M);
 			dummy.MaxHits = 10000;
@@ -359,6 +397,17 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("SPELL_CHOICE: " + name + "=" + ok);
+		}
+	}
+
+	/// <summary>#1518 - on the caster: whom @spellPower was worked out for.</summary>
+	public class E_AreaPowerProbe : CompiledTriggerGroup {
+		internal static readonly List<Character> reached = new List<Character>();
+
+		public void On_SpellPower(Character self, SpellPowerArgs args) {
+			if (args.Target is Character ch) {
+				reached.Add(ch);
+			}
 		}
 	}
 
