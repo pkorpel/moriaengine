@@ -5,10 +5,16 @@
 [NPCDef npc_test_multi_spell]
 NAME = "Multi Spell Test"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 AddSpell = s_magic_arrow
 AddSpell = s_fireball
 
 [NPCDef npc_test_single_combat_spell]
 NAME = "Single Combat Spell Test"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 CombatSpell = s_magic_arrow

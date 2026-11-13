@@ -5,6 +5,9 @@
 [NPCDef npc_test_support_only_caster]
 NAME = "Support Only Test Caster"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 AddSpell = s_greater_heal
 AddSpell = s_magic_reflection
 MaxMana = 1000

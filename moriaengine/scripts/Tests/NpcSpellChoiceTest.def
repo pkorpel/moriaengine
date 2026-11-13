@@ -2,6 +2,9 @@
 [NPCDef npc_test_choice_mage]
 NAME = "Spell Choice Mage"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 AddSpell = s_fireball
 AddSpell = s_lightning
 AddSpell = s_harm
@@ -15,10 +18,22 @@ AddSpell = s_greater_heal
 [NPCDef npc_test_choice_drainer]
 NAME = "Spell Choice Drainer"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 AddSpell = s_magic_arrow
 AddSpell = s_mana_drain
 
 [NPCDef npc_test_choice_summoner]
 NAME = "Spell Choice Summoner"
 ANIM = 0x1fff
+// #1420 - NPC casts take their power from these, as a player's
+EvalInt = 700
+Magery = 700
 AddSpell = s_summon_elem_air
+
+// #1420 - one mind-power spell, so a cast at a dummy is always this one.
+[NPCDef npc_test_power_caster]
+NAME = "Spell Power Caster"
+ANIM = 0x1fff
+AddSpell = s_magic_arrow
