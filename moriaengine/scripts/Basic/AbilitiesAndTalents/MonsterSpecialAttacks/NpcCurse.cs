@@ -161,11 +161,17 @@ namespace SteamEngine.CompiledScripts {
 			TryApplyAreaCurse(self, NpcCurseDef, nextNpcCurseTimeTK,
 				npcDef.NpcCurseChance, npcDef.NpcCurseCooldown, npcDef.NpcCurseDamage,
 				delegate (Character target, double amount) {
-					//bare DamageType.Magic has no resist "subtype" bit and throws - MagicMystical
-					//is this engine's generic "magic, no specific element" bucket
-					DamageManager.CauseDamage(self, target, DamageType.MagicMystical, amount);
-					target.SysMessage("You feel a dark and mighty force draining your life!");
+					NpcCurseHit(self, target, amount);
 				});
+		}
+
+		/// <summary>#1519 - f_npcCurse_effect's damage_noresponse (Curse.scp): straight to the hits, past damage_final, so the
+		/// energy shield doesn't see it.</summary>
+		internal static void NpcCurseHit(NPC self, Character target, double amount) {
+			//bare DamageType.Magic has no resist "subtype" bit and throws - MagicMystical
+			//is this engine's generic "magic, no specific element" bucket
+			DamageManager.CauseDamageNoResponse(self, target, DamageType.MagicMystical, amount);
+			target.SysMessage("You feel a dark and mighty force draining your life!");
 		}
 
 		/// <summary>#797 e_npc_curse_mana - same pulse, drains mana.</summary>

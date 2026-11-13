@@ -80,7 +80,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			player.SysMessage(part.skinText);
-			DamageManager.CauseDamage(attacker, player, DamageType.Acid, damage);
+			DamageManager.CauseDamageNoResponse(attacker, player, DamageType.Acid, damage); //#1519 - aciddamage.scp's damage_noresponse
 		}
 
 		private static (LayerNames layer, int weight, string armorText, string skinText) PickAcidLayer() {
