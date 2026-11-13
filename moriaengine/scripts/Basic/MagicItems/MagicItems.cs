@@ -296,6 +296,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (int n in Properties(item)) {
 				ApplyProperty(ch, n, Value(item, n) * sign);
 			}
+			MagicWearerPlugin.Sync(ch); //#1476
 		}
 
 		/// <summary>#925 - what a magic mount gives its rider, on as a worn magic item's.</summary>
@@ -304,6 +305,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (KeyValuePair<int, int> value in values) {
 				ApplyProperty(ch, value.Key, value.Value * sign);
 			}
+			MagicWearerPlugin.Sync(ch); //#1476
 		}
 
 		private static void ApplyProperty(Character ch, int n, int v) {

@@ -66,6 +66,21 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGIC_DONE");
 		}
 
+		/// <summary>#1476 - a blow of 100 through @swingLanding, as ProcessSwing raises it.</summary>
+		private static double SlayedBlow(Player player, NPC target) {
+			WeaponSwingArgs swing = DamageManager.GetWeaponSwingArgs(player, target);
+			swing.DamageAfterAC = 100;
+			DamageManager.Trigger_SwingLanding(swing);
+			return swing.DamageAfterAC;
+		}
+
+		/// <summary>#1476 - the power a magic arrow arrives at `target` with (its probe records it and cancels the effect).</summary>
+		private static int SlayedSpell(Player player, NPC target) {
+			E_SpellPowerProbe.power = int.MinValue;
+			SpellDef.GetByDefname("s_magic_arrow").EffectChar(player, target, EffectFlag.FromSpellBook);
+			return E_SpellPowerProbe.power;
+		}
+
 		[SteamFunction]
 		public static void TestMagicCombat(Character self) {
 			Player player = (Player) self;
@@ -77,17 +92,30 @@ namespace SteamEngine.CompiledScripts {
 			NPCDef def = (NPCDef) rabbit.Def;
 			string type = def.MonsterType;
 			def.MonsterType = "animal,60";
+			//#1476 - the slayers through the triggers: a blow's @swingLanding and a spell's @beforeDoEffect, without and with
+			double blowBare = SlayedBlow(player, rabbit);
+			rabbit.AddTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+			int spellBare = SlayedSpell(player, rabbit);
 			Item ring = MagicItems.MagicItem(player, new ScriptArgs("i_ring_gold 104 20 111 10 121 100"));
 			ring.Cont = player;
+			Report("theWearerHasItsPlugin", MagicWearerPlugin.Of(player) != null);
 			Report("aSlayerCountsByTheMonstersPercent", (MagicCombat.SlayerBonuses(player, rabbit)[3] == 12) && (Math.Abs(MagicCombat.ApplySlayers(player, rabbit, 100) - 112) < 0.01));
+			double blowSlayed = SlayedBlow(player, rabbit);
+			int spellSlayed = SlayedSpell(player, rabbit);
+			rabbit.RemoveTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+			Console.WriteLine("MAGIC_ITEMS: blow " + blowBare + " -> " + blowSlayed + ", spell " + spellBare + " -> " + spellSlayed);
+			Report("theSlayersGoThroughTheTriggers", (blowBare > 0) && (Math.Abs(blowSlayed - (blowBare * 112 / 100)) < 0.01) && (spellBare > 0)
+				&& (spellSlayed == (int) ((spellBare * 112) / 100.0)));
 			def.MonsterType = "humanoid";
 			Report("notAgainstAnotherKind", MagicCombat.ApplySlayers(player, rabbit, 100) == 100);
 			def.MonsterType = type;
 			player.Hits = 10;
-			MagicCombat.AfterSwing(player, rabbit, 100);
+			MagicCombat.Leech(player, rabbit, 100);
+			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, rabbit), 100); //the freezing blow is the plugin's
 			Report("leechHealsByTheFormula", player.Hits == 10 + MagicCombat.Leech(100, 20, ClassAbilitySettings.instance));
 			Report("freezingParalyses", ParalyzeEffectPluginDef.IsParalyzed(rabbit));
 			ring.Delete();
+			Report("takenOffThePluginGoes", (MagicWearerPlugin.Of(player) == null) && !MagicItems.IsUnderMagic(player));
 			player.Hits = player.MaxHits;
 
 			Item shield = MagicItems.MagicItem(player, new ScriptArgs("i_ring_gold 136 100"));
