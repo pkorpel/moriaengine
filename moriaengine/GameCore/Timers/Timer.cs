@@ -90,6 +90,15 @@ namespace SteamEngine.Timers {
 			return ProcessTimingOut();
 		}
 
+		/// <summary>#1452 - for tests: how many changes wait for the timer thread.</summary>
+		internal static int PendingChangesCount {
+			get {
+				lock (changesLock) {
+					return changes.Count;
+				}
+			}
+		}
+
 		private static bool HasChanges() {
 			lock (changesLock) {
 				return changes.Count > 0;
@@ -180,8 +189,8 @@ namespace SteamEngine.Timers {
 									if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
 										if (timer.period >= TimeSpan.Zero) {
 											timer.fireAt = fireAt + timer.period;
+											timer.isInChangesQueue = true; //#1452 - before the queue, so a Clear in between leaves it consistent
 											QueueChange(timer); //the timer thread itself: the next round takes it, no signal needed
-											timer.isInChangesQueue = true;
 										}
 										currentTimer = timer;
 										try {
@@ -211,7 +220,13 @@ namespace SteamEngine.Timers {
 
 		public static void Clear() {
 			lock (changesLock) {
-				changes.Clear();
+				//#1452 - a dropped change's timer isn't queued any more: one that outlives the clear (made before a recompile's
+				//load) would otherwise never queue a change again, its re-arm or delete silently doing nothing. The enqueuers
+				//set the flag before QueueChange (under the timer's lock), so a clear landing between the two leaves it
+				//queued and flagged, or dropped and unflagged.
+				while (changes.Count > 0) {
+					changes.Dequeue().isInChangesQueue = false;
+				}
 				if (timerThread != null) {
 					generation++; //#1188 - the timer thread clears its own heap, see NextChange
 					return;
@@ -305,9 +320,9 @@ namespace SteamEngine.Timers {
 			lock (this) {
 				this.fireAt = value;
 				if (!this.isInChangesQueue) {
+					this.isInChangesQueue = true; //#1452 - before the queue, so a Clear in between leaves it consistent
 					QueueChange(this);
 					wakeSignal.Signal();
-					this.isInChangesQueue = true;
 				}
 			}
 		}
@@ -316,9 +331,9 @@ namespace SteamEngine.Timers {
 			lock (this) {
 				this.isDeleted = true;
 				if (!this.isInChangesQueue) {
+					this.isInChangesQueue = true; //#1452 - before the queue, so a Clear in between leaves it consistent
 					QueueChange(this);
 					wakeSignal.Signal();
-					this.isInChangesQueue = true;
 				}
 			}
 		}
