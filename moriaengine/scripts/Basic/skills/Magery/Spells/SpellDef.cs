@@ -650,8 +650,20 @@ namespace SteamEngine.CompiledScripts {
 			Player player = caster as Player;
 			if ((player != null) && ((this.Id == spellFireField) || (this.Id == spellPoisonField) || (this.Id == spellParalyzeField))) {
 				vsMonster += System.Math.Min(player.Level / 4, 50) * settings.fieldSpellPowerPerLevel;
-			} else if (withLevelBonus) {
-				vsMonster += this.MonsterLevelBonus(caster, target);
+			} else {
+				double levelBonus = withLevelBonus ? this.MonsterLevelBonus(caster, target) : 0;
+				if ((levelBonus == 0) && (player != null) && Professions.HasProfession(player, Professions.Mystic) && !target.IsPlayer &&
+						(AlterEgoPlugin.Of(target) == null)) {
+					//#1515 - Erebor's mystic branch, after the fields and Standcast: mystikvM * (vMSM + mysticLvL_sm * level), as
+					//the mystic strike's (DamageManager.GetMindPowerSwingArgs), and the double swing on a real cast. Not on a
+					//possessing mystic (a player: Erebor's isplayer branch) nor a mystic's image (npc==15: pvpSM there)
+					double mystic = settings.mysticPowerVsM * (settings.spellPowerVsM + (System.Math.Min(player.Level, 200) * settings.mysticPowerPerLevel));
+					if (withLevelBonus && MysticAbilities.RollCrushingBlow(player)) {
+						mystic *= 1 + settings.mysticCrushingBlowStrength;
+					}
+					return multiplier * mystic;
+				}
+				vsMonster += levelBonus;
 			}
 			return multiplier * vsMonster;
 		}
