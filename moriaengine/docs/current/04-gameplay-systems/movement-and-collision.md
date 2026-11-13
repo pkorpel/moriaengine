@@ -173,12 +173,16 @@ NPC stamina and carried weight aren't kept Sphere-accurate here.
 `a_tevent_e_ovinovac` (`StranglerVineAbilityDef`, in
 `scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks/StranglerVine.cs`), ported from
 Erebor's `e_ovinovac` (`systems/new_events.scp`). A player who shoves past the monster
-(`NPC.On_PersonalSpace`) is entangled: "You have been entangled and cannot move!". Neither of
-them can step (`CheckCanMove`), and the vine attacks. The grip loosens ("The grip loosens...")
-once the vine has taken `vineHitsToBreak` (5) landed hits, when either one dies, or when they
+(`NPC.On_PersonalSpace`) is entangled: "Byl jsi omotan a nemuzes se hnout!". Neither of
+them can step (`CheckCanMove`), and the vine attacks. The grip loosens ("Sevreni povolilo...")
+once the vine has taken `vineHitsToBreak` (6) hits, when either one dies, or when they
 no longer share a tile (e.g. the victim is teleported or knocked back). Erebor checked the
 last two with a 2s timer item; here they're checked when the victim tries to move. One victim
 at a time, and invulnerable characters aren't grabbed.
+
+A hit is a landed blow (the vine's @getHit) or a harmful spell's damage (@damage from `CauseSpellDamage`), as Erebor's
+`@aftergetswing`, which `damage_final` raised for blows and `damagecust` alike (#1412). Erebor's count: the first hit
+sets `kolik_ran` to 4, each later one takes one off while it's above 0, and the next releases, so 6 in all.
 
 ### Not ported
 
