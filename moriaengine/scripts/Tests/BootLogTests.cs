@@ -106,11 +106,14 @@ namespace SteamEngine.CompiledScripts {
 			return line;
 		}
 
-		/// <summary>#1492 - a deep copy keeps a [CopyableData] reference field (a copy of it): it used to stay null.</summary>
+		/// <summary>#1492 - a deep copy keeps a [CopyableData] reference field (a copy of it): it used to stay null. #1496 - arrays
+		/// too (no implementor was found for them).</summary>
 		private static bool DeepCopyKeepsFields() {
 			DeepCopyFieldProbe original = new DeepCopyFieldProbe();
 			original.names = new System.Collections.Generic.List<string> { "a", "b" };
 			original.text = "kept";
+			original.counts = new[] { 3, 5 };
+			original.args = new object[] { "x", 7 };
 			DeepCopyFieldProbe copy;
 			try {
 				copy = (DeepCopyFieldProbe) DeepCopyFactory.GetCopy(original);
@@ -118,16 +121,22 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			return (copy != original) && (copy.names != null) && (copy.names != original.names) && (copy.names.Count == 2) &&
-				(copy.names[1] == "b") && (copy.text == "kept");
+				(copy.names[1] == "b") && (copy.text == "kept") &&
+				(copy.counts != null) && (copy.counts != original.counts) && (copy.counts.Length == 2) && (copy.counts[0] == 3) && (copy.counts[1] == 5) && //#1496
+				(copy.args != null) && (copy.args != original.args) && ((string) copy.args[0] == "x") && ((int) copy.args[1] == 7);
 		}
 
-		/// <summary>#1492 - a reference member and a simple one.</summary>
+		/// <summary>#1492 - reference members (a list, #1496 arrays) and a simple one.</summary>
 		[DeepCopyableClass]
 		public class DeepCopyFieldProbe {
 			[CopyableData]
 			public System.Collections.Generic.List<string> names;
 			[CopyableData]
 			public string text;
+			[CopyableData]
+			public int[] counts;
+			[CopyableData]
+			public object[] args;
 
 			[DeepCopyImplementation]
 			public DeepCopyFieldProbe() {
