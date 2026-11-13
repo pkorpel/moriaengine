@@ -16,6 +16,7 @@
 */
 
 using System;
+using SteamEngine.Timers;
 using System.Globalization;
 
 namespace SteamEngine.CompiledScripts {
@@ -141,14 +142,26 @@ namespace SteamEngine.CompiledScripts {
 			NPC hiddenDummy = (NPC) dummyDef.Create(targetX, self.Y, targetZ, self.M);
 			hiddenDummy.Flag_Hidden = true;
 			hiddenDummy.SetRealSkillValue((int) SkillName.Hiding, 0);
+			NPCAiTimer.Freeze(hiddenDummy, 60); //#1443 - a sheep that walked off before the cast landed was missed
 
 			NPC invisDummy = (NPC) dummyDef.Create(targetX + 1, self.Y, targetZ, self.M);
 			invisDummy.Flag_InvisByMagic = true;
+			NPCAiTimer.Freeze(invisDummy, 60);
 
-			Point4D groundTarget = new Point4D(targetX, self.Y, targetZ, self.M);
-			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, groundTarget, null, book, spell, null);
+			lastRevealTarget = new Point4D(targetX, self.Y, targetZ, self.M);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, lastRevealTarget, null, book, spell, null);
 			magery.PhaseSelect();
 			Console.WriteLine("MAGERY_REVEAL_TEST: STARTED hiddenUid=" + hiddenDummy.Uid + " invisUid=" + invisDummy.Uid);
+		}
+
+		private static Point4D lastRevealTarget;
+
+		/// <summary>#1443 - Reveal again at the same spot, for a cast that fizzled (Erebor's skill 60.0 against 100.0: about one in
+		/// 32).</summary>
+		[SteamFunction]
+		public static void TestRecastReveal(Character self) {
+			SkillSequenceArgs.Acquire(self, SkillName.Magery, lastRevealTarget, null, FindBook(self), SpellDef.GetByDefname("s_reveal"), null).PhaseSelect();
+			Console.WriteLine("MAGERY_REVEAL_TEST: RECAST");
 		}
 
 		/// <summary>#484 - the real regression test for the fizzle fix. Temporarily sets self's
@@ -305,11 +318,37 @@ namespace SteamEngine.CompiledScripts {
 			// distance=15 and even reusing Fire Field's own already-shipped model).
 			int targetX = self.X + 3;
 			int targetZ = self.GetMap().GetTileZ(targetX, self.Y);
-			Point4D groundTarget = new Point4D(targetX, self.Y, targetZ, self.M);
-			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, groundTarget, null, book, spell, null);
+			lastFieldTarget = new Point4D(targetX, self.Y, targetZ, self.M);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, lastFieldTarget, null, book, spell, null);
 			magery.PhaseSelect();
 			Console.WriteLine("MAGERY_PARAFIELD_TEST: STARTED targetX=" + targetX + " targetY=" + self.Y +
 				" targetZ=" + targetZ + " targetM=" + self.M);
+		}
+
+		private static Point4D lastFieldTarget;
+
+		/// <summary>#1392 - whether Paralyze Field's item stands on its target tile yet (an item with the field's tick).</summary>
+		[SteamFunction]
+		public static void TestReportFieldAt(Character self) {
+			bool present = false;
+			if (lastFieldTarget != null) {
+				foreach (Thing thing in self.GetMap().GetItemsInRange(lastFieldTarget.X, lastFieldTarget.Y, 0)) {
+					if (thing.HasTimer(TimerKey.Acquire("_paralyzeFieldTick_"))) {
+						present = true;
+						break;
+					}
+				}
+			}
+			Console.WriteLine("MAGERY_FIELD_AT: present=" + present + " |");
+		}
+
+		/// <summary>#1392 - Paralyze Field again at the same spot, for a cast that fizzled (Erebor's skill 62.0 against 100.0:
+		/// about one in 26).</summary>
+		[SteamFunction]
+		public static void TestRecastParalyzeField(Character self) {
+			self.Mana = self.MaxMana;
+			SkillSequenceArgs.Acquire(self, SkillName.Magery, lastFieldTarget, null, FindBook(self), SpellDef.GetByDefname("s_paralyzation_field"), null).PhaseSelect();
+			Console.WriteLine("MAGERY_PARAFIELD_TEST: RECAST");
 		}
 
 		/// <summary>#489 - spawns a dummy NPC at an exact point (by X/Y/Z/M) - used to place it
@@ -324,6 +363,7 @@ namespace SteamEngine.CompiledScripts {
 			byte m = Convert.ToByte(parts[3], CultureInfo.InvariantCulture);
 			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
 			NPC dummy = (NPC) dummyDef.Create(x, y, z, m);
+			NPCAiTimer.Freeze(dummy, 60); //#1392 - a sheep that stepped off the field's line before its first tick was never paralyzed
 			Console.WriteLine("MAGERY_SPAWN_TEST: dummyUid=" + dummy.Uid);
 		}
 

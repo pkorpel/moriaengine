@@ -177,7 +177,18 @@ namespace SteamEngine.Tests.Protocol {
 				int targetZ = ExtractInt(startLine, "targetZ");
 				int targetM = ExtractInt(startLine, "targetM");
 
-				Thread.Sleep(9000); // CASTTIME is 5.0s; generous margin (matching this file's own
+				//#1392 - waits for the field's item on the target tile (CASTTIME 5.0 s; later under load), and casts again if
+				//it never came (a fizzle: Erebor's 62.0 against 100.0, about one in 26) - the dummy must come after the item,
+				//or CheckPositionForItem skips the occupied tile
+				string fieldLine = this.PollUntil(client, ".TestReportFieldAt", "MAGERY_FIELD_AT:", "present=True", 15);
+				if (!fieldLine.Contains("present=True")) {
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestRecastParalyzeField");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_PARAFIELD_TEST: RECAST", mark, TimeSpan.FromSeconds(10)));
+					fieldLine = this.PollUntil(client, ".TestReportFieldAt", "MAGERY_FIELD_AT:", "present=True", 15);
+				}
+				Assert.True(fieldLine.Contains("present=True"), "No paralyze field on its target tile. FULL:\n" + this.fixture.GameOutputSnapshot());
+				// (was a fixed Thread.Sleep(9000): CASTTIME is 5.0s; generous margin (matching this file's own
 				// ~2x-CASTTIME convention elsewhere) for the field item to definitely exist
 				// before the dummy spawns - too little margin here would race the field's own
 				// creation, and if the dummy already occupied the target tile by the time the
@@ -190,15 +201,10 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SPAWN_TEST:", mark, TimeSpan.FromSeconds(10)));
 				uint dummyUid = ExtractMarkedUid(LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SPAWN_TEST:"), "dummyUid=");
 
-				Thread.Sleep(3000); // field's own tick fires every paralyzeFieldTickIntervalSeconds
-				// (default 1.0s) relative to the field's own creation time, not the dummy's spawn
-				// time - generous margin covers at least one full tick cycle after the dummy
-				// exists, regardless of where in that cycle the dummy happened to spawn.
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportIsParalyzed " + dummyUid);
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_PARALYZE_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_PARALYZE_TEST:");
+				//#1392 - every tick (1 s) paralyzes whoever stands in its column for 4 s; a sheep that stepped off the line
+				//before the first tick was never paralyzed, so the dummy is frozen, and its state is asked until the first
+				//tick has come
+				string resultLine = this.PollUntil(client, ".TestReportIsParalyzed " + dummyUid, "MAGERY_PARALYZE_TEST:", "paralyzed=True", 20);
 				Assert.True(resultLine.Contains("paralyzed=True"), "FULL:\n" + this.fixture.GameOutputSnapshot());
 			}
 		}
@@ -219,35 +225,22 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestCastInvisibilityOnSelf");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_INVIS_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
 
-				Thread.Sleep(3500); // CASTTIME is 1.0s; wide margin for the stroke delay -
-				// widened after an intermittent flake under sandbox load (same class of
-				// full-boot-tier timing contention already documented throughout this
-				// repo's CLAUDE.md), confirmed not a logic bug by re-running clean
-				// immediately after with no code change
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportVisibilityFlags " + selfUid);
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string duringLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				//#1443 - waits for each state instead of fixed sleeps (the 3 s test spell left about 0.5 s of margin): on
+				//(CASTTIME 1.0 s and the stroke), then off again (a flat 8 s DURATION) - and not before the duration, timers
+				//never fire early
+				DateTime started = DateTime.UtcNow;
+				string duringLine = this.PollUntil(client, ".TestReportVisibilityFlags " + selfUid, "MAGERY_VISIBILITY_TEST:", "invisByMagic=True", 8);
 				Assert.True(duringLine.Contains("invisByMagic=True"), "FULL:\n" + this.fixture.GameOutputSnapshot());
 
-				Thread.Sleep(7000); // DURATION is a flat 8s from about 1s after the cast; 3.5s elapsed above
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportVisibilityFlags " + selfUid);
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string afterLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				string afterLine = this.PollUntil(client, ".TestReportVisibilityFlags " + selfUid, "MAGERY_VISIBILITY_TEST:", "invisByMagic=False", 15);
 				Assert.Contains("invisByMagic=False", afterLine);
+				double lasted = (DateTime.UtcNow - started).TotalSeconds;
+				Assert.True(lasted >= 8, "Invisibility ended after " + lasted + " s, before its 8 s duration.");
 			}
 		}
 
-		/// <summary>#489 - Reveal: unconditionally clears Flag_InvisByMagic (no skill contest -
-		/// classic Reveal strips magical invisibility outright) and, for a Flag_Hidden target,
-		/// only clears it after winning a Magery-vs-Hiding skill contest. AccountC's caster has
-		/// max Magery (via TestGrantFullSpellbook) against a Hiding-0 dummy, so the contest is as
-		/// close to deterministic as SkillUtils' bell curve allows (same bell-curve shape already
-		/// confirmed elsewhere in this file - skill 1000 vs. difficulty 0 lands far into the
-		/// near-certain-success tail).</summary>
+		/// <summary>#489 - Reveal clears Flag_InvisByMagic and Flag_Hidden of everyone in its area, with no contest (#962:
+		/// Sphere's plain Reveal()). The two sheep are frozen (#1443).</summary>
 		[Fact]
 		public void RevealClearsInvisibilityAlwaysAndHidingOnSkillContestSuccess() {
 			this.EnsureAutoAccountCreationEnabled();
@@ -262,18 +255,19 @@ namespace SteamEngine.Tests.Protocol {
 				uint hiddenUid = ExtractMarkedUid(startLine, "hiddenUid=");
 				uint invisUid = ExtractMarkedUid(startLine, "invisUid=");
 
-				Thread.Sleep(5000); // CASTTIME is 3.0s; generous margin for the stroke + area-effect dispatch
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportVisibilityFlags " + invisUid);
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string invisLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				//#1443 - the sheep are frozen now (one that walked off before the cast landed was missed, and a hidden one that
+				//moved revealed itself); each state is waited for, and a cast that fizzled (60.0 against 100.0, about one in 32)
+				//gets one more Reveal at the same spot
+				string invisLine = this.PollUntil(client, ".TestReportVisibilityFlags " + invisUid, "MAGERY_VISIBILITY_TEST:", "invisByMagic=False", 8);
+				string hiddenLine = this.PollUntil(client, ".TestReportVisibilityFlags " + hiddenUid, "MAGERY_VISIBILITY_TEST:", "hidden=False", 2);
+				if (!invisLine.Contains("invisByMagic=False") || !hiddenLine.Contains("hidden=False")) {
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestRecastReveal");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_REVEAL_TEST: RECAST", mark, TimeSpan.FromSeconds(10)));
+					invisLine = this.PollUntil(client, ".TestReportVisibilityFlags " + invisUid, "MAGERY_VISIBILITY_TEST:", "invisByMagic=False", 8);
+					hiddenLine = this.PollUntil(client, ".TestReportVisibilityFlags " + hiddenUid, "MAGERY_VISIBILITY_TEST:", "hidden=False", 2);
+				}
 				Assert.Contains("invisByMagic=False", invisLine);
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportVisibilityFlags " + hiddenUid);
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string hiddenLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
 				Assert.Contains("hidden=False", hiddenLine);
 			}
 		}
@@ -640,6 +634,23 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendSpeech(".TestReportDispellablePluginCount");
 			Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DISPEL_TEST: dispellablePluginCount=", mark, TimeSpan.FromSeconds(10)));
 			return ExtractInt(LastLineContaining(this.fixture.GameOutputSnapshot(), "dispellablePluginCount="), "dispellablePluginCount");
+		}
+
+		/// <summary>#1443 - asks every half second until the answer has `expected` or `seconds` run out; the last answer.</summary>
+		private string PollUntil(TestGameClient client, string speech, string marker, string expected, int seconds) {
+			DateTime until = DateTime.UtcNow.AddSeconds(seconds);
+			string line;
+			do {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(speech);
+				Assert.True(this.fixture.WaitForGameOutputSince(marker, mark, TimeSpan.FromSeconds(10)), "No '" + marker + "' after " + speech);
+				line = LastLineContaining(this.fixture.GameOutputSnapshot(), marker);
+				if (line.Contains(expected)) {
+					return line;
+				}
+				Thread.Sleep(500);
+			} while (DateTime.UtcNow < until);
+			return line;
 		}
 
 		private uint SelfUidOf(TestGameClient client) {
