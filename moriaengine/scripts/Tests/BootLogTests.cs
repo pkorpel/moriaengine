@@ -99,6 +99,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			withUncopied.Delete();
 			line += " itemDupeWithUncopiedTimer=" + itemDupe;
+			line += " itemDupeLeavesRunningPlugins=" + DupeTimedPlugins.Check(self); //#1493
 			original.RemoveTag(TagKey.Acquire("spawnGem")); //before the delete: the gem's count isn't this test's
 			original.RemoveTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char"));
 			original.Delete();
@@ -263,6 +264,74 @@ namespace SteamEngine.CompiledScripts {
 					+ " regen=" + player.HitsRegenSpeed + " regenBefore=" + player.GetTag(preRegenTK);
 			}
 			Console.WriteLine("BOOT_STATES: check " + line + " |");
+		}
+	}
+
+	/// <summary>#1493 - a dupe leaves an item's running timer plugins with the original: the copy would get no timer and the
+	/// plugin would never end. One waiting with no timer running, and a plain one, go along.</summary>
+	internal static class DupeTimedPlugins {
+		internal static bool Check(Character self) {
+			PluginKey runningKey = PluginKey.Acquire("_dupeRunningProbe_"), waitingKey = PluginKey.Acquire("_dupeWaitingProbe_"),
+				plainKey = PluginKey.Acquire("_dupePlainProbe_");
+			Item kit = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+			Item copy = null;
+			try {
+				TimedProbePlugin running = (TimedProbePlugin) TimedProbePluginDef.instance.Create();
+				kit.AddPlugin(runningKey, running);
+				running.Timer = 600;
+				TimedProbePlugin waiting = (TimedProbePlugin) TimedProbePluginDef.instance.Create();
+				kit.AddPlugin(waitingKey, waiting);
+				waiting.Timer = -1; //a paused timer: it goes along
+				kit.AddPlugin(plainKey, KillCreditProbePluginDef.instance.Create());
+				copy = (Item) kit.Dupe();
+				int copied = 0;
+				foreach (Plugin plugin in copy.GetAllPlugins()) {
+					copied++;
+				}
+				Console.WriteLine("DUPE_TIMED_PLUGINS: running=" + (copy.GetPlugin(runningKey) != null) + " waiting=" + (copy.GetPlugin(waitingKey) != null)
+					+ " plain=" + (copy.GetPlugin(plainKey) != null) + " copied=" + copied + " originalRunning=" + running.Timer);
+				return (copy.GetPlugin(runningKey) == null) && (copy.GetPlugin(waitingKey) is TimedProbePlugin) && (copy.GetPlugin(plainKey) is KillCreditProbePlugin)
+					&& (copied == 2) && (kit.GetPlugin(runningKey) == running) && (running.Timer > 500);
+			} finally {
+				if (copy != null) {
+					copy.Delete();
+				}
+				kit.Delete();
+			}
+		}
+	}
+
+	public class TimedProbePluginDef : PluginDef {
+		public static readonly TimedProbePluginDef instance =
+			(TimedProbePluginDef) new TimedProbePluginDef("p_timed_probe", "C# scripts", -1).Register();
+
+		public TimedProbePluginDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+		}
+
+		protected override Plugin CreateImpl() {
+			return new TimedProbePlugin();
+		}
+
+		public new static void Bootstrap() {
+			RegisterPluginDef(typeof(TimedProbePluginDef), typeof(TimedProbePlugin));
+		}
+	}
+
+	/// <summary>#1493 - a TimerPlugin that does nothing on its timer. Never saved.</summary>
+	[DeepCopyableClass]
+	[SaveableClass]
+	public class TimedProbePlugin : TimerPlugin {
+		[DeepCopyImplementation]
+		public TimedProbePlugin(TimedProbePlugin copyFrom)
+			: base(copyFrom) {
+		}
+
+		[LoadingInitializer]
+		public TimedProbePlugin() {
+		}
+
+		public void On_Timer() {
 		}
 	}
 }
