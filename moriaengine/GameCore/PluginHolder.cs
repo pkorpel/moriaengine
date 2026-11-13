@@ -89,7 +89,7 @@ namespace SteamEngine {
 			if (copyFrom.tags != null) {
 				foreach (DictionaryEntry entry in copyFrom.tags) {
 					PluginKey pk = entry.Key as PluginKey;
-					if (pk != null) {
+					if ((pk != null) && ((Plugin) entry.Value).GoesWithACopy) { //#1493
 						DeepCopyFactory.GetCopyDelayed(entry.Value, this.DelayedGetCopy_Plugin, pk);
 					}
 				}
@@ -99,7 +99,10 @@ namespace SteamEngine {
 				Plugin curPlugin = copyFrom.firstPlugin;
 				int order = 0;
 				while (curPlugin != null) {
-					DeepCopyFactory.GetCopyDelayed(curPlugin, this.DelayedGetCopy_SetPluginAsNonSimple, order++);
+					if (curPlugin.GoesWithACopy) { //#1493
+						DeepCopyFactory.GetCopyDelayed(curPlugin, this.DelayedGetCopy_SetPluginAsNonSimple, order);
+					}
+					order++;
 					curPlugin = curPlugin.nextInList;
 				}
 			}

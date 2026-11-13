@@ -59,6 +59,16 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1493 - whether a dupe of its holder takes a copy of it. A copy gets no timers (#1485, as Sphere's dupe
+		/// copies no TIMER), so a plugin running on its own timer would sit on the copy and never end: such a plugin stays
+		/// the original's (scripts' TimerPlugin says so while its timer runs). Something else on the copy that refers to it
+		/// gets an unattached copy of it, which never runs.</summary>
+		public virtual bool GoesWithACopy {
+			get {
+				return true;
+			}
+		}
+
 		//the first trigger that throws an exceptions terminates the other ones that way
 		public void Run(TriggerKey tk, ScriptArgs sa, out object scriptedRetVal, out object compiledRetVal) {
 			scriptedRetVal = null;

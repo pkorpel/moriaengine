@@ -75,6 +75,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1493 - a running timer stays with the original: a dupe's copy would get none and never end (the user's call:
+		/// drop it, as close to Sphere as a timerless copy can get). A plugin waiting with no timer running goes along.</summary>
+		public override bool GoesWithACopy {
+			get {
+				BoundTimer timer = this.GetTimer(timerKey);
+				return (timer == null) || timer.IsPaused;
+			}
+		}
+
 		public BoundTimer TimerObject {
 			get {
 				return this.GetTimer(timerKey);
