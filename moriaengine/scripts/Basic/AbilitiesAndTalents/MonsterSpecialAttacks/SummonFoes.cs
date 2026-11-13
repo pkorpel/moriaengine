@@ -75,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 					int distance = Point2D.GetSimpleDistance(self, fighter);
 					EffectFactory.StationaryEffect(fighter, BlowUpEffect, 6, 15);
 					fighter.Sound(ExplosionSound);
-					fighter.Hits = (short) Math.Max(0, fighter.Hits - ((distance > 0) ? (damage / distance) : damage));
+					Character.SetHitsBy(fighter, (short) Math.Max(0, fighter.Hits - ((distance > 0) ? (damage / distance) : damage)), self); //#1464 - killed by the blast
 				}
 			}
 		}

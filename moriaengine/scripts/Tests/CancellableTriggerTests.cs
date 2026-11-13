@@ -26,7 +26,36 @@ namespace SteamEngine.CompiledScripts {
 				rabbit.RemoveTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance);
 				rabbit.CauseDeath((Character) self);
 			}
-			Console.WriteLine(line + " diesWithout=" + rabbit.IsDeleted + " |");
+			line += " diesWithout=" + rabbit.IsDeleted;
+
+			//#1464 - a damage death names its attacker, not Globals.SrcCharacter (here this test's player, the last packet's
+			//sender); a hits change given no killer names nobody
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(self.X + 2, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(orc, 60);
+			NPC hurt = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y + 1, self.Z, self.M);
+			hurt.AddTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance); //keeps it alive, records the killer
+			E_DenyDeathProbe.killer = null;
+			DamageManager.CauseDamage(orc, hurt, DamageType.Irresistable, 10000);
+			line += " damageNamesItsAttacker=" + (E_DenyDeathProbe.killer == orc);
+			E_DenyDeathProbe.killer = self;
+			Character.SetHitsBy(hurt, 0, null);
+			line += " noKillerNamesNobody=" + (E_DenyDeathProbe.killer == null);
+			//a death inside that death (a blast of the dying) doesn't take the given killer over: it names its own
+			NPC inner = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y + 1, self.Z, self.M);
+			inner.AddTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance);
+			E_NestedDeathProbe.inner = inner;
+			hurt.RemoveTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance); //the nested probe keeps it alive instead
+			hurt.AddTriggerGroup(SingletonScript<E_NestedDeathProbe>.Instance);
+			E_DenyDeathProbe.killer = null;
+			DamageManager.CauseDamage(orc, hurt, DamageType.Irresistable, 10000); //hurt's @denyDeath kills inner, by the setter
+			line += " aNestedDeathKeepsItsOwnKiller=" + ((E_NestedDeathProbe.innerKiller == self) && (E_NestedDeathProbe.ran));
+			hurt.RemoveTriggerGroup(SingletonScript<E_NestedDeathProbe>.Instance);
+			inner.RemoveTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance);
+			inner.Delete();
+			hurt.RemoveTriggerGroup(SingletonScript<E_DenyDeathProbe>.Instance);
+			hurt.Delete();
+			orc.Delete();
+			Console.WriteLine(line + " |");
 		}
 
 		[SteamFunction]
@@ -107,6 +136,22 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The death's first step raises it: a denial must come before.</summary>
 		public void On_HostileAction(Character self, Character enemy) {
 			hostile++;
+		}
+	}
+
+	/// <summary>#1464 - on the outer victim: its @denyDeath sets another's hits to 0 (no killer given), and reads what that
+	/// one's probe saw.</summary>
+	public class E_NestedDeathProbe : CompiledTriggerGroup {
+		internal static NPC inner;
+		internal static Character innerKiller;
+		internal static bool ran;
+
+		public TriggerResult On_DenyDeath(Character self, Character killedBy) {
+			ran = true;
+			E_DenyDeathProbe.killer = null;
+			inner.Hits = 0;
+			innerKiller = E_DenyDeathProbe.killer;
+			return TriggerResult.Cancel;
 		}
 	}
 

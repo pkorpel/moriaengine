@@ -155,7 +155,7 @@ namespace SteamEngine.CompiledScripts {
 
 			if (this.food <= 0) {
 				this.food = 0;
-				self.Hits = 0; //matches systems/skills/taming.scp's own starvation consequence ("act.hits=0") - the normal death-on-zero-hits path takes over from here
+				Character.SetHitsBy(self, 0, null); //#1464 - starved: no killer. Matches systems/skills/taming.scp's own starvation consequence ("act.hits=0") - the normal death-on-zero-hits path takes over from here
 			}
 		}
 	}

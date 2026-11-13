@@ -47,7 +47,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			if (SummonSpellDef.IsSummonedCreature(target)) {
-				target.Hits = 0; //#1022 - e_monster's @spelleffect 44
+				Character.SetHitsBy(target, 0, null); //#1022 - e_monster's @spelleffect 44; #1464 - no killer, as Sphere's hits=0
 				return;
 			}
 			base.On_EffectChar(target, spellEffectArgs);

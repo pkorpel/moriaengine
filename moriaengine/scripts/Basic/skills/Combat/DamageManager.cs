@@ -250,7 +250,7 @@ namespace SteamEngine.CompiledScripts {
 
 				damage = damageArgs.damage;
 				int newHits = (int) Math.Round(defender.Hits - damage);
-				defender.Hits = (short) newHits;
+				Character.SetHitsBy(defender, (short) Math.Max(newHits, -1), attacker); //#1464 - a death names the attacker, not the last packet's sender; the floor keeps a huge blow from wrapping round into a heal
 
 				int actualDamage = previousHits - newHits;
 				HpSight.ShowChange(defender, actualDamage, false); //#927

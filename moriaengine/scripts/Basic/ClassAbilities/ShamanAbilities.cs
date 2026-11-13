@@ -139,8 +139,7 @@ namespace SteamEngine.CompiledScripts {
 			int w = (woodoo <= 9) ? woodoo : 10 + ClassAbilities.Points(self, "woodoo_obet");
 			RitualEffect(self);
 			if (self.Hits <= 40) {
-				self.Hits = 0;
-				self.CauseDeath(self);
+				Character.SetHitsBy(self, 0, self); //#1464 - one death, by itself (it used to be asked twice: Hits = 0, then CauseDeath)
 				return;
 			}
 			self.Hits = (short) (self.Hits - 40);

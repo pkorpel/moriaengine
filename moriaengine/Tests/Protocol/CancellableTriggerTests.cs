@@ -28,6 +28,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestDenyDeath", "CANCELLABLE_DENYDEATH:");
 				string line = this.LastLine("CANCELLABLE_DENYDEATH:");
 				Assert.True(line.Contains("kept=True asked=True killer=True noDeath=True beforeAnyStep=True diesWithout=True"), line + "\n" + this.fixture.GameOutputSnapshot());
+				Assert.True(line.Contains("damageNamesItsAttacker=True noKillerNamesNobody=True aNestedDeathKeepsItsOwnKiller=True"), "#1464: " + line); //#1464
 			}
 		}
 
