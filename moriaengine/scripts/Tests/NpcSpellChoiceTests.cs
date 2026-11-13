@@ -32,6 +32,7 @@ namespace SteamEngine.CompiledScripts {
 				TargetStateDecidesTheAttack(self);
 				ManaDrainOnlyForAMage(self);
 				SummonsReallyAppear(self);
+				ACastTakesTheCastersPower(self); //#1420
 			} finally {
 				VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			}
@@ -58,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 			timer.EngageTarget(dummy);
 			SpellDef reflection = SpellDef.GetByDefname("s_magic_reflection");
 			SpellDef heal = SpellDef.GetByDefname("s_greater_heal");
-			Console.WriteLine("SPELL_CHOICE_INFO: guard hits=" + guard.Hits + "/" + guard.MaxHits + " healAmount=" + heal.GetEffectForValue(NpcSpellChoice.SpellPower));
+			Console.WriteLine("SPELL_CHOICE_INFO: guard hits=" + guard.Hits + "/" + guard.MaxHits + " healAmount=" + heal.GetEffectForValue(heal.EstimatePower(guard, guard)));
 
 			Report("guardHitsAreFull", guard.Hits == guard.MaxHits);
 			Report("guardReflectsFirst", Counts(timer, guard, dummy).Get(reflection) == Rolls);
@@ -147,7 +148,7 @@ namespace SteamEngine.CompiledScripts {
 
 			dummy = Dummy(self);
 			timer.EngageTarget(dummy);
-			SpellDef.GetByDefname("s_magic_reflection").ApplyEffectChar(dummy, dummy, NpcSpellChoice.SpellPower, EffectFlag.FromSpellBook | EffectFlag.BeneficialEffect);
+			SpellDef.GetByDefname("s_magic_reflection").ApplyEffectChar(dummy, dummy, 700, EffectFlag.FromSpellBook | EffectFlag.BeneficialEffect);
 			Report("targetReflects", MagicReflectionPluginDef.HasMagicReflection(dummy));
 			Dictionary<SpellDef, int> reflecting = Counts(timer, mage, dummy);
 			Console.WriteLine("SPELL_CHOICE_INFO: reflecting target: " + Describe(reflecting));
@@ -196,6 +197,37 @@ namespace SteamEngine.CompiledScripts {
 			return mage;
 		}
 
+		/// <summary>#1420 - an NPC's cast works its power out as a player's: its Eval Int is its mind power, times Erebor's
+		/// monster multipliers, less the target's defense (the old fixed 700 knew none of it). The dummy's probe records the
+		/// power the effect arrives with and cancels it.</summary>
+		private static void ACastTakesTheCastersPower(Character self) {
+			NPC caster = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_power_caster")).Create(self.X + 1, self.Y, self.Z, self.M);
+			NPC dummy = Dummy(self);
+			dummy.AddTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+			NPCAiTimer timer = NPCAiTimer.GetFor(caster);
+			timer.EngageTarget(dummy);
+			caster.MaxMana = 1000;
+			MagerySettings settings = MagerySettings.instance;
+			int[] got = new int[2], expected = new int[2];
+			int[] evalInts = { 400, 900 };
+			for (int i = 0; i < 2; i++) {
+				caster.SetRealSkillValue((int) SkillName.EvalInt, evalInts[i]);
+				caster.InvalidateCombatWeaponValues();
+				caster.Mana = 500;
+				timer.ForgetCastCooldown();
+				E_SpellPowerProbe.power = int.MinValue;
+				timer.Fight(caster, dummy);
+				got[i] = E_SpellPowerProbe.power;
+				expected[i] = (int) ((evalInts[i] * 10) * settings.spellPowerMonster * settings.spellPowerVsM) - CombatCalculator.GetSpellDefense(caster, dummy);
+			}
+			Console.WriteLine("SPELL_CHOICE_INFO: power at Eval Int 40.0=" + got[0] + " (" + expected[0] + "), at 90.0=" + got[1] + " (" + expected[1] + ")"
+				+ " mindPower=" + caster.MindPowerVsM);
+			Report("aCastTakesTheCastersPower", (got[0] == expected[0]) && (got[1] == expected[1]) && (got[1] > got[0]));
+			dummy.RemoveTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+			caster.Delete();
+			dummy.Delete();
+		}
+
 		private static NPC Dummy(Character self) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y, self.Z, self.M);
 			dummy.MaxHits = 10000;
@@ -240,6 +272,16 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("SPELL_CHOICE: " + name + "=" + ok);
+		}
+	}
+
+	/// <summary>#1420 - records the power a spell's effect arrives with, and cancels the effect.</summary>
+	public class E_SpellPowerProbe : CompiledTriggerGroup {
+		internal static int power;
+
+		public TriggerResult On_SpellEffect(Character self, SpellEffectArgs args) {
+			power = args.SpellPower;
+			return TriggerResult.Cancel;
 		}
 	}
 }

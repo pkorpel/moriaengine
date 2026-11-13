@@ -30,9 +30,6 @@ namespace SteamEngine.CompiledScripts {
 	/// off at once and can't be interrupted, and tag.lecitel healers, who heal friends.
 	/// </summary>
 	internal static class NpcSpellChoice {
-		/// <summary>GM-level, not from Magery: NPCs have no meaningful skill set up for this.</summary>
-		internal const int SpellPower = 700;
-
 		private const double DispelSummonScore = 0.9;
 		private const double CureScore = 0.85;
 		private const double ParalyzeScore = 0.8;
@@ -152,8 +149,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((share * 100) >= NpcAggroSettings.instance.npcHealBelowPercent) {
 				return 0;
 			}
-			if ((self.MaxHits - self.Hits) < spell.GetEffectForValue(SpellPower)) {
-				return 0;
+			double amount = spell.GetEffectForValue(spell.EstimatePower(self, self)); //#1420 - its own power
+			if ((amount <= 0) || ((self.MaxHits - self.Hits) < amount)) {
+				return 0; //a heal that heals nothing (no Magery) isn't worth the mana either
 			}
 			return HealBaseScore + (1 - share);
 		}
@@ -215,7 +213,7 @@ namespace SteamEngine.CompiledScripts {
 				foreach (SpellDef spell in spells) {
 					DamageSpellDef attack = spell as DamageSpellDef;
 					if (attack != null) {
-						double estimate = attack.EstimateDamage(self, target, SpellPower);
+						double estimate = attack.EstimateDamage(self, target, attack.EstimatePower(self, target)); //#1420
 						this.damage[attack] = estimate;
 						this.bestDamage = System.Math.Max(this.bestDamage, estimate);
 						this.weakestDamage = System.Math.Min(this.weakestDamage, estimate);
