@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
@@ -30,22 +31,23 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
 		}
 
-		protected bool RunScenarioExpectEither(string charName, string command, string markerA, string markerB, TimeSpan timeout) {
-			DateTime deadline = DateTime.UtcNow + timeout;
+		/// <summary>#1504 - two players at once: the second on its own account, created on the way (TestEnableAutoAccountCreation
+		/// first), as one account plays one character at a time.</summary>
+		private protected void RunWithTwoPlayers(string charName, string secondAccount, string secondCharName, Action<TestGameClient, TestGameClient> scenario) {
 			using (var game = this.ConnectLoginAndCreateCharacter(charName)) {
-				game.SendSpeech(command);
-				while (DateTime.UtcNow < deadline) {
-					if (this.fixture.WaitForGameOutput(markerA, TimeSpan.FromMilliseconds(500))) {
-						Console.WriteLine("Observed: " + markerA);
-						return true;
-					}
-					if (this.fixture.WaitForGameOutput(markerB, TimeSpan.FromMilliseconds(500))) {
-						Console.WriteLine("Observed: " + markerB);
-						return true;
-					}
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				game.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST: ENABLED", mark, TimeSpan.FromSeconds(10)));
+				using (var second = this.ConnectLoginAndCreateCharacter(secondCharName, secondAccount)) {
+					scenario(game, second);
 				}
 			}
-			return false;
+		}
+
+		protected GameServerPairFixture Fixture {
+			get {
+				return this.fixture;
+			}
 		}
 
 		/// <summary>
@@ -56,13 +58,13 @@ namespace SteamEngine.Tests.Protocol {
 		/// a flat "connection closed" (0 bytes) or a real LoginDeniedOutPacket (0x82,
 		/// AlreadyOnline) instead of the character list. Retrying absorbs that race.
 		/// </summary>
-		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+		private TestGameClient ConnectLoginAndCreateCharacter(string charName, string account = TestAccount) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(TestAccount, TestPassword);
+					game.SendLogin(account, (account == TestAccount) ? TestPassword : account);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -75,12 +77,12 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
-		private int WaitForServerListingAndGetRedirectPort() {
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(TestAccount, TestPassword);
+						login.SendLogin(account, (account == TestAccount) ? TestPassword : account);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {
@@ -147,14 +149,31 @@ namespace SteamEngine.Tests.Protocol {
 		public CombatDepthTestsB(GameServerPairFixture servers) : base(servers) {
 		}
 
+		/// <summary>#1504 - #58's question asked for real: a dragon's breath (its cone of fire) burns the player it faces and
+		/// a player beside them in the cone. Server side: CombatDepthTests.TestDragonBreathCone.</summary>
 		[Fact]
-		public void DragonBreathAoeQuestionIsAnswered() {
-			// Deliberately not asserting which answer - #58 was explicitly left open pending
-			// this check. Either concrete answer is a pass for this test; only "no damage at
-			// all" (a test-setup problem, not an AOE answer) would leave both unseen and time out.
-			bool sawAoe = this.RunScenarioExpectEither("DragonWatcher", ".TestDragonBreathAoe",
-				"DRAGON_AOE_TEST: AOE_CONFIRMED", "DRAGON_AOE_TEST: SINGLE_TARGET_ONLY", TimeSpan.FromSeconds(110)); //#1465 - the login counts too: 45 s at most after it
-			Assert.True(sawAoe, "Expected the dragon breath test to resolve to one definite answer (see test output/log for which).");
+		public void DragonBreathBurnsEveryPlayerInItsCone() {
+			this.RunWithTwoPlayers("DragonWatcher", "breathbeside", "BreathBeside", (engaged, beside) => {
+				int mark = this.Fixture.GameOutputSnapshot().Length;
+				beside.SendSpeech(".TestReportMyUid");
+				Assert.True(this.Fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+				string output = this.Fixture.GameOutputSnapshot();
+				int at = output.IndexOf("MY_UID: ", mark, StringComparison.Ordinal) + "MY_UID: ".Length;
+				string uid = output.Substring(at, output.IndexOf(' ', at) - at);
+				mark = this.Fixture.GameOutputSnapshot().Length;
+				engaged.SendSpeech(".TestDragonBreathCone " + uid);
+				Assert.True(this.Fixture.WaitForGameOutputSince("DRAGON_CONE: STARTED", mark, TimeSpan.FromSeconds(10)), this.Fixture.GameOutputSnapshot());
+				Thread.Sleep(3000); //the breath is 1 s after the inhale
+				mark = this.Fixture.GameOutputSnapshot().Length;
+				engaged.SendSpeech(".TestDragonBreathConeReport");
+				Assert.True(this.Fixture.WaitForGameOutputSince("DRAGON_CONE: RESULT", mark, TimeSpan.FromSeconds(10)));
+				output = this.Fixture.GameOutputSnapshot();
+				string line = output.Substring(output.LastIndexOf("DRAGON_CONE: RESULT", StringComparison.Ordinal));
+				line = line.Substring(0, line.IndexOf('\n') < 0 ? line.Length : line.IndexOf('\n'));
+				int lostEngaged = int.Parse(Regex.Match(line, @"lostEngaged=(-?\d+)").Groups[1].Value);
+				int lostBeside = int.Parse(Regex.Match(line, @"lostBeside=(-?\d+)").Groups[1].Value);
+				Assert.True(line.Contains("besideInCone=True") && (lostEngaged > 0) && (lostBeside > 0), "Both players in the cone should burn: " + line);
+			});
 		}
 
 		[Fact]
