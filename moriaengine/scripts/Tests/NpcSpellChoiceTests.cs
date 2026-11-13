@@ -33,6 +33,7 @@ namespace SteamEngine.CompiledScripts {
 				ManaDrainOnlyForAMage(self);
 				SummonsReallyAppear(self);
 				ACastTakesTheCastersPower(self); //#1420
+				AReflectionGoesBackFromTheReflector(self); //#1420
 			} finally {
 				VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			}
@@ -228,6 +229,43 @@ namespace SteamEngine.CompiledScripts {
 			dummy.Delete();
 		}
 
+		/// <summary>#1420 - a reflected spell goes back as Erebor's dospellcustom sent it: what the caster brought (its mind
+		/// power x 10), lowered by the reflection, through the reflector's multipliers (a player's against a monster, vMSM,
+		/// not the monster's MvSM it was cast with) and less the caster's own defense. The caster's probe records the power
+		/// arriving back and cancels it.</summary>
+		private static void AReflectionGoesBackFromTheReflector(Character self) {
+			int plevel = self.Account.PLevel;
+			self.Account.PLevel = 1;
+			NPC caster = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_power_caster")).Create(self.X + 1, self.Y, self.Z, self.M);
+			try {
+				caster.SetRealSkillValue((int) SkillName.EvalInt, 900);
+				caster.InvalidateCombatWeaponValues();
+				caster.AddTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+				SpellDef.GetByDefname("s_magic_reflection").ApplyEffectChar(self, self, 700, EffectFlag.FromSpellBook | EffectFlag.BeneficialEffect);
+				MagicReflectionPlugin reflection = MagicReflectionPluginDef.GetMagicReflectionPlugin(self);
+				double lowering = (reflection == null) ? 0 : reflection.EffectPower;
+				E_SpellPowerProbe.power = int.MinValue;
+				E_SpellPowerProbe.spellPowerRaised = 0;
+				SpellDef.GetByDefname("s_magic_arrow").EffectChar(caster, self, EffectFlag.FromSpellBook);
+				MagerySettings settings = MagerySettings.instance;
+				int expected = (int) (((int) ((caster.MindPowerVsP * 10) * lowering)) * settings.spellPowerVsM) - CombatCalculator.GetSpellDefense(self, caster);
+				Console.WriteLine("SPELL_CHOICE_INFO: reflected power=" + E_SpellPowerProbe.power + " (" + expected + ") lowering=" + lowering
+					+ " mindPowerVsP=" + caster.MindPowerVsP + " castersOwnSpellPower=" + E_SpellPowerProbe.spellPowerRaised);
+				Report("aReflectionGoesBackFromTheReflector", (reflection != null) && (lowering > 0) && (E_SpellPowerProbe.power == expected)
+					&& (MagicReflectionPluginDef.GetMagicReflectionPlugin(self) == null));
+				//the caster's own leg runs nothing: its @spellPower never fires for a spell turned back before the multipliers
+				Report("theCastersLegSpendsNothing", (E_SpellPowerProbe.power != int.MinValue) && (E_SpellPowerProbe.spellPowerRaised == 0));
+			} finally {
+				caster.RemoveTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
+				caster.Delete();
+				MagicReflectionPlugin left = MagicReflectionPluginDef.GetMagicReflectionPlugin(self);
+				if (left != null) {
+					left.Delete(); //never used up: the check failed
+				}
+				self.Account.PLevel = (byte) plevel;
+			}
+		}
+
 		private static NPC Dummy(Character self) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y, self.Z, self.M);
 			dummy.MaxHits = 10000;
@@ -277,7 +315,11 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1420 - records the power a spell's effect arrives with, and cancels the effect.</summary>
 	public class E_SpellPowerProbe : CompiledTriggerGroup {
-		internal static int power;
+		internal static int power, spellPowerRaised;
+
+		public void On_SpellPower(Character self, SpellPowerArgs args) {
+			spellPowerRaised++;
+		}
 
 		public TriggerResult On_SpellEffect(Character self, SpellEffectArgs args) {
 			power = args.SpellPower;
