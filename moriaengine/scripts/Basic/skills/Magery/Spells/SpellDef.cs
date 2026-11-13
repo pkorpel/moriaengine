@@ -682,6 +682,22 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly TriggerKey tkSpellPower = TriggerKey.Acquire("spellPower");
+		private static readonly TriggerKey tkBeforeDoEffect = TriggerKey.Acquire("beforeDoEffect");
+		private static readonly TriggerKey tkBeforeGetEffect = TriggerKey.Acquire("beforeGetEffect");
+
+		/// <summary>#1476 - Sphere's @BeforeDoEffect on the caster: after the target's defense (or the resist roll), the power a
+		/// handler may still change (MagicWearerPlugin's slayers).</summary>
+		private int TriggerBeforeDoEffect(Character caster, IPoint3D mainTarget, IPoint3D target, int spellPower) {
+			SpellPowerArgs args = new SpellPowerArgs(caster, this, mainTarget, target, spellPower);
+			caster.TryTrigger(tkBeforeDoEffect, new ScriptArgs(args));
+			return args.SpellPower;
+		}
+
+		/// <summary>#1476 - for a @beforeGetEffect handler turning the spell back (MagicWearerPlugin's reflex): its effect on
+		/// `reflected`, past the triggers before it.</summary>
+		internal void RunEffectOnReflected(Character reflected, SpellEffectArgs spellEffectArgs) {
+			this.RunEffectChar(reflected, spellEffectArgs);
+		}
 
 		/// <summary>#1419 - the caster's @spellPower: a handler may change the power, after the inline modifiers (charge,
 		/// Koncentrace, a stolen talent) and before the target's defense. Plugins run newest first, so a change whose
@@ -799,7 +815,7 @@ namespace SteamEngine.CompiledScripts {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
 				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);
 			}
-			return MagicCombat.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - magic items' slayers, after the defense
+			return this.TriggerBeforeDoEffect(caster, mainTarget, currentTarget, spellPower); //#1476 - after the defense: magic items' slayers
 		}
 
 		/// <summary>#1420 - about what GetSpellPowerAgainstChar gives `caster` against `target`, for an NPC choosing a spell:
@@ -834,7 +850,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			MonsterSpecialAttacks.TryStartRegeneration(target); //#1022
-			if (MagicCombat.ReflectsOrBlocks(this, target, spellEffectArgs, reflected => this.RunEffectChar(reflected, spellEffectArgs))) { //#1017
+			if (target.TryCancellableTrigger(tkBeforeGetEffect, spellEffectArgs.scriptArgs) == TriggerResult.Cancel) { //#1476 - Sphere's @BeforeGetEffect: the items' reflex and block
 				return;
 			}
 			this.RunEffectChar(target, spellEffectArgs);

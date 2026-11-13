@@ -30,7 +30,7 @@ namespace SteamEngine.Tests.Protocol {
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "aBagUnpacks", "aPouchHasOneProperty", "unidentifiedCantBeWorn", "identifiedItHasAName", "everyRollMakesAnItem",
 						"everyPropertyIsFromItsTable", "aBlackBagIsValoriteOrBetter", "theInfoLines", "wornItWorks", "takenOffItStops", "namedByItsGraphic",
-						"aSlayerCountsByTheMonstersPercent", "notAgainstAnotherKind", "leechHealsByTheFormula", "freezingParalyses", "aBlockStopsAHarmfulSpell", "aReflexSendsItBack", "aMagicMountGivesItsPowers", "magicClothingWantsAMasterAndMagicThread", "aGmCopiesAMagicItem", "bagsAreCounted",
+						"theWearerHasItsPlugin", "aSlayerCountsByTheMonstersPercent", "theSlayersGoThroughTheTriggers", "takenOffThePluginGoes", /*#1476*/ "notAgainstAnotherKind", "leechHealsByTheFormula", "freezingParalyses", "aBlockStopsAHarmfulSpell", "aReflexSendsItBack", "aMagicMountGivesItsPowers", "magicClothingWantsAMasterAndMagicThread", "aGmCopiesAMagicItem", "bagsAreCounted",
 						"theVetesnikIsAnExchanger", "identifyingCostsAndReveals", "tooFewToExchange", "tenPropertiesBuyABag", "aCrushingPathStaff", "aSharpsPathKryss", "noPathNoMace" }) {
 					string marker = "MAGIC_ITEM: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
