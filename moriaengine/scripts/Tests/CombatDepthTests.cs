@@ -173,32 +173,65 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ARCHER_STANDOFF_TEST: STARTED");
 		}
 
-		/// <summary>
-		/// NOTE (#1465, #1504): c_dragon_lord has no breath (no e_fire_dragon) and the breath burns only players, so both sheep
-		/// can only be hurt by the dragon's melee: the answer says whether it swung at the second one too, not the breath's.
-		/// Dragon breath (#58's open question): does the AOE spell bypass actually fan out to a
-		/// second target standing right next to the explicitly engaged one, or does it only ever
-		/// land on the one target passed to SpellEffectArgs? Answers it either way rather than
-		/// assuming - both outcomes are a "PASS" in the sense that the question is now answered;
-		/// the marker text itself carries which answer it was.
-		/// </summary>
-		[SteamFunction]
-		public static void TestDragonBreathAoe(Character self) {
-			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
-			NPCDef dragonDef = ThingDef.GetByDefname("c_dragon_lord") as NPCDef;
-			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
-			NPC dragon = (NPC) dragonDef.Create(self.X + 1, self.Y, self.Z, self.M);
-			NPC dummy1 = (NPC) dummyDef.Create(self.X + 2, self.Y, self.Z, self.M);
-			NPC dummy2 = (NPC) dummyDef.Create(self.X + 2, self.Y + 1, self.Z, self.M); // adjacent to dummy1, never itself engaged
+		private static Player breathEngaged, breathBeside;
+		private static NPC breathDragon;
+		private static int engagedHitsBefore, besideHitsBefore;
+		private static bool besideInCone;
 
-			int startingHits1 = dummy1.Hits;
-			int startingHits2 = dummy2.Hits;
-			NPCAiTimer.GetFor(dragon).EngageTarget(dummy1);
-			BoundTimer check = self.AddTimer(DragonAoeCheckTimer.TimerKey,
-				new DragonAoeCheckTimer(dummy1, dummy2, startingHits1, startingHits2, CheckDelaySeconds));
-			check.DueInSeconds = 1; //#1465 - looks every second: the answer as soon as it's known, not after a fixed 45 s
-			check.PeriodInSeconds = 1;
-			Console.WriteLine("DRAGON_AOE_TEST: STARTED");
+		/// <summary>#1504 (was #58's open question, never really asked: the old test's dragon had no breath and its two
+		/// targets were sheep, which the breath never burns) - does a dragon's breath hit a player beside the one it faces?
+		/// A brown dragon (e_fire_dragon) faces `self` 2 tiles off, its AI off so no blow gets in the count; the other
+		/// player (its uid in the args) stands on a tile of the breath's cone next to `self`. The breath goes through
+		/// DragonActionTimer, the same as after the dragon's own roll (TryFireDragon), without the dice.</summary>
+		[SteamFunction]
+		public static void TestDragonBreathCone(Character self, ScriptArgs sa) {
+			Player engaged = (Player) self;
+			Player beside = (Player) Thing.UidGetCharacter(uint.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture));
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			foreach (Player player in new[] { engaged, beside }) {
+				player.Account.PLevel = 1; //the breath burns non-GM players only
+				player.MaxHits = 30000;
+				player.Hits = player.MaxHits;
+			}
+			NPC dragon = (NPC) ThingDef.GetByDefname("c_drak_hnedy").Create(self.X, self.Y, self.Z, self.M);
+			dragon.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			int[][] sides = { new[] { 2, 0, (int) Direction.West }, new[] { -2, 0, (int) Direction.East }, new[] { 0, 2, (int) Direction.North }, new[] { 0, -2, (int) Direction.South } };
+			foreach (int[] side in sides) {
+				dragon.P(self.X + side[0], self.Y + side[1], self.Z, self.M);
+				dragon.Direction = (Direction) side[2];
+				if (dragon.CanSeeLOS(self).Allow) {
+					break;
+				}
+			}
+			besideInCone = false;
+			foreach (int[] t in MonsterSpecialAttacks.DragonCone((int) dragon.Direction)) {
+				int x = dragon.X + t[0], y = dragon.Y + t[1];
+				//beside the engaged player, off the dragon's line through it (a breath along the line only would miss it)
+				if ((Point2D.GetSimpleDistance(x, y, self.X, self.Y) == 1) && (x != dragon.X) && (y != dragon.Y) && (t[2] == 0)) {
+					beside.P(x, y, self.Z, self.M);
+					besideInCone = (beside.X == x) && (beside.Y == y);
+					break;
+				}
+			}
+			breathDragon = dragon;
+			breathEngaged = engaged;
+			breathBeside = beside;
+			engagedHitsBefore = engaged.Hits;
+			besideHitsBefore = beside.Hits;
+			int[] tuned = (dragon.Def as NPCDef).AbilityTuning("fireDragonDamage");
+			DragonActionTimer.Start(dragon, DragonActionTimer.Breath, 1, (tuned == null) ? 120 : tuned[0], 4, 0);
+			Console.WriteLine("DRAGON_CONE: STARTED dragon=" + dragon.X + "," + dragon.Y + " facing=" + dragon.Direction + " engaged=" + self.X + "," + self.Y
+				+ " beside=" + beside.X + "," + beside.Y + " besideInCone=" + besideInCone);
+		}
+
+		[SteamFunction]
+		public static void TestDragonBreathConeReport(Character self) {
+			Console.WriteLine("DRAGON_CONE: RESULT lostEngaged=" + (engagedHitsBefore - breathEngaged.Hits) + " lostBeside=" + (besideHitsBefore - breathBeside.Hits)
+				+ " besideInCone=" + besideInCone);
+			if ((breathDragon != null) && !breathDragon.IsDeleted) {
+				breathDragon.Delete();
+			}
 		}
 
 		/// <summary>
@@ -370,51 +403,6 @@ namespace SteamEngine.CompiledScripts {
 					(this.liche.IsDeleted ? -1 : this.liche.X) + "," + (this.liche.IsDeleted ? -1 : this.liche.Y) + "))");
 			} else {
 				Console.WriteLine("SPELLCASTER_STANDOFF_TEST: FAIL (stayed at range but never attempted a cast)");
-			}
-		}
-	}
-
-	[SaveableClass]
-	public class DragonAoeCheckTimer : BoundTimer {
-		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_dragonAoeCheckTimer_");
-
-		private NPC dummy1, dummy2;
-		private int startingHits1, startingHits2;
-		private double secondsLeft;
-
-		[LoadingInitializer]
-		public DragonAoeCheckTimer() {
-		}
-
-		public DragonAoeCheckTimer(NPC dummy1, NPC dummy2, int startingHits1, int startingHits2, double seconds) {
-			this.dummy1 = dummy1;
-			this.dummy2 = dummy2;
-			this.startingHits1 = startingHits1;
-			this.startingHits2 = startingHits2;
-			this.secondsLeft = seconds;
-		}
-
-		/// <summary>#1465 - every second: the adjacent dummy hurt answers AOE at once; "single target" and "no damage" can
-		/// only be told when the time is up.</summary>
-		protected override void OnTimeout(TagHolder cont) {
-			if ((this.dummy1 == null) || (this.dummy2 == null)) { //not saved: after a reload there's nothing to answer
-				this.Delete();
-				return;
-			}
-			bool hit1 = this.dummy1.IsDeleted || (this.dummy1.Hits < this.startingHits1);
-			bool hit2 = this.dummy2.IsDeleted || (this.dummy2.Hits < this.startingHits2);
-			this.secondsLeft--;
-			if (!(hit1 && hit2) && (this.secondsLeft > 0)) {
-				return;
-			}
-
-			this.Delete();
-			if (!hit1) {
-				Console.WriteLine("DRAGON_AOE_TEST: NO_DAMAGE (engaged target itself was never hit - test setup issue, not an AOE answer)");
-			} else if (hit2) {
-				Console.WriteLine("DRAGON_AOE_TEST: AOE_CONFIRMED (adjacent non-engaged target also took damage)");
-			} else {
-				Console.WriteLine("DRAGON_AOE_TEST: SINGLE_TARGET_ONLY (adjacent non-engaged target was unaffected)");
 			}
 		}
 	}
