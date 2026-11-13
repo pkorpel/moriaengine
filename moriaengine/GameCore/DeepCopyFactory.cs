@@ -147,6 +147,8 @@ namespace SteamEngine {
 						implementors[type] = implementor;
 					} else if (type.IsGenericType && implementors.TryGetValue(type.GetGenericTypeDefinition(), out implementor)) {
 						implementors[type] = implementor; //#920 - List<> and the like are registered open
+					} else if (type.IsArray && (type.GetArrayRank() == 1) && implementors.TryGetValue(typeof(Array), out implementor)) {
+						implementors[type] = implementor; //#1496 - ArraySaver (one dimension) is registered for Array, as ObjectSaver finds it
 					} else {
 						throw new SEException("We don't know how to copy the type " + type);
 					}
