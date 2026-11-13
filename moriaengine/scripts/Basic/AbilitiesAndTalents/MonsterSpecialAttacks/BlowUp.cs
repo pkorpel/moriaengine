@@ -134,14 +134,14 @@ namespace SteamEngine.CompiledScripts {
 					int distance = Point2D.GetSimpleDistance(self, other);
 					if ((distance <= def.SureReach) || OneIn(def.FarOneIn)) {
 						int damage = def.DamageByDistance * (BlowUpNineTiles - distance) * ((other is NPC) ? def.NpcMultiplier : 1);
-						other.Hits = (short) Math.Max(0, other.Hits - damage); //dam_god: no resist, no armor
+						Character.SetHitsBy(other, (short) Math.Max(0, other.Hits - damage), self); //dam_god: no resist, no armor; #1464 - killed by the blast
 						if (other is Player) {
 							other.SysMessage("Zasahl te kus tela");
 						}
 					}
 				}
 			}
-			self.Hits = 0;
+			Character.SetHitsBy(self, 0, null); //#1464 - its own blast, no killer (Sphere's hits=0)
 		}
 	}
 

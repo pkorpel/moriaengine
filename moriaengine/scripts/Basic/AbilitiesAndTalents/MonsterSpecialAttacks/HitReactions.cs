@@ -299,7 +299,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>e_guard's @aftergetswing: a summon that strikes a guard dies.</summary>
 		private static void TryKillSummonHittingGuard(NPC guard, Character attacker) {
 			if ((guard.AggroMode == AggroMode.GuardsRealm) && SummonSpellDef.IsSummonedCreature(attacker)) {
-				attacker.Hits = 0;
+				Character.SetHitsBy(attacker, 0, guard); //#1464
 			}
 		}
 
