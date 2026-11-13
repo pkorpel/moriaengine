@@ -79,7 +79,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Globals.dice.Next(5) == 0) {
 				attacker.SysMessage("Your blow slams hard into " + defender.Name + "'s armor.");
 			}
-			return DamageManager.CauseDamage(defender, attacker, damageType, (landedDamage * percent + 50) / 100);
+			return DamageManager.SendBlowBack(defender, attacker, damageType, (landedDamage * percent + 50) / 100); //#1519 - src.damage_noresponse (new_events.scp)
 		}
 	}
 }

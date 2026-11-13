@@ -83,7 +83,7 @@ namespace SteamEngine.CompiledScripts {
 				extra += ScriptUtil.GetRandInRange(def.CritBonus[0], def.CritBonus[1]);
 				attacker.SysMessage("You land a critical blow.");
 			}
-			return DamageManager.CauseDamage(attacker, defender, DamageType.Irresistable, extra);
+			return DamageManager.CauseDamageNoResponse(attacker, defender, DamageType.Irresistable, extra); //#1519 - e_craftmonster's hits=, past damage_final
 		}
 	}
 }
