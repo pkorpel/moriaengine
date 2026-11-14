@@ -151,6 +151,14 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("STANDCAST_SHIELD: curseWhole=" + curseWhole + " blowBackHits=" + self.Hits + "/" + self.MaxHits + " energy=" + up.EffectPower);
 			Check("curseAndBlowBackWhole", curseWhole && (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
 			self.Hits = self.MaxHits;
+			//#1524 - Rinald's breath (f_dragon_fire's tiles) and Halda Molle's frost wave (hits=) skip damage_final too: whole
+			RinaldBreath.BurnHit(monster, self, 20);
+			bool rinaldWhole = (self.Hits < self.MaxHits) && Near(up.EffectPower, 30); //its fire resist may cut it; the shield doesn't
+			self.Hits = self.MaxHits;
+			MonsterSpecialAttacks.FrostHit(monster, self, 20);
+			Console.WriteLine("STANDCAST_SHIELD: rinaldWhole=" + rinaldWhole + " frostHits=" + self.Hits + "/" + self.MaxHits + " energy=" + up.EffectPower);
+			Check("rinaldAndFrostWhole", rinaldWhole && (self.Hits == self.MaxHits - 20) && Near(up.EffectPower, 30));
+			self.Hits = self.MaxHits;
 			Check("standcastRefusedUnderIt", RefusesStandcast(self));
 			//with a mana shield too: the energy shield first (20 -> 15), the mana shield takes the 15 (damage_final's order)
 			self.AddPlugin(DamageManager.manaShieldKey, ((PluginDef) AbstractScript.GetByDefname("p_mana_shield")).Create());

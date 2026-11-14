@@ -105,8 +105,14 @@ namespace SteamEngine.CompiledScripts {
 			int damage = ((now <= tile.flameUntil) ? tile.damage : 0) + ((now <= tile.afterFireUntil) ? (tile.damage / 2) : 0);
 			tiles.Remove(Key(victim.X, victim.Y, victim.M));
 			if ((damage > 0) && !tile.owner.IsDeleted) {
-				DamageManager.CauseDamage(tile.owner, victim, DamageType.MagicFire, damage);
+				BurnHit(tile.owner, victim, damage);
 			}
+		}
+
+		/// <summary>#1524 - Erebor's Rinald breathes f_dragon_fire (velmistr.scp): its tiles burn by damage_noresponse, as the
+		/// dragons' (DragonFire, #1401), past damage_final and the energy shield.</summary>
+		internal static void BurnHit(Character owner, Character victim, int damage) {
+			DamageManager.CauseDamageNoResponse(owner, victim, DamageType.MagicFire, damage);
 		}
 
 		private static void Purge() {
