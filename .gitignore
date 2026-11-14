@@ -1,3 +1,54 @@
+# Claude
 .DS_Store
 .claude/settings.local.json
 .claude/worktrees/
+
+# Visual Studio
+.vs/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]enchmarkDotNet.Artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+!**/packages/build/
+!**/packages/repositories.config
+
+# .NET tooling
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+*.pid
+*.seed
+
+# OS-generated files
+Thumbs.db
+Desktop.ini
