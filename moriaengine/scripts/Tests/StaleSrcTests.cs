@@ -6,6 +6,9 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1155/#1156 - server side of Tests/Protocol/StaleSrcTests.cs.</summary>
 	public static class StaleSrcTests {
 		private static NPC attacker, rabbit;
+		private static Character stepper;
+		private static int stepFromX;
+		private static Item stepProbe;
 		private static int rabbitX, rabbitY, rabbitHits;
 		private static bool moved, reported;
 		//#1180 - the hit the client waits for must come after the setup's player logged out: the watch arms then
@@ -84,6 +87,49 @@ namespace SteamEngine.CompiledScripts {
 					rabbit.Delete();
 					break;
 				}
+				case "stepsetup": {
+						//#1529 - the stepper, facing east on open ground, a probe item two tiles east
+						MovementSpeedTests.TestTeleportToOpenGround(self);
+						VerificationTestUtils.CleanupNearbyNpcs(self, 12);
+						self.Account.PLevel = 1; //a GM's steps are never queued
+						self.Direction = Direction.East;
+						stepper = self;
+						E_StepSrcProbe.src = null;
+						E_StepSrcProbe.stepped = null;
+						int probeZ = self.GetMap().GetFixedZ(new Point4D(self.X + 2, self.Y, self.Z, self.M)); //where the stepper will stand
+						Item probe = (Item) ThingDef.GetByDefname("i_gold").Create(self.X + 2, self.Y, probeZ, self.M);
+						stepFromX = self.X;
+						probe.AddTriggerGroup(SingletonScript<E_StepSrcProbe>.Instance);
+						stepProbe = probe;
+						line = "ready";
+						break;
+					}
+				case "steppush": {
+						//#1529 - another client's command walks the stepper twice at once: the first step goes now (inside this
+						//packet), the second is too soon and waits for the movement thread, with this client as the last sender
+						object movement = typeof(Networking.GameState).GetField("movementState", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(stepper.GameState);
+						MethodInfo request = movement.GetType().GetMethod("MovementRequest", BindingFlags.NonPublic | BindingFlags.Instance);
+						request.Invoke(movement, new object[] { Direction.East, false, (byte) 1 });
+						//a fresh connection's step reserves hold the whole uptime (its first steps are free): empty them and make
+						//the next step due a walk's time from now, so the second request really waits in the queue
+						Type movementType = movement.GetType();
+						foreach (string reserve in new[] { "lastStepReserve", "secondLastStepReserve", "thirdLastStepReserve" }) {
+							movementType.GetField(reserve, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(movement, 0L);
+						}
+						movementType.GetField("nextMovementTime", BindingFlags.NonPublic | BindingFlags.Instance)
+							.SetValue(movement, SteamEngine.Common.HighPerformanceTimer.TickCount + SteamEngine.Common.HighPerformanceTimer.SecondsToTicks(0.5));
+						request.Invoke(movement, new object[] { Direction.East, false, (byte) 2 });
+						line = "pushed queued=" + (stepper.X == stepFromX + 1) + " x=" + stepper.X;
+						break;
+					}
+				case "stepresult": {
+						line = "stepped=" + (E_StepSrcProbe.stepped == stepper) + " srcWasStepper=" + (E_StepSrcProbe.src == stepper)
+							+ " src=" + ((E_StepSrcProbe.src == null) ? "null" : E_StepSrcProbe.src.ToString());
+						if ((stepProbe != null) && !stepProbe.IsDeleted) {
+							stepProbe.Delete();
+						}
+						break;
+					}
 				case "timersrc":
 					//#1502 - a timer armed right after this client's own command: its OnTimeout must see no Globals.Src (this
 					//client sent the last packet), and a MessageTo line still reaches the client
@@ -112,6 +158,17 @@ namespace SteamEngine.CompiledScripts {
 				reported = true; //the client waits for this line instead of a fixed time; no client is logged in meanwhile
 				Console.WriteLine("STALESRC_TEST: hit |");
 			}
+		}
+	}
+
+	/// <summary>#1529 - records Globals.Src when a character steps on its item.</summary>
+	public class E_StepSrcProbe : CompiledTriggerGroup {
+		internal static object src;
+		internal static Character stepped;
+
+		public void on_step(TagHolder self, Character steppingChar) {
+			src = Globals.Src;
+			stepped = steppingChar;
 		}
 	}
 
