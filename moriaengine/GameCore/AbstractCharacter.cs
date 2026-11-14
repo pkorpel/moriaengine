@@ -127,17 +127,19 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>In the world with its account offline (#1487: the account's client, not GameState, which is now only the
+		/// client playing this character).</summary>
 		public bool IsLingering {
 			get {
-				return this.IsPlayer && !this.Flag_Disconnected && this.GameState == null;
+				return this.IsPlayer && !this.Flag_Disconnected && (this.account.GameState == null);
 			}
 		}
 
 		/// <summary>#1487 - logged out while its account's client is on, playing another character or choosing one. It isn't
-		/// IsLingering then (GameState is the account's), but it's in the world only for its logout delay all the same.</summary>
+		/// IsLingering then (the account has a client), but it's in the world only for its logout delay all the same.</summary>
 		public bool IsLeftByItsAccount {
 			get {
-				GameState state = this.GameState;
+				GameState state = this.IsPlayer ? this.account.GameState : null;
 				return this.IsPlayer && !this.Flag_Disconnected && (state != null) && (state.Character != this);
 			}
 		}
@@ -158,13 +160,13 @@ namespace SteamEngine {
 		//    }
 		//}
 
+		/// <summary>The client playing this character, or null. #1487 (the user's call): only while its account's client plays
+		/// this one - a character its account left (standing out its logout delay while the account plays another or chooses)
+		/// gets no messages or packets of its own, which used to reach that client.</summary>
 		public GameState GameState {
-			get
-			{
-				if (this.account != null) {
-					return this.account.GameState;
-				}
-				return null;
+			get {
+				GameState state = (this.account == null) ? null : this.account.GameState;
+				return ((state != null) && (state.Character == this)) ? state : null;
 			}
 		}
 
