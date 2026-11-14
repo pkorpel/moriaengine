@@ -18,7 +18,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			this.Timer = 1; //each second, as long as it lasts (offline too: it ticks nothing then)
-			if (!player.IsOnline) {
+			if (player.GameState == null) { //#1487 - Erebor's isonline is the character's: not one its account left
 				return;
 			}
 			long now = DateTime.UtcNow.Ticks;
@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			this.Timer = 1;
-			if (!player.IsOnline) {
+			if (player.GameState == null) { //#1487 - Erebor's isonline is the character's: not one its account left
 				return;
 			}
 			int left = AfkCheck.SecondsLeft(this);

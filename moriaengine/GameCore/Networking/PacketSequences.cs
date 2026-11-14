@@ -37,6 +37,7 @@ namespace SteamEngine.Networking {
 				GameState state = this.ch.GameState;
 				if (state == null) {
 					this.Delete();
+					return; //#1487 - the client left (or plays another) before its version came
 				}
 				if (state.Version != ClientVersion.nullValue) {
 					SendStartGameSequence(this.ch);
