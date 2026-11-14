@@ -572,13 +572,14 @@ namespace SteamEngine.CompiledScripts {
 								//#1518 - who's spared first, as Erebor's dospellcustom_donesrc returns for friends before its multipliers:
 								//the power and what it spends (Standcast, Koncentrace, a mystic's crushing blow, the roll, @spellPower)
 								//only for those the spell reaches
-								CharRelation mainRelation = (sea != null) ? sea.CasterToMainTargetRelation : this.RelationToMainTarget(caster, target);
+								CharRelation mainRelation = (target is Character mainChar) ? AreaRelation(caster, mainChar) :
+									((sea != null) ? sea.CasterToMainTargetRelation : this.RelationToMainTarget(caster, target));
 								if ((flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial) {
-									if (Notoriety.GetCharRelation(caster, ch) < mainRelation) { //target "more enemy" than main target, we don't wanna benefit him.
+									if (AreaRelation(caster, ch) < mainRelation) { //target "more enemy" than main target, we don't wanna benefit him.
 										continue;
 									}
 								} else if ((flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
-									if (Notoriety.GetCharRelation(caster, ch) > mainRelation) { //target "more friendly" than main target, we don't wanna hurt him.
+									if (AreaRelation(caster, ch) > mainRelation) { //target "more friendly" than main target, we don't wanna hurt him.
 										continue;
 									}
 								}
@@ -750,6 +751,13 @@ namespace SteamEngine.CompiledScripts {
 				sea.SpellPower = spellPower;
 			}
 			sea.BasePower = basePower;
+		}
+
+		/// <summary>#1522 - Erebor's ismyfriend for an area spell: a pet is as friendly as its master (the caster's own pet is
+		/// the caster's), and a pet casting sees with its master's eyes. Notoriety itself knows no pets, and stays so: its
+		/// relation colours names and moves guards.</summary>
+		private static CharRelation AreaRelation(Character caster, Character ch) {
+			return Notoriety.GetCharRelation(caster.ControlMaster ?? caster, ch.ControlMaster ?? ch);
 		}
 
 		/// <summary>#1518 - SpellEffectArgs.CasterToMainTargetRelation before there's a sea: the main target's relation, or

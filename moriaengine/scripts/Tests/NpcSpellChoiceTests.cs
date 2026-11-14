@@ -318,7 +318,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1518 - an area spell decides whom it spares before working out the power, as Erebor returns for friends
 		/// before its multipliers: the caster's @spellPower runs for the two monsters it hits, never for a friend beside them
-		/// (one of the caster's realm: Notoriety has no pet relation, #1522).</summary>
+		/// (one of the caster's realm; its own pet of no realm too since #1522, as Erebor's ismyfriend).</summary>
 		private static void AnAreaSpellSparesFriendsBeforeThePower(Character self) {
 			int plevel = self.Account.PLevel;
 			self.Account.PLevel = 1;
@@ -327,12 +327,14 @@ namespace SteamEngine.CompiledScripts {
 			NPC main = Dummy(self);
 			NPC other = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y + 1, self.Z, self.M);
 			NPC pet = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 3, self.Y, self.Z, self.M);
+			NPC ownPet = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 3, self.Y + 1, self.Z, self.M);
 			try {
 				other.MaxHits = 10000;
 				other.Hits = 10000;
 				pet.ControlMaster = self;
 				pet.Realm = Realm.Gondor;
-				foreach (NPC npc in new[] { main, other, pet }) {
+				ownPet.ControlMaster = self; //#1522 - no realm: a friend only as the caster's pet, as Erebor's ismyfriend
+				foreach (NPC npc in new[] { main, other, pet, ownPet }) {
 					NPCAiTimer.Freeze(npc, 300);
 				}
 				E_AreaPowerProbe.reached.Clear();
@@ -340,14 +342,17 @@ namespace SteamEngine.CompiledScripts {
 				SpellDef explosion = SpellDef.GetByDefname("s_explosion");
 				explosion.Trigger_Success(SkillSequenceArgs.Acquire(self, SkillName.Magery, main, null, null, explosion, null));
 				Console.WriteLine("SPELL_CHOICE_INFO: area power for main=" + E_AreaPowerProbe.reached.Contains(main) + " other="
-					+ E_AreaPowerProbe.reached.Contains(other) + " pet=" + E_AreaPowerProbe.reached.Contains(pet) + " petHits=" + pet.Hits + "/" + pet.MaxHits);
+					+ E_AreaPowerProbe.reached.Contains(other) + " pet=" + E_AreaPowerProbe.reached.Contains(pet) + " petHits=" + pet.Hits + "/" + pet.MaxHits
+					+ " ownPet=" + E_AreaPowerProbe.reached.Contains(ownPet) + " ownPetHits=" + ownPet.Hits + "/" + ownPet.MaxHits);
 				Report("anAreaSpellSparesFriendsBeforeThePower", E_AreaPowerProbe.reached.Contains(main) && E_AreaPowerProbe.reached.Contains(other)
 					&& !E_AreaPowerProbe.reached.Contains(pet) && (pet.Hits == pet.MaxHits));
+				Report("anAreaSpellSparesTheCastersPet", !E_AreaPowerProbe.reached.Contains(ownPet) && (ownPet.Hits == ownPet.MaxHits)); //#1522
 			} finally {
 				self.RemoveTriggerGroup(SingletonScript<E_AreaPowerProbe>.Instance);
 				main.Delete();
 				other.Delete();
 				pet.Delete();
+				ownPet.Delete();
 				self.Realm = realm;
 				self.Account.PLevel = (byte) plevel;
 			}
