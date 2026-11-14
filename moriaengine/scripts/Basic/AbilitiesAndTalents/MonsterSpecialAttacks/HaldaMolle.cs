@@ -310,13 +310,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1524 - i_frosty_wave's @Step (halda_molle.scp): `src.hits = <src.hits>-59`, a direct hits change past
+		/// damage_final and the energy shield.</summary>
+		internal static void FrostHit(Character owner, Character victim, int damage) {
+			DamageManager.CauseDamageNoResponse(owner, victim, DamageType.Irresistable, damage);
+		}
+
 		private static void Freeze(FrostTile tile, Character victim) {
 			FrostWaveAbilityDef def = FrostWaveDef;
 			if ((def == null) || !(victim is Player) || victim.IsGM || !victim.IsAliveAndValid || !tile.hit.Add(victim)) {
 				return;
 			}
 			victim.SysMessage("Byl si zmrazen.");
-			DamageManager.CauseDamage(tile.owner.IsDeleted ? null : tile.owner, victim, DamageType.Irresistable, def.Damage);
+			FrostHit(tile.owner.IsDeleted ? null : tile.owner, victim, def.Damage);
 			if (!victim.IsDeleted && !victim.Flag_Dead) {
 				ParalyzeEffectPluginDef.Paralyze(victim, frostParalyzePK, TimeSpan.FromSeconds(def.ParalyzeSeconds));
 			}
