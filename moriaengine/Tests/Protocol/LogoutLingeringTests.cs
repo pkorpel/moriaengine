@@ -94,7 +94,22 @@ namespace SteamEngine.Tests.Protocol {
 						observer.SendSpeech(".TestReportLingerState " + firstUid);
 						Assert.True(this.fixture.WaitForGameOutputSince("LINGER_STATE: uid=" + firstUid, markBefore, TimeSpan.FromSeconds(10)));
 						Assert.Contains("isLingering=False flagDisconnected=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "LINGER_STATE: uid=" + firstUid));
-						Thread.Sleep(10000); //past the delay
+						//#1487 (the user's call) - a line to the left character reaches no client: not the account's, playing the second
+						int markTell = this.fixture.GameOutputSnapshot().Length;
+						observer.SendSpeech(".TestTellCharacter " + firstUid);
+						Assert.True(this.fixture.WaitForGameOutputSince("TELL_TEST: uid=" + firstUid, markTell, TimeSpan.FromSeconds(10)));
+						Assert.Contains("gameStateNull=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "TELL_TEST: uid=" + firstUid));
+						bool leaked = false;
+						DateTime readUntil = DateTime.UtcNow.AddSeconds(6); //bounded: other lines may keep coming
+						try {
+							while (!leaked && (DateTime.UtcNow < readUntil)) {
+								leaked = second.ReadSystemMessage(TimeSpan.FromSeconds(3)).Contains("Zprava pro odesleho");
+							}
+						} catch (TimeoutException) {
+							//nothing more came: right
+						}
+						Assert.False(leaked, "The left character's line reached its account's client, now playing another character.");
+						Thread.Sleep(7000); //past the delay (10 s with the checks above)
 						int markCheck = this.fixture.GameOutputSnapshot().Length;
 						observer.SendSpeech(".TestReportLingerState " + firstUid);
 						Assert.True(this.fixture.WaitForGameOutputSince("LINGER_STATE: uid=" + firstUid, markCheck, TimeSpan.FromSeconds(10)));

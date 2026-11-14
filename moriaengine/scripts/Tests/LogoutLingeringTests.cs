@@ -36,6 +36,15 @@ namespace SteamEngine.CompiledScripts {
 				" flagDisconnected=" + target.Flag_Disconnected);
 		}
 
+		/// <summary>#1487 - a line to a character (its uid): one its account left has no client of its own, so nobody gets it.</summary>
+		[SteamFunction]
+		public static void TestTellCharacter(Character self, ScriptArgs sa) {
+			uint targetUid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			Character target = (Character) Thing.UidGetCharacter(targetUid);
+			target.SysMessage("Zprava pro odesleho");
+			Console.WriteLine("TELL_TEST: uid=" + targetUid + " gameStateNull=" + (target.GameState == null));
+		}
+
 		private static double? logoutDelayBefore;
 
 		/// <summary>#1487 - the ordinary logout delay, in seconds; "restore" puts back the one before the first change.</summary>
