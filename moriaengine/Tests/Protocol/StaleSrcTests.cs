@@ -18,6 +18,23 @@ namespace SteamEngine.Tests.Protocol {
 			return CommandPermissionTests.Ask(this.fixture, client, ".TestStaleSrc \"" + what + "\"", "STALESRC_TEST: " + what + " ");
 		}
 
+		/// <summary>#1529 - a step queued for the movement thread runs with its own client as Globals.Src, not with whoever
+		/// sent the last packet since: another client's command queues the stepper's second step, a probe item on its tile
+		/// records the Src it sees.</summary>
+		[Fact]
+		public void AQueuedStepIsItsOwnClients() {
+			using var stepper = CommandPermissionTests.Connect("floortests", "Src Stepper");
+			CommandPermissionTests.Ask(this.fixture, stepper, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			using var pusher = CommandPermissionTests.Connect("srcpusher", "Src Pusher");
+			string setup = this.Do(stepper, "stepsetup");
+			Assert.Contains("ready", setup);
+			string pushed = this.Do(pusher, "steppush");
+			Assert.True(pushed.Contains("queued=True"), "the second step wasn't queued: " + pushed);
+			Thread.Sleep(2000); //the queued step waits out the walk delay on the movement thread
+			string result = this.Do(stepper, "stepresult");
+			Assert.True(result.Contains("stepped=True srcWasStepper=True"), pushed + " / " + result);
+		}
+
 		[Fact]
 		public void KnockbackNeedsDamageAndSwingsGoOnAfterTheLastSenderLeaves() {
 			int mark;

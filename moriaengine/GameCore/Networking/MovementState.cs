@@ -88,7 +88,15 @@ namespace SteamEngine.Networking {
 
 							MovementState ms = currentNode.Value;
 							if (ms.moveRequests.Count > 0) {
-								ms.ProcessMovement(ms.moveRequests.Dequeue());
+								//#1529 - a queued step is its own client's, as its packet was: Globals.Src was whoever sent the last
+								//packet since (another player), which @step code, killers and messages read. Back after.
+								ISrc packetSrc = Globals.Src;
+								Globals.SetSrc(ms.gameState.Character);
+								try {
+									ms.ProcessMovement(ms.moveRequests.Dequeue());
+								} finally {
+									Globals.SetSrc(packetSrc);
+								}
 								if (ms.moveRequests.Count == 0) {
 									queue.Remove(currentNode);
 								}
