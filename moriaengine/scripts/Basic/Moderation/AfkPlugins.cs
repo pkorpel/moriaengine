@@ -1,12 +1,21 @@
 using System;
+using SteamEngine;
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1473 - Erebor's i_afk_countdown: the warning before an AFK check, a red line each second, then the check
 	/// with what's left of its time. Its @logout is e_afk_controlled's: the log notes it.</summary>
 	[Dialogs.ViewableClass]
-	public partial class AfkCountdownPlugin {
+	[PluginTemplate]
+	public partial class AfkCountdownPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal long endsAt = 0;
+		[SaveableData, CopyableData]
+		internal string action = null;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_afkCountdown_");
 
 		internal static AfkCountdownPlugin Of(Character ch) {
@@ -49,11 +58,19 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1473 - Erebor's i_afk_dialog: the check, ticking each second. The red count every other second; a dialog
 	/// that was answered wrong or closed comes back. Its @login and @logout are e_afk_controlled's.</summary>
 	[Dialogs.ViewableClass]
-	public partial class AfkCheckPlugin {
+	[PluginTemplate]
+	public partial class AfkCheckPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal string letters = null;
+		[SaveableData, CopyableData]
+		internal long endsAt = 0;
+		[SaveableData, CopyableData]
+		internal string action = null;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_afkCheck_");
 
 		//not saved: after a restart or a login the dialog has to be sent again
-		internal bool shown;
+		internal bool shown { get; set; }
 
 		internal static AfkCheckPlugin Of(Character ch) {
 			return (ch == null) ? null : ch.GetPlugin(Key) as AfkCheckPlugin;

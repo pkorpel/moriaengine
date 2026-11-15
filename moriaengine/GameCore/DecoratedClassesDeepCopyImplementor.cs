@@ -34,14 +34,6 @@ namespace SteamEngine {
 	}
 
 	/// <summary>
-	/// In classes that have [DeepCopyableClass], use this attribute to decorate public instance fields and properties
-	/// that are supposed to be copied by the deepcopy framework along with the main object.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-	public sealed class CopyableDataAttribute : Attribute {
-	}
-
-	/// <summary>
 	/// Use this to decorate a static method or constructor that implements deep copying of instances of the given class. 
 	/// It must return value of assignable (the same) type.
 	/// If it has one parameter of its type, the original object being copied will be supplied using this parameter.
