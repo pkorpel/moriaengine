@@ -84,7 +84,7 @@ function Set-MulPathToCheckedInUoFiles {
 	if (-not (Test-Path 'steamengine.ini')) {
 		return
 	}
-	$uoFiles = Join-Path $PSScriptRoot '..' 'uo-files'
+	$uoFiles = Join-Path $PSScriptRoot '../uo-files'
 	if (-not (Test-Path $uoFiles)) {
 		return
 	}

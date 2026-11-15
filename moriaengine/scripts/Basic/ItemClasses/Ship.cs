@@ -16,12 +16,17 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using System.Collections.Generic;
+using SteamEngine;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingDefTemplate]
 	public partial class ShipDef : MultiItemDef {
+		[DefField(typeof(ShipFacing), DefaultExpression = "ShipFacing.North")]
+		private FieldValue facing;
 
 
 		DMICDLoadHelper[] shipComponentsHelpers = new DMICDLoadHelper[4];
@@ -114,7 +119,20 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate(Copy = false)]
 	public partial class Ship : MultiItem {
+		[SaveableData, CopyableData]
+		private LinkedList<Thing> carriedThings = null;
+		[SaveableData, CopyableData]
+		internal Item tiller = null;
+		[SaveableData, CopyableData]
+		internal Item leftPlank = null;
+		[SaveableData, CopyableData]
+		internal Item rightPlank = null;
+		[SaveableData, CopyableData]
+		internal Item trunk = null;
+		[SaveableData, CopyableData]
+		internal ShipFacing facing = ShipFacing.North;
 
 		internal override void InitMultiRegion() {
 			int n = this.TypeDef.rectangleHelpers.Count;
@@ -127,7 +145,6 @@ namespace SteamEngine.CompiledScripts {
 				// TODO - pouzit region.Place(P()) a v pripade false poresit co delat s neuspechem!!
 			}
 		}
-
 
 		internal void AddThing(Thing t) {
 			if (this.carriedThings == null) {

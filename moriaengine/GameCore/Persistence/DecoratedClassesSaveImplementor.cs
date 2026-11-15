@@ -105,38 +105,6 @@ namespace SteamEngine.Persistence {
 		//no params
 	}
 
-	/// <summary>Use to mark the instance fields and properties to be automatically saved and loaded.</summary>
-	/// <remarks>
-	/// Note that any properties decorated by this attribute must be simple, that means no indexers.
-	/// Also note that these fields and attributes must be public.
-	/// </remarks>
-	/// <seealso cref="LoadingInitializerAttribute"/>
-	/// <seealso cref="LoadSectionAttribute"/>
-	/// <seealso cref="LoadingInitializerAttribute"/>
-	/// <seealso cref="LoadingFinalizerAttribute"/>
-	/// <seealso cref="LoadLineAttribute"/>
-	/// <seealso cref="SaveAttribute"/>
-	/// <seealso cref="SaveableClassAttribute"/>
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-	public sealed class SaveableDataAttribute : Attribute {
-		private string description;
-
-		public string Description {
-			get {
-				return this.description;
-			}
-		}
-
-		//no params constructor
-		public SaveableDataAttribute() {
-		}
-
-		//constructor allowing us to specify the displayed name of the attribute
-		public SaveableDataAttribute(string description) {
-			this.description = description;
-		}
-	}
-
 	/// <summary>Use to mark the instance method that is repeatedly called for every line in the loaded section.</summary>
 	/// <remarks>
 	/// Decorate only public instance methods which have one string parameter and return void. 
