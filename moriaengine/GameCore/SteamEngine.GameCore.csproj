@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Common\SteamEngine.Common.csproj" />
     <ProjectReference Include="..\Communication\SteamEngine.Communication.csproj" />
     <ProjectReference Include="..\ThirdParty\SteamEngine.ThirdParty.csproj" />
+    <ProjectReference Include="..\Tools\SteamEngine.Generators.Abstractions\SteamEngine.Generators.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

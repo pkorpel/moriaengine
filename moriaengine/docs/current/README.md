@@ -41,6 +41,8 @@ file whose job is session continuity, not permanent reference.
 - [Scripting & code generation pipeline](02-engine-core/scripting-pipeline.md) - how
   `[ThingTemplate X : Y]` `.ct` files become real C# via `ClassTemplateParser`, the two
   *different* kinds of `*.Generated.cs` files, and the manual regeneration workflow.
+- [ThingAndPluginClasses `Generator`](02-engine-core/code%20generators/thing-and-plugin-classes-generator.md) -
+  build-time Roslyn generator for Thing/Plugin def+instance partial classes and legacy parity notes - replaces the .ct-based generation
 - [LScript](02-engine-core/lscript.md) - the embedded scripting language used by `.scp`/`.def`
   content and raw-LScript dialogs: triggers, the `{a,b}` random-range operator, known parser
   quirks.
