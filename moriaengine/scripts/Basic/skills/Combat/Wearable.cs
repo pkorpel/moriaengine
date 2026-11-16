@@ -16,10 +16,27 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingDefTemplate]
 	public partial class WearableDef : DestroyableDef {
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue armorVsP;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue mindDefenseVsP;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue armorVsM;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue mindDefenseVsM;
+
+		[DefField(typeof(WearableType), DefaultExpression = "WearableType.Clothing")]
+		private FieldValue wearableType;
+
 		protected override void LoadScriptLine(string filename, int line, string param, string args) {
 			switch (param) {
 				case "armor":
@@ -33,6 +50,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Wearable : Destroyable {
 
 		public int ArmorVsP {

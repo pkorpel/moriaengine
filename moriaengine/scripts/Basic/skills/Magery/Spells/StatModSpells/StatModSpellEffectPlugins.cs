@@ -19,6 +19,8 @@ using System;
 using SteamEngine.CompiledScripts.Dialogs;
 
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -67,7 +69,11 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class StrModSpellEffectPlugin {
+	[PluginTemplate]
+	public partial class StrModSpellEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		public short strDifference = 0;
+
 		public override string EffectDetail {
 			get {
 				return ActiveEffects.SignedStat(this.strDifference, "Str");
@@ -86,11 +92,16 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class StrModSpellEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class StrModSpellEffectPluginDef : EffectDurationPluginDef {
 	}
 
 	[ViewableClass]
-	public partial class DexModSpellEffectPlugin {
+	[PluginTemplate]
+	public partial class DexModSpellEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		public short dexDifference = 0;
+
 		public override string EffectDetail {
 			get {
 				return ActiveEffects.SignedStat(this.dexDifference, "Dex");
@@ -109,11 +120,16 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class DexModSpellEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class DexModSpellEffectPluginDef : EffectDurationPluginDef {
 	}
 
 	[ViewableClass]
-	public partial class IntModSpellEffectPlugin {
+	[PluginTemplate]
+	public partial class IntModSpellEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		public short intDifference = 0;
+
 		public override string EffectDetail {
 			get {
 				return ActiveEffects.SignedStat(this.intDifference, "Int");
@@ -139,11 +155,22 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class IntModSpellEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class IntModSpellEffectPluginDef : EffectDurationPluginDef {
 	}
 
 	[ViewableClass]
-	public partial class BlessSpellEffectPlugin {
+	[PluginTemplate]
+	public partial class BlessSpellEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		public short intDifference = 0;
+
+		[SaveableData, CopyableData]
+		public short dexDifference = 0;
+
+		[SaveableData, CopyableData]
+		public short strDifference = 0;
+
 		public override string EffectDetail {
 			get {
 				return ActiveEffects.Join(ActiveEffects.SignedStat(this.strDifference, "Str"), ActiveEffects.SignedStat(this.dexDifference, "Dex"), ActiveEffects.SignedStat(this.intDifference, "Int"));
@@ -171,11 +198,37 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class BlessSpellEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class BlessSpellEffectPluginDef : EffectDurationPluginDef {
 	}
 
 	[ViewableClass]
-	public partial class CurseSpellEffectPlugin {
+	[PluginTemplate]
+	public partial class CurseSpellEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		public short intDifference = 0;
+
+		[SaveableData, CopyableData]
+		public short dexDifference = 0;
+
+		[SaveableData, CopyableData]
+		public short strDifference = 0;
+
+		[SaveableData, CopyableData]
+		public short maxHitsDifference = 0 /* = vit for players */;
+
+		[SaveableData, CopyableData]
+		public short maxStamDifference = 0 /* unused for players ( = vit)*/;
+
+		[SaveableData, CopyableData]
+		public short maxManaDifference = 0 /* unused for players ( = int)*/;
+
+		[SaveableData, CopyableData]
+		public short resistFireDifference = 0 /* unused for players */;
+
+		[SaveableData, CopyableData]
+		public short resistColdDifference = 0 /* unused for players */;
+
 		private const int MostFireResistCursed = 990, LeastFireResistCursed = 20, FireResistLostPercent = 5;
 		private static readonly TagKey fireLostTK = TagKey.Acquire("_curseFireLost_");
 
@@ -274,7 +327,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class CurseSpellEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class CurseSpellEffectPluginDef : EffectDurationPluginDef {
 	}
 
 	internal class StatModLoc : CompiledLocStringCollection<StatModLoc> {

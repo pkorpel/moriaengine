@@ -1,4 +1,6 @@
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -59,7 +61,14 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1424 - an incognito: the true name and skin it hides, given back as it ends (its time, a death). Silent and
 	/// not dispellable, as before.</summary>
 	[ViewableClass]
-	public partial class IncognitoEffectPlugin {
+	[PluginTemplate]
+	public partial class IncognitoEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		internal string trueName = null;
+
+		[SaveableData, CopyableData]
+		internal int color = 0;
+
 		private const int SkinHueLow = 0x83ea, SkinHueHigh = 0x8422;
 
 		public void On_Assign() {
@@ -93,6 +102,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class IncognitoEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class IncognitoEffectPluginDef : EffectDurationPluginDef {
 	}
 }

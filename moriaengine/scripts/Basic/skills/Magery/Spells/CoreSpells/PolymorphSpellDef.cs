@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
@@ -63,7 +64,17 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1424 - a polymorph's form: the body it replaced and what it did to Str and Dex, all given back as it ends
 	/// (its time, a death, a new form). Silent and not dispellable, as before.</summary>
 	[ViewableClass]
-	public partial class PolymorphEffectPlugin {
+	[PluginTemplate]
+	public partial class PolymorphEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		internal int oldModel = 0;
+
+		[SaveableData, CopyableData]
+		internal int strChange = 0;
+
+		[SaveableData, CopyableData]
+		internal int dexChange = 0;
+
 		internal void Become(NPCDef form) {
 			Character self = (Character) this.Cont;
 			this.oldModel = self.Model;
@@ -87,7 +98,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PolymorphEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class PolymorphEffectPluginDef : EffectDurationPluginDef {
 	}
 
 	/// <summary>#1001 - Sphere's sm_polymorph, a gump or the picture menu, MenuStyles.</summary>

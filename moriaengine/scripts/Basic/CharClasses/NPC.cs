@@ -25,6 +25,7 @@ using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.LScript;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -123,7 +124,478 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class NPCDef {
+	[ThingDefTemplate]
+	public partial class NPCDef : CharacterDef {
+		[DefField(typeof(double), DefaultExpression = "1")]
+		private FieldValue weaponAttack;
+
+		[DefField(typeof(double), DefaultExpression = "0")]
+		private FieldValue weaponPiercing;
+
+		[DefField(typeof(double), DefaultExpression = "2.0")]
+		private FieldValue weaponDelay;
+
+		[DefField(typeof(WeaponType), DefaultExpression = "WeaponType.Undefined")]
+		private FieldValue weaponType;
+
+		[DefField(typeof(DamageType), DefaultExpression = "DamageType.Irresistable")]
+		private FieldValue naturalDamageType;
+
+		[DefField(typeof(int), DefaultExpression = "1")]
+		private FieldValue weaponRange;
+
+		[DefField(typeof(int), DefaultExpression = "5")]
+		private FieldValue strikeStartRange;
+
+		[DefField(typeof(int), DefaultExpression = "10")]
+		private FieldValue strikeStopRange;
+
+		[DefField(typeof(int), DefaultExpression = "-1")]
+		private FieldValue projectileAnim;
+
+		[DefField(typeof(double), DefaultExpression = "1")]
+		private FieldValue mindPower;
+
+		[DefField(typeof(int), DefaultExpression = "-1")]
+		private FieldValue bloodColor;
+
+		[DefField(typeof(int), DefaultExpression = "-1")]
+		private FieldValue mountColor;
+
+		//#1375 - these were tags behind hand-written properties until then
+		//AggroMode: Calm (fights back), Hostile (wild monsters), GuardsRealm (town guards)
+		[DefField(typeof(AggroMode), DefaultExpression = "AggroMode.Calm")]
+		private FieldValue aggroMode;
+
+		//#700 - the realm a GuardsRealm NPC protects, seeded onto each new one (Erebor's tag.guard)
+		[DefField(typeof(Realm), DefaultExpression = "Realm.None")]
+		private FieldValue realm;
+
+		//#828 - the one skill an Erebor skill teacher (spk_mistr, tag.ucimskill) teaches, None for everyone else
+		[DefField(typeof(SkillName), DefaultExpression = "SkillName.None")]
+		private FieldValue teachesSkill;
+
+		//#590 - Erebor's MOVERATE, 3 is the baseline of one tile per AI tick, higher is faster
+		[DefField(typeof(double), DefaultExpression = "3.0")]
+		private FieldValue moveRate;
+
+		//#716 - how far it keeps while casting, negative means the AI's own default
+		[DefField(typeof(double), DefaultExpression = "-1")]
+		private FieldValue spellCastRange;
+
+		//#794 - Erebor's tag(isBoss,1): never becomes an elite monster
+		[DefField(typeof(bool), DefaultExpression = "false")]
+		private FieldValue isBoss;
+
+		//#1017 - Erebor's NPC=brain_dragon: a dragonslayer counts in full when no monstertype says dragon
+		[DefField(typeof(bool), DefaultExpression = "false")]
+		private FieldValue dragonBrain;
+
+		//#962 - Erebor's tag(noanimate,1): its corpse can't be raised
+		[DefField(typeof(bool), DefaultExpression = "false")]
+		private FieldValue noAnimate;
+
+		//#1017 - Erebor's tag.hypnotizable, flags_hypno: can be hypnotized, may loot, the talents a mystic can steal
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue hypnotizable;
+
+		//#1070 - Erebor's tag.resist_silence, permille against Mind Blast's silence, 1000 or more can't be silenced
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistSilence;
+
+		//#1017 - Erebor's tag.monstertype, monstertype2, monstertype3: kind[,percent] for slayers
+		[DefField(typeof(string))]
+		private FieldValue monsterType;
+
+		[DefField(typeof(string))]
+		private FieldValue monsterType2;
+
+		[DefField(typeof(string))]
+		private FieldValue monsterType3;
+
+		//#925 - Erebor's tag(magic_horse,name): the mount's powers, MountPowers' table of that name
+		[DefField(typeof(string))]
+		private FieldValue magicHorse;
+
+		//#1022 - Erebor's tag.had: the serpent druid's serpent form, a chardef whose look it takes
+		[DefField(typeof(string))]
+		private FieldValue serpentForm;
+
+		//enhancements #57 - the spell it casts at its target instead of swinging, null for weapons only
+		[DefField(typeof(SpellDef))]
+		private FieldValue combatSpell;
+
+		//#700 - the mount species it spawns riding (Erebor's tag.mount), keyword mountnpc; null for none
+		[DefField(typeof(NPCDef))]
+		private FieldValue mountCharDef;
+
+		//#1405 - the add-up lists, one element per script line (NPCDef.LoadScriptLine gathers them), read as Spells, Loot...
+		//Not named as their keywords: a line named as a field loads at once, before the other scripts (AbstractDef.LoadScriptLines)
+		[DefField(typeof(SpellDef[]))]
+		private FieldValue spellList;
+
+		[DefField(typeof(NPCDef[]))]
+		private FieldValue summonList;
+
+		[DefField(typeof(NPCDef[]))]
+		private FieldValue battleSummonList;
+
+		[DefField(typeof(string[]))]
+		private FieldValue lootList;
+
+		//Equip lines, and each one's EquipColor and EquipName ("" where none), by index
+		[DefField(typeof(string[]))]
+		private FieldValue equipList;
+
+		[DefField(typeof(string[]))]
+		private FieldValue equipColorList;
+
+		[DefField(typeof(string[]))]
+		private FieldValue equipNameList;
+
+		//"amount defname" each, the last Resources line; "[amount] category" each, the last FoodType line
+		[DefField(typeof(string[]))]
+		private FieldValue resourceList;
+
+		[DefField(typeof(string[]))]
+		private FieldValue foodTypeList;
+
+		//"SkillName min max" and "ResistX min max" each
+		[DefField(typeof(string[]))]
+		private FieldValue skillRangeList;
+
+		[DefField(typeof(string[]))]
+		private FieldValue resistRangeList;
+
+		//Sphere's CAN text, e.g. MT_WALK|MT_SWIM
+		[DefField(typeof(string))]
+		private FieldValue can;
+
+		//#1377 - {min,max} ranges, rolled per NPC or per use; a script line gives "min max" or one value for both
+		[DefField(typeof(int[]))]
+		private FieldValue experienceWorth;
+
+		[DefField(typeof(int[]))]
+		private FieldValue strRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue dexRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue intRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue stunChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue stunDuration;
+
+		[DefField(typeof(int[]))]
+		private FieldValue stunCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue criticChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue criticDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue roundattackChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue roundattackDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue roundattackCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue pullDistance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue bleedChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue knockbackChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcSpeed;
+
+		[DefField(typeof(int[]))]
+		private FieldValue selfresDelay;
+
+		[DefField(typeof(int[]))]
+		private FieldValue paraKrikChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue paraKrikCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue sniperChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue sniperDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue summoningChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue summoningCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue summoningLifetime;
+
+		[DefField(typeof(int[]))]
+		private FieldValue phoenixFireDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue explodeDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue regenerationHp;
+
+		[DefField(typeof(int[]))]
+		private FieldValue regenerationInterval;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lifeLeechAmount;
+
+		[DefField(typeof(int[]))]
+		private FieldValue reactiveArmorPercent;
+
+		[DefField(typeof(int[]))]
+		private FieldValue stamDmgChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue stamDmgPower;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lifeLeechCap;
+
+		[DefField(typeof(int[]))]
+		private FieldValue acidChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue acidDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue deathDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue regenerationDivisor;
+
+		[DefField(typeof(int[]))]
+		private FieldValue resistCountdownChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue resistCountdownAmount;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lightningsChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lightningsRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseManaChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseManaCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseManaDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseStamChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseStamCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcCurseStamDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue pushallChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue pushallCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue magicShieldStrength;
+
+		[DefField(typeof(int[]))]
+		private FieldValue dupeCount;
+
+		[DefField(typeof(int[]))]
+		private FieldValue backstabDamageReducer;
+
+		[DefField(typeof(int[]))]
+		private FieldValue multishotChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue multishotCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue multishotDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue dispelBombChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue dispelBombRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue dispelBombCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue warcryCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fameRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue karmaRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue maxHitsRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue maxStamRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue maxManaRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonFireType;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonBombChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonBombCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonBombDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonBombFireType;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonRoundChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonRoundCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonRoundDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonRoundFireType;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonRoundTurns;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonCageChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonCageCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonCageFireType;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonCageDuration;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonAuraChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonAuraCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonAuraInterval;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonAuraTicks;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonAuraDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue fireDragonAuraResist;
+
+		[DefField(typeof(int[]))]
+		private FieldValue swampDragonAuraChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue swampDragonAuraCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue swampDragonAuraInterval;
+
+		[DefField(typeof(int[]))]
+		private FieldValue swampDragonAuraTicks;
+
+		[DefField(typeof(int[]))]
+		private FieldValue swampDragonAuraDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lavaBombChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lavaBombRange;
+
+		[DefField(typeof(int[]))]
+		private FieldValue lavaBombCooldown;
+
+		[DefField(typeof(int[]))]
+		private FieldValue bombaBoyDamage;
+
+		[DefField(typeof(int[]))]
+		private FieldValue rozdeleniCopyChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue frostWaveChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue frostWaveStrength;
+
+		[DefField(typeof(int[]))]
+		private FieldValue warniakType;
+
+		[DefField(typeof(int[]))]
+		private FieldValue warniakCount;
+
+		[DefField(typeof(int[]))]
+		private FieldValue warniakDropHitChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue npcPortDistance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue hcnMadnessChance;
+
+		[DefField(typeof(int[]))]
+		private FieldValue hcnMadnessStrength;
+
 		//#1405 - the add-up lists are typed fields (NPC.ct); the properties below read them as they did the tags, built once
 		//for the array they were built from, so a GM's change to a field shows
 		private const int SlotSpells = 0, SlotSummons = 1, SlotBattleSummons = 2, SlotLoot = 3, SlotResources = 4, SlotFoodTypes = 5,
@@ -998,7 +1470,19 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class NPC : Character {
+		[SaveableData, CopyableData]
+		private IMovementSettings movementSettings = null;
+
+		[SaveableData, CopyableData]
+		short maxStamina = 100;
+
+		[SaveableData, CopyableData]
+		short maxHitpoints = 100;
+
+		[SaveableData, CopyableData]
+		short maxMana = 100;
 
 		private static readonly TagKey instanceAggroModeTK = TagKey.Acquire("_npcAggroMode_");
 

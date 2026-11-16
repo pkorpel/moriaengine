@@ -19,16 +19,27 @@ using SteamEngine.Common;
 using SteamEngine.Communication;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class SpellBookDef {
+	[ThingDefTemplate]
+	public partial class SpellBookDef : EquippableDef {
+		[DefField(typeof(int), DefaultExpression = "1")]
+		private FieldValue firstSpellId;
 	}
 
 	[ViewableClass]
-	public partial class SpellBook {
+	[ThingTemplate]
+	public partial class SpellBook : Equippable {
+		[SaveableData, CopyableData]
+		public ulong contents = 0;
+
+		[SaveableData, CopyableData]
+		public int necroSpells = 0;
 
 		private const int FirstNecroSpell = 65, LastNecroSpell = 70;
 
