@@ -17,16 +17,28 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	partial class PlayerVendorStockEntry {
+	[ThingTemplate]
+	partial class PlayerVendorStockEntry : Container {
+		[SaveableData, CopyableData]
+		public decimal price = 0;
+
+		[SaveableData, CopyableData]
+		public string origDescription = null;
+
+		[SaveableData, CopyableData]
+		public bool soldByUnits = false;
 
 	}
 
 	[ViewableClass]
-	partial class PlayerVendorStockEntryDef {
+	[ThingDefTemplate]
+	partial class PlayerVendorStockEntryDef : ContainerDef {
 
 	}
 }

@@ -16,12 +16,20 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 using System.Globalization;
 using SteamEngine.Common;
+using SteamEngine.Persistence;
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingDefTemplate]
 	public partial class DestroyableDef : EquippableDef {
+		[DefField(typeof(ushort), DefaultExpression = "100")]
+		private FieldValue maxDurability;
+
+		[DefField(typeof(bool), DefaultExpression = "false")]
+		private FieldValue canRepair;
 
 	}
 
@@ -31,7 +39,13 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Destroyable : Equippable {
+		[SaveableData, CopyableData]
+		private ushort durability = 100;
+
+		[SaveableData, CopyableData]
+		private ushort maxDurability = 100;
 
 		public ushort Durability {
 			get {

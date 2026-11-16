@@ -18,10 +18,18 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 using System;
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class RegBox : Item {
+		[SaveableData, CopyableData]
+		public int pocetRegu = 0;
+
+		[SaveableData, CopyableData]
+		public Dictionary<ItemDef, int> inBoxReags = null;
 
 		public void EnsureDictionary() {
 			if (this.inBoxReags == null) {
@@ -37,7 +45,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class RegBoxDef {
+	[ThingDefTemplate]
+	public partial class RegBoxDef : ItemDef {
+		[DefField(typeof(int), DefaultExpression = "1000000")]
+		private FieldValue capacity;
 	}
 }
 

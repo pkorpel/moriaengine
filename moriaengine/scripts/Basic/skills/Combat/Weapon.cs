@@ -17,10 +17,69 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class WeaponDef {
+	[ThingDefTemplate]
+	public partial class WeaponDef : DestroyableDef {
+		[DefField(typeof(double), DefaultExpression = "50")]
+		private FieldValue attackVsM;
+
+		[DefField(typeof(double), DefaultExpression = "50")]
+		private FieldValue attackVsP;
+
+		[DefField(typeof(double), DefaultExpression = "0")]
+		private FieldValue piercing;
+
+		[DefField(typeof(double), DefaultExpression = "100")]
+		private FieldValue speed;
+
+		[DefField(typeof(WeaponType), DefaultExpression = "WeaponType.BareHands")]
+		private FieldValue weaponType;
+
+		[DefField(typeof(WeaponAnimType), DefaultExpression = "WeaponAnimType.Undefined")]
+		private FieldValue weaponAnimType;
+
+		[DefField(typeof(ProjectileType), DefaultExpression = "ProjectileType.None")]
+		private FieldValue projectileType;
+
+		[DefField(typeof(int), DefaultExpression = "-1")]
+		private FieldValue projectileAnim;
+
+		[DefField(typeof(string))]
+		private FieldValue ammoType;
+
+		[DefField(typeof(int), DefaultExpression = "1")]
+		private FieldValue rangeVsM;
+
+		[DefField(typeof(int), DefaultExpression = "1")]
+		private FieldValue rangeVsP;
+
+		[DefField(typeof(int), DefaultExpression = "5")]
+		private FieldValue strikeStartRange;
+
+		[DefField(typeof(int), DefaultExpression = "10")]
+		private FieldValue strikeStopRange;
+
+		[DefField(typeof(double), DefaultExpression = "-1")]
+		private FieldValue mindPowerVsM;
+
+		[DefField(typeof(double), DefaultExpression = "-1")]
+		private FieldValue mindPowerVsP;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue poisoningDifficulty;
+
+		[DefField(typeof(double), DefaultExpression = "1.0")]
+		private FieldValue poisoningEfficiency;
+
+		[DefField(typeof(int), DefaultExpression = "5")]
+		private FieldValue poisonCapacity;
+
+		[DefField(typeof(double), DefaultExpression = "1.0")]
+		private FieldValue bleedingEfficiency;
+
 		protected override void LoadScriptLine(string filename, int line, string param, string args) {
 			if (param.Equals("range", StringComparison.OrdinalIgnoreCase)) {
 				base.LoadScriptLine(filename, line, "rangevsm", args);
@@ -32,7 +91,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class Weapon : IPoisonableItem {
+	[ThingTemplate]
+	public partial class Weapon : Destroyable, IPoisonableItem {
 		//#962 - Erebor's t_cm_blacksmithing_target, given to a one-handed mace at @create
 		public override void OnUse(AbstractCharacter from) {
 			Player player = from as Player;

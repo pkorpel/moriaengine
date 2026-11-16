@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
@@ -94,7 +95,77 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#920 - Erebor's i_varGate (systems/variableGate.scp). Its @Step, in its order: first
 	/// everything that can stop the walker, then everything that takes from them or gives to them.</summary>
 	[ViewableClass]
-	public partial class VarGate {
+	[ThingTemplate]
+	public partial class VarGate : Item {
+		[SaveableData, CopyableData]
+		internal int gateFlags = 0;
+
+		[SaveableData, CopyableData]
+		internal bool goHome = false;
+
+		[SaveableData, CopyableData]
+		internal int expAmount = 0;
+
+		[SaveableData, CopyableData]
+		internal int expMinutes = 0;
+
+		[SaveableData, CopyableData]
+		internal int expMinLevel = 0;
+
+		[SaveableData, CopyableData]
+		internal int expMaxLevel = 0;
+
+		[SaveableData, CopyableData]
+		internal int expDecayLow = 0;
+
+		[SaveableData, CopyableData]
+		internal int expDecayHigh = 0;
+
+		[SaveableData, CopyableData]
+		internal int reqMinLevel = 0;
+
+		[SaveableData, CopyableData]
+		internal int reqMaxLevel = 0;
+
+		[SaveableData, CopyableData]
+		internal int addItemSeconds = 0;
+
+		[SaveableData, CopyableData]
+		internal List<VarGateEntry> removals = null;
+
+		[SaveableData, CopyableData]
+		internal List<VarGateEntry> additions = null;
+
+		[SaveableData, CopyableData]
+		internal List<VarGateEntry> functions = null;
+
+		[SaveableData, CopyableData]
+		internal List<Thing> guards = null;
+
+		[SaveableData, CopyableData]
+		internal bool hasTimeSeal = false;
+
+		[SaveableData, CopyableData]
+		internal int sealLength = 60;
+
+		[SaveableData, CopyableData]
+		internal int sealDelay = 10;
+
+		[SaveableData, CopyableData]
+		internal int sealMaxPlayers = 0;
+
+		[SaveableData, CopyableData]
+		internal bool sealSameRealm = false;
+
+		[SaveableData, CopyableData]
+		internal int sealFirstRealm = 0;
+
+		[SaveableData, CopyableData]
+		internal List<VarGateSeal> seals = null;
+
+		[SaveableData, CopyableData]
+		internal List<VarGateRecord> records = null;
+
 		private static readonly TagKey spawnedCountTK = TagKey.Acquire("spawnedCount");
 		private static readonly int[] stepX = { 0, 1, 1, 1, 0, -1, -1, -1 };
 		private static readonly int[] stepY = { -1, -1, 0, 1, 1, 1, 0, -1 };
@@ -653,6 +724,11 @@ namespace SteamEngine.CompiledScripts {
 				ch.Go(this.MoreP);
 			}
 		}
+	}
+
+	[ViewableClass]
+	[ThingDefTemplate]
+	public partial class VarGateDef : ItemDef {
 	}
 
 	/// <summary>#920 - the gate functions of Erebor's that have what they need here. A gate runs them on

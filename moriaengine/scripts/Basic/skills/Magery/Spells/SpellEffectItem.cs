@@ -17,6 +17,7 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 using SteamEngine.Timers;
@@ -24,7 +25,14 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class SpellEffectItem {
+	[ThingTemplate]
+	public partial class SpellEffectItem : Item {
+		[SaveableData, CopyableData]
+		bool dispellable = false;
+
+		[SaveableData, CopyableData]
+		int spellPower = 0;
+
 		public static bool CheckPositionForItem(int x, int y, ref int z, Map map, int height, bool checkCharacters) {
 			for (int offset = 0; offset < 10; offset++) {
 				int offsetZ = z - offset;
@@ -77,7 +85,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SpellEffectItemDef {
+	[ThingDefTemplate]
+	public partial class SpellEffectItemDef : ItemDef {
 
 		public SpellEffectItem Conjure(IPoint4D target, bool checkCharacters, int spellPower, TimeSpan duration, bool dispellable) {
 			int x = target.X;

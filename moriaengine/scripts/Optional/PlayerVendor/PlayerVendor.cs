@@ -21,11 +21,16 @@ using System.Globalization;
 using System.Linq;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class PlayerVendor {
+	[ThingTemplate]
+	public partial class PlayerVendor : NPC {
+		[SaveableData, CopyableData]
+		private bool isOperational = true;
 
 		public override void On_Create() {
 			base.On_Create();
@@ -365,7 +370,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PlayerVendorDef {
+	[ThingDefTemplate]
+	public partial class PlayerVendorDef : NPCDef {
 
 		private static ContainerDef i_playervendor_stock_container;
 		public static ContainerDef StockContainerDef {

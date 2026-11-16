@@ -19,6 +19,8 @@ using System;
 using SteamEngine.Common;
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -92,7 +94,13 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#778, #1409 - on a strangler vine's victim: no step while the hold is intact ("You are entangled"); a hold
 	/// that isn't any more is released at the step and the step goes ahead.</summary>
-	public partial class EntangledPlugin {
+	[PluginTemplate]
+	[ViewableClass]
+	public partial class EntangledPlugin : Plugin {
+		//#1409 - the vine holding this character
+		[SaveableData, CopyableData]
+		internal Character vine = null;
+
 		public static readonly PluginKey key = PluginKey.Acquire("_entangled_");
 
 		public TriggerResult On_DenyMove(bool running) {
@@ -106,14 +114,25 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class EntangledPluginDef {
+	[PluginDefTemplate]
+	[ViewableClass]
+	public partial class EntangledPluginDef : PluginDef {
 		public static readonly EntangledPluginDef instance =
 			(EntangledPluginDef) new EntangledPluginDef("p_entangled", "C# scripts", -1).Register();
 	}
 
 	/// <summary>#778, #1409 - on the vine holding someone: it doesn't walk off while the hold is intact, and every landed
 	/// blow on it (its own @getHit) and every spell's damage (@damage, #1412) counts toward letting go.</summary>
-	public partial class VineHoldPlugin {
+	[PluginTemplate]
+	[ViewableClass]
+	public partial class VineHoldPlugin : Plugin {
+		//#1409 - whom this vine holds, and how many more landed blows it takes to let go
+		[SaveableData, CopyableData]
+		Character victim = null;
+
+		[SaveableData, CopyableData]
+		int hitsLeft = 1;
+
 		public static readonly PluginKey key = PluginKey.Acquire("_vineHold_");
 
 		public Character Victim {
@@ -187,7 +206,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class VineHoldPluginDef {
+	[PluginDefTemplate]
+	[ViewableClass]
+	public partial class VineHoldPluginDef : PluginDef {
 		public static readonly VineHoldPluginDef instance =
 			(VineHoldPluginDef) new VineHoldPluginDef("p_vine_hold", "C# scripts", -1).Register();
 	}
