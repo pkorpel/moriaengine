@@ -69,14 +69,18 @@ commands protocol tests drive over the wire.
 dialogs are written in; also the language real in-game "speech" commands get parsed
 through for sufficiently-elevated accounts. See [LScript](../02-engine-core/lscript.md).
 
-**`.ct` / `.def` / `.scp`** - three content file conventions, all ultimately loaded by the
-same LScript machinery, distinguished by what they're *for*: a `.ct` file is a class
-*template* co-located with a C# gameplay class, driving code generation for that class
-(e.g. `Item.ct` next to `Item.cs`); a `.def` file contains real `[ItemDef ...]`/
-`[CharacterDef ...]`-style content blocks; a `.scp` file holds everything else written in
-raw LScript (dialogs, trigger groups, standalone functions). See
+**`.def` / `.scp`** - two content file conventions, both loaded by the same LScript
+machinery, distinguished by what they're *for*: a `.def` file contains real
+`[ItemDef ...]`/`[CharacterDef ...]`-style content blocks; a `.scp` file holds everything
+else written in raw LScript (dialogs, trigger groups, standalone functions). See
 [Architecture overview](architecture-overview.md) and
 [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md).
+
+**Template attributes** - C# attributes such as `[ThingTemplate]`, `[ThingDefTemplate]`,
+`[PluginTemplate]`, `[PluginDefTemplate]`, `[DefField]`, `[SaveableData]` and
+`[CopyableData]` used to describe class template behavior that code generation turns into
+runtime wiring. See
+[ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md).
 
 **BoundTimer** - a `Timer` subclass that lives attached to a specific `TagHolder` (stored
 in that holder's own tag table, which is why it persists across saves for free). See

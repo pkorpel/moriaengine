@@ -62,13 +62,10 @@ NAME = Attr Flag Test Item
 ATTR = attr_static|attr_magic
 ```
 
-Three different file extensions are used by convention for different *kinds* of content,
-though they all ultimately go through the same LScript loader:
+Two script-file extensions are used for different *kinds* of content, while template class
+shape is authored in attributed C# and compiled by the
+[ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md):
 
-- **`.ct`** - class *templates*, one per C# gameplay class (e.g.
-  `scripts/Basic/ItemClasses/Item.ct` sits next to `Item.cs`). These declare the typed
-  fields a class needs and drive C# code generation - see
-  [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md).
 - **`.def`** - *definitions*: the actual `[ItemDef ...]`/`[CharacterDef ...]`/etc blocks
   that create real, loadable content (an item type, an NPC type, a house type...).
 - **`.scp`** - everything else written in raw LScript: dialogs, trigger groups, standalone
@@ -78,7 +75,8 @@ At boot, every `.def`/`.scp` file under `scripts/` is parsed and the content it 
 becomes available by its `DEFNAME` (e.g. `i_attr_flag_test`), ready to be instantiated into
 a real in-world `Item`/`Character`/etc via `ThingDef.Create(...)`. See
 [The Thing model](../02-engine-core/thing-model.md) for how a `.def` block turns into a
-live object.
+live object and [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md)
+for template generation flow.
 
 ## Boot sequence
 
@@ -102,15 +100,8 @@ order:
    "Generating compiled Triggergroups", etc).
 4. Compiles *that* generated code and loads it too.
 
-Separately, **`ClassTemplateParser`** processes every `.ct` file and writes a
-*per-class* `X.Generated.cs` file co-located next to the `.ct`/`.cs` it came from (e.g.
-`Item.Generated.cs` next to `Item.ct`/`Item.cs`) - a different generation mechanism from
-step 3 above, even though both ultimately produce files with the same `*.Generated.cs`
-naming convention. Neither kind of generated file is checked into source control; both
-need regenerating (by running GameCore, typically twice in a row - once to produce the
-first generation, once more because the first run's own new types need to exist before the
-second pass's reflection-based generators can see them) whenever a `.ct` file changes or a
-new `[SteamFunction]`/trigger-dispatched class is added. `build.ps1` automates this
+Neither kind of generated file is checked into source control and regeneration is handled
+by running GameCore when source inputs change. `build.ps1` automates this
 (`Invoke-ScriptGeneration`); see
 [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md) for the
 full mechanics and the manual regeneration steps when `pwsh` isn't available.

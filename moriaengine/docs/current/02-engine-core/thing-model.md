@@ -20,8 +20,8 @@ The split between `AbstractItem`/`AbstractCharacter` and `Item`/`Character` is d
 `AbstractItem`/`AbstractCharacter` live in `GameCore` and define the engine-level contract
 (triggers, persistence plumbing, networking hooks) that has to exist regardless of what game
 content looks like. `Item`/`Character` live in `scripts/` (the compiled-separately "scripts"
-assembly) and are what actual game classes extend - this is also the layer the `.ct` template
-pipeline generates code against (see [scripting-pipeline.md](scripting-pipeline.md)). A
+assembly) and are what actual game classes extend - this is also the layer the template
+generator targets (see [scripting-pipeline.md](scripting-pipeline.md)). A
 script author never touches `GameCore` directly; everything they write is a subclass (direct
 or indirect) of `Item` or `Character`.
 
@@ -69,10 +69,11 @@ This has a direct consequence for where a given piece of data should live:
   independent field once, at creation time - after which a GM can change ONE specific
   instance without touching the def's default for every other instance of that type.
 
-Both halves of this split are declared together in a single `.ct` file (`Def:` section for
-the def-level fields, `Vars:` section for the instance-level fields) - see
-[scripting-pipeline.md](scripting-pipeline.md) for the exact mechanics of how that becomes
-real C#.
+Both halves of this split are declared in C# on the corresponding def and thing classes
+(`DefField` for def-level defaults, saveable fields for instance state) - see
+[scripting-pipeline.md](scripting-pipeline.md) and
+[ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)
+for the generation mechanics.
 
 ## Position and containment
 

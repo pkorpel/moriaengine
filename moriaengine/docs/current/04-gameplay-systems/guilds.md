@@ -58,7 +58,7 @@ Nothing leads the save to a Role by itself, so `GuildStone.Save` saves its guild
 memberships. Before #884 no guild ever survived a restart. A guild without a stone isn't saved,
 and `GuildDef.Bootstrap` registers `r_guild` before the world loads.
 
-The stone's guild isn't a `.ct` field, so a GM's `.dupe` of a stone is a new stone with no guild.
+The stone's guild is tag-backed, so a GM's `.dupe` of a stone is a new stone with no guild.
 
 ## Not done
 

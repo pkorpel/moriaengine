@@ -36,10 +36,9 @@ a new storage mechanism.
 semantically-named C# property, e.g. `House.Owner` (`scripts/Basic/ItemClasses/Housing/
 House.cs`) or `Item.OwnedBy` (`scripts/Basic/ItemClasses/Item.cs`) - a plain get/set wrapper
 around `GetTag`/`SetTag` on one fixed key. This is preferred over a real instance field
-whenever the value is occasional (most instances never set it) or the class's own `.ct`
-template doesn't already declare a field for it - adding a tag costs nothing for instances
-that never use it, where a declared `Vars:` field would need regenerating the class and (for
-a value type) always occupies space.
+whenever the value is occasional (most instances never set it) or the class doesn't already
+have a dedicated field for it - adding a tag costs nothing for instances that never use it,
+where a declared field (especially a value type) always occupies space.
 
 One real naming trap, found while adding `Item.OwnedBy`: `House` and `Corpse` (both `Item`
 subclasses) already each had their own `Owner` property with an unrelated meaning (who owns
