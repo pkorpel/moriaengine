@@ -18,6 +18,7 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
@@ -28,7 +29,14 @@ namespace SteamEngine.CompiledScripts {
 	/// no duration, each hit is a tenth weaker, and doses don't add up. The green health bar goes through the character's
 	/// poison counter, shared with bleeding; a death ends it (EffectDurationPlugin.On_Death).</summary>
 	[ViewableClass]
-	public partial class DamagingPoisonEffectPlugin {
+	[PluginTemplate]
+	public partial class DamagingPoisonEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		internal PoisonKind kind = PoisonKind.AbsoluteDamage;
+
+		[SaveableData, CopyableData]
+		internal int strength = 0;
+
 		private const int LeastLoss = 1, LossShare = 10, HitEffectSpeed = 1, HitEffectLength = 32, HitEffect = 0x1ae4;
 		private static readonly TimerKey tickTK = TimerKey.Acquire("_poisonTick_");
 		private static readonly PluginKey[] keys = CreateKeys();
@@ -120,7 +128,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class DamagingPoisonEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class DamagingPoisonEffectPluginDef : EffectDurationPluginDef {
 		private static DamagingPoisonEffectPluginDef instance;
 
 		/// <summary>p_poison (poisonSpell.def).</summary>

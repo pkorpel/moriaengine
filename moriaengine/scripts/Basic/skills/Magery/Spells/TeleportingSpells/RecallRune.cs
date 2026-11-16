@@ -17,10 +17,18 @@
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
-	public partial class RecallRune {
+	[ThingTemplate]
+	public partial class RecallRune : Item {
+		[SaveableData, CopyableData]
+		Point4D target = null;
+
+		[SaveableData, CopyableData]
+		string targetDescription = null;
 
 		public string TargetDescription {
 			get {
@@ -102,7 +110,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class RecallRuneDef {
+	[ThingDefTemplate]
+	public partial class RecallRuneDef : ItemDef {
 	}
 
 	public class RecallRuneLoc : CompiledLocStringCollection<RecallRuneLoc> {

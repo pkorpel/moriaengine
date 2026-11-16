@@ -18,16 +18,36 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class ProjectileDef {
+	[ThingDefTemplate]
+	public partial class ProjectileDef : ItemDef {
+		[DefField(typeof(double), DefaultExpression = "0")]
+		private FieldValue piercing;
+
+		[DefField(typeof(double), DefaultExpression = "1.0")]
+		private FieldValue damageMultiplier;
+
+		[DefField(typeof(ProjectileType), DefaultExpression = "ProjectileType.Bolt")]
+		private FieldValue projectileType;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue bleedCoefficient;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue poisoningDifficulty;
+
+		[DefField(typeof(double), DefaultExpression = "1.0")]
+		private FieldValue poisoningEfficiency;
 
 	}
 
 	[ViewableClass]
-	public partial class Projectile : IPoisonableItem {
+	[ThingTemplate]
+	public partial class Projectile : Item, IPoisonableItem {
 
 		public ProjectileType ProjectileType {
 			get {

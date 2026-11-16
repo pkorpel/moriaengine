@@ -19,6 +19,7 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 using System;
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 
 /* TO DO !:
@@ -34,7 +35,32 @@ using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class TreasureChest : Container {
+		[SaveableData, CopyableData]
+		private List<TreasureItemEntry> treasureItems = null;
+
+		[SaveableData, CopyableData]
+		private List<TreasureSpawnEntry> treasureSpawns = null;
+
+		[SaveableData, CopyableData]
+		private int moneyCoefficient = 100;
+
+		[SaveableData, CopyableData]
+		private int check = 0;
+
+		[SaveableData, CopyableData]
+		private int lockpick = 0;
+
+		[SaveableData, CopyableData]
+		private int cycleTime = 84600;
+
+		[SaveableData, CopyableData]
+		private long lastOpen = 0;
+
+		[SaveableData, CopyableData]
+		private bool wasSpawned = false;
+
 		private static CharacterDef defaultTreasureSpawn;
 		private static ItemDef defaultTreasureItem;
 
@@ -267,7 +293,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class TreasureChestDef {
+	[ThingDefTemplate]
+	public partial class TreasureChestDef : ContainerDef {
 
 	}
 
