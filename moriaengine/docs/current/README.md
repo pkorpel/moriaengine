@@ -37,12 +37,12 @@ file whose job is session continuity, not permanent reference.
 
 ### 2. Engine core (GameCore)
 - [The Thing model](02-engine-core/thing-model.md) - `Thing`/`AbstractItem`/`AbstractCharacter`,
-  UIDs, the Item/Character class-per-template split, `.ct` `Def:`/`Vars:` fields.
+  UIDs, the Item/Character class-per-template split, and def-vs-instance data ownership.
 - [Scripting & code generation pipeline](02-engine-core/scripting-pipeline.md) - how
-  `[ThingTemplate X : Y]` `.ct` files become real C# via `ClassTemplateParser`, the two
-  *different* kinds of `*.Generated.cs` files, and the manual regeneration workflow.
+  attributed script C# and definition files feed runtime/build-time generators, the two
+  kinds of `*.Generated.cs` files, and the regeneration workflow.
 - [ThingAndPluginClasses `Generator`](02-engine-core/code%20generators/thing-and-plugin-classes-generator.md) -
-  build-time Roslyn generator for Thing/Plugin def+instance partial classes and legacy parity notes - replaces the .ct-based generation
+  build-time Roslyn generator for Thing/Plugin def+instance partial classes and legacy parity notes.
 - [LScript](02-engine-core/lscript.md) - the embedded scripting language used by `.scp`/`.def`
   content and raw-LScript dialogs: triggers, the `{a,b}` random-range operator, known parser
   quirks.

@@ -54,7 +54,7 @@ never made it into the player's hand).
 the def's `associatedSkill` when a `.def` line sets one (`associatedskill = <SkillName>`),
 else derived (#392): an axe's `WeaponType` gives Lumberjacking, `tooltype = Pickaxe` or
 `FishingPole` gives Mining or Fishing. `associatedSkill` and `toolType` are typed `Def:`
-fields in `Equippable.ct` since #1384 (def tags with hand-written parsing before):
+fields on `EquippableDef` since #1384 (def tags with hand-written parsing before):
 
 ```csharp
 public virtual void OnUse(AbstractCharacter from) {

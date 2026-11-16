@@ -119,24 +119,24 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	[ThingTemplate(Copy = false)]
+	[ThingTemplate(Copy = false)] // copying multiitems not supported
 	public partial class Ship : MultiItem {
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private LinkedList<Thing> carriedThings = null;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal Item tiller = null;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal Item leftPlank = null;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal Item rightPlank = null;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal Item trunk = null;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal ShipFacing facing = ShipFacing.North;
 
 		internal override void InitMultiRegion() {

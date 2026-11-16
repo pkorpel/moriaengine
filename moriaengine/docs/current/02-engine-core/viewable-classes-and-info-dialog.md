@@ -13,9 +13,9 @@ time, by reflecting over `[ViewableClass]`-marked types.
 
 `ViewableClassGenerator` (`scripts/Basic/administration/InfoDialog/Generator/
 ViewableClassGenerator.cs`) is an `ISteamCSCodeGenerator` - one of the compile-time code
-generators that run as part of this engine's own build (same family as the `.ct`
-`ClassTemplateParser` pipeline described in [Scripting & code generation
-pipeline](scripting-pipeline.md), emitting into `Generated/ViewableClasses.Generated.cs`).
+generators that run as part of this engine's own build (see
+[Scripting & code generation pipeline](scripting-pipeline.md), emitting into
+`Generated/ViewableClasses.Generated.cs`).
 For every type carrying `[ViewableClass]` (or matching the small hardcoded
 `viewableSpecials` list, currently just `Plugin`), it emits a dedicated
 `GeneratedDataView_<Type>_<N>` class containing one small sealed inner class per visible

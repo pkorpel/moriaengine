@@ -1,53 +1,53 @@
 # Scripting & code generation pipeline
 
-moriaengine content is split across three genuinely different file roles, plus two
-*different* code-generation mechanisms that turn parts of it into real C#. Both run at
-every boot.
+moriaengine content is split across three genuinely different input roles, plus two
+*different* code-generation mechanisms that turn parts of it into real C#. Both are part of
+the boot/build pipeline.
 
-## The three content file types
+## The three input types
 
-| Extension | Role | Example |
+| Input | Role | Example |
 |---|---|---|
-| `.ct` | **Class templates** - declares a C# class's shape (fields, which are def-level vs instance-level) | `scripts/Basic/ItemClasses/Item.ct` |
+| Attributed C# (`.cs`) | **Class templates** - declares a C# class's shape (def-level vs instance-level fields, persistence/copy participation, template wiring) | `scripts/Basic/ItemClasses/Item.cs` |
 | `.def` | **Content data** - configures one `*Def` instance's values (an `ItemDef`, `CharacterDef`, etc) | `scripts/converted/item_deed.def` |
 | `.scp` | **LScript source** - trigger groups, functions, raw-LScript dialogs; real executable script code, not data | `scripts/Basic/Spawning/spawn.scp` |
 
-A `.def` file's `[ItemDef i_something]` block *configures an instance of a class the .ct
-pipeline already generated* - it never defines a new class. A `.ct` file never contains game
-content, only the shape a class should have. A `.scp` file is interpreted LScript, not
-compiled - see [lscript.md](lscript.md).
+A `.def` file's `[ItemDef i_something]` block configures an instance of a class whose shape
+the attributed C# template pipeline already generated. It never defines a new class. A
+`.scp` file is interpreted LScript, not compiled - see [lscript.md](lscript.md).
 
-## Mechanism 1: `.ct` → per-class generated C# (`ClassTemplateParser`)
+## Mechanism 1: attributed template classes → generated C# glue (Thing/Plugin generator)
 
-`GameCore/CompiledScripts/ClassTemplates/ClassTemplateParser.cs` reads every `.ct` file under
-`scripts/` at boot and writes one `<file name>.Generated.cs` per `.ct` file, right next to
-it, holding every `[ThingTemplate ...]` and `[PluginTemplate ...]` section of that file (e.g.
-`Item.ct` → `Item.Generated.cs`; `skills/Combat/Plugins.ct` → `Plugins.Generated.cs` with two
-plugins). This is a different place from the central `moriaengine/Generated/` folder - see
-mechanism 2 below.
+`SteamEngine.Generators.ThingAndPluginClasses.Generator` reads template attributes in script
+C# and emits the equivalent partial-class glue during build (as Roslyn-generated source in
+the compilation, not source-adjacent files). This is a different place from the central
+`moriaengine/Generated/` folder - see mechanism 2 below.
 
-A `.ct` file has two sections:
+Template classes are authored directly in C#, for example:
 
+```csharp
+[ThingTemplate]
+public partial class Item : AbstractItem {
+	[SaveableData, CopyableData]
+	private int amount = 1;
+}
+
+[ThingDefTemplate]
+public partial class ItemDef : AbstractItemDef {
+	[DefField(typeof(int), DefaultExpression = "1000")]
+	private FieldValue difficulty;
+}
 ```
-[ThingTemplate Item : AbstractItem]
-Def:	//vars on the def
-	public ResourcesList resources = null
-	...
-	public ResourcesList skillMake = null
-	//how hard it is to craft this item (value compared against the skill (1000=100.0)
-	public int difficulty = 1000
-	public LightType light = (LightType) 0
-Vars:	//vars defined in the class, so they basically do what tags do, but better
-```
 
-(`scripts/Basic/ItemClasses/Item.ct` as the original engine had it). For each `Def:` field
-the generated def constructor calls `this.InitTypedField(name, defaultValue, type)` and the
-def gets a property wrapping that `FieldValue` (see
-[persistence-and-saving.md](persistence-and-saving.md)), so a `.def` line `DIFFICULTY = 500`
-sets `ItemDef.Difficulty` with no parsing code. The field is named for what it is: every def
-value is the default for things made from that def, so a `Def:` field's name never says
-"default". For each `Vars:` field the generated code declares the field on the thing's class
-with its save, load and deep-copy code.
+For each `[DefField]`, generated def code initializes the typed `FieldValue` and emits a
+typed property wrapper (see
+[persistence-and-saving.md](persistence-and-saving.md)), so a `.def` line
+`DIFFICULTY = 500` sets `ItemDef.Difficulty` with no per-field parsing code. For
+`[SaveableData]` / `[CopyableData]` members, generated code provides save/load/deep-copy
+plumbing on the thing/plugin class.
+
+See [ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)
+for the exact generated members and constraints.
 
 ### A def value and a thing's own value
 
@@ -66,8 +66,8 @@ A thing reads a value from its def in one of three ways, all in the original eng
   differs from the def's).
 
 Pick by whether a later change to the def should reach things already in the world (first
-and third) or not (second). `Item`'s Sphere `ATTR` flags (#215/#217) are the second kind: a
-`Def:` field and a `Vars:` field, both called `attributes`, the instance's copied in
+and third) or not (second). `Item`'s Sphere `ATTR` flags (#215/#217) are the second kind:
+def-level and instance-level fields both called `attributes`, with the instance copied in
 `Item.On_Create`. Sphere's own `ATTR` keyword reaches the def field through a hand-written
 `"attr"` alias in `AbstractItemDef.LoadScriptLine`. (The def field was `attributesDefault`
 until #1382.)
@@ -82,7 +82,7 @@ A second, unrelated generation pass produces six files directly under the
 - `CompiledTriggerGroups.Generated.cs` - compiled-C# trigger group dispatch.
 - `PluginTriggerGroups.Generated.cs` - same idea for plugin trigger groups.
 - `DecoratedClassesSaveImplementors.Generated.cs` - save/load glue for `[SaveableClass]`
-  types that aren't `.ct`-generated (settings categories, hand-written timers, etc).
+  types that are hand-written (settings categories, hand-written timers, etc).
 - `DeepCopyImplementor.Generated.cs` - deep-copy glue for `[DeepCopyableClass]` types.
 - `ViewableClasses.Generated.cs` - reflection metadata backing the `.info` dialog's property
   discovery for every `[ViewableClass]` type (see
@@ -101,23 +101,24 @@ for every method carrying `[SteamFunctionAttribute]`.
 
 A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
 
-1. `ClassTemplateParser.Init()` writes every `.ct`'s `X.Generated.cs` into `scripts/`;
-2. the scripts project is compiled and loaded, and `ClassManager` reflects over it, feeding
-   each generator;
+1. the scripts project is compiled and loaded (including build-time template generation);
+2. `ClassManager` reflects over it, feeding each generator;
 3. `GeneratedCodeUtil.WriteOutAndCompile` writes the six `Generated/*.Generated.cs` files and
    compiles the Generated project against the scripts assembly just loaded, then loads it.
 
-So a new `[SteamFunction]`, `[ViewableClass]` member or `.ct` field is picked up by the next
-boot, once. Checked 2026-11-10: with all six `Generated/*.Generated.cs` files deleted, one
-boot came up, passed `BootLogTests` and wrote them again.
+So a new `[SteamFunction]`, `[ViewableClass]` member, or template field/attribute change is
+picked up by the next boot, once. Checked 2026-11-10: with all six
+`Generated/*.Generated.cs` files deleted, one boot came up, passed `BootLogTests` and wrote
+them again.
 
 ## Reusing the last build
 
 Since #1358 a boot doesn't compile what hasn't changed. Two parts:
 
 - **Generated sources are written only when their text changes.**
-  - Both generators write through `MsBuildLauncher.WriteSourceIfChanged`: `ClassTemplateParser`'s `X.Generated.cs` in `scripts/`, and `GeneratedCodeUtil`'s files in `Generated/`.
-  - Before, every boot rewrote them with the same text. The new write times made MSBuild recompile both projects every time: about 12.5 s for the scripts and 10.7 s for Generated.
+  - `GeneratedCodeUtil` generators write through `MsBuildLauncher.WriteSourceIfChanged`.
+  - Before, every boot rewrote them with the same text. The new write times made MSBuild
+    recompile both projects every time: about 12.5 s for the scripts and 10.7 s for Generated.
 - **A fingerprint of each project's inputs.**
   - `BuildFingerprint.Of` hashes the content of every `.cs`, `.resx`, `.csproj`, `.props` and `.targets` file below the project. The top-level `bin/` and `obj/` folders and hidden folders are left out, as the SDK's default globs do.
   - It also hashes any `Directory.Build.*` files above the project, the `SteamEngine.*.dll` files the running GameCore was started from, the build type and the assembly number.
@@ -129,14 +130,16 @@ Since #1358 a boot doesn't compile what hasn't changed. Two parts:
   - Since the generated sources keep their write times, `build.ps1`'s "is generation current" check reads `Generated/generated-at.txt` instead, which `GeneratedCodeUtil` touches every time it generates.
   - The boot log says which happened: "Reused compiled C# scripts, no source changed." or "Done compiling C# scripts.", and the same for Generated.
 
-Measured on the test servers: a boot with nothing changed reached ready in 11 s. A boot that compiled both projects took 27 s. With only the first part (MSBuild finding both projects up to date), it took 15 s.
+Measured on the test servers: a boot with nothing changed reached ready in 11 s. A boot that
+compiled both projects took 27 s. With only the first part (MSBuild finding both projects up
+to date), it took 15 s.
 
 ## Building outside a boot
 
 A plain `dotnet build` of the solution (an IDE, the test scripts, the pre-push hook) compiles
 the scripts and Generated projects from the generated files already on disk. On a fresh
 checkout there are none, so `build.ps1`'s `Invoke-ScriptGeneration` boots GameCore first (twice
-when the first boot has to write `steamengine.ini` and exits), and again whenever a `.ct` or
-`.cs` source is newer than `Generated/generated-at.txt`. After a change that removes or renames something a generated file refers to (a
-`[SteamFunction]` method, a `.ct` field), the old generated file can fail such a build until
-the next boot rewrites it.
+when the first boot has to write `steamengine.ini` and exits), and again whenever a `.cs`
+source is newer than `Generated/generated-at.txt`. After a change that removes or renames something a generated file refers to (a
+`[SteamFunction]` method, a generated field/property), the old generated file can fail such a
+build until the next boot rewrites it.

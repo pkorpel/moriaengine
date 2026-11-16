@@ -34,8 +34,7 @@ constants.
 more than one entry" - races locked to one nation skip the nation-picker gump entirely.
 
 `Player` gained tag-backed `Race`/`Nation`/`Home` properties - deliberately **not**
-`.ct`-declared, avoiding the `*.Generated.cs` regeneration pipeline for a simple
-persisted value (see
+field-backed, avoiding extra persisted instance fields for a simple occasionally-set value (see
 [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md)) - the
 same choice already made for the pre-existing `Character.Realm`.
 

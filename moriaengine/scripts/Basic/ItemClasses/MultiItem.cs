@@ -191,9 +191,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	[ThingTemplate]
+	[ThingTemplate(Copy = false)] // copying multi items is not supported, would have to be hand-written, but we shouldn't need it
 	public partial class MultiItem : Item {
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal Item[] components = null;
 
 		protected MultiRegion region;
