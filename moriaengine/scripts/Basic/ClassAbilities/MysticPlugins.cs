@@ -1,12 +1,20 @@
 using System;
 using System.Collections.Generic;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1455 - the mystic's profession plugin (mystic.def's professionPluginDef), on #1429's pattern: the catch
 	/// field's cooldown (Erebor's tag.catchField_nextds) and the hypnosis' retry delay (#1461).</summary>
 	[Dialogs.ViewableClass]
-	public partial class MysticProfessionPlugin {
+	[PluginTemplate]
+	public partial class MysticProfessionPlugin : ProfessionPlugin {
+		[SaveableData, CopyableData]
+		internal double nextCatchField = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextHypnosis = 0;
 
 		/// <summary>The mystic's plugin, null for anyone else.</summary>
 		internal static MysticProfessionPlugin Of(Character ch) {
@@ -17,7 +25,11 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1461 - Erebor's i_hypno_timer with e_hypnotizing: the concentration before the swap. A step (@step, here
 	/// @stepTaken) or a blow (@aftergetswing, here @getSwingLanding) breaks it.</summary>
 	[Dialogs.ViewableClass]
-	public partial class ConcentrationPlugin {
+	[PluginTemplate]
+	public partial class ConcentrationPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal NPC monster = null;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_hypnoConcentration_");
 
 		internal static ConcentrationPlugin Of(Character ch) {
@@ -49,7 +61,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class ConcentrationPluginDef {
+	[PluginDefTemplate]
+	public partial class ConcentrationPluginDef : TimerPluginDef {
 		public static readonly ConcentrationPluginDef instance =
 			(ConcentrationPluginDef) new ConcentrationPluginDef("p_hypnoConcentration", "C# scripts", -1).Register();
 	}
@@ -57,7 +70,17 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1455 - Erebor's i_catchitem: the mystic holds one monster with the mind, a tick a second. A death lets go
 	/// at the next tick, as its @timer saw statf_dead.</summary>
 	[Dialogs.ViewableClass]
-	public partial class CatchPlugin {
+	[PluginTemplate]
+	public partial class CatchPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal Character monster = null;
+
+		[SaveableData, CopyableData]
+		internal int ticks = 0;
+
+		[SaveableData, CopyableData]
+		internal int monsterExp = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_catchItem_");
 
 		internal static CatchPlugin Of(Character ch) {
@@ -71,7 +94,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class CatchPluginDef {
+	[PluginDefTemplate]
+	public partial class CatchPluginDef : TimerPluginDef {
 		public static readonly CatchPluginDef instance =
 			(CatchPluginDef) new CatchPluginDef("p_catchItem", "C# scripts", -1).Register();
 	}
@@ -79,7 +103,14 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1455 - Erebor's i_memory_catchField with e_catchField: the monsters around the mystic held, a tick a
 	/// second; its own @death ends it, as e_catchField's.</summary>
 	[Dialogs.ViewableClass]
-	public partial class CatchFieldPlugin {
+	[PluginTemplate]
+	public partial class CatchFieldPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal int effort = 0;
+
+		[SaveableData, CopyableData]
+		internal List<NPC> held = null;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_catchField_");
 
 		internal static CatchFieldPlugin Of(Character ch) {
@@ -99,7 +130,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class CatchFieldPluginDef {
+	[PluginDefTemplate]
+	public partial class CatchFieldPluginDef : TimerPluginDef {
 		public static readonly CatchFieldPluginDef instance =
 			(CatchFieldPluginDef) new CatchFieldPluginDef("p_catchField", "C# scripts", -1).Register();
 	}
@@ -107,7 +139,14 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1455 - Erebor's e_catchedInField with tag.catchedBy and tag.catchPower: a monster held by a catch field.
 	/// A blow at it frees it (@aftergetswing, here @getSwingLanding).</summary>
 	[Dialogs.ViewableClass]
-	public partial class CaughtPlugin {
+	[PluginTemplate]
+	public partial class CaughtPlugin : Plugin {
+		[SaveableData, CopyableData]
+		internal Character mystic = null;
+
+		[SaveableData, CopyableData]
+		internal int power = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_catchedInField_");
 
 		internal static CaughtPlugin Of(Character ch) {
@@ -123,14 +162,19 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class CaughtPluginDef {
+	[PluginDefTemplate]
+	public partial class CaughtPluginDef : PluginDef {
 		public static readonly CaughtPluginDef instance =
 			(CaughtPluginDef) new CaughtPluginDef("p_catchedInField", "C# scripts", -1).Register();
 	}
 
 	/// <summary>#1455 - Erebor's i_controlnpc: in 5 s the mystic may take the creature over.</summary>
 	[Dialogs.ViewableClass]
-	public partial class ControlNpcPlugin {
+	[PluginTemplate]
+	public partial class ControlNpcPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal Character target = null;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_controlNpc_");
 
 		internal static ControlNpcPlugin Of(Character ch) {
@@ -147,7 +191,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class ControlNpcPluginDef {
+	[PluginDefTemplate]
+	public partial class ControlNpcPluginDef : TimerPluginDef {
 		public static readonly ControlNpcPluginDef instance =
 			(ControlNpcPluginDef) new ControlNpcPluginDef("p_controlNpc", "C# scripts", -1).Register();
 	}
@@ -157,7 +202,29 @@ namespace SteamEngine.CompiledScripts {
 	/// power against monsters, at @swingLanding and @spellPower. Its own @death ends it, as e_mystik's @death consumed
 	/// i_buffSteal; its @unAssign (Erebor's @unEquip) gives a held talent back whenever it goes.</summary>
 	[Dialogs.ViewableClass]
-	public partial class BuffStealPlugin {
+	[PluginTemplate]
+	public partial class BuffStealPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal Character target = null;
+
+		[SaveableData, CopyableData]
+		internal int type = 0;
+
+		[SaveableData, CopyableData]
+		internal int power = 0;
+
+		[SaveableData, CopyableData]
+		internal int changed = 0;
+
+		[SaveableData, CopyableData]
+		internal int state = 0;
+
+		[SaveableData, CopyableData]
+		internal bool success = false;
+
+		[SaveableData, CopyableData]
+		internal int bonus = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_buffSteal_");
 
 		internal static BuffStealPlugin Of(Character ch) {
@@ -209,7 +276,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class BuffStealPluginDef {
+	[PluginDefTemplate]
+	public partial class BuffStealPluginDef : TimerPluginDef {
 		public static readonly BuffStealPluginDef instance =
 			(BuffStealPluginDef) new BuffStealPluginDef("p_buffSteal", "C# scripts", -1).Register();
 	}
@@ -217,7 +285,17 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1457 - Erebor's i_buffStealNPC with e_npcChangeDmg: 60 s of a robbed monster, then its talent comes
 	/// back. Its blows lose the cut (tag.changeDmgPercent) at @swingLanding, e_npcChangeDmg's @AfterSwing.</summary>
 	[Dialogs.ViewableClass]
-	public partial class BuffStolenPlugin {
+	[PluginTemplate]
+	public partial class BuffStolenPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal int type = 0;
+
+		[SaveableData, CopyableData]
+		internal int changed = 0;
+
+		[SaveableData, CopyableData]
+		internal int cut = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_buffStealNpc_");
 
 		internal static BuffStolenPlugin Of(Character ch) {
@@ -246,8 +324,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class BuffStolenPluginDef {
+	[PluginDefTemplate]
+	public partial class BuffStolenPluginDef : TimerPluginDef {
 		public static readonly BuffStolenPluginDef instance =
 			(BuffStolenPluginDef) new BuffStolenPluginDef("p_buffStealNpc", "C# scripts", -1).Register();
+	}
+
+	[PluginDefTemplate]
+	public partial class MysticProfessionPluginDef : ProfessionPluginDef {
 	}
 }

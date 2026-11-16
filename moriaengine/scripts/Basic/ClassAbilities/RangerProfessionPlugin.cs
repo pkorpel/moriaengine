@@ -1,3 +1,6 @@
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
+
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1431 - the ranger's profession plugin (ranger.def's professionPluginDef), on #1429's pattern. It holds the
@@ -5,7 +8,19 @@ namespace SteamEngine.CompiledScripts {
 	/// The spree adds to the ranger's blows in @swingLanding and gains its charges in @kill. What the ranger's commands do
 	/// stays in RangerAbilities; the critical shot comes from the counter the classes share.</summary>
 	[Dialogs.ViewableClass]
-	public partial class RangerProfessionPlugin {
+	[PluginTemplate]
+	public partial class RangerProfessionPlugin : ProfessionPlugin {
+		[SaveableData, CopyableData]
+		internal double nextKnockback = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextSplitShot = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextCrushingArrow = 0;
+
+		[SaveableData, CopyableData]
+		internal Character spreeTarget = null;
 
 		/// <summary>The ranger's plugin, null for anyone else.</summary>
 		internal static RangerProfessionPlugin Of(Character ch) {
@@ -23,5 +38,9 @@ namespace SteamEngine.CompiledScripts {
 				RangerAbilities.OnKill(this, npc);
 			}
 		}
+	}
+
+	[PluginDefTemplate]
+	public partial class RangerProfessionPluginDef : ProfessionPluginDef {
 	}
 }

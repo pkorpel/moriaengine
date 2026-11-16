@@ -1,11 +1,26 @@
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>t_figurine_2: a shrunk pet, a double click brings it back as the new owner's.</summary>
 	[ViewableClass]
-	public partial class PetFigurine {
+	[ThingTemplate]
+	public partial class PetFigurine : Item {
+		[SaveableData, CopyableData]
+		internal NPCDef petDef = null;
+
+		[SaveableData, CopyableData]
+		internal string petName = null;
+
+		[SaveableData, CopyableData]
+		internal int petColor = 0;
+
+		[SaveableData, CopyableData]
+		internal int petHits = 0;
+
 		internal void Keep(NPC pet) {
 			this.petDef = (NPCDef) pet.Def;
 			this.petName = pet.Name;
@@ -56,6 +71,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PetFigurineDef {
+	[ThingDefTemplate]
+	public partial class PetFigurineDef : ItemDef {
 	}
 }

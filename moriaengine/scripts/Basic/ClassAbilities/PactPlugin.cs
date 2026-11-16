@@ -1,4 +1,6 @@
 using System;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
@@ -8,7 +10,32 @@ namespace SteamEngine.CompiledScripts {
 	/// plugin a character, whichever sides it holds: a mana pact may be the shaman's own. It goes when it holds neither
 	/// side.</summary>
 	[Dialogs.ViewableClass]
-	public partial class PactPlugin {
+	[PluginTemplate]
+	public partial class PactPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal string givenType = null;
+
+		[SaveableData, CopyableData]
+		internal Character receiver = null;
+
+		[SaveableData, CopyableData]
+		internal string borneType = null;
+
+		[SaveableData, CopyableData]
+		internal Character giver = null;
+
+		[SaveableData, CopyableData]
+		internal bool bloodOff = false;
+
+		[SaveableData, CopyableData]
+		internal int regen = 0;
+
+		[SaveableData, CopyableData]
+		internal int ticksLeft = 0;
+
+		[SaveableData, CopyableData]
+		internal double endsAt = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_shamanPact_");
 		internal const double TickSeconds = 5;
 
@@ -116,7 +143,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class PactPluginDef {
+	[PluginDefTemplate]
+	public partial class PactPluginDef : TimerPluginDef {
 		public static readonly PactPluginDef instance =
 			(PactPluginDef) new PactPluginDef("p_shamanPact", "C# scripts", -1).Register();
 	}

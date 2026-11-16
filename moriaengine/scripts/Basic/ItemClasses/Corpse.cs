@@ -20,16 +20,44 @@ using System.Collections.Generic;
 using SteamEngine.Communication;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingDefTemplate]
 	public partial class CorpseDef : ContainerDef {
 
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Corpse : Container {
+		[SaveableData, CopyableData]
+		private Direction direction = (Direction) 0;
+
+		[SaveableData, CopyableData]
+		private Character owner = null;
+
+		[SaveableData, CopyableData]
+		private string ownerName = null;
+
+		[SaveableData, CopyableData]
+		private ushort hairModel = 0;
+
+		[SaveableData, CopyableData]
+		private ushort hairColor = 0;
+
+		[SaveableData, CopyableData]
+		private ushort beardModel = 0;
+
+		[SaveableData, CopyableData]
+		private ushort beardColor = 0;
+
+		[SaveableData, CopyableData]
+		internal Dictionary<ICorpseEquipInfo, AbstractItem> equippedItems = null;
+
 		uint hairFakeUid = GetFakeItemUid();
 		uint beardFakeUid = GetFakeItemUid();
 

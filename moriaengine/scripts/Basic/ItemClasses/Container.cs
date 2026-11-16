@@ -18,14 +18,20 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class ContainerDef {
+	[ThingDefTemplate]
+	public partial class ContainerDef : EquippableDef {
+		[DefField(typeof(short), DefaultExpression = "-1")]
+		private FieldValue gump;
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Container : Equippable {
 		float weight; //of the contents, Sphere's m_totalweight
 

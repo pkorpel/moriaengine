@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
+	[ThingDefTemplate]
+	public partial class CityVenueDef : ItemDef {
+	}
 
+	//#1240 - a venue of the living city: a hidden marker, all a venue knows is on it (as a house's hidden gem)
 	/// <summary>#1240 - a venue: a building or open place of a city with a type, a Czech name, opening hours and rectangles. It isn't
 	/// a region: FlaggedRegion.City and RealmTag aren't inherited and much asks "which area am I in" (the town stone compares areas),
 	/// so a child region would change answers all over. The marker stands hidden at the venue's middle and keeps everything in tags.</summary>
-	public partial class CityVenue {
+	[ThingTemplate]
+	public partial class CityVenue : Item {
 		private static readonly TagKey typeTK = TagKey.Acquire("_venue_type_");
 		private static readonly TagKey titleTK = TagKey.Acquire("_venue_title_");
 		private static readonly TagKey cityTK = TagKey.Acquire("_venue_city_");

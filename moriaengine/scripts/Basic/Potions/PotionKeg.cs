@@ -1,13 +1,28 @@
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
+	[ViewableClass]
+	[ThingDefTemplate]
+	public partial class PotionKegDef : ItemDef {
+		[DefField(typeof(int), DefaultExpression = "1000")]
+		private FieldValue capacity;
+	}
 
 	/// <summary>t_keg_potion: holds a number of one potion, poured in by target and drawn into empty
 	/// bottles the same way; a garbage can empties it.</summary>
 	[ViewableClass]
-	public partial class PotionKeg {
+	[ThingTemplate]
+	public partial class PotionKeg : Item {
+		[SaveableData, CopyableData]
+		public int potionsCount = 0;
+
+		[SaveableData, CopyableData]
+		public PotionDef potionDef = null;
+
 		internal const int LiquidSound = 0x240, Reach = 2;
 
 		public override void On_DClick(AbstractCharacter from) {

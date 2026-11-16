@@ -17,11 +17,17 @@
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class CraftingProcessPlugin {
+	[PluginTemplate]
+	public partial class CraftingProcessPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		public CraftingOrder craftingOrder = null;
+
 		private static PluginKey craftingProcessPK = PluginKey.Acquire("_craftingProcess_");
 		private const int CraftMessageColor = 0x57;
 		private const double SecondsBetweenItems = 0.1;
@@ -163,7 +169,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class CraftingProcessPluginDef {
+	[PluginDefTemplate]
+	public partial class CraftingProcessPluginDef : TimerPluginDef {
 	}
 
 	partial class CraftingProcessPluginDef {

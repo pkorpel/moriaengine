@@ -1,5 +1,7 @@
 using System;
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -7,7 +9,16 @@ namespace SteamEngine.CompiledScripts {
 	/// cooldowns of voodoo, the pacts and the life pact (Erebor's serv.time tags). The stats ritual and the voodoo shield
 	/// are effects on the character, each its own plugin below.</summary>
 	[Dialogs.ViewableClass]
-	public partial class ShamanProfessionPlugin {
+	[PluginTemplate]
+	public partial class ShamanProfessionPlugin : ProfessionPlugin {
+		[SaveableData, CopyableData]
+		internal double nextVoodoo = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextPact = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextLifePact = 0;
 
 		/// <summary>The shaman's plugin, null for anyone else.</summary>
 		internal static ShamanProfessionPlugin Of(Character ch) {
@@ -19,7 +30,11 @@ namespace SteamEngine.CompiledScripts {
 	/// blood. It changes the character's own stats, so it's on the character, not on the profession plugin: it outlasts a
 	/// profession change, and .voodoorovnovaha needs no class. Death puts the stats back, in its own @death.</summary>
 	[Dialogs.ViewableClass]
-	public partial class VoodooStatsPlugin {
+	[PluginTemplate]
+	public partial class VoodooStatsPlugin : Plugin {
+		[SaveableData, CopyableData]
+		internal int ritual = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_voodooStats_");
 
 		internal static VoodooStatsPlugin Of(Character ch) {
@@ -36,7 +51,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class VoodooStatsPluginDef {
+	[PluginDefTemplate]
+	public partial class VoodooStatsPluginDef : PluginDef {
 		public static readonly VoodooStatsPluginDef instance =
 			(VoodooStatsPluginDef) new VoodooStatsPluginDef("p_voodooStats", "C# scripts", -1).Register();
 	}
@@ -46,7 +62,11 @@ namespace SteamEngine.CompiledScripts {
 	/// DamageManager.CauseSpellDamage). When the time is up, it's cancelled, or a spell goes through it, it rests 180 s, then
 	/// goes. It stays through death, as Erebor's memory item.</summary>
 	[Dialogs.ViewableClass]
-	public partial class VoodooShieldPlugin {
+	[PluginTemplate]
+	public partial class VoodooShieldPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		internal bool resting = false;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_voodooShield_");
 		internal const double UpSeconds = 30, RestSeconds = 180;
 
@@ -110,8 +130,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class VoodooShieldPluginDef {
+	[PluginDefTemplate]
+	public partial class VoodooShieldPluginDef : EffectDurationPluginDef {
 		public static readonly VoodooShieldPluginDef instance =
 			(VoodooShieldPluginDef) new VoodooShieldPluginDef("p_voodooShield", "C# scripts", -1).Register();
+	}
+
+	[PluginDefTemplate]
+	public partial class ShamanProfessionPluginDef : ProfessionPluginDef {
 	}
 }

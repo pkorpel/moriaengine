@@ -19,11 +19,25 @@ using System;
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class EffectDurationPlugin : IEffectDescriber {
+	[PluginTemplate]
+	public partial class EffectDurationPlugin : TimerPlugin, IEffectDescriber {
+		[SaveableData, CopyableData]
+		private double effectPower = 0;
+
+		[SaveableData, CopyableData]
+		private Thing sourceThing = null;
+
+		[SaveableData, CopyableData]
+		private EffectFlag flags = EffectFlag.Unknown;
+
+		[SaveableData, CopyableData]
+		private AbstractDef sourceDef = null;
 
 		//sourcething = spell caster / ability user / trap item / etc
 		public void Init(Thing sourceThing, EffectFlag sourceType, double power, TimeSpan duration) {
@@ -228,7 +242,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class EffectDurationPluginDef {
+	[PluginDefTemplate]
+	public partial class EffectDurationPluginDef : TimerPluginDef {
 	}
 
 	public class EffectDurationLoc : CompiledLocStringCollection<EffectDurationLoc> {

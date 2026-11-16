@@ -18,6 +18,8 @@
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -26,7 +28,23 @@ namespace SteamEngine.CompiledScripts {
 	/// it holds a reference to the ProfessionDef, dispatches all trigger calls etc.
 	/// </summary>
 	[ViewableClass]
-	public partial class ProfessionPlugin {
+	[PluginTemplate]
+	public partial class ProfessionPlugin : Plugin {
+		[SaveableData, CopyableData]
+		private ProfessionDef profession = null;
+
+		[SaveableData, CopyableData]
+		private SkillRank skillRank = SkillRank.Novice;
+
+		[SaveableData, CopyableData]
+		internal bool counterOn = false;
+
+		[SaveableData, CopyableData]
+		internal bool stunReady = false;
+
+		[SaveableData, CopyableData]
+		internal double nextStun = 0;
+
 		internal static PluginKey professionKey = PluginKey.Acquire("_profession_");
 
 		/// <summary>Initialize the profession on the character - grants the .def's starting
@@ -178,7 +196,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class ProfessionPluginDef {
+	[PluginDefTemplate]
+	public partial class ProfessionPluginDef : PluginDef {
 	}
 
 	public class ProfessionPluginLoc : CompiledLocStringCollection<ProfessionPluginLoc> {

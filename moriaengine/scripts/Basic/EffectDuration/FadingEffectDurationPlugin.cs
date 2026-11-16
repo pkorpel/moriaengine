@@ -17,6 +17,7 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
@@ -24,7 +25,8 @@ namespace SteamEngine.CompiledScripts {
 
 
 	[ViewableClass]
-	public partial class FadingEffectDurationPlugin {
+	[PluginTemplate]
+	public partial class FadingEffectDurationPlugin : EffectDurationPlugin {
 		public const double minimumEffectPower = 0.1;
 
 		static TimerKey tickTimerKey = TimerKey.Acquire("_tick_timer_");
@@ -60,7 +62,19 @@ namespace SteamEngine.CompiledScripts {
 
 
 	[ViewableClass]
-	public partial class FadingEffectDurationPluginDef {
+	[PluginDefTemplate]
+	public partial class FadingEffectDurationPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(double), DefaultExpression = "5")]
+		private FieldValue tickInterval;
+
+		[DefField(typeof(int), DefaultExpression = "60")]
+		private FieldValue maxTicks;
+
+		[DefField(typeof(double), DefaultExpression = "1000")]
+		private FieldValue maxPower;
+
+		[DefField(typeof(PluginKey))]
+		private FieldValue pluginKey;
 
 		public void Apply(Thing source, Character target, EffectFlag sourceType, double effectPower, int tickCount) {
 			//every FadingEffect type has it's pluginkey, so they're independent on each other

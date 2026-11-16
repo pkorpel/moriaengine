@@ -20,15 +20,33 @@ using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class PlayerTrackingPlugin {
+	[PluginTemplate]
+	public partial class PlayerTrackingPlugin : TimerPlugin {
 		private static readonly PluginKey trackingPluginKey = PluginKey.Acquire("_tracking_");
 
 		public const int refreshTimeout = 5; //number of seconds after which all displayed footsteps will be refreshed (if necessary)
+
+		[SaveableData, CopyableData]
+		private TimeSpan maxFootstepAge = TimeSpan.Zero;
+
+		[SaveableData, CopyableData]
+		private int safeSteps = 0;
+
+		[SaveableData, CopyableData]
+		private Character trackedChar = null;
+
+		[SaveableData, CopyableData]
+		private int stepsCntr = 0;
+
+		[SaveableData, CopyableData]
+		private int rectWidth = 0;
 
 		private ImmutableRectangle trackingRectangle;
 		private TimeSpan lastRefreshAt;
@@ -297,15 +315,26 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PlayerTrackingPluginDef {
+	[PluginDefTemplate]
+	public partial class PlayerTrackingPluginDef : TimerPluginDef {
 		public static readonly PlayerTrackingPluginDef instance = (PlayerTrackingPluginDef)
 			new PlayerTrackingPluginDef("p_tracking", "C#scripts", -1).Register();
 	}
 
 	[ViewableClass]
-	public partial class NPCTrackingPlugin {
+	[PluginTemplate]
+	public partial class NPCTrackingPlugin : TimerPlugin {
 		internal static PluginKey npcTrackingPluginKey = PluginKey.Acquire("_NPCtracking_");
 		internal static int refreshTimeout = 10; //number of seconds after which all displayed footsteps will be refreshed (if necessary)
+
+		[SaveableData, CopyableData]
+		internal int maxAllowedDist = 0;
+
+		[SaveableData, CopyableData]
+		internal int safeSteps = 0;
+
+		[SaveableData, CopyableData]
+		internal Character whoToTrack = null;
 
 		private int stepsCntr;
 
@@ -359,7 +388,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class NPCTrackingPluginDef {
+	[PluginDefTemplate]
+	public partial class NPCTrackingPluginDef : TimerPluginDef {
 		public static readonly NPCTrackingPluginDef instance = (NPCTrackingPluginDef)
 			new NPCTrackingPluginDef("p_NPCtracking", "C#scripts", -1).Register();
 	}
