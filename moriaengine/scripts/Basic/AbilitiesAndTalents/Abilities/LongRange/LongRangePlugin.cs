@@ -16,11 +16,13 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class LongRangePlugin {
+	[PluginTemplate]
+	public partial class LongRangePlugin : EffectDurationPlugin {
 
 		private static ActivableAbilityDef a_longrange;
 		public static ActivableAbilityDef LongRangeDef {
@@ -52,6 +54,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class LongRangePluginDef {
+	[PluginDefTemplate]
+	public partial class LongRangePluginDef : EffectDurationPluginDef {
 	}
 }

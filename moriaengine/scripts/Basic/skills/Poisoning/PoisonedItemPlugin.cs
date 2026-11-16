@@ -19,14 +19,26 @@ using System;
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - jed_sila, jed_vydrz and jed_typ on a poisoned weapon or arrows. A blade's dose wears down with its
 	/// strength, sniz_jed. Arrows are spent as they're shot.</summary>
 	[ViewableClass]
-	public partial class PoisonedItemPlugin {
+	[PluginTemplate]
+	public partial class PoisonedItemPlugin : Plugin {
+		[SaveableData, CopyableData]
+		private int poisonPower = 0;
+		[SaveableData, CopyableData]
+		private int poisonDoses = 0;
+		[SaveableData, CopyableData]
+		private PoisonKind poisonKind = PoisonKind.PercentOfHits;
+		[SaveableData, CopyableData]
+		private string poisonName = null;
+
 		public static PluginKey poisonPK = PluginKey.Acquire("_poison_");
 
 		internal static void Bind(Item item, PoisonPotion bottle, int power, int doses) {
@@ -152,7 +164,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PoisonedItemPluginDef {
+	[PluginDefTemplate]
+	public partial class PoisonedItemPluginDef : PluginDef {
 		public static readonly PoisonedItemPluginDef instance = (PoisonedItemPluginDef)
 			new PoisonedItemPluginDef("p_poisoned_item", "C# scripts", -1).Register();
 	}

@@ -1,13 +1,16 @@
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class ReactiveArmorPlugin {
+	[PluginTemplate]
+	public partial class ReactiveArmorPlugin : EffectDurationPlugin {
 	}
 
 	[ViewableClass]
-	public partial class ReactiveArmorPluginDef {
+	[PluginDefTemplate]
+	public partial class ReactiveArmorPluginDef : EffectDurationPluginDef {
 		private static readonly PluginKey key = PluginKey.Acquire("spellEffect_reactive_armor");
 
 		public static bool HasReactiveArmor(Character target) {

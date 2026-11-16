@@ -3,18 +3,24 @@ using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class CashiersItemDef {
+	[ThingDefTemplate]
+	public partial class CashiersItemDef : ItemDef {
+		[DefField(typeof(Int32), DefaultExpression = "0")]
+		private FieldValue maxAmount;
 	}
 
 	/// <summary>#883 - Erebor's money items (seky.scp): a cheque, which only a banker cashes, and
 	/// the purse and strongbox, which hold gold without its weight. MaxAmount 0 is a cheque.</summary>
 	[ViewableClass]
-	public partial class CashiersItem {
+	[ThingTemplate]
+	public partial class CashiersItem : Item {
 		private static readonly TagKey valueTK = TagKey.Acquire("_cashiersValue_");
 		private static readonly TagKey checkValueTK = TagKey.Acquire("_checkValue_");
 		internal const string CheckDef = "i_cashiers_check", PurseDef = "i_cashiers_mesec", StrongboxDef = "i_cashiers_pokladnicka";

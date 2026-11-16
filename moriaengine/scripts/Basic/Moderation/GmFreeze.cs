@@ -16,11 +16,13 @@
 */
 
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1107, #1409 - a GM's .freeze (and .summoncage): the frozen character refuses every step in its @denyMove,
 	/// with the frozen line.</summary>
-	public partial class GmFreezePlugin {
+	[PluginTemplate]
+	public partial class GmFreezePlugin : Plugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_gmFrozen_");
 
 		public static bool IsFrozen(Character ch) {
@@ -42,7 +44,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class GmFreezePluginDef {
+	[PluginDefTemplate]
+	public partial class GmFreezePluginDef : PluginDef {
 		public static readonly GmFreezePluginDef instance =
 			(GmFreezePluginDef) new GmFreezePluginDef("p_gm_freeze", "C# scripts", -1).Register();
 	}

@@ -1,17 +1,20 @@
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class TownStoneDef {
+	[ThingDefTemplate]
+	public partial class TownStoneDef : ItemDef {
 	}
 
 	/// <summary>#892 - i_townstone (t_townmenu): a Gondor city's seat, standing in the map area of that
 	/// city. Everything of the town is on Town, and this saves it.</summary>
 	[ViewableClass]
-	public partial class TownStone {
+	[ThingTemplate]
+	public partial class TownStone : Item {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
 			if ((player == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
@@ -60,13 +63,15 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class TaxChestDef {
+	[ThingDefTemplate]
+	public partial class TaxChestDef : ContainerDef {
 	}
 
 	/// <summary>i_tax_chest, which never opens: double click tells the tax and offers to pay it, and gold
 	/// that got into it goes to the treasury.</summary>
 	[ViewableClass]
-	public partial class TaxChest {
+	[ThingTemplate]
+	public partial class TaxChest : Container {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
 			Town town = Town.OfChest(this);

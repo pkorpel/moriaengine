@@ -3,12 +3,14 @@ using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class CollectorDef {
+	[ThingDefTemplate]
+	public partial class CollectorDef : ItemDef {
 	}
 
 	/// <summary>#1247 - Erebor's t_collector (systems/uzitecne_nezaraditelne_itemy.scp): a bag that counts what its owner takes
@@ -16,7 +18,8 @@ namespace SteamEngine.CompiledScripts {
 	/// Its settings are tags: the def's (the converter writes a bag's @create lines there), which an instance tag of the same
 	/// name overrides, so an errand can make a bag of its own. The count lives on the bag, as `contentscount`.</summary>
 	[ViewableClass]
-	public partial class Collector {
+	[ThingTemplate]
+	public partial class Collector : Item {
 		internal static readonly TagKey CountTK = TagKey.Acquire("contentscount");
 		internal static readonly TagKey InfoTK = TagKey.Acquire("contentsinfo");
 		internal static readonly TagKey TypeTK = TagKey.Acquire("contentstype");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 using SteamEngine.Networking;
@@ -205,13 +206,15 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class RealmStoneDef {
+	[ThingDefTemplate]
+	public partial class RealmStoneDef : ItemDef {
 	}
 
 	/// <summary>i_generalstone and i_lordnazgulsstone: who holds the realm's office, and its blacklist.
 	/// Which of the two goes by the realm of the map area it stands in.</summary>
 	[ViewableClass]
-	public partial class RealmStone {
+	[ThingTemplate]
+	public partial class RealmStone : Item {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
 			if ((player == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
@@ -399,13 +402,15 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PowerBadgeDef {
+	[ThingDefTemplate]
+	public partial class PowerBadgeDef : EquippableDef {
 	}
 
 	/// <summary>i_generals_bracelet, and the Rings of Power: what marks an office, can't be taken off by
 	/// hand, and asks for a uniform (Uniform).</summary>
 	[ViewableClass]
-	public partial class PowerBadge {
+	[ThingTemplate]
+	public partial class PowerBadge : Equippable {
 		private static readonly TagKey realNameTK = TagKey.Acquire("_realNameBeforeTitle_");
 
 		public static PowerBadge Find(Character ch) {

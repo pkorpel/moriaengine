@@ -17,11 +17,13 @@
 
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	partial class WeaponSkillTargetTrackerPlugin {
+	[PluginTemplate]
+	partial class WeaponSkillTargetTrackerPlugin : TimerPlugin {
 		HashSet<Character> attackers = new HashSet<Character>();
 
 		private static PluginKey weaponSkillTargetPK = PluginKey.Acquire("_weaponSkillTarget_");
@@ -85,7 +87,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	partial class WeaponSkillTargetTrackerPluginDef {
+	[PluginDefTemplate]
+	partial class WeaponSkillTargetTrackerPluginDef : TimerPluginDef {
 		public static WeaponSkillTargetTrackerPluginDef instance = (WeaponSkillTargetTrackerPluginDef) 
 			new WeaponSkillTargetTrackerPluginDef("p_weaponSkillTargetTracker", "C# scripts", -1).Register();
 	}

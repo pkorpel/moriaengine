@@ -1,10 +1,12 @@
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
-	public partial class CaptainStoneDef {
+	[ThingDefTemplate]
+	public partial class CaptainStoneDef : ItemDef {
 	}
 
 	/// <summary>#1116 - Erebor's keep captain stone (t_captainmenu, t_mordorcaptainmenu in systems/velitele_pevnosti*.scp). A
@@ -13,7 +15,8 @@ namespace SteamEngine.CompiledScripts {
 	/// Fixed from Erebor: the stone serves whoever holds the keep. Erebor's stone kept its realm's type, so a captain of the
 	/// realm that took the keep could never open it.</summary>
 	[ViewableClass]
-	public partial class CaptainStone {
+	[ThingTemplate]
+	public partial class CaptainStone : Item {
 		private static readonly TagKey fortTK = TagKey.Acquire("_captainStoneFort_");
 
 		public string Fort {

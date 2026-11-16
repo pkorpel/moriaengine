@@ -17,11 +17,13 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	//represents the activated ignition ability
-	public partial class IgnitionActivatedPlugin {
+	[PluginTemplate]
+	public partial class IgnitionActivatedPlugin : StatDrainingEffectDurationPlugin {
 		private static ActivableAbilityDef a_ignition;
 		private static ActivableAbilityDef IgnitionDef {
 			get {
@@ -93,6 +95,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class IgnitionActivatedPluginDef {
+	[PluginDefTemplate]
+	public partial class IgnitionActivatedPluginDef : StatDrainingEffectDurationPluginDef {
 	}
 }

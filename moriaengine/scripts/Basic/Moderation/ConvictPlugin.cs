@@ -1,4 +1,6 @@
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -7,7 +9,19 @@ namespace SteamEngine.CompiledScripts {
 	/// sentence's Lumberjacking a GM set (lagrskill), and the murders, name and Lumberjacking given back at the release
 	/// (lagrkills, lagrname, lumberpits). Camp reads and writes them.</summary>
 	[Dialogs.ViewableClass]
-	public partial class ConvictPlugin {
+	[PluginTemplate]
+	public partial class ConvictPlugin : Plugin {
+		[SaveableData, CopyableData]
+		internal int sentence = 0;
+		[SaveableData, CopyableData]
+		internal int sentenceSkill = 0;
+		[SaveableData, CopyableData]
+		internal int keptKills = 0;
+		[SaveableData, CopyableData]
+		internal string keptName = null;
+		[SaveableData, CopyableData]
+		internal int keptLumber = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_convict_");
 
 		internal static ConvictPlugin Of(Character ch) {
@@ -33,7 +47,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class ConvictPluginDef {
+	[PluginDefTemplate]
+	public partial class ConvictPluginDef : PluginDef {
 		public static readonly ConvictPluginDef instance =
 			(ConvictPluginDef) new ConvictPluginDef("p_convict", "C# scripts", -1).Register();
 	}

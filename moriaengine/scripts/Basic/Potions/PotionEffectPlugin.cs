@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -19,7 +21,17 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#927 - Erebor's i_a_*_potion runes. Each sits in a slot, as a rune sat in a layer: a new one in
 	/// the same slot replaces the old. Sphere has one potion layer, so stat potions don't add up, and potions
 	/// aren't dispelled.</summary>
-	public partial class PotionEffectPlugin {
+	[PluginTemplate]
+	public partial class PotionEffectPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		public int stat = 0;
+		[SaveableData, CopyableData]
+		public int amount = 0;
+		[SaveableData, CopyableData]
+		public string name = "";
+		[SaveableData, CopyableData]
+		public int icon = 0;
+
 		/// <summary>Layer 44, LAYER_FLAG_Potion.</summary>
 		public static readonly PluginKey MainSlot = PluginKey.Acquire("_potionEffect_main_");
 		public static readonly PluginKey NightSightSlot = PluginKey.Acquire("_potionEffect_nightsight_");
@@ -126,6 +138,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class PotionEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class PotionEffectPluginDef : EffectDurationPluginDef {
 	}
 }

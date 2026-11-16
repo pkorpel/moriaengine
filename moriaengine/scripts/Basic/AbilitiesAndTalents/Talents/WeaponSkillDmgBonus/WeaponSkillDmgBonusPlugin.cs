@@ -16,10 +16,13 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class WeaponSkillDmgBonusPlugin {
+	[PluginTemplate]
+	public partial class WeaponSkillDmgBonusPlugin : EffectDurationPlugin {
 
 		public void On_BeforeSwing(WeaponSwingArgs swingArgs) {
 			var attackerSkill = swingArgs.attacker.CurrentSkill as WeaponSkillDef;
@@ -30,6 +33,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class WeaponSkillDmgBonusPluginDef {
+	[PluginDefTemplate]
+	public partial class WeaponSkillDmgBonusPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(WeaponSkillDef))]
+		private FieldValue skill;
 	}
 }

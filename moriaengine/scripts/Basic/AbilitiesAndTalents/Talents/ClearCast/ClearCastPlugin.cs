@@ -16,10 +16,12 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class ClearCastPlugin {
+	[PluginTemplate]
+	public partial class ClearCastPlugin : StatDrainingEffectDurationPlugin {
 
 		private static ActivableAbilityDef a_clearcast;
 		public static ActivableAbilityDef ClearCastDef {
@@ -47,6 +49,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class ClearCastPluginDef {
+	[PluginDefTemplate]
+	public partial class ClearCastPluginDef : StatDrainingEffectDurationPluginDef {
 	}
 }

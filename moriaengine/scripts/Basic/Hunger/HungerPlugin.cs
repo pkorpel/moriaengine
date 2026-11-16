@@ -1,4 +1,6 @@
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#924, #1396 - a player's hunger, on every player from login. It does its work in its holder's triggers,
@@ -6,7 +8,11 @@ namespace SteamEngine.CompiledScripts {
 	/// (ishungrymsg: a hungry player's success is a failure), @spellCast and @hitTry (hungryhurts, Erebor's @spellcast and
 	/// @hittry). The skills that ask about hunger themselves in Erebor's scripts call PlayerHunger, which reads this.</summary>
 	[ViewableClass]
-	public partial class HungerPlugin {
+	[PluginTemplate]
+	public partial class HungerPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		private int food = 15;
+
 		public static readonly PluginKey key = PluginKey.Acquire("_hunger_");
 
 		internal static HungerPlugin Of(Character ch) {
@@ -69,7 +75,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class HungerPluginDef {
+	[PluginDefTemplate]
+	public partial class HungerPluginDef : TimerPluginDef {
 		public static readonly HungerPluginDef instance =
 			(HungerPluginDef) new HungerPluginDef("p_hunger", "C# scripts", -1).Register();
 	}

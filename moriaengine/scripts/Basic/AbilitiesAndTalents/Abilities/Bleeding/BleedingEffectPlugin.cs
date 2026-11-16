@@ -19,11 +19,13 @@ using System.Globalization;
 using SteamEngine.Common;
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	//the similarity to DamagingPoison is not random :)
-	public partial class BleedingEffectPlugin {
+	[PluginTemplate]
+	public partial class BleedingEffectPlugin : FadingEffectDurationPlugin {
 
 		public override void On_Assign() {
 
@@ -96,7 +98,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class BleedingEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class BleedingEffectPluginDef : FadingEffectDurationPluginDef {
 		private static PassiveAbilityDef a_bleeding_maxpower_bonus;
 		private static PassiveAbilityDef BleedingMaxPowerBonusDef {
 			get {

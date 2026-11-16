@@ -17,10 +17,12 @@
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class BloodritualPlugin {
+	[PluginTemplate]
+	public partial class BloodritualPlugin : EffectDurationPlugin {
 
 		private static ActivableAbilityDef a_bloodritual;
 		public static ActivableAbilityDef BloodritualDef {
@@ -46,7 +48,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class BloodritualPluginDef {
+	[PluginDefTemplate]
+	public partial class BloodritualPluginDef : EffectDurationPluginDef {
 	}
 
 	public class BloodritualLoc : CompiledLocStringCollection<BloodritualLoc> {

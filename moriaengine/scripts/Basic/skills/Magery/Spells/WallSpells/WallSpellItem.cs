@@ -16,10 +16,13 @@
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class WallSpellItem {
+	[ThingTemplate]
+	public partial class WallSpellItem : SpellEffectItem {
 
 		public override bool BlocksFit {
 			get {
@@ -35,7 +38,13 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class WallSpellItemDef {
+	[ThingDefTemplate]
+	public partial class WallSpellItemDef : SpellEffectItemDef {
+		[DefField(typeof(ushort), DefaultExpression = "0")]
+		private FieldValue northSouthModel;
+
+		[DefField(typeof(ushort), DefaultExpression = "0")]
+		private FieldValue eastWestModel;
 
 	}
 }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 using SteamEngine.Timers;
@@ -429,13 +430,15 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class NazgulShrineDef {
+	[ThingDefTemplate]
+	public partial class NazgulShrineDef : ItemDef {
 	}
 
 	/// <summary>t_shrine_power: a Mordor city's seat and where its ring comes from. i_leading_shrine_power
 	/// has no city: it stands in Fela Nazgul and holds the leading ring.</summary>
 	[ViewableClass]
-	public partial class NazgulShrine {
+	[ThingTemplate]
+	public partial class NazgulShrine : Item {
 		private bool IsLeadingShrine {
 			get { return this.Def == ThingDef.GetByDefname("i_leading_shrine_power"); }
 		}
@@ -522,14 +525,16 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class NazgulGateDef {
+	[ThingDefTemplate]
+	public partial class NazgulGateDef : ItemDef {
 	}
 
 	/// <summary>i_lordnazguls_gate and i_lordnazguls_gate_out. With no First Nazgul, a Nazgul opens the way
 	/// into Fela Nazgul, and up to 3 of Mordor pass with half an hour for the trial; the leading shrine is inside.
 	/// The gate is red while there's a First Nazgul, and shut.</summary>
 	[ViewableClass]
-	public partial class NazgulGate {
+	[ThingTemplate]
+	public partial class NazgulGate : Item {
 		private const int OpenColor = 0x692, ShutColor = 0x689;
 		private static readonly TagKey passesTK = TagKey.Acquire("_gatePasses_");
 		private static readonly TimerKey resetTK = TimerKey.Acquire("_gateReset_");
@@ -654,12 +659,14 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class NazgulBoardDef {
+	[ThingDefTemplate]
+	public partial class NazgulBoardDef : ItemDef {
 	}
 
 	/// <summary>t_lordnazgulboard: what the First Nazgul has done, for all to read, which also checks the ring.</summary>
 	[ViewableClass]
-	public partial class NazgulBoard {
+	[ThingTemplate]
+	public partial class NazgulBoard : Item {
 		public override void On_DClick(AbstractCharacter from) {
 			RealmOffice office = RealmOffice.For(Realm.Mordor);
 			Character first = office?.holder;

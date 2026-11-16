@@ -1,19 +1,22 @@
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class RentChestDef {
+	[ThingDefTemplate]
+	public partial class RentChestDef : ContainerDef {
 	}
 
 	/// <summary>#941 - i_najem_chest: anyone opens it and puts money in, which buys time when someone clicks it or the sign, as on
 	/// Erebor. It takes nothing else, as nothing else pays, and only a GM takes anything out, for what an eviction left in it.
 	/// Erebor kept it locked (#958).</summary>
 	[ViewableClass]
-	public partial class RentChest {
+	[ThingTemplate]
+	public partial class RentChest : Container {
 		private static readonly TagKey houseTK = TagKey.Acquire("_rent_chest_house_");
 
 		public House House {

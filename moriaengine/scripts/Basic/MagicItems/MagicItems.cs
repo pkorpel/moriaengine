@@ -3,16 +3,25 @@ using System.Collections.Generic;
 using System.Text;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class MagicBagDef {
+	[ThingDefTemplate]
+	public partial class MagicBagDef : ItemDef {
+		[DefField(typeof(Int32), DefaultExpression = "0")]
+		private FieldValue tier;
+
+		[DefField(typeof(Int32), DefaultExpression = "1")]
+		private FieldValue rolls;
 	}
 
 	/// <summary>#1017 - mit_main: a double click unpacks the bag into one unidentified magic item.</summary>
 	[ViewableClass]
-	public partial class MagicBag {
+	[ThingTemplate]
+	public partial class MagicBag : Item {
 		public override void On_Create() {
 			base.On_Create();
 			MagicItemGmTools.CountBag(this); //#1070 - padnute_*

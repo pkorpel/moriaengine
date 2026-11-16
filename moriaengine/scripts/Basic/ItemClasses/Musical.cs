@@ -16,13 +16,22 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class MusicalDef {
+	[ThingDefTemplate]
+	public partial class MusicalDef : ItemDef {
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue successSound;
+
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue failureSound;
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Musical : Item {
 		public override void On_DClick(AbstractCharacter ac) {
 			Character clicker = ac as Character;

@@ -2,6 +2,7 @@ using System;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
@@ -10,12 +11,14 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class ShamanItemDef {
+	[ThingDefTemplate]
+	public partial class ShamanItemDef : ItemDef {
 	}
 
 	/// <summary>#1017 - the shaman's things: i_soul_case, i_soul, i_empathy_item, i_empathy_bottle.</summary>
 	[ViewableClass]
-	public partial class ShamanItem {
+	[ThingTemplate]
+	public partial class ShamanItem : Item {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
 			if (player == null) {

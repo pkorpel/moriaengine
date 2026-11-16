@@ -15,11 +15,15 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class SpellClassDiscountPlugin {
+	[PluginTemplate]
+	public partial class SpellClassDiscountPlugin : EffectDurationPlugin {
 		public void On_SkillStart(SkillSequenceArgs skillSeqArgs) {
 			if (skillSeqArgs.SkillDef.Id == (int) SkillName.Magery) {
 				Character self = (Character) this.Cont;
@@ -32,6 +36,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SpellClassDiscountPluginDef {
+	[PluginDefTemplate]
+	public partial class SpellClassDiscountPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(Type))]
+		private FieldValue spellDefClass;
 	}
 }

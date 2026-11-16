@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class EreborVendorDef {
+	[ThingDefTemplate]
+	public partial class EreborVendorDef : NPCDef {
 	}
 
 	/// <summary>#1017 - Erebor's player vendor, customvendor.scp: what it sells waits in its bank box, each in a pouch carrying a
 	/// description and price; it buys what its owner lists, with its own purse, and keeps 10% of every sale. Spoken to by
 	/// its words; one vendor at a time, and a step ends the dealing.</summary>
 	[ViewableClass]
-	public partial class EreborVendor {
+	[ThingTemplate]
+	public partial class EreborVendor : NPC {
 		private static readonly TagKey ownerTK = TagKey.Acquire("_ev_owner_");
 		private static readonly TagKey goldTK = TagKey.Acquire("_ev_gold_");
 		private static readonly TagKey commissionTK = TagKey.Acquire("_ev_provize_");

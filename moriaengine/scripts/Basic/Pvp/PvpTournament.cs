@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
@@ -159,12 +160,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class PvpTournamentStoneDef {
+	[ThingDefTemplate]
+	public partial class PvpTournamentStoneDef : ItemDef {
 	}
 
 	/// <summary>i_stone_pvp_turnaj.</summary>
 	[ViewableClass]
-	public partial class PvpTournamentStone {
+	[ThingTemplate]
+	public partial class PvpTournamentStone : Item {
 		public override void On_DClick(AbstractCharacter from) {
 			if (from is Player player) {
 				PvpTournament.Enter(player);
