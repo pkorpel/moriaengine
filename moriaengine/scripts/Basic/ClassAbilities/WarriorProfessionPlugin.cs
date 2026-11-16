@@ -1,3 +1,6 @@
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
+
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1429 - the warrior's profession plugin (warrior.def's professionPluginDef), the original code's own way
@@ -6,7 +9,25 @@ namespace SteamEngine.CompiledScripts {
 	/// raised where Erebor's @AfterSwing and @aftergetswing ran: before the dodge. What the warrior's commands do stays
 	/// in WarriorAbilities.</summary>
 	[Dialogs.ViewableClass]
-	public partial class WarriorProfessionPlugin {
+	[PluginTemplate]
+	public partial class WarriorProfessionPlugin : ProfessionPlugin {
+		[SaveableData, CopyableData]
+		internal bool defending = false;
+
+		[SaveableData, CopyableData]
+		internal double nextRoundAttack = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextLeap = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextCry = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextSingleTaunt = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextMassTaunt = 0;
 
 		/// <summary>The warrior's plugin, null for anyone else.</summary>
 		internal static WarriorProfessionPlugin Of(Character ch) {
@@ -24,5 +45,9 @@ namespace SteamEngine.CompiledScripts {
 			WarriorAbilities.ModifyIncomingBlow(this, swing);
 			base.On_GetSwingLanding(swing);
 		}
+	}
+
+	[PluginDefTemplate]
+	public partial class WarriorProfessionPluginDef : ProfessionPluginDef {
 	}
 }

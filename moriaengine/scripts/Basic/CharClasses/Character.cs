@@ -21,6 +21,7 @@ using SteamEngine.Common;
 using SteamEngine.Communication;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
@@ -34,7 +35,58 @@ namespace SteamEngine.CompiledScripts {
 	//}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Character : AbstractCharacter {
+		//TODO: A gettable flags property which emulates sphere flags
+
+		//short experience=0
+
+		[SaveableData, CopyableData]
+		private short hitpoints = 100;
+
+		[SaveableData, CopyableData]
+		private short mana = 100;
+
+		[SaveableData, CopyableData]
+		private short stamina = 100;
+
+		[SaveableData, CopyableData]
+		private short strength = 15;
+
+		[SaveableData, CopyableData]
+		private short dexterity = 15;
+
+		[SaveableData, CopyableData]
+		private short intelligence = 15;
+
+		[SaveableData, CopyableData]
+		private short fame = 0;
+
+		[SaveableData, CopyableData]
+		private short karma = 0;
+
+		[SaveableData, CopyableData]
+		private double hitsRegenSpeed = 0.0;
+
+		[SaveableData, CopyableData]
+		private double manaRegenSpeed = 0.0;
+
+		[SaveableData, CopyableData]
+		private double stamRegenSpeed = 0.0;
+
+		[SaveableData, CopyableData]
+		private short tithingPoints = 0;
+
+		[SaveableData, CopyableData]
+		private byte statLockByte = 0;
+
+		[SaveableData, CopyableData]
+		private string title = null;
+
+		//Character owner = null
+		[SaveableData, CopyableData]
+		private Character mountorrider = null;
+
 		//removed, reworked to use the Skills togeter with abilities in one distionary
 		//Skill[] skills;//this CAN be null, altough it usually isn't
 
@@ -3155,7 +3207,89 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class CharacterDef {
+	[ThingDefTemplate]
+	public partial class CharacterDef : AbstractCharacterDef {
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue angerSound;
+
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue idleSound;
+
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue attackSound;
+
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue hurtSound;
+
+		[DefField(typeof(int), DefaultExpression = "SoundNames.None")]
+		private FieldValue deathSound;
+
+		[DefField(typeof(int), DefaultExpression = "0x2006")]
+		private FieldValue corpseModel;
+
+		[DefField(typeof(uint), DefaultExpression = "0xffffffff")] // all anims by default
+		private FieldValue animsAvailable;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistMagic;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistFire;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistElectric;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistAcid;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistCold;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistPoison;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistMystical;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistPhysical;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistSlashing;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistStabbing;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistBlunt;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistSharp;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistArchery;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistBleed;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistSummon;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistDragon;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistParalyse;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue resistCurse;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue armorVsM;
+
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue armorVsP;
+
 		private CharModelInfo charModelInfo;
 
 		private CorpseDef corpseDef;

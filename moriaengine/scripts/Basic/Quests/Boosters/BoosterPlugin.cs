@@ -1,4 +1,6 @@
 using System;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -6,7 +8,17 @@ namespace SteamEngine.CompiledScripts {
 	/// kind, whose timer is this plugin's, and the seconds left while offline. A logout pauses it, a login resumes it, and
 	/// each experience gain gets the running one's percent of its base. It goes once it holds nothing.</summary>
 	[Dialogs.ViewableClass]
-	public partial class BoosterPlugin {
+	[PluginTemplate]
+	public partial class BoosterPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal string stored = null;
+
+		[SaveableData, CopyableData]
+		internal int running = -1;
+
+		[SaveableData, CopyableData]
+		internal double pausedLeft = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_boosterPlugin_");
 
 		internal static BoosterPlugin Of(Character ch) {
@@ -67,7 +79,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class BoosterPluginDef {
+	[PluginDefTemplate]
+	public partial class BoosterPluginDef : TimerPluginDef {
 		public static readonly BoosterPluginDef instance =
 			(BoosterPluginDef) new BoosterPluginDef("p_boosters", "C# scripts", -1).Register();
 	}

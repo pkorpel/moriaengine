@@ -1,4 +1,6 @@
 using System;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -7,7 +9,74 @@ namespace SteamEngine.CompiledScripts {
 	/// ends the possession. The mystic doesn't die in the body (@denyDeath), comes home at a logout (@logout), and earns
 	/// nothing until then (@gainExperience counts the gain's base, paid on the way home).</summary>
 	[Dialogs.ViewableClass]
-	public partial class PossessionPlugin {
+	[PluginTemplate]
+	public partial class PossessionPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal NPC monster = null;
+
+		[SaveableData, CopyableData]
+		internal NPC ego = null;
+
+		[SaveableData, CopyableData]
+		internal Container layersBox = null;
+
+		[SaveableData, CopyableData]
+		internal Container packBox = null;
+
+		[SaveableData, CopyableData]
+		internal string name = null;
+
+		[SaveableData, CopyableData]
+		internal string title = null;
+
+		[SaveableData, CopyableData]
+		internal string skills = null;
+
+		[SaveableData, CopyableData]
+		internal int model = 0;
+
+		[SaveableData, CopyableData]
+		internal int color = 0;
+
+		[SaveableData, CopyableData]
+		internal int str = 0;
+
+		[SaveableData, CopyableData]
+		internal int dex = 0;
+
+		[SaveableData, CopyableData]
+		internal int intel = 0;
+
+		[SaveableData, CopyableData]
+		internal int vit = 0;
+
+		[SaveableData, CopyableData]
+		internal int hits = 0;
+
+		[SaveableData, CopyableData]
+		internal int stam = 0;
+
+		[SaveableData, CopyableData]
+		internal int mana = 0;
+
+		[SaveableData, CopyableData]
+		internal int x = 0;
+
+		[SaveableData, CopyableData]
+		internal int y = 0;
+
+		[SaveableData, CopyableData]
+		internal int z = 0;
+
+		[SaveableData, CopyableData]
+		internal int m = 0;
+
+		[SaveableData, CopyableData]
+		internal int gained = 0;
+
+		[SaveableData, CopyableData]
+		internal bool monsterInvulnerable = false;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_hypnoPossession_");
 
 		internal static PossessionPlugin Of(Character ch) {
@@ -45,7 +114,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class PossessionPluginDef {
+	[PluginDefTemplate]
+	public partial class PossessionPluginDef : TimerPluginDef {
 		public static readonly PossessionPluginDef instance =
 			(PossessionPluginDef) new PossessionPluginDef("p_hypnoPossession", "C# scripts", -1).Register();
 	}
@@ -53,7 +123,11 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1467 - the alter ego left where the mystic stood (e_hypnotising_mystic_ego, Erebor's tag on the ego), with
 	/// its ring of alarm pads looked at every second. A blow or a spell on it, or its death, brings the mystic home.</summary>
 	[Dialogs.ViewableClass]
-	public partial class AlterEgoPlugin {
+	[PluginTemplate]
+	public partial class AlterEgoPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal Player mystic = null;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_hypnoEgo_");
 
 		internal static AlterEgoPlugin Of(Character ch) {
@@ -94,7 +168,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class AlterEgoPluginDef {
+	[PluginDefTemplate]
+	public partial class AlterEgoPluginDef : TimerPluginDef {
 		public static readonly AlterEgoPluginDef instance =
 			(AlterEgoPluginDef) new AlterEgoPluginDef("p_hypnoEgo", "C# scripts", -1).Register();
 	}

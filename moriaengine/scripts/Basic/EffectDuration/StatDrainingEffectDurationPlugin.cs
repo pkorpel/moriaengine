@@ -16,11 +16,22 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class StatDrainingEffectDurationPlugin {
+	[PluginTemplate]
+	public partial class StatDrainingEffectDurationPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		private double hitsDrain = 0;
+
+		[SaveableData, CopyableData]
+		private double manaDrain = 0;
+
+		[SaveableData, CopyableData]
+		private double stamDrain = 0;
 
 		public void InitDrain(double hitsDrain, double stamDrain, double manaDrain) {
 			this.manaDrain = manaDrain;
@@ -74,6 +85,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class StatDrainingEffectDurationPluginDef {
+	[PluginDefTemplate]
+	public partial class StatDrainingEffectDurationPluginDef : EffectDurationPluginDef {
 	}
 }

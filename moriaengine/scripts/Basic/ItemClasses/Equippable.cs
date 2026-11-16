@@ -18,6 +18,8 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#392 - a tool-category tag independent of WeaponType (pickaxe/fishing pole
@@ -32,7 +34,23 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class EquippableDef {
+	[ThingDefTemplate]
+	public partial class EquippableDef : ItemDef {
+		[DefField(typeof(int), DefaultExpression = "30")]
+		private FieldValue layer;
+
+		///TODO: [Alias("twohands")] or something like it
+		[DefField(typeof(bool), DefaultExpression = "false")]
+		private FieldValue twoHanded;
+
+		//#370/#392 - the skill a "use" of this tool starts; None = derived, see EquippableDef.UseSkill
+		[DefField(typeof(SkillName), DefaultExpression = "SkillName.None")]
+		private FieldValue associatedSkill;
+
+		//#392 - Pickaxe/FishingPole grant Mining/Fishing (EquippableDef.UseSkill)
+		[DefField(typeof(ToolType), DefaultExpression = "ToolType.None")]
+		private FieldValue toolType;
+
 		/// <summary>#370 - the skill a dclick/`.usehand` "use" action on this equippable
 		/// starts (e.g. a pickaxe's Mining, a hatchet's Lumberjacking), and the skill it counts
 		/// as the tool for (IsHoldingToolFor). SkillName.None means this item has no "use"
@@ -67,6 +85,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Equippable : Item {
 		public override int Layer {
 			get {
