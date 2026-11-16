@@ -17,10 +17,12 @@
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
-	public partial class MagicReflectionPlugin {
+	[PluginTemplate]
+	public partial class MagicReflectionPlugin : EffectDurationPlugin {
 
 		public void On_Assign() {
 			Player self = this.Cont as Player;
@@ -76,7 +78,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class MagicReflectionPluginDef {
+	[PluginDefTemplate]
+	public partial class MagicReflectionPluginDef : EffectDurationPluginDef {
 		public static readonly MagicReflectionPluginDef instance = (MagicReflectionPluginDef)
 			new MagicReflectionPluginDef("p_magic_reflection", "C# scripts", -1).Register();
 

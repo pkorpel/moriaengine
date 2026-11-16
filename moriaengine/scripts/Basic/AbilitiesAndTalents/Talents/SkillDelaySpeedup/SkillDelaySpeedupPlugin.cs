@@ -16,10 +16,13 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class SkillDelaySpeedupPlugin {
+	[PluginTemplate]
+	public partial class SkillDelaySpeedupPlugin : EffectDurationPlugin {
 		public TriggerResult On_SkillStart(SkillSequenceArgs ssa) {
 			if (ssa.SkillDef == this.TypeDef.Skill) {
 				ssa.DelayInSeconds *= (1 - this.EffectPower);
@@ -36,6 +39,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SkillDelaySpeedupPluginDef {
+	[PluginDefTemplate]
+	public partial class SkillDelaySpeedupPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(SkillDef))]
+		private FieldValue skill;
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -7,7 +8,8 @@ namespace SteamEngine.CompiledScripts {
 	/// other reveals (a skill's start, a blow, a class command) stay calls: Sphere reveals per skill, and a blow's reveal has
 	/// its place in the swing (a backstab needs the thief still hidden when its bonus is worked out).</summary>
 	[Dialogs.ViewableClass]
-	public partial class HiddenPlugin {
+	[PluginTemplate]
+	public partial class HiddenPlugin : Plugin {
 		internal static readonly PluginKey Key = PluginKey.Acquire("_hidden_");
 
 		internal static HiddenPlugin Of(Character ch) {
@@ -33,7 +35,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class HiddenPluginDef {
+	[PluginDefTemplate]
+	public partial class HiddenPluginDef : PluginDef {
 		public static readonly HiddenPluginDef instance =
 			(HiddenPluginDef) new HiddenPluginDef("p_hidden", "C# scripts", -1).Register();
 	}

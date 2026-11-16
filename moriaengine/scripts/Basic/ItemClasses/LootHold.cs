@@ -15,10 +15,13 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using SteamEngine.Generators.Abstractions;
+
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1023, #1409 - Erebor's i_looter_immobilizer: every pick at another's body holds the looter for a while (each
 	/// pick adds to what's left), refusing steps in @denyMove until its timer runs out.</summary>
-	public partial class LootHoldPlugin {
+	[PluginTemplate]
+	public partial class LootHoldPlugin : TimerPlugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_lootHold_");
 
 		public static bool IsHeld(Character ch) {
@@ -46,7 +49,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class LootHoldPluginDef {
+	[PluginDefTemplate]
+	public partial class LootHoldPluginDef : TimerPluginDef {
 		public static readonly LootHoldPluginDef instance =
 			(LootHoldPluginDef) new LootHoldPluginDef("p_loot_hold", "C# scripts", -1).Register();
 	}

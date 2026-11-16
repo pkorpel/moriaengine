@@ -2,19 +2,22 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class HypnotizerBallDef {
+	[ThingDefTemplate]
+	public partial class HypnotizerBallDef : ItemDef {
 	}
 
 	/// <summary>#1017 - i_hypnotizer, the mystic's crystal ball: a double click opens d_hypnotizerBall, or brings a
 	/// possessing mystic home.</summary>
 	[ViewableClass]
-	public partial class HypnotizerBall {
+	[ThingTemplate]
+	public partial class HypnotizerBall : Item {
 		internal const int NormalColor = 0x480, PossessingColor = 0x445;
 
 		public override void On_DClick(AbstractCharacter from) {

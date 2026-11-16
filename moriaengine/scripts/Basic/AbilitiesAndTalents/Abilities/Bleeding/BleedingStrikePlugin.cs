@@ -16,11 +16,13 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	//represents the activated bleeding strike ability
-	public partial class BleedingStrikePlugin {
+	[PluginTemplate]
+	public partial class BleedingStrikePlugin : EffectDurationPlugin {
 		private static ActivableAbilityDef a_bleeding_strike;
 		private static ActivableAbilityDef BleedingStrikeDef {
 			get {
@@ -58,6 +60,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class BleedingStrikePluginDef {
+	[PluginDefTemplate]
+	public partial class BleedingStrikePluginDef : EffectDurationPluginDef {
 	}
 }

@@ -16,6 +16,8 @@
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -28,7 +30,14 @@ namespace SteamEngine.CompiledScripts {
 	/// authored .def content the way Profession has one file per profession.
 	/// </summary>
 	[ViewableClass]
-	public partial class RaceNationPlugin {
+	[PluginTemplate]
+	public partial class RaceNationPlugin : Plugin {
+		[SaveableData, CopyableData]
+		private Race race = Race.None;
+
+		[SaveableData, CopyableData]
+		private Nation nation = Nation.None;
+
 		internal static PluginKey raceNationKey = PluginKey.Acquire("_racenation_");
 
 		public Race Race {
@@ -64,7 +73,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class RaceNationPluginDef {
+	[PluginDefTemplate]
+	public partial class RaceNationPluginDef : PluginDef {
 		public static readonly RaceNationPluginDef instance = (RaceNationPluginDef)
 			new RaceNationPluginDef("p_racenation", "C# scripts", -1).Register();
 	}

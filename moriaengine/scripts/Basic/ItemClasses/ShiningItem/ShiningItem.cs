@@ -1,8 +1,10 @@
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class ShiningItem {
+	[ThingTemplate]
+	public partial class ShiningItem : Equippable {
 		public override void On_DClick(AbstractCharacter dclicker) {
             this.Say("Shine");
             if (this.Amount > 1) {
@@ -17,6 +19,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public class ShiningItemdef {
+	[ThingDefTemplate]
+	public partial class ShiningItemDef : EquippableDef {
 	}
 }

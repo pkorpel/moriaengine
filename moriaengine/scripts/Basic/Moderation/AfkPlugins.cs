@@ -13,6 +13,7 @@ namespace SteamEngine.CompiledScripts {
 	public partial class AfkCountdownPlugin : TimerPlugin {
 		[SaveableData, CopyableData]
 		internal long endsAt = 0;
+
 		[SaveableData, CopyableData]
 		internal string action = null;
 
@@ -62,8 +63,10 @@ namespace SteamEngine.CompiledScripts {
 	public partial class AfkCheckPlugin : TimerPlugin {
 		[SaveableData, CopyableData]
 		internal string letters = null;
+
 		[SaveableData, CopyableData]
 		internal long endsAt = 0;
+
 		[SaveableData, CopyableData]
 		internal string action = null;
 

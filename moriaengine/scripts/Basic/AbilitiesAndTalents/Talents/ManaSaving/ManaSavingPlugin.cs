@@ -17,11 +17,13 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class ManaSavingPlugin {
+	[PluginTemplate]
+	public partial class ManaSavingPlugin : StatDrainingEffectDurationPlugin {
 
 		private static ActivableAbilityDef a_mana_saving;
 		public static ActivableAbilityDef ManaSavingDef {
@@ -67,6 +69,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class ManaSavingPluginDef {
+	[PluginDefTemplate]
+	public partial class ManaSavingPluginDef : StatDrainingEffectDurationPluginDef {
 	}
 }

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class HouseDef {
+	[ThingDefTemplate]
+	public partial class HouseDef : ItemDef {
 	}
 
 	/// <summary>Erebor's order, hm_findrank. A blocked house gives everybody but a GM Blocked.</summary>
@@ -17,7 +19,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#941 - a house of Erebor (systems/housemenu.scp): a building on the map, a region with a house number, and
 	/// this hidden gem holding who it belongs to. Everything is in tags, which the save takes care of.</summary>
 	[ViewableClass]
-	public partial class House {
+	[ThingTemplate]
+	public partial class House : Item {
 		private static readonly TagKey ownerTK = TagKey.Acquire("_house_owner_");
 		private static readonly TagKey friendsTK = TagKey.Acquire("_house_friends_");
 		private static readonly TagKey coOwnersTK = TagKey.Acquire("_house_coowners_");

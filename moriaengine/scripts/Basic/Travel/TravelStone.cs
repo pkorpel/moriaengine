@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
@@ -8,12 +9,14 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class TravelStoneDef {
+	[ThingDefTemplate]
+	public partial class TravelStoneDef : ItemDef {
 	}
 
 	/// <summary>#1035 - i_stone_travel (t_stone_travel), a coach station. See TravelStops.</summary>
 	[ViewableClass]
-	public partial class TravelStone {
+	[ThingTemplate]
+	public partial class TravelStone : Item {
 		private const int ClassMessageHue = 0x57;
 
 		public override void On_Create() {

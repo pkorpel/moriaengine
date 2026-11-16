@@ -1,3 +1,0 @@
-[ThingTemplate CashiersItem : Item]
-Def:	//vars on the def
-	int maxAmount = 0

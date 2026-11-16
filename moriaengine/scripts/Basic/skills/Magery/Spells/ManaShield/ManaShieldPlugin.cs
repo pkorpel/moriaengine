@@ -18,11 +18,13 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	//represents the activated ignition ability
-	public partial class ManaShieldPlugin {
+	[PluginTemplate]
+	public partial class ManaShieldPlugin : StatDrainingEffectDurationPlugin {
 
 		//private static DurableCharEffectSpellDef s_mana_shield;
 		//private static DurableCharEffectSpellDef ManaShieldDef {
@@ -88,7 +90,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class ManaShieldPluginDef {
+	[PluginDefTemplate]
+	public partial class ManaShieldPluginDef : StatDrainingEffectDurationPluginDef {
 	}
 
 	public class ManaShieldLoc : CompiledLocStringCollection<ManaShieldLoc> {

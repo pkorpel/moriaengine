@@ -16,10 +16,13 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class SpellManaDiscountPlugin {
+	[PluginTemplate]
+	public partial class SpellManaDiscountPlugin : EffectDurationPlugin {
 		public void On_SkillStart(SkillSequenceArgs skillSeqArgs) {
 			if (skillSeqArgs.SkillDef.Id == (int) SkillName.Magery) {
 				Character self = (Character) this.Cont;
@@ -32,6 +35,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SpellManaDiscountPluginDef {
+	[PluginDefTemplate]
+	public partial class SpellManaDiscountPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(SpellDef))]
+		private FieldValue spell;
 	}
 }

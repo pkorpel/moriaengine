@@ -18,11 +18,13 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class ParalyzeEffectPlugin {
+	[PluginTemplate]
+	public partial class ParalyzeEffectPlugin : EffectDurationPlugin {
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			self.ClilocSysMessage(500111); //You are frozen and cannot move.
@@ -62,7 +64,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class ParalyzeEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class ParalyzeEffectPluginDef : EffectDurationPluginDef {
 		public static readonly ParalyzeEffectPluginDef instance = (ParalyzeEffectPluginDef)
 			new ParalyzeEffectPluginDef("p_paralyze", "C# scripts", -1).Register();
 

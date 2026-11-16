@@ -17,10 +17,13 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class CoolDownSpeedupPlugin {
+	[PluginTemplate]
+	public partial class CoolDownSpeedupPlugin : EffectDurationPlugin {
 		public void On_ActivateAbility(AbilityDef ad, Ability a) {
 			if (ad == this.TypeDef.Ability) {
 				//move the lastusage time backwards
@@ -30,6 +33,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class CoolDownSpeedupPluginDef {
+	[PluginDefTemplate]
+	public partial class CoolDownSpeedupPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(AbilityDef))]
+		private FieldValue ability;
 	}
 }
