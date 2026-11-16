@@ -37,11 +37,12 @@ resolved on first use (`ResolveTemporaryState`), so a value can name a def defin
 
 A def has two kinds of values:
 
-- **Typed fields**: declared in a `.ct` file's `Def:` section (or with `InitTypedField` in a
+- **Typed fields**: declared directly in C# with `[DefField]` (or with `InitTypedField` in a
   hand-written def's constructor, as `ActivableAbilityDef`'s `pluginDef` and `pluginKey`).
   The field has a C# type, and both script text and saved text are converted to it
   (`ConvertTools.ConvertTo`). A `double` field is a `double` whatever the text looks like.
-  This is the normal place for a def's own properties.
+  This is the normal place for a def's own properties (see
+  [ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)).
 - **Tags**: `tag.name = value` lines, and `GetTag`/`SetTag` in code. A tag has no type: the
   value is whatever the parser makes of the text. A number is an `int` when it looks like
   one and a `double` otherwise (`ConvertTools.TryParseAnyNumber`), and a saved `double` of
@@ -52,7 +53,7 @@ A def has two kinds of values:
 A value the code itself defines and reads (aggro mode, move rate, a realm) belongs in a typed
 field, not a tag. `NPCDef`'s single values (aggro mode, realm, the taught skill, move rate,
 spell cast range, boss, dragon brain, no-animate, hypnotizable, silence resist, monster types,
-magic horse, serpent form) are `Defs:` fields in `NPC.ct` since #1375, and its {min, max}
+magic horse, serpent form) are typed def fields since #1375, and its {min, max}
 ranges (`int[]` fields, about 108: stats, experience, every monster ability's numbers) since
 #1377. `NPCDef.LoadScriptLine` only turns a range's script form (`min max`, or one value for
 both) into the comma list FieldValue reads an array from, and maps the keywords that differ
@@ -90,12 +91,11 @@ order for other values (saved ones, code): a number first, then the names.
 
 ## Generic instance Save/Load
 
-For `Item`/`Character`-family classes, the `Vars:` section of a `.ct` file
-(see [scripting-pipeline.md](scripting-pipeline.md)) drives auto-generated Save/Load code
-per class - each instance field gets written and re-read with no hand-written persistence
-code at all.
+For `Item`/`Character`-family classes, instance fields marked with
+`[SaveableData, CopyableData]` are persisted through generated save/load/deep-copy code,
+with no per-field hand-written persistence code (via the template generator).
 
-For hand-written classes that aren't `.ct`-generated - settings categories
+For hand-written classes that don't use this template pipeline - settings categories
 (`SettingsMetaCategory` subclasses, see
 [../03-admin-tooling/settings-dialog.md](../03-admin-tooling/settings-dialog.md)) and
 `BoundTimer` subclasses (see [tags-and-timers.md](tags-and-timers.md)) are the two recurring
@@ -121,7 +121,7 @@ public partial class CraftingProcessPluginDef {
 ```
 
 The def class has a `Bootstrap()`, which `ClassManager.InitClasses` calls right after the scripts compile, before
-anything loads. A `.ct`-generated plugin def gets one with `RegisterPluginDef`; a hand-written plugin def writes the same
+anything loads. A template-generated plugin def gets one with `RegisterPluginDef`; a hand-written plugin def writes the same
 (`TimerPluginDef`, `MagicChargePluginDef`); any other def class with such a field has an empty one, "to ensure calling the
 static initialiser" (`PartyDef`, `GuildDef`). The original code assumed a class's static field initializers had run by
 that call; .NET 8 (checked with a small program) runs them only when a field is first read, unless the class has a static

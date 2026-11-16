@@ -151,27 +151,14 @@ shares (spells and gear by profession, the shield block); a subclass overrides i
 
 ## Declaring a plugin
 
-### The class: `.ct` template or by hand
+### The class: template attributes or fully hand-written
 
-Most plugins are written as a `[PluginTemplate]` in a `.ct` file plus a partial class in a
-`.cs` beside it. `ClassTemplateParser` turns each `.ct` file into one `<file name>.Generated.cs`
-beside it, holding all of its templates, at every boot (`Main.cs:171`), before the scripts
-compile:
-
-```
-[PluginTemplate RegenerationPlugin : TimerPlugin]
-Vars:
-	private double residuumHits = 0.0
-	...
-```
-
-(`scripts/Basic/Regeneration/RegenerationPlugin.ct`). The generated file holds the
-`RegenerationPluginDef` class (with `CreateImpl` and a `Bootstrap` that pairs the two
-types), the plugin's fields, their save/load and deep-copy code, and the constructors.
-A `Def:` section adds fields to the def instead, settable from its script section
-(`FadingEffectDurationPlugin.ct`: `tickInterval`, `maxTicks`, `maxPower`, `pluginKey`).
-The behaviour goes in the hand-written partial class (`RegenerationPlugin.cs`: `On_Assign`,
-`On_Timer`).
+Most plugins use template attributes directly in C#: `[PluginTemplate]` on the plugin class
+and `[PluginDefTemplate]` on the matching def class. The build-time generator emits the
+generated pairing/constructors/registration glue, while behavior stays in the hand-written
+class body (`RegenerationPlugin.cs`: `On_Assign`, `On_Timer`).
+See [ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)
+for generation details.
 
 A plugin with no fields can be written by hand instead: a `PluginDef` subclass with
 `CreateImpl` and a `Bootstrap` calling `RegisterPluginDef`, and a `[SaveableClass]`,
@@ -215,8 +202,8 @@ save that holds such a plugin loads. There are two ways to make one:
    somewhere in the LScript as simple `[RegenerationPluginDef p_regenerations]`".
 
    It exists before the world loads because `ClassManager.InitClasses` runs the def class's
-   static constructor before calling its `Bootstrap()`. A `.ct` def class gets its `Bootstrap()`
-   generated; a hand-written one declares `public new static void Bootstrap()` itself, calling
+   static constructor before calling its `Bootstrap()`. A template-generated def gets its
+   `Bootstrap()` generated; a hand-written one declares `public new static void Bootstrap()` itself, calling
    `RegisterPluginDef` (`TimerPluginDef`, `MagicChargePluginDef`) (#1369, see
    [persistence-and-saving.md](persistence-and-saving.md#defs-made-in-code-and-what-a-save-refers-to-by-name)).
    Use it as `CraftingProcessPluginDef.instance`. A def made in a static field of any other
@@ -315,6 +302,6 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 
 ## Related
 
-- [scripting-pipeline.md](scripting-pipeline.md): `.ct` templates and `Generated/`.
+- [scripting-pipeline.md](scripting-pipeline.md): generation pipeline and `Generated/`.
 - [triggers-and-deny-chains.md](triggers-and-deny-chains.md): trigger dispatch.
 - [persistence-and-saving.md](persistence-and-saving.md): def values and saves.

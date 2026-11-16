@@ -23,7 +23,6 @@ using System.Threading;
 using SteamEngine.AuxServerPipe;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
-using SteamEngine.CompiledScripts.ClassTemplates;
 using SteamEngine.LScript;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
@@ -168,8 +167,6 @@ namespace SteamEngine {
 					return false;
 				}
 
-				ClassTemplateParser.Init();
-
 				if (!CompilerInvoker.CompileScripts(true)) {
 					return false;
 				}
@@ -244,7 +241,6 @@ namespace SteamEngine {
 
 		//returns false if nothing was changing, otherwise true
 		internal static bool TryResyncCompiledScripts() {
-			ClassTemplateParser.Resync();
 			if (CompilerInvoker.FindIfSourcesHaveChanged()) {
 				RecompileScripts();
 				return true;
@@ -355,7 +351,6 @@ namespace SteamEngine {
 			RunLevelManager.SetStartup();
 			ObjectSaver.ClearJobs();
 
-			ClassTemplateParser.Init();
 			if (!CompilerInvoker.CompileScripts(false)) {
 				RunLevelManager.UnsetStartup();
 				return false;

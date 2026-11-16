@@ -133,8 +133,8 @@ What this says:
 Shielded only protects state that lives in its containers. Making the game logic safe to run on several threads would mean:
 
 - **Every mutable field transactional.** About **3,000 mutable instance fields and 600 mutable static fields** across 999
-  source files in GameCore, Common, Communication and scripts. On top of that come the generated `.ct` fields
-  (`*.Generated.cs`, 93 files) and the 515 `[SaveableData]` fields: positions, flags, stats, skills, tags, plugins,
+  source files in GameCore, Common, Communication and scripts. On top of that come generated fields
+  (`*.Generated.cs`) and the 515 `[SaveableData]` fields: positions, flags, stats, skills, tags, plugins,
   timers, sector lists, region data, settings. Without ProxyGen on .NET 8, each one changes by hand or in the code
   generators.
 - **Every collection replaced.** Tags are a `Hashtable` per `TagHolder`. Sectors hold intrusive lists, the timer queue is

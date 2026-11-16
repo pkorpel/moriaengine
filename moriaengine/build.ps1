@@ -7,8 +7,8 @@
   Single entry point for building MoriaEngine/SteamEngine. Works identically
   on Windows (powershell.exe or pwsh) and macOS/Linux (pwsh).
 
-  scripts/Generated's .Generated.cs files are produced at runtime by
-  GameCore's own ClassTemplateParser, not checked into source control. On a
+  scripts/Generated's generated C# files are produced at runtime by
+  GameCore's code generators and are not checked into source control. On a
   fresh checkout this script runs GameCore just long enough to generate them
   before attempting the full solution build - see Invoke-ScriptGeneration
   below. You never need to do this by hand.
@@ -59,7 +59,7 @@ $StandaloneProjects = @(
 	# Tests/SteamEngine.Tests.csproj is NOT standalone anymore (issue #358 gave it a
 	# ProjectReference on scripts/SteamEngine.Scripts.csproj, to test StaticMemberSaver
 	# against a real [HasSavedMembers] type) - building it this early, before
-	# Invoke-ScriptGeneration has produced Generated/*.Generated.cs, fails. The final
+	# Invoke-ScriptGeneration has produced required generated files, fails. The final
 	# "Building full solution" step below already builds it, by which point script
 	# generation has run.
 )
@@ -96,32 +96,10 @@ function Set-MulPathToCheckedInUoFiles {
 	}
 }
 
-function Remove-OrphanedGeneratedFiles {
-	# *.Generated.cs files are gitignored and sit beside their .ct template, so moving or
-	# deleting a template leaves the old output behind on every machine that had built it,
-	# where it collides with the new one (CS0102/CS0111 on the class). Hit moving Potion.ct
-	# in #928: the author's copy had been deleted by hand, so only other checkouts failed.
-	# The generator trims spaces and underscores off the name, and 'ItemLockPlugin .ct'
-	# does have a space, so compare trimmed names.
-	$templates = @{}
-	Get-ChildItem -Path scripts -Filter '*.ct' -Recurse -File | ForEach-Object {
-		$templates[(Join-Path $_.DirectoryName $_.BaseName.Trim('_', ' '))] = $true
-	}
-	Get-ChildItem -Path scripts -Filter '*.Generated.cs' -Recurse -File |
-		Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } |
-		ForEach-Object {
-			$template = Join-Path $_.DirectoryName ($_.Name -replace '\.Generated\.cs$', '')
-			if (-not $templates.ContainsKey($template)) {
-				Write-Host "==> Removing $($_.FullName): its template is gone"
-				Remove-Item $_.FullName
-			}
-		}
-}
-
 function Invoke-ScriptGeneration {
 	# scripts/Generated needs GameCore to have actually booted once (it writes
 	# a default steamengine.ini and exits) and then a second time (it compiles
-	# scripts/Generated from the .ct templates via ClassTemplateParser). No UO
+	# scripts/Generated from source metadata). No UO
 	# client data or AuxiliaryServer needed - that happens later in boot.
 	param([string]$Configuration)
 
@@ -133,32 +111,27 @@ function Invoke-ScriptGeneration {
 	Set-MulPathToCheckedInUoFiles
 
 	# Real bug found 2026-10-14: checking only whether the marker file EXISTS (not
-	# whether it's still current) meant editing a .ct template - e.g. adding a new
-	# persisted field to Player.ct - left every *.Generated.cs file on disk silently
+	# whether it's still current) meant editing source left every *.Generated.cs file on disk silently
 	# stale, with this function skipping regeneration entirely on every subsequent
 	# build until something else happened to force a fresh one. Compare timestamps
-	# instead: if any .ct template anywhere in the repo is newer than the marker, the
-	# generated output no longer reflects the current templates and must be redone.
+	# instead: if any source input anywhere in the repo is newer than the marker, the
+	# generated output no longer reflects current sources and must be redone.
 	#
-	# Real bug found 2026-10-15: that fix only covered .ct -> CompiledTriggerGroups.
+	# Real bug found 2026-10-15: relying on one subset of generated outputs was incomplete.
 	# Generated/CompiledScriptHolders.Generated.cs is a SEPARATE generated output,
 	# produced from reflection over [SteamFunction]-attributed plain C# methods under
 	# scripts/ (GameCore/CompiledScripts/CompiledScriptHolder.cs's
-	# CompiledScriptHolderGenerator) - not from .ct templates at all. Renaming/adding a
-	# [SteamFunction] method (e.g. #190-193's Kill->InstaKill rename) doesn't touch any
-	# .ct file, so the old check alone would report "up to date" and skip regeneration,
+	# CompiledScriptHolderGenerator). Renaming/adding a
+	# [SteamFunction] method (e.g. #190-193's Kill->InstaKill rename) can report "up to date" and skip regeneration,
 	# leaving a stale CompiledScriptHolders.Generated.cs (referencing an OLDER method
 	# name from whatever session last ran the generator) to fail the final solution
 	# build with a confusing CS0117 on an unrelated-looking class. Also compare against
 	# the newest plain .cs source file (excluding the *.Generated.cs outputs
 	# themselves, and bin/obj) anywhere in the repo.
-	$newestTemplate = Get-ChildItem -Path . -Filter '*.ct' -Recurse -File -ErrorAction SilentlyContinue |
-		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
 	$newestSource = Get-ChildItem -Path . -Filter '*.cs' -Recurse -File -ErrorAction SilentlyContinue |
 		Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' -and $_.Name -notlike '*.Generated.cs' } |
 		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
-	$newestInput = @($newestTemplate, $newestSource) | Where-Object { $_ } |
-		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+	$newestInput = $newestSource
 	function Test-GeneratedUpToDate {
 		if (-not (Test-Path $generatedMarker)) {
 			return $false
@@ -233,7 +206,6 @@ if ($Clean) {
 }
 
 Write-Host '==> Restoring SteamEngine.sln'
-Remove-OrphanedGeneratedFiles
 Invoke-Dotnet @('restore', 'SteamEngine.sln')
 
 Write-Host "==> Building standalone-buildable projects ($Configuration)"

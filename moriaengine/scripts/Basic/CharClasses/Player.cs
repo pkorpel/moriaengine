@@ -31,57 +31,57 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	[ThingTemplate]
+	[ThingTemplate(Copy = false)] // copying player is not supported
 	public partial class Player : Character {
 		//every skill can have modified its max value specified by profession (e.g. by magic items etc)
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private Dictionary<SkillName, short> maxSkillModifier = null;
 
 		//players profession
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private ProfessionPlugin profession = null;
 
 		//container to put the created items into (defaultly Backpack)
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private Container receivingContainer = null;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private short vitality = 100;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private byte visionRange = Globals.MaxUpdateRange;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private byte personalLightLevel = 0;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		internal List<Thing> targMem = null;
 
 		//players in-game level and experience
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private short level = 0;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int experience = 0;
 
 		//leveling system (#129): unspent point pools granted on level-up, spent via LevelingSystem.TrySpendSkillPoints/TrySpendAbilityPoints
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int unspentSkillPoints = 0;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int unspentAbilityPoints = 0;
 
 		//leveling system (#129): how many attribute points have been spent into each stat so far - used to compute the remaining attribute-point budget, see Player.AttributePointBudget
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int strPointsAllocated = 0;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int dexPointsAllocated = 0;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int intPointsAllocated = 0;
 
-		[SaveableData, CopyableData]
+		[SaveableData]
 		private int vitPointsAllocated = 0;
 
 		public int Level {

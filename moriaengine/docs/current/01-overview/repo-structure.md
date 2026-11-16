@@ -17,8 +17,11 @@ subfolders:
 - `GameCore/Timers/` - `Timer`/`BoundTimer`. See
   [Tags & timers](../02-engine-core/tags-and-timers.md).
 - `GameCore/CompiledScripts/` - the script-compilation and code-generation pipeline itself
-  (`CompilerInvoker`, `GeneratedCodeUtil`, `ClassTemplateParser` and friends). See
+  (`CompilerInvoker`, `GeneratedCodeUtil` and friends). See
   [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md).
+- `Tools/SteamEngine.Generators/` - Roslyn source generators, including Thing/Plugin class
+  template generation. See
+  [ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md).
 - `GameCore/LScript/` - the embedded scripting language's parser/interpreter. See
   [LScript](../02-engine-core/lscript.md).
 - `GameCore/Persistence/` - the generic save/load machinery. See
