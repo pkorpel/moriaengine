@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
-	public partial class FortressPalantirDef {
+	[ThingDefTemplate]
+	public partial class FortressPalantirDef : ItemDef {
 	}
 
-	public partial class FortCashBoxDef {
+	[ThingDefTemplate]
+	public partial class FortCashBoxDef : ItemDef {
 	}
 
 	/// <summary>#1116 - Erebor's i_fortress_palantir (dobyvani/dobyvani-palantir.scp): the keep is taken at it. While the war
@@ -23,7 +26,8 @@ namespace SteamEngine.CompiledScripts {
 	/// Fixed from Erebor: the palantir works while the war runs (Erebor's canbewar also wanted the hour 19-21, so every war
 	/// stopped dead at 22:00 whatever its countdown said).</summary>
 	[ViewableClass]
-	public partial class FortressPalantir {
+	[ThingTemplate]
+	public partial class FortressPalantir : Item {
 		private static readonly TagKey fortTK = TagKey.Acquire("_palantirFort_");
 
 		internal const int GondorHue = 0x05, MordorHue = 0x22;
@@ -62,7 +66,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>t_fort_cashbox: the gold a capture brought, 1 for every 5 s since the keep was last taken, for the war lord who
 	/// took it, as a cheque. Erebor overwrote what the last one didn't collect, as here.</summary>
 	[ViewableClass]
-	public partial class FortCashBox {
+	[ThingTemplate]
+	public partial class FortCashBox : Item {
 		private static readonly TagKey fortTK = TagKey.Acquire("_cashBoxFort_");
 
 		public string Fort {

@@ -16,10 +16,12 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class WhirlWindPlugin {
+	[PluginTemplate]
+	public partial class WhirlWindPlugin : EffectDurationPlugin {
 		private static ActivableAbilityDef a_whirlwind;
 		public static ActivableAbilityDef WhirlWindDef {
 			get {
@@ -56,6 +58,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class WhirlWindPluginDef {
+	[PluginDefTemplate]
+	public partial class WhirlWindPluginDef : EffectDurationPluginDef {
 	}
 }

@@ -1,10 +1,17 @@
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
+
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1426 - a player's weekly set and the player's events that count for it, Erebor's e_weekly_quest,
 	/// e_weekly_itemDclick, e_weekly_itemLoot, e_weekly_stepOnWeb and @playerKill. Put on with the first set, it stays.
 	/// The rules are WeeklyQuests'; the teacher, the bandage, the palantir, the poison and bleed ticks and a blow's damage
 	/// still call them directly, each with its own number.</summary>
-	public partial class WeeklyQuestPlugin {
+	[PluginTemplate]
+	public partial class WeeklyQuestPlugin : Plugin {
+		[SaveableData, CopyableData]
+		internal WeeklySet set = null;
+
 		public static readonly PluginKey key = PluginKey.Acquire("_weekly_");
 
 		/// <summary>The player's set from now on.</summary>
@@ -49,7 +56,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class WeeklyQuestPluginDef {
+	[PluginDefTemplate]
+	public partial class WeeklyQuestPluginDef : PluginDef {
 		public static readonly WeeklyQuestPluginDef instance =
 			(WeeklyQuestPluginDef) new WeeklyQuestPluginDef("p_weeklyQuests", "C# scripts", -1).Register();
 	}

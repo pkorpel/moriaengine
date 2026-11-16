@@ -18,6 +18,8 @@
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
@@ -147,7 +149,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SnoopingPlugin {
+	[PluginTemplate]
+	public partial class SnoopingPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		private LinkedList<Container> snoopedBackpacks = null;
 
 		internal static PluginKey snoopedPluginKey = PluginKey.Acquire("_snoopedBackpacks_");
 		public static int duration = 180;
@@ -202,7 +207,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SnoopingPluginDef {
+	[PluginDefTemplate]
+	public partial class SnoopingPluginDef : TimerPluginDef {
 		public static readonly SnoopingPluginDef instance = (SnoopingPluginDef)
 			new SnoopingPluginDef("p_snoopedBackpacks", "C#scripts", -1).Register(); //#1163 - never was
 	}

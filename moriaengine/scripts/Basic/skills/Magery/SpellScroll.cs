@@ -17,11 +17,13 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class SpellScrollDef {
+	[ThingDefTemplate]
+	public partial class SpellScrollDef : ItemDef {
 		private SpellDef spellDef;
 
 		public SpellDef SpellDef {
@@ -59,7 +61,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SpellScroll {
+	[ThingTemplate]
+	public partial class SpellScroll : Item {
 		public SpellDef SpellDef {
 			get {
 				return this.TypeDef.SpellDef;

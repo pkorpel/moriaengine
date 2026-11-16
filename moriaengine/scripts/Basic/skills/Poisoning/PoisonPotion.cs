@@ -17,10 +17,13 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class PoisonPotion {
+	[ThingTemplate]
+	public partial class PoisonPotion : Potion {
 
 		public override void On_DClick(AbstractCharacter dclicker) {
 			if (dclicker is Player player) {
@@ -59,7 +62,16 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PoisonPotionDef {
+	[ThingDefTemplate]
+	public partial class PoisonPotionDef : PotionDef {
+		[DefField(typeof(string), DefaultExpression = "\"poison_c\"")]
+		private FieldValue poisonKind;
+
+		[DefField(typeof(int[]), DefaultExpression = "new int[] {0, 1000}")]
+		private FieldValue poisonPower;
+
+		[DefField(typeof(int), DefaultExpression = "24")]
+		private FieldValue poisonTickCount;
 
 	}
 }

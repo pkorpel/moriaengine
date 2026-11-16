@@ -16,11 +16,14 @@
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#927 - what a potion does is its PotionKind, found by its def: see PotionKinds.</summary>
 	[ViewableClass]
-	public partial class Potion {
+	[ThingTemplate]
+	public partial class Potion : Item {
 		public override void On_DClick(AbstractCharacter dclicker) {
 			Character user = dclicker as Character;
 			PotionKind kind = PotionKinds.Find(this);
@@ -55,6 +58,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class PotionDef {
+	[ThingDefTemplate]
+	public partial class PotionDef : ItemDef {
+		[DefField(typeof(ItemDef))]
+		private FieldValue emptyFlask;
 	}
 }

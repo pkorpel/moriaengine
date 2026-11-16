@@ -17,11 +17,13 @@
 
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	partial class WeaponSkillTargetQueuePlugin {
+	[PluginTemplate]
+	partial class WeaponSkillTargetQueuePlugin : TimerPlugin {
 		LinkedList<Character> targetQueue = new LinkedList<Character>();
 
 		private new Character Cont {
@@ -229,7 +231,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	partial class WeaponSkillTargetQueuePluginDef {
+	[PluginDefTemplate]
+	partial class WeaponSkillTargetQueuePluginDef : TimerPluginDef {
 		public static WeaponSkillTargetQueuePluginDef instance = (WeaponSkillTargetQueuePluginDef)
 			new WeaponSkillTargetQueuePluginDef("p_weaponSkillTargetQueue", "C# scripts", -1).Register();
 	}

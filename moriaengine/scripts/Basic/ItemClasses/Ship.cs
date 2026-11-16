@@ -123,14 +123,19 @@ namespace SteamEngine.CompiledScripts {
 	public partial class Ship : MultiItem {
 		[SaveableData, CopyableData]
 		private LinkedList<Thing> carriedThings = null;
+
 		[SaveableData, CopyableData]
 		internal Item tiller = null;
+
 		[SaveableData, CopyableData]
 		internal Item leftPlank = null;
+
 		[SaveableData, CopyableData]
 		internal Item rightPlank = null;
+
 		[SaveableData, CopyableData]
 		internal Item trunk = null;
+
 		[SaveableData, CopyableData]
 		internal ShipFacing facing = ShipFacing.North;
 

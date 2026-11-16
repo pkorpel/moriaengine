@@ -17,6 +17,7 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -66,13 +67,15 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class WarcryEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class WarcryEffectPluginDef : EffectDurationPluginDef {
 		public static readonly WarcryEffectPluginDef instance =
 			(WarcryEffectPluginDef) new WarcryEffectPluginDef("p_warcryEffect", "C# scripts", -1).Register();
 	}
 
 	[ViewableClass]
-	public partial class WarcryEffectPlugin {
+	[PluginTemplate]
+	public partial class WarcryEffectPlugin : EffectDurationPlugin {
 
 		internal static PluginKey warcyEffectPluginKey = PluginKey.Acquire("_warcryEffect_");
 

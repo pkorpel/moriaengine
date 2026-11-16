@@ -2,22 +2,26 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class StallDef {
+	[ThingDefTemplate]
+	public partial class StallDef : HouseDef {
 	}
 
 	[ViewableClass]
-	public partial class FieldDef {
+	[ThingDefTemplate]
+	public partial class FieldDef : HouseDef {
 	}
 
 	/// <summary>#1017 - a vendor stall (stanek): an owner, rent by size, locks, a bank, and room for a vendor. Erebor leased
 	/// them at auction; here they're claimed as houses are, the auction waits for the user's word.</summary>
 	[ViewableClass]
-	public partial class Stall {
+	[ThingTemplate]
+	public partial class Stall : House {
 		protected internal override string PlaqueText {
 			get { return "Stanek cislo "; }
 		}
@@ -176,7 +180,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1017 - a field (pole): a stall without the vendor, and a dog whose owner may open its gates.</summary>
 	[ViewableClass]
-	public partial class Field {
+	[ThingTemplate]
+	public partial class Field : House {
 		private static readonly TagKey guardTK = TagKey.Acquire("_field_guard_");
 
 		protected internal override string PlaqueText {

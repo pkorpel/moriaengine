@@ -20,15 +20,18 @@ using SteamEngine.Common;
 using SteamEngine.Communication;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class BankBoxDef {
+	[ThingDefTemplate]
+	public partial class BankBoxDef : ContainerDef {
 	}
 
 	[ViewableClass]
-	public partial class BankBox {
+	[ThingTemplate]
+	public partial class BankBox : Container {
 		/// <summary>#879 - a client ignores opening an item it doesn't know, and a bank box sits on a
 		/// layer that's never sent. Sphere's addBankOpen sends it to the owner first.</summary>
 		public void OpenBankTo(Character viewer) {

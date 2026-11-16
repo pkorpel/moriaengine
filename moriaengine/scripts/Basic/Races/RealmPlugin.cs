@@ -16,6 +16,8 @@
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -28,7 +30,11 @@ namespace SteamEngine.CompiledScripts {
 	/// "guard.Realm = Realm.Gondor".
 	/// </summary>
 	[ViewableClass]
-	public partial class RealmPlugin {
+	[PluginTemplate]
+	public partial class RealmPlugin : Plugin {
+		[SaveableData, CopyableData]
+		private Realm realm = Realm.None;
+
 		internal static PluginKey realmKey = PluginKey.Acquire("_realmplugin_");
 
 		public Realm Realm {
@@ -55,7 +61,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class RealmPluginDef {
+	[PluginDefTemplate]
+	public partial class RealmPluginDef : PluginDef {
 		public static readonly RealmPluginDef instance = (RealmPluginDef)
 			new RealmPluginDef("p_realm", "C# scripts", -1).Register();
 	}

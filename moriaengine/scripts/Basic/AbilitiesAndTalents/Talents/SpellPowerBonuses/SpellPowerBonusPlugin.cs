@@ -16,10 +16,13 @@
  */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class SpellPowerBonusPlugin {
+	[PluginTemplate]
+	public partial class SpellPowerBonusPlugin : EffectDurationPlugin {
 
 		public void On_CauseSpellEffect(SpellEffectArgs spellEffectArgs) {
 			if (spellEffectArgs.CurrentTarget == spellEffectArgs.MainTarget) { //so that the power is only raised once. Won't work in case of mass spells that are ground-targettable - TODO?
@@ -31,6 +34,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class SpellPowerBonusPluginDef {
+	[PluginDefTemplate]
+	public partial class SpellPowerBonusPluginDef : EffectDurationPluginDef {
+		[DefField(typeof(SpellDef))]
+		private FieldValue spell;
 	}
 }

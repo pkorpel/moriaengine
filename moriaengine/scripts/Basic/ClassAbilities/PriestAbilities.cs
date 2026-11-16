@@ -3,6 +3,7 @@ using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
@@ -11,13 +12,15 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class LifeCandleDef {
+	[ThingDefTemplate]
+	public partial class LifeCandleDef : ItemDef {
 	}
 
 	/// <summary>#1017 - i_svice_zivota and i_svice_zivota_lit: a priest lights one, and for a day it can bring
 	/// them back from the dead. The lit one is attr_newbie, so it stays in the pack through death.</summary>
 	[ViewableClass]
-	public partial class LifeCandle {
+	[ThingTemplate]
+	public partial class LifeCandle : Item {
 		internal const string LitDef = "i_svice_zivota_lit";
 		internal static readonly TimerKey BurningTK = TimerKey.Acquire("_lifeCandleBurning_");
 

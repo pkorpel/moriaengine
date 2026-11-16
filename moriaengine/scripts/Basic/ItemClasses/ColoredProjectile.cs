@@ -16,15 +16,24 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class ColoredProjectileDef : IObjectWithMaterial {
+	[ThingDefTemplate]
+	public partial class ColoredProjectileDef : ProjectileDef, IObjectWithMaterial {
+		[DefField(typeof(MaterialType), DefaultExpression = "MaterialType.None")]
+		private FieldValue materialType;
+
+		[DefField(typeof(Material), DefaultExpression = "Material.None")]
+		private FieldValue material;
 	}
 
 	[ViewableClass]
-	public partial class ColoredProjectile {
+	[ThingTemplate]
+	public partial class ColoredProjectile : Projectile {
 
 	}
 }

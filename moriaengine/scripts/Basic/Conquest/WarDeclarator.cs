@@ -2,18 +2,21 @@ using System;
 using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
-	public partial class WarDeclaratorDef {
+	[ThingDefTemplate]
+	public partial class WarDeclaratorDef : ItemDef {
 	}
 
 	/// <summary>#1116 - Erebor's i_war_declarator (dobyvani-declarator.scp): a GM's double click sets its realm from the area
 	/// it stands in; a player of that realm with the right to declare war gets dialog_declare_war, anyone else is refused.
 	/// It carries its realm's war clock (WarDeclaratorTimer).</summary>
 	[ViewableClass]
-	public partial class WarDeclarator {
+	[ThingTemplate]
+	public partial class WarDeclarator : Item {
 		private static readonly TagKey realmTK = TagKey.Acquire("_warDeclaratorRealm_");
 
 		/// <summary>Erebor's my_realm: the realm whose front this stone serves.</summary>

@@ -15,11 +15,14 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using SteamEngine.Generators.Abstractions;
+
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1409 - Sphere's flag_immobile, as a plugin refusing every step in @denyMove (no line): a mystic's catch
 	/// and catch field, a hypnotized body and its alter ego, Erebor's player vendors. One flag, as on Erebor: whoever
 	/// clears it clears it. A blow is still possible.</summary>
-	public partial class ImmobilePlugin {
+	[PluginTemplate]
+	public partial class ImmobilePlugin : Plugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_immobile_");
 
 		public static bool IsImmobile(Character ch) {
@@ -39,7 +42,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class ImmobilePluginDef {
+	[PluginDefTemplate]
+	public partial class ImmobilePluginDef : PluginDef {
 		public static readonly ImmobilePluginDef instance =
 			(ImmobilePluginDef) new ImmobilePluginDef("p_immobile", "C# scripts", -1).Register();
 	}

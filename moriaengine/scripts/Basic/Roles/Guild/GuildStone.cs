@@ -1,17 +1,20 @@
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class GuildStoneDef {
+	[ThingDefTemplate]
+	public partial class GuildStoneDef : ItemDef {
 	}
 
 	/// <summary>#884 - Erebor's i_guildstone (systems/guilds.scp): the guild is this stone. The
 	/// first to double click a stone nobody belongs to becomes its master.</summary>
 	[ViewableClass]
-	public partial class GuildStone {
+	[ThingTemplate]
+	public partial class GuildStone : Item {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
 			if (player == null) {
