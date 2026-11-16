@@ -18,6 +18,8 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -104,7 +106,14 @@ namespace SteamEngine.CompiledScripts {
 	/// ShieldPower percent and taken whole off the energy (DamageManager calls Absorb); then the rest. A Deactivate (a
 	/// GM's dialog, points taken away) removes it with its rest.</summary>
 	[ViewableClass]
-	public partial class EnergyShieldPlugin {
+	[PluginTemplate]
+	public partial class EnergyShieldPlugin : EffectDurationPlugin {
+		[SaveableData, CopyableData]
+		private int shieldPower = 100;
+
+		[SaveableData, CopyableData]
+		private bool resting = false;
+
 		private const int recallSpellId = 32;
 
 		public static EnergyShieldPlugin Of(Character ch) {
@@ -220,6 +229,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class EnergyShieldPluginDef {
+	[PluginDefTemplate]
+	public partial class EnergyShieldPluginDef : EffectDurationPluginDef {
 	}
 }

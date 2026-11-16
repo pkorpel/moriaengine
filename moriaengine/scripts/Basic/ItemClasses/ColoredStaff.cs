@@ -19,15 +19,23 @@ using System;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
-	public partial class ColoredStaffDef {
+	[ThingDefTemplate]
+	public partial class ColoredStaffDef : ColoredWeaponDef {
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue maxMana;
 	}
 
 	[ViewableClass]
-	public partial class ColoredStaff {
+	[ThingTemplate]
+	public partial class ColoredStaff : ColoredWeapon {
+		[SaveableData, CopyableData]
+		private ushort mana = 0;
 
 		//this ability raises the maximum of mana that can be deposited in a staff
 		private static AbilityDef a_mana_deposit_bonus;

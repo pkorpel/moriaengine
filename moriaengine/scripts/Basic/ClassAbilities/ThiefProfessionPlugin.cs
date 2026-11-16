@@ -1,3 +1,6 @@
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
+
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1433 - the thief's profession plugin (thief.def's professionPluginDef), on #1429's pattern. It holds what
@@ -5,7 +8,31 @@ namespace SteamEngine.CompiledScripts {
 	/// strike with their cooldowns, and the knife throw's and round strike's cooldowns. e_thief's @AfterSwing is its
 	/// @swingLanding. The mask stays on the character (ThiefMask): it swaps the character's own name, karma and realm.</summary>
 	[Dialogs.ViewableClass]
-	public partial class ThiefProfessionPlugin {
+	[PluginTemplate]
+	public partial class ThiefProfessionPlugin : ProfessionPlugin {
+		[SaveableData, CopyableData]
+		internal double hiddenAt = 0;
+
+		[SaveableData, CopyableData]
+		internal bool stabbing = false;
+
+		[SaveableData, CopyableData]
+		internal bool throatReady = false;
+
+		[SaveableData, CopyableData]
+		internal double nextThroat = 0;
+
+		[SaveableData, CopyableData]
+		internal bool shieldReady = false;
+
+		[SaveableData, CopyableData]
+		internal double nextShield = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextThrow = 0;
+
+		[SaveableData, CopyableData]
+		internal double nextStrike = 0;
 
 		/// <summary>The thief's plugin, null for anyone else.</summary>
 		internal static ThiefProfessionPlugin Of(Character ch) {
@@ -27,5 +54,9 @@ namespace SteamEngine.CompiledScripts {
 			ThiefAbilities.ChargeWarFork(this, swing);
 			ThiefAbilities.AfterFencingBlow(this, swing);
 		}
+	}
+
+	[PluginDefTemplate]
+	public partial class ThiefProfessionPluginDef : ProfessionPluginDef {
 	}
 }

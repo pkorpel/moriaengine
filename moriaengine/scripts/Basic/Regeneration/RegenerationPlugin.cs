@@ -17,6 +17,8 @@
 
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -25,7 +27,22 @@ namespace SteamEngine.CompiledScripts {
 	/// and adds correct number of points to be regenerated
 	/// </summary>
 	[ViewableClass]
-	public partial class RegenerationPlugin {
+	[PluginTemplate]
+	public partial class RegenerationPlugin : TimerPlugin {
+		//the rest of points that should be regenereated in the next regen round (always in <0,1) )
+		[SaveableData, CopyableData]
+		private double residuumHits = 0.0;
+
+		[SaveableData, CopyableData]
+		private double residuumStam = 0.0;
+
+		[SaveableData, CopyableData]
+		private double residuumMana = 0.0;
+
+		//server time of the last on@timer trigger run (used for computing the regenerated amounts)
+		[SaveableData, CopyableData]
+		private double lastServerTime = 0.0;
+
 		internal static PluginKey regenerationsPluginKey = PluginKey.Acquire("_regenerations_");
 
 		internal const double MIN_TIMER = 1.0d; //minimal timer usable
@@ -170,7 +187,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class RegenerationPluginDef {
+	[PluginDefTemplate]
+	public partial class RegenerationPluginDef : TimerPluginDef {
 		//this is to initialize (create the instance) of the Regen.Plug.Def. it must be here as bellow or
 		//somewhere in the LScript as simple [RegenerationPluginDef p_regenerations]
 		//if the instance is not pre-created in either way it will crash during attempt to assign this plugin...

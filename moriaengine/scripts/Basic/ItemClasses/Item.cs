@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
@@ -67,7 +68,14 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class Item : AbstractItem {
+		//#215/#217 - per-instance Sphere-style ATTR bitflags, independent of the def's
+		//"attributes" above once seeded - lets a GM lock down/make invisible/etc. ONE specific
+		//item without changing every other item created from the same ItemDef.
+		[SaveableData, CopyableData]
+		private ItemAttributes attributes = ItemAttributes.none;
+
 		/// <summary>#1260 - an errand's item (a loaf on the bread round) keeps apart from the player's own of its kind.</summary>
 		public override bool CanStackWith(AbstractItem other) {
 			return !Errands.IsErrandItem(this) && !Errands.IsErrandItem(other);
@@ -732,7 +740,37 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class ItemDef {
+	[ThingDefTemplate]
+	public partial class ItemDef : AbstractItemDef {
+		[DefField(typeof(ResourcesList))]
+		private FieldValue resources;
+
+		[DefField(typeof(ResourcesList))]
+		private FieldValue resources2;
+
+		[DefField(typeof(ResourcesList))]
+		private FieldValue skillMake;
+
+		[DefField(typeof(ResourcesList))]
+		private FieldValue skillmake2;
+
+		//#962 - Sphere's VALUE: nastaveni_cm_value
+		[DefField(typeof(int), DefaultExpression = "0")]
+		private FieldValue itemValue;
+
+		//how hard it is to craft this item (value compared against the skill (1000=100.0)
+		[DefField(typeof(int), DefaultExpression = "1000")]
+		private FieldValue difficulty;
+
+		[DefField(typeof(LightType), DefaultExpression = "(LightType) 0")]
+		private FieldValue light;
+
+		//#215/#217 - Sphere-style ATTR bitflags ("ATTR = attr_x|attr_y" .def line, see
+		//AbstractItemDef.LoadScriptLine's "attr"->"attributes" alias) - copied into each new
+		//instance's own "attributes" (see Vars: below) at creation time (Item.On_Create).
+		[DefField(typeof(ItemAttributes), DefaultExpression = "ItemAttributes.none")]
+		private FieldValue attributes;
+
 		/// <summary>#962 - a recipe from outside this def's own section, read as if it were written there.</summary>
 		internal void SetRecipe(string filename, int line, string resources, string skillMake) {
 			if (resources != null) {

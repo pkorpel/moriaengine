@@ -20,10 +20,13 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
+	[ThingDefTemplate]
 	public partial class MultiItemDef : ItemDef {
 		private DynamicMultiItemComponentDescription[] components;
 
@@ -188,7 +191,11 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
+	[ThingTemplate]
 	public partial class MultiItem : Item {
+		[SaveableData, CopyableData]
+		internal Item[] components = null;
+
 		protected MultiRegion region;
 
 		internal static readonly TagKey ownerMultiTK = TagKey.Acquire("_ownerMultiItem_");

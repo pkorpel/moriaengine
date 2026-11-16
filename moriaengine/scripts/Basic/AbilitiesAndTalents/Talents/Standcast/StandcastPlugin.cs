@@ -16,6 +16,8 @@
 */
 
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -25,7 +27,13 @@ namespace SteamEngine.CompiledScripts {
 	/// at @monsterSpellPower the bonus is added (magie.scp: the first monster target only, half for every target of the
 	/// three area spells); raising the energy shield switches it off.</summary>
 	[ViewableClass]
-	public partial class StandcastPlugin {
+	[PluginTemplate]
+	public partial class StandcastPlugin : Plugin {
+		//#1386 - Erebor's tag.standcast for the cast under way: 1 = its first monster target gets the level bonus, 2 = every
+		//monster target gets half (Explosion, Chain Lightning, Meteor Swarm), 0 = none
+		[SaveableData, CopyableData]
+		private int boost = 0;
+
 		private const int spellExplosion = 43, spellChainLightning = 49, spellMeteorSwarm = 55;
 
 		/// <summary>#860 - dospellcustom_donesrc: what Standcast adds to the multiplier of a spell on a monster. By level,
@@ -73,13 +81,15 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class StandcastPluginDef {
+	[PluginDefTemplate]
+	public partial class StandcastPluginDef : PluginDef {
 	}
 
 	/// <summary>#1386 - Erebor's flag_immobile for a cast under Standcast (f_setStandcast, its i_delayed_Function
 	/// timer): no step until the timer ends.</summary>
 	[ViewableClass]
-	public partial class CastFreezePlugin {
+	[PluginTemplate]
+	public partial class CastFreezePlugin : TimerPlugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_castFreeze_");
 
 		/// <summary>Freezes for a cast of castSeconds; a cast while still frozen changes the time left as f_setStandcast
@@ -131,7 +141,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class CastFreezePluginDef {
+	[PluginDefTemplate]
+	public partial class CastFreezePluginDef : TimerPluginDef {
 		public static readonly CastFreezePluginDef instance =
 			(CastFreezePluginDef) new CastFreezePluginDef("p_cast_freeze", "C# scripts", -1).Register();
 	}

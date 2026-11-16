@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -10,7 +12,14 @@ namespace SteamEngine.CompiledScripts {
 	/// blessed (the Bless spell) or dead; a blessing goes at its first tick. The curse's events are its own triggers:
 	/// e_warcry_effect and e_noport at @denySpellCast, e_nohorse at @stepTaken. .boosts shows each, as Erebor's boosty_menu.</summary>
 	[Dialogs.ViewableClass]
-	public partial class VoodooEffectPlugin : IEffectDescriber {
+	[PluginTemplate]
+	public partial class VoodooEffectPlugin : TimerPlugin, IEffectDescriber {
+		[SaveableData, CopyableData]
+		internal int kind = 0;
+
+		[SaveableData, CopyableData]
+		internal Character shaman = null;
+
 		internal const double Period = 30;
 		private const int recallSpellId = 32;
 		private const int boostsIcon = 0x5001; //boosty_menu's i_woodooeffect line
@@ -120,7 +129,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class VoodooEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class VoodooEffectPluginDef : TimerPluginDef {
 		public static readonly VoodooEffectPluginDef instance =
 			(VoodooEffectPluginDef) new VoodooEffectPluginDef("p_woodooEffect", "C# scripts", -1).Register();
 	}
@@ -128,7 +138,14 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1450 - Erebor's i_mem_woodoo: a voodoo on its way to its owner, 10 s for a curse, 5 for a blessing. Several
 	/// may be on their way at once, each under a key of its own.</summary>
 	[Dialogs.ViewableClass]
-	public partial class VoodooHandlePlugin {
+	[PluginTemplate]
+	public partial class VoodooHandlePlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal int kind = 0;
+
+		[SaveableData, CopyableData]
+		internal Player shaman = null;
+
 		/// <summary>For tests and GMs: every voodoo on its way to ch goes.</summary>
 		internal static void RemoveAll(Character ch) {
 			List<VoodooHandlePlugin> found = new List<VoodooHandlePlugin>();
@@ -162,7 +179,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class VoodooHandlePluginDef {
+	[PluginDefTemplate]
+	public partial class VoodooHandlePluginDef : TimerPluginDef {
 		public static readonly VoodooHandlePluginDef instance =
 			(VoodooHandlePluginDef) new VoodooHandlePluginDef("p_voodooHandle", "C# scripts", -1).Register();
 	}

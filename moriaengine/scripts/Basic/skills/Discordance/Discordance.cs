@@ -17,6 +17,7 @@
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Generators.Abstractions;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
@@ -155,7 +156,56 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class DiscordanceEffectPlugin {
+	[PluginTemplate]
+	public partial class DiscordanceEffectPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		public int discordEffectPower = 0;
+
+		[SaveableData, CopyableData]
+		public short lowed_dex = 0;
+
+		[SaveableData, CopyableData]
+		public short lowed_str = 0;
+
+		[SaveableData, CopyableData]
+		public short lowed_int = 0;
+
+		[SaveableData, CopyableData]
+		public short lowed_hits = 0;
+
+		[SaveableData, CopyableData]
+		public short lowed_mana = 0;
+
+		[SaveableData, CopyableData]
+		public short lowed_stam = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_magery = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_resist = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_wrestl = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_archer = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_mace = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_onehand = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_twohand = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_poison = 0;
+
+		[SaveableData, CopyableData]
+		public ushort lowed_ei = 0;
+
 		private const int LeastSeconds = 10, SkillForASecond = 20, Permille = 1000;
 
 		public void On_Assign() {
@@ -247,7 +297,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public partial class DiscordanceEffectPluginDef {
+	[PluginDefTemplate]
+	public partial class DiscordanceEffectPluginDef : TimerPluginDef {
 	}
 
 	internal class DiscordanceLoc : CompiledLocStringCollection<DiscordanceLoc> {

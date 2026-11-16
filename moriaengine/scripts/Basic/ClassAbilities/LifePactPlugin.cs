@@ -1,4 +1,6 @@
 using System;
+using SteamEngine.Generators.Abstractions;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -6,7 +8,14 @@ namespace SteamEngine.CompiledScripts {
 	/// timer is the soul's end; then the soul goes and the pact with it. It stays through death: the pact is there to rise
 	/// from it.</summary>
 	[Dialogs.ViewableClass]
-	public partial class LifePactPlugin {
+	[PluginTemplate]
+	public partial class LifePactPlugin : TimerPlugin {
+		[SaveableData, CopyableData]
+		internal Character giver = null;
+
+		[SaveableData, CopyableData]
+		internal double createdAt = 0;
+
 		internal static readonly PluginKey Key = PluginKey.Acquire("_lifePact_");
 
 		internal static LifePactPlugin Of(Character ch) {
@@ -22,7 +31,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class LifePactPluginDef {
+	[PluginDefTemplate]
+	public partial class LifePactPluginDef : TimerPluginDef {
 		public static readonly LifePactPluginDef instance =
 			(LifePactPluginDef) new LifePactPluginDef("p_lifePact", "C# scripts", -1).Register();
 	}
@@ -30,7 +40,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1447 - the empathy elixir, Erebor's i_getphysresists with e_getphysresists: for 8 s each of its holder's
 	/// swings reads a monster's physical resists. It stays through death, as Erebor's memory item did.</summary>
 	[Dialogs.ViewableClass]
-	public partial class EmpathyPlugin {
+	[PluginTemplate]
+	public partial class EmpathyPlugin : EffectDurationPlugin {
 		internal static readonly PluginKey Key = PluginKey.Acquire("_empathy_");
 		internal const double Seconds = 8;
 
@@ -61,7 +72,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class EmpathyPluginDef {
+	[PluginDefTemplate]
+	public partial class EmpathyPluginDef : EffectDurationPluginDef {
 		public static readonly EmpathyPluginDef instance =
 			(EmpathyPluginDef) new EmpathyPluginDef("p_empathy", "C# scripts", -1).Register();
 	}
