@@ -72,30 +72,6 @@ function Invoke-Dotnet {
 	}
 }
 
-function Set-MulPathToCheckedInUoFiles {
-	# steamengine.ini defaults mulPath to the literal string "muls" (GameCore/Globals.cs),
-	# a folder nobody actually has - real UO client data lives in the repo's own uo-files/
-	# (one level up from here). Without this, every fresh steamengine.ini silently boots
-	# against missing mul files (CRITICAL: Unable to locate tiledata.mul, etc.) until
-	# someone notices and hand-edits the ini - which doesn't help the next person who
-	# generates a fresh one, since the file is gitignored by design (real per-install
-	# config, not something to commit). Rewrite it here instead, every time, so a fresh
-	# clone just works.
-	if (-not (Test-Path 'steamengine.ini')) {
-		return
-	}
-	$uoFiles = Join-Path $PSScriptRoot '../uo-files'
-	if (-not (Test-Path $uoFiles)) {
-		return
-	}
-	$ini = Get-Content 'steamengine.ini' -Raw
-	$patched = $ini -replace '(?m)^mulPath\s*=\s*muls\s*$', 'mulPath = ../uo-files'
-	if ($patched -ne $ini) {
-		Write-Host '==> Pointing mulPath at ../uo-files in steamengine.ini'
-		Set-Content 'steamengine.ini' $patched -NoNewline
-	}
-}
-
 function Invoke-ScriptGeneration {
 	# scripts/Generated needs GameCore to have actually booted once (it writes
 	# a default steamengine.ini and exits) and then a second time (it compiles
@@ -107,8 +83,6 @@ function Invoke-ScriptGeneration {
 	# #1358: GameCore writes generated sources only when their text changes, so their own write times no longer say when
 	# generation last ran; GeneratedCodeUtil touches this file every time instead.
 	$generatedMarker = 'Generated/generated-at.txt'
-
-	Set-MulPathToCheckedInUoFiles
 
 	# Real bug found 2026-10-14: checking only whether the marker file EXISTS (not
 	# whether it's still current) meant editing source left every *.Generated.cs file on disk silently
@@ -180,13 +154,6 @@ function Invoke-ScriptGeneration {
 		Get-Content $stdout -ErrorAction SilentlyContinue | Select-Object -Last 15 | ForEach-Object { Write-Host "    [out] $_" }
 		Get-Content $stderr -ErrorAction SilentlyContinue | Select-Object -Last 30 | ForEach-Object { Write-Host "    [err] $_" }
 		Remove-Item $stdout, $stderr -ErrorAction SilentlyContinue
-
-		if ($run -eq 1) {
-			# This run is the one that actually wrote steamengine.ini for the first time
-			# on a fresh clone (see Set-MulPathToCheckedInUoFiles) - patch it before run 2,
-			# which is the one that needs real mul files to fully boot cleanly.
-			Set-MulPathToCheckedInUoFiles
-		}
 	}
 
 	if (-not (Test-Path $generatedMarker)) {
