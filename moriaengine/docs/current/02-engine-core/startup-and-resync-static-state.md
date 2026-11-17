@@ -226,6 +226,18 @@ They are a dependency blueprint. A fixture selects the depth it needs.
 - aux/network host boundaries,
 - watchdogs and process shutdown.
 
+**Representative classes**
+
+- `MainClass`
+- `RunLevelManager`
+- `Globals` (process/configuration boundary)
+- `ParentProcessWatchdog`
+- `AuxServerPipeClient`
+- `DynamicAssemblyResolver`
+
+`MainClass` is the production orchestrator; a test fixture should replace or
+host the process-specific part while calling the same world operations.
+
 **Lifecycle**
 
 - create process host,
@@ -247,6 +259,16 @@ state.
 - allocators and pure deterministic services,
 - formula/parser/result types.
 
+**Representative classes**
+
+- `MonotonicTime`
+- `HighPerformanceTimer`
+- `Build`
+- `ConvertTools`
+- `Random`
+- formula result types used by combat/skill/progression code
+- parser/evaluator types in `LScriptGrammarTests` and `RandomExpressionParseTests`
+
 **Reload behavior**
 
 - create or replace if configuration/clock policy changes,
@@ -266,6 +288,21 @@ This is the smallest useful unit and already matches many fast tests.
 - command caches,
 - localization catalogs,
 - weak pools and lookup caches.
+
+**Representative classes**
+
+- `ClassManager`
+- `ScriptHolder`
+- `AbstractScript`
+- `Constant`
+- `AbstractDef`
+- `TestSuite`
+- `LocManager`
+- `Commands` (command cache/authorization state)
+- `AosToolTips`
+- `ItemOnGroundUpdater`
+- `WeakRefDictionaryUtils`
+- `PoolBase`
 
 **Reload behavior**
 
@@ -287,6 +324,17 @@ This level removes the first major static state family:
 - plugin/template class relationships,
 - code-made def state.
 
+**Representative classes**
+
+- `ThingDef`
+- `PluginDef`
+- `AbstractDef`
+- `AbstractSkillDef`
+- `FieldValue`
+- `DefFieldAttribute`
+- `ThingTemplateAttribute` / `PluginTemplateAttribute`
+- generated template metadata types in `Tools/SteamEngine.Generators`
+
 **Reload behavior**
 
 - definitions are rebuilt after script/registry assembly reload,
@@ -307,6 +355,21 @@ world.
 - trigger groups,
 - script functions/constants,
 - script-origin localization and scripted hooks.
+
+**Representative classes**
+
+- `ScriptLoader`
+- `CompilerInvoker`
+- `GeneratedCodeUtil`
+- `LScriptMain`
+- `LScriptHolder`
+- `ScriptedTriggerGroup`
+- `ScriptedGumpDef`
+- `ScriptedLocStringCollection`
+- `ScriptedLocResxBridge`
+- `SteamFunctionAttribute`
+- `CompiledScriptHolder`
+- `TriggerGroup`
 
 **Reload behavior**
 
@@ -332,6 +395,20 @@ commit that result.
 - static/multi-world spatial structures,
 - spatial caches.
 
+**Representative classes**
+
+- `Map`
+- `Sector`
+- `ActivityGrid`
+- `Region`
+- `StaticRegion`
+- `DynamicRegion`
+- `TileData`
+- `MultiData`
+- `SoundMul`
+- `CharData`
+- `StaticRegion`/`Region` lookup and LOS/pathfinding helpers
+
 **Reload behavior**
 
 - create a new map index snapshot for full reload,
@@ -354,6 +431,20 @@ For a real boot it can be backed by MUL/map files.
 - UID/world indexes,
 - live entity cross-references.
 
+**Representative classes**
+
+- `Thing`
+- `Item`
+- `AbstractItem` / `AbstractCharacter`
+- `Character`
+- `NPC`
+- `Player`
+- `AbstractAccount`
+- `Inventory`
+- `Container`
+- `OpenedContainers`
+- `Plugin` and plugin instances
+
 **Reload behavior**
 
 - world save/load creates entity state through explicit input/output,
@@ -373,6 +464,19 @@ for entity/unit fixtures.
 - scheduled save/world events,
 - deferred object resolution,
 - wake/cancellation state.
+
+**Representative classes**
+
+- `SteamEngine.Timers.Timer`
+- `TimerPriorityQueue`
+- `TimerKey`
+- `FunctionTimer`
+- `MethodTimer`
+- `TriggerTimer`
+- `BoundTimer`
+- `ObjectSaver` delayed-load/deferred-resolution jobs
+- `SyncQueue`/`CharSyncQueue`/`ItemSyncQueue`
+- `WorldSaver` background-save coordination
 
 **Reload behavior**
 
@@ -397,6 +501,19 @@ It is also a prime source of cross-world leakage.
 - snapshot load diagnostics,
 - relink plans.
 
+**Representative classes**
+
+- `WorldSaver`
+- `ObjectSaver`
+- `SaveStream`
+- `SaveTimings`
+- `DecoratedClassesSaveImplementor`
+- saveable/static-member implementors
+- `EnumTagPersistence`
+- `FieldValue`
+- save-format/version helpers
+- snapshot/relink DTOs and result types to introduce
+
 **Reload behavior**
 
 - save operations return a snapshot/write plan rather than mutating static state,
@@ -415,6 +532,20 @@ world lifecycle or require the network layer.
 - packet queues,
 - character relink links,
 - protocol transport state.
+
+**Representative classes**
+
+- `GameServer`
+- `GameServerProtocol`
+- `GameState`
+- `TcpConnection<GameState>`
+- `IncomingPackets`/`OutgoingPackets`
+- `GameCompression`
+- `GameEncryption`
+- `PacketSequences`
+- `MovementState`
+- `CharSyncQueue`
+- `ItemSyncQueue`
 
 **Reload behavior**
 
