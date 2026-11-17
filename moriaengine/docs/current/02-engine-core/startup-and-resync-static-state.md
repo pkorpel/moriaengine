@@ -154,9 +154,28 @@ Design intent:
 - **one active world per process** in production (same behavior as today),
 - **multiple isolated worlds in one process** in tests (sequential first, optional parallel later),
 - explicit lifecycle: `Create` → `Initialize` → `Run` → `Resync/Recompile` → `Shutdown` → `Dispose`,
+- **functional core, imperative shell** for heavy operations:
+  - loading/saving/reload steps take explicit input parameters (state + options + dependencies),
+  - they return explicit result objects (state deltas, diagnostics, side effects to apply),
+  - orchestration lives in one place (production host `MainClass`, or test fixtures),
 - most current static APIs become either:
   - thin compatibility shims to `World.Current`,
   - or instance APIs on `World` services.
+
+### Orchestration model (production and tests)
+
+The long-term shape should be:
+
+- **Orchestrator layer** (`MainClass` in production, fixture host in tests):
+  - chooses sequence and policy,
+  - provides dependencies/options,
+  - commits side effects (network/listeners/threads/logging/IO boundaries).
+- **World operations layer** (pure-ish domain operations):
+  - no hidden static reads/writes,
+  - no implicit singleton lookups,
+  - deterministic outputs for deterministic inputs.
+
+This is what enables lightweight test boots: tests can call the same operations with fake/minimal dependencies and assert on returned results without requiring full process-global setup.
 
 ### What should become world-owned first
 
@@ -197,6 +216,10 @@ Lower-priority or keep-static candidates:
 1. Move `Init`/`LoadAll`/`ForgetAll` orchestration into `World.Initialize()`, `World.Reload()`, `World.Reset()`.
 2. Keep `MainClass` as thin host wiring (console, process shutdown, aux process hookup).
 3. Keep run-level transitions but make them world-scoped where possible.
+4. Introduce operation contracts that return structured results, for example:
+   - `Initialize(WorldInitInput) -> WorldInitResult`
+   - `Reload(WorldReloadInput) -> WorldReloadResult`
+   - `Reset(WorldResetInput) -> WorldResetResult`
 
 **Exit criteria:** `MainClass` delegates world lifecycle; startup/recompile behavior parity preserved.
 
@@ -211,7 +234,7 @@ Lower-priority or keep-static candidates:
 #### Phase 4 - De-staticize world data + map dynamic state
 
 1. Move `Thing`/account/world collections and map dynamic indexes under world state objects.
-2. Make world load/save paths consume explicit world state instances.
+2. Make world load/save paths consume explicit world state instances and return explicit output/state updates (not hidden global mutations).
 3. Isolate references crossing world boundary (network sessions, aux links).
 
 **Exit criteria:** most gameplay/runtime mutable data is world-instance-owned.
@@ -248,6 +271,12 @@ Lower-priority or keep-static candidates:
 - Do not break save/reload compatibility while moving ownership.
 - Maintain command/recompile/shutdown behavior parity at every phase.
 - Prefer **strangler pattern** (facade delegates) over big-bang rewrites.
+- For major operations (load/save/recompile/resync), prefer signatures of the form:
+  - `Result = Operation(Input, Dependencies, Options)`
+  - avoid reading implicit ambient state except at the orchestrator boundary.
+- Keep side-effect execution at boundaries:
+  - planning/computation returns intent/results,
+  - orchestrator commits IO/thread/network/timer effects.
 - For each migrated subsystem, add:
   - lifecycle tests (init/reset/reload),
   - leak checks (old world references not callable),
