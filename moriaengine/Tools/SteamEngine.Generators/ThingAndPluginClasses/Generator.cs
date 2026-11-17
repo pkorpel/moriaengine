@@ -23,7 +23,7 @@ public sealed partial class Generator : IIncrementalGenerator {
 
 		context.RegisterSourceOutput(
 			context.CompilationProvider.Combine(classes),
-			static (spc, data) => Execute(spc, data.Left, data.Right!));
+			static (spc, data) => Execute(spc, data.Left, data.Right));
 	}
 
 	private static void Execute(
@@ -32,20 +32,21 @@ public sealed partial class Generator : IIncrementalGenerator {
 		IReadOnlyCollection<TemplateDiscoveryResult> discoveries) {
 		// Build all template pairs first, then emit in a single deterministic pass.
 		var diagnostics = new List<Diagnostic>();
-		var hasRequiredDeclarations = Analyzer.ValidateRequiredDeclarations(compilation, diagnostics);
-		var hasRequiredCanonicalTypes = Analyzer.ValidateRequiredCanonicalTypes(compilation, diagnostics);
-		var candidates = new List<TemplateCandidate>();
-		foreach (var discovery in discoveries) {
-			if (discovery is null) {
-				continue;
-			}
-			diagnostics.AddRange(discovery.Diagnostics);
-			if (discovery.Candidate is not null) {
-				candidates.Add(discovery.Candidate);
-			}
-		}
 
-		if (hasRequiredDeclarations && hasRequiredCanonicalTypes) {
+		if (Analyzer.ValidateRequiredDeclarations(compilation, diagnostics)
+			&& Analyzer.ValidateRequiredCanonicalTypes(compilation, diagnostics)) {
+
+			var candidates = new List<TemplateCandidate>();
+			foreach (var discovery in discoveries) {
+				if (discovery is null) {
+					continue;
+				}
+				diagnostics.AddRange(discovery.Diagnostics);
+				if (discovery.Candidate is not null) {
+					candidates.Add(discovery.Candidate);
+				}
+			}
+
 			var pairs = Analyzer.BuildTemplatePairs(candidates, diagnostics);
 			foreach (var pair in pairs) {
 				if (!Renderer.TryRenderPair(pair, out var source)) {

@@ -92,16 +92,9 @@ function Invoke-ScriptGeneration {
 	# generated output no longer reflects current sources and must be redone.
 	#
 	# Real bug found 2026-10-15: relying on one subset of generated outputs was incomplete.
-	# Generated/CompiledScriptHolders.Generated.cs is a SEPARATE generated output,
-	# produced from reflection over [SteamFunction]-attributed plain C# methods under
-	# scripts/ (GameCore/CompiledScripts/CompiledScriptHolder.cs's
-	# CompiledScriptHolderGenerator). Renaming/adding a
-	# [SteamFunction] method (e.g. #190-193's Kill->InstaKill rename) can report "up to date" and skip regeneration,
-	# leaving a stale CompiledScriptHolders.Generated.cs (referencing an OLDER method
-	# name from whatever session last ran the generator) to fail the final solution
-	# build with a confusing CS0117 on an unrelated-looking class. Also compare against
-	# the newest plain .cs source file (excluding the *.Generated.cs outputs
-	# themselves, and bin/obj) anywhere in the repo.
+	# Also compare against the newest plain .cs source file (excluding the
+	# *.Generated.cs outputs themselves, and bin/obj) anywhere in the repo so
+	# source changes that affect generated code cannot be skipped.
 	$newestSource = Get-ChildItem -Path . -Filter '*.cs' -Recurse -File -ErrorAction SilentlyContinue |
 		Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' -and $_.Name -notlike '*.Generated.cs' } |
 		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1

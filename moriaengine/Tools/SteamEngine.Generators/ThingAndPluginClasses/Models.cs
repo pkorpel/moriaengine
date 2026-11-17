@@ -30,12 +30,12 @@ internal sealed class TemplateCandidate {
 }
 
 internal sealed class TemplateDiscoveryResult {
-	internal TemplateDiscoveryResult(TemplateCandidate candidate, IReadOnlyList<Diagnostic> diagnostics) {
+	internal TemplateDiscoveryResult(TemplateCandidate? candidate, IReadOnlyList<Diagnostic> diagnostics) {
 		Candidate = candidate;
 		Diagnostics = diagnostics;
 	}
 
-	internal TemplateCandidate Candidate { get; }
+	internal TemplateCandidate? Candidate { get; }
 	internal IReadOnlyList<Diagnostic> Diagnostics { get; }
 }
 

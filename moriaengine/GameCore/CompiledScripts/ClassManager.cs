@@ -292,9 +292,6 @@ namespace SteamEngine.CompiledScripts {
 				if (Attribute.IsDefined(meth, typeof(RegisterWithRunTestsAttribute))) {
 					TestSuite.AddTest(meth);
 				}
-				if (Attribute.IsDefined(meth, typeof(SteamFunctionAttribute))) {
-					CompiledScriptHolderGenerator.AddCompiledSHType(meth);
-				}
 			}
 
 			if (type.IsSubclassOf(typeof(TagHolder))) {
