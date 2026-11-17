@@ -193,78 +193,350 @@ Lower-priority or keep-static candidates:
 - truly global OS-facing glue (process watchdog hooks),
 - narrow, audited singleton interop points while migration is ongoing.
 
-### Migration phases
+### Migration structure: hierarchy of replaceable state levels
 
-#### Phase 0 - Baseline and boundaries
+The previous broad phase list is not enough as an implementation plan. The
+better unit of migration is a **world state level**: a set of objects that can
+be constructed together, reloaded together, and discarded together.
 
-1. Freeze and document static mutation boundaries (this page + code comments at key roots).
-2. Add a static-state inventory test/checklist used in PRs touching startup/resync.
-3. Define `World` contract interfaces (`IWorld`, lifecycle hooks, core service accessors).
+The test fixture ladder below is useful because it describes real groups of
+dependencies. The world should expose the same groups as nested scopes rather
+than as a flat list of static reset methods.
 
-**Exit criteria:** agreed world contract + explicit inventory of static owners and reset semantics.
+Each level:
 
-#### Phase 1 - Introduce `World` shell with compatibility bridge
+1. has explicit inputs and explicit construction results,
+2. owns all mutable state introduced at that level,
+3. exposes only the lifecycle operations needed by the level above,
+4. is discarded wholesale when reloading invalidates it,
+5. is independently constructible by a test fixture,
+6. and does not reach back into a lower level except through instance references.
 
-1. Add `World` class and `WorldRuntime`/`WorldContext` scaffolding.
-2. Add `World.Current` + guard rails (clear errors if accessed without active world).
-3. Keep existing static entry points, but route new code through world-aware adapters.
+The levels are not ten separate public APIs that all tests must initialize.
+They are a dependency blueprint. A fixture selects the depth it needs.
 
-**Exit criteria:** server still boots exactly as today; no behavior change, but `World` lifecycle exists.
+#### Level 0 - Process host
 
-#### Phase 2 - Move startup/resync orchestration into `World`
+**Owns**
 
-1. Move `Init`/`LoadAll`/`ForgetAll` orchestration into `World.Initialize()`, `World.Reload()`, `World.Reset()`.
-2. Keep `MainClass` as thin host wiring (console, process shutdown, aux process hookup).
-3. Keep run-level transitions but make them world-scoped where possible.
-4. Introduce operation contracts that return structured results, for example:
-   - `Initialize(WorldInitInput) -> WorldInitResult`
-   - `Reload(WorldReloadInput) -> WorldReloadResult`
-   - `Reset(WorldResetInput) -> WorldResetResult`
+- process lifecycle,
+- OS/current-directory/configuration location,
+- logging/console infrastructure,
+- run-level coordinator,
+- aux/network host boundaries,
+- watchdogs and process shutdown.
 
-**Exit criteria:** `MainClass` delegates world lifecycle; startup/recompile behavior parity preserved.
+**Lifecycle**
 
-#### Phase 3 - De-staticize script/runtime registries
+- create process host,
+- create selected world,
+- run,
+- shut down world,
+- dispose host.
 
-1. Move script registries from static dictionaries into world-owned services.
-2. Update `ScriptLoader`, `ClassManager`, `GeneratedCodeUtil` consumers to use world services.
-3. Keep temporary static facades delegating to `World.Current`.
+This level belongs to `MainClass` or a test fixture. It should not own gameplay
+state.
 
-**Exit criteria:** recompile/reset no longer depends on broad static `ForgetAll` lists for moved subsystems.
+#### Level 1 - Pure engine inputs and clocks
 
-#### Phase 4 - De-staticize world data + map dynamic state
+**Owns**
 
-1. Move `Thing`/account/world collections and map dynamic indexes under world state objects.
-2. Make world load/save paths consume explicit world state instances and return explicit output/state updates (not hidden global mutations).
-3. Isolate references crossing world boundary (network sessions, aux links).
+- immutable configuration,
+- random sources,
+- monotonic clock,
+- allocators and pure deterministic services,
+- formula/parser/result types.
 
-**Exit criteria:** most gameplay/runtime mutable data is world-instance-owned.
+**Reload behavior**
 
-#### Phase 5 - Timers/jobs/deferred work
+- create or replace if configuration/clock policy changes,
+- normally reconstructed between tests,
+- no world-save data.
 
-1. Scope timer queues and job/deferred callbacks to world instance.
-2. Ensure reload/shutdown guarantees: no callbacks from old world after swap/reset.
-3. Add cancellation/disposal ordering tests.
+This is the smallest useful unit and already matches many fast tests.
 
-**Exit criteria:** no cross-world timer/job leakage in stress reload tests.
+#### Level 2 - Registries and caches
 
-#### Phase 6 - Test harness enablement (lightweight worlds)
+**Owns**
 
-1. Add a lightweight world host for tests (no sockets, optional reduced data load).
-2. Add fixture helpers: create world, load minimal scripts, run assertions, dispose world.
-3. Add optional knobs:
-   - skip aux/network listeners,
-   - disable timer thread unless requested,
-   - load targeted script subsets.
+- type/name lookup,
+- def and script registries,
+- SteamFunction/script-holder lookup,
+- trigger/plugin lookup,
+- command caches,
+- localization catalogs,
+- weak pools and lookup caches.
 
-**Exit criteria:** unit/integration tests can run isolated world boots in-process without full server bring-up.
+**Reload behavior**
 
-#### Phase 7 - Retire compatibility statics
+- `CreateRegistrySnapshot(inputs) -> Result`
+- on script recompile: create a new registry tree and swap it,
+- old registry objects are discarded rather than individually cleared.
 
-1. Remove static shim APIs subsystem-by-subsystem.
-2. Fail builds on new mutable static fields in migrated areas.
-3. Keep only explicit process-level statics.
+This level removes the first major static state family:
+`ClassManager`, `ScriptHolder`, `AbstractScript`, `Constant`, `TestSuite`,
+`FieldValue`, and many lookup caches.
 
-**Exit criteria:** static mutable state is exceptional/audited, not default.
+#### Level 3 - Definitions and templates
+
+**Owns**
+
+- definition objects,
+- template metadata,
+- def-field models,
+- plugin/template class relationships,
+- code-made def state.
+
+**Reload behavior**
+
+- definitions are rebuilt after script/registry assembly reload,
+- existing Things must be relinked or converted against the new definitions,
+- no direct clear/repopulate of old registries.
+
+This level is tightly coupled to registries and code generation but should be
+separately replaceable because a def-only resync may not invalidate the whole
+world.
+
+#### Level 4 - Script runtime
+
+**Owns**
+
+- parsed `.def`/`.scp` state,
+- LScript parsed/executable state,
+- ScriptHolder dispatch,
+- trigger groups,
+- script functions/constants,
+- script-origin localization and scripted hooks.
+
+**Reload behavior**
+
+- incremental resync: new script runtime snapshot plus changed-file delta,
+- full recompile: create a new assembly/script runtime level,
+- trigger/command registries resolve through this level.
+
+The functional operation can be:
+
+`ReloadScripts(ScriptReloadInput) -> ScriptReloadResult`
+
+The result contains changed definitions, trigger changes, diagnostics,
+new registries, and lifecycle hooks to run. `MainClass` decides when and how to
+commit that result.
+
+#### Level 5 - Spatial world
+
+**Owns**
+
+- map/tiles/statics/sectors,
+- regions,
+- LOS/range/pathfinding indexes,
+- static/multi-world spatial structures,
+- spatial caches.
+
+**Reload behavior**
+
+- create a new map index snapshot for full reload,
+- rebuild derived sectors/regions,
+- relink existing world objects,
+- discard old indexes wholesale.
+
+For lightweight tests this level can be a synthetic map implementation.
+For a real boot it can be backed by MUL/map files.
+
+#### Level 6 - Live entities and accounts
+
+**Owns**
+
+- Things,
+- accounts,
+- characters/items/NPCs,
+- inventories/opened containers,
+- live plugins attached to entities,
+- UID/world indexes,
+- live entity cross-references.
+
+**Reload behavior**
+
+- world save/load creates entity state through explicit input/output,
+- full recompile may preserve entity state, swap definitions/registries, and relink,
+- world reset/failed load constructs a fresh entity scope and must never retain old references.
+
+This level is coupled to definitions and spatial state but can exist in isolation
+for entity/unit fixtures.
+
+#### Level 7 - Deferred work and timers
+
+**Owns**
+
+- timer heap,
+- delayed callbacks,
+- delayed copy/load,
+- scheduled save/world events,
+- deferred object resolution,
+- wake/cancellation state.
+
+**Reload behavior**
+
+- snapshot timers before recompile,
+- stop old scheduler,
+- create a new timer scope,
+- convert/restore/reject work intentionally,
+- never allow old callbacks to execute against a new world.
+
+This is a natural standalone migration slice because it is stateful but compact.
+It is also a prime source of cross-world leakage.
+
+#### Level 8 - Persistence and snapshots
+
+**Owns**
+
+- serialization plans,
+- save buffers,
+- loaded snapshots,
+- save-format version state,
+- pending/async save jobs,
+- snapshot load diagnostics,
+- relink plans.
+
+**Reload behavior**
+
+- save operations return a snapshot/write plan rather than mutating static state,
+- load operations return a snapshot/state delta plus diagnostics,
+- relinking is performed by the orchestrator after entity/script/def scopes exist.
+
+Persistence should remain a value/operation boundary: it should not own
+world lifecycle or require the network layer.
+
+#### Level 9 - Network and session adapters
+
+**Owns**
+
+- active connections,
+- client/session/game-state mapping,
+- packet queues,
+- character relink links,
+- protocol transport state.
+
+**Reload behavior**
+
+- back up session links before recompile,
+- keep transport objects or explicitly reconnect,
+- relink characters after the new world scopes are committed,
+- remove backup links after success.
+
+This level should be thin infrastructure. Gameplay tests should not require it
+unless they specifically test login, packets, or session behavior.
+
+### How levels compose
+
+A useful hierarchy is:
+
+```text
+ProcessHost
+  World
+    EngineInputs
+    Registries
+    Definitions
+    ScriptRuntime
+    SpatialWorld
+    LiveEntities
+    DeferredWork
+    Persistence
+    NetworkAdapter
+```
+
+The hierarchy is a **lifecycle grouping**, not a call-chain hierarchy:
+
+- lower levels provide inputs/services,
+- higher levels can own lower-level instances,
+- reload invalidates only the levels whose input changed,
+- the orchestrator decides which levels are preserved, rebuilt, or replaced.
+
+Examples:
+
+- pure formula test: Levels 0–1 only,
+- LScript test: Levels 0–4,
+- synthetic map/combat test: Levels 0–7,
+- real save/restart test: Levels 0–8,
+- login/protocol test: Levels 0–9.
+
+### Concrete migration milestones
+
+#### Milestone 1 - Functional operations and the first replaceable scope
+
+1. Add a clock/scheduler value object and timer scope.
+2. Move timer heap/clear/deferred work state behind explicit operations.
+3. Add a lightweight fixture that creates and disposes the timer scope twice.
+4. Confirm no callback survives across scope disposal.
+
+**Proof:** timer unit tests become independent; no server boot or static clear is needed.
+
+#### Milestone 2 - Replaceable registries
+
+1. Add a registry scope for type/name/ScriptHolder/TriggerGroup lookups.
+2. Make script discovery and class initialization produce registry snapshots.
+3. Replace static `ForgetAll`/repopulate sequences with new-scope swapping.
+4. Keep compatibility shims for existing callers.
+
+**Proof:** script holder and trigger registries can be reloaded twice in one process.
+
+#### Milestone 3 - Script runtime result + incremental resync
+
+1. Move script file parsing behind explicit input/change-set operations.
+2. Return a `ScriptReloadResult` containing diagnostics and registry deltas.
+3. Let a test fixture commit or reject that result.
+4. Keep `MainClass` responsible for process-level pause/save/relink side effects.
+
+**Proof:** incremental script resync is reproducible in-process without a server pair.
+
+#### Milestone 4 - Persistence planning
+
+1. Convert save buffers and entity/static serialization to explicit input/output operations.
+2. Return snapshot/write/load/relink plans.
+3. Move filesystem/process sequencing to the orchestrator.
+4. Retain real restart tests only for end-to-end proof.
+
+**Proof:** object round trips and snapshot relinking work with no network/process boot.
+
+#### Milestone 5 - Spatial and entity scopes
+
+1. Introduce synthetic map scope and spatial index snapshots.
+2. Move live entity collections, UID lookup, accounts, and containers behind world state.
+3. Explicitly rebuild or relink definitions/entities after reload.
+4. Add direct entity/combat tests under this scope.
+
+**Proof:** synthetic map/combat tests run in-process across repeated world lifecycles.
+
+#### Milestone 6 - Production orchestration and compatibility retirement
+
+1. Move `MainClass.Init`, `LoadAll`, and `ForgetAll` sequences into a world builder/orchestrator.
+2. Commit each level with a clear success/failure boundary.
+3. Add retry/recompile behavior from structured results.
+4. Retire static shims subsystem-by-subsystem.
+
+**Proof:** production boot/recompile and test fixtures use the same operation contracts.
+
+### Concrete first vertical slice
+
+The first vertical slice should exercise the architecture across at least:
+
+```text
+ProcessHost
+  EngineInputs
+  Registries
+  ScriptRuntime
+  DeferredWork
+```
+
+Start with a script holder or trigger registry, not a full Thing/Map world:
+
+1. create a clock,
+2. create a fresh registry,
+3. register synthetic/real script functions,
+4. schedule deferred work,
+5. perform resync/reload into a new registry/runtime scope,
+6. verify old callbacks and functions are unreachable,
+7. dispose the old scope,
+8. repeat in a second test instance.
 
 ### Cross-cutting rules during migration
 
@@ -281,14 +553,3 @@ Lower-priority or keep-static candidates:
   - lifecycle tests (init/reset/reload),
   - leak checks (old world references not callable),
   - determinism checks (same inputs -> same resulting registries/state).
-
-### Suggested first implementation slice
-
-A practical first slice with low risk:
-
-1. Introduce `World` + lifecycle skeleton.
-2. Move orchestration methods (`Init`/`LoadAll`/`ForgetAll`) into world class without changing internals yet.
-3. Route one small registry (for example script function table) through `World.Current`.
-4. Add one test fixture that boots/disposes a lightweight world twice in one process and verifies no leftover commands/functions from the first run.
-
-That gives immediate testing value while proving the migration shape before deeper subsystem moves.
