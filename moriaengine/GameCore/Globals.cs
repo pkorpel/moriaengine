@@ -513,12 +513,12 @@ namespace SteamEngine {
 					////if (routerIP.Length>0) {
 					//Server.SetRouterIP(routerIP);
 					////}
-					mulPath = files.GetValue("mulPath", "muls", "Path to the mul files");
+					mulPath = files.GetValue("mulPath", "../uo-files", "Path to the mul files");
 				} else {
 					string mulsPath = GetMulsPath();
 					if (mulsPath == null) {
 						msgBox += "Unable to locate the UO MUL files. Please either place them in the 'muls' folder or specify the proper path in steamengine.ini (change mulPath=muls to the proper path)\n\n";
-						mulsPath = files.GetValue("mulPath", "muls", "Path to the mul files");
+						mulsPath = files.GetValue("mulPath", "../uo-files", "Path to the mul files");
 					} else {
 						mulsPath = files.GetValue("mulPath", mulsPath, "Path to the mul files");
 					}

@@ -286,14 +286,14 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private static Process StartHeldOpenStdin(string fileName, string arguments, string workingDirectory) {
-			var psi = new ProcessStartInfo(fileName, arguments) {
+			var psi = new ProcessStartInfo(fileName, "\"" + arguments +  "\"" ) {
 				WorkingDirectory = workingDirectory,
 				RedirectStandardInput = true,
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
 				UseShellExecute = false,
 			};
-			// GameCore's own script-compile step shells out to a nested "dotnet build"
+			// GameCore's own script-compile step shells out to a nested "dotnet build"1
 			// (MsBuildLauncher.cs). A long test session accumulates many idle MSBuild/
 			// VBCSCompiler node-reuse server processes; inherited by this child process, this
 			// stops its own nested builds from trying to hand off to one of those (observed
