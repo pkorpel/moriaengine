@@ -109,3 +109,6 @@ full mechanics and the manual regeneration steps when `pwsh` isn't available.
 Once script compilation and code generation succeed, GameCore loads the actual game world
 (regions, accounts, saved items/characters from the most recent `saves/<date>/<time>/`
 snapshot) and starts listening for connections.
+
+For an exact startup/resync/recompile call map with static-state reset points, see
+[GameCore startup/resync static-state map](../02-engine-core/startup-and-resync-static-state.md).
