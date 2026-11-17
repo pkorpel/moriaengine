@@ -1,5 +1,8 @@
 # Test infrastructure
 
+For subsystem and dependency categories across all fast and protocol tests, see
+[Test subsystem dependency map](test-subsystem-dependency-map.md).
+
 The xUnit suite (`Tests/`) is split into two tiers with very different cost and
 isolation characteristics - picking the wrong one for a new test is the most common
 mistake to avoid.
