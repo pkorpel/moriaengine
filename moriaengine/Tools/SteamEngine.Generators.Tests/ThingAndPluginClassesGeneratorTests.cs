@@ -70,9 +70,9 @@ public sealed class ComplexPayload {
 """;
 
 	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; }
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; }
-		internal IReadOnlyList<Diagnostic> DriverDiagnostics { get; init; }
+		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
+		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
+		internal IReadOnlyList<Diagnostic> DriverDiagnostics { get; init; } = Array.Empty<Diagnostic>();
 	}
 
 	[Fact]

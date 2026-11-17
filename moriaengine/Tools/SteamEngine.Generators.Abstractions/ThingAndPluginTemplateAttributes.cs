@@ -54,6 +54,7 @@ namespace SteamEngine.Generators.Abstractions {
 		/// </summary>
 		public DefFieldAttribute(Type valueType) {
 			ValueType = valueType;
+			DefaultExpression = null;
 		}
 
 		/// <summary>
@@ -65,6 +66,6 @@ namespace SteamEngine.Generators.Abstractions {
 		/// Optional C# expression emitted as the default value in generated InitTypedField calls.
 		/// When omitted, the generator uses default(ValueType).
 		/// </summary>
-		public string DefaultExpression { get; set; }
+		public string? DefaultExpression { get; set; }
 	}
 }

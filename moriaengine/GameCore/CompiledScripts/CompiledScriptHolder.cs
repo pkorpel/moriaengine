@@ -50,24 +50,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	[AttributeUsage(AttributeTargets.Method)]
-	public sealed class SteamFunctionAttribute : Attribute {
-		private readonly string newFunctionName;
-
-		public SteamFunctionAttribute() {
-		}
-
-		public SteamFunctionAttribute(string newFunctionName) {
-			this.newFunctionName = newFunctionName;
-		}
-
-		public string NewFunctionName {
-			get {
-				return this.newFunctionName;
-			}
-		}
-	}
-
 	internal sealed class CompiledScriptHolderGenerator : ISteamCSCodeGenerator {
 		static List<MethodInfo> compiledSHs = new List<MethodInfo>();
 
