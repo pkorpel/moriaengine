@@ -142,7 +142,9 @@ internal static class Analyzer {
 			if (!TryCreateRenderPair(symbolPair, diagnostics, out var renderPair)) {
 				continue;
 			}
-			templatePairs.Add(renderPair);
+			if (renderPair is not null) {
+				templatePairs.Add(renderPair);
+			}
 		}
 		return templatePairs;
 	}
@@ -215,7 +217,7 @@ internal static class Analyzer {
 		return false;
 	}
 
-	private static bool TryCreateRenderPair(TemplatePairSymbols symbolPair, ICollection<Diagnostic> diagnostics, out TemplatePair renderPair) {
+	private static bool TryCreateRenderPair(TemplatePairSymbols symbolPair, ICollection<Diagnostic> diagnostics, out TemplatePair? renderPair) {
 		if (!TryGetBaseTypeNames(symbolPair, out var instanceBaseName, out var defBaseName)) {
 			renderPair = null;
 			return false;
@@ -223,7 +225,7 @@ internal static class Analyzer {
 
 		var defFields = Parser.GetDefFields(symbolPair.DefSymbol, symbolPair.Compilation, diagnostics).ToList();
 		var instanceFields = GetInstanceFields(symbolPair.InstanceSymbol, symbolPair.Compilation, diagnostics).ToList();
-		WarnCopyableDataWithCopyDisabled(symbolPair.InstanceCopyAllowed, symbolPair.InstanceSymbol?.Name, instanceFields, diagnostics);
+		WarnCopyableDataWithCopyDisabled(symbolPair.InstanceCopyAllowed, symbolPair.InstanceSymbol?.Name ?? string.Empty, instanceFields, diagnostics);
 		var saveLoadMembers = ValidateDistinctSaveLoadKeys(
 			instanceFields.Where(f => f.IncludeInSaveLoad).ToList(),
 			diagnostics);
@@ -276,7 +278,7 @@ internal static class Analyzer {
 		}
 	}
 
-	private static bool TryGetInstanceBaseNameFromDef(INamedTypeSymbol defSymbol, out string instanceBaseName) {
+	private static bool TryGetInstanceBaseNameFromDef(INamedTypeSymbol? defSymbol, out string instanceBaseName) {
 		if (defSymbol?.BaseType is not INamedTypeSymbol defBase) {
 			instanceBaseName = string.Empty;
 			return false;
@@ -294,14 +296,14 @@ internal static class Analyzer {
 
 	private sealed class KnownTypeSymbols {
 		internal KnownTypeSymbols(Compilation compilation) {
-			Thing = compilation.GetTypeByMetadataName("SteamEngine.Thing");
-			AbstractScript = compilation.GetTypeByMetadataName("SteamEngine.AbstractScript");
-			Region = compilation.GetTypeByMetadataName("SteamEngine.Regions.Region");
-			Globals = compilation.GetTypeByMetadataName("SteamEngine.Globals");
-			IAbstractKey = compilation.GetTypeByMetadataName("SteamEngine.IAbstractKey");
-			AbstractAccount = compilation.GetTypeByMetadataName("SteamEngine.AbstractAccount");
-			SaveableDataAttribute = compilation.GetTypeByMetadataName("SteamEngine.SaveableDataAttribute");
-			CopyableDataAttribute = compilation.GetTypeByMetadataName("SteamEngine.CopyableDataAttribute");
+			Thing = GetRequired(compilation, "SteamEngine.Thing");
+			AbstractScript = GetRequired(compilation, "SteamEngine.AbstractScript");
+			Region = GetRequired(compilation, "SteamEngine.Regions.Region");
+			Globals = GetRequired(compilation, "SteamEngine.Globals");
+			IAbstractKey = GetRequired(compilation, "SteamEngine.IAbstractKey");
+			AbstractAccount = GetRequired(compilation, "SteamEngine.AbstractAccount");
+			SaveableDataAttribute = GetRequired(compilation, "SteamEngine.SaveableDataAttribute");
+			CopyableDataAttribute = GetRequired(compilation, "SteamEngine.CopyableDataAttribute");
 		}
 
 		internal INamedTypeSymbol Thing { get; }
@@ -312,9 +314,14 @@ internal static class Analyzer {
 		internal INamedTypeSymbol AbstractAccount { get; }
 		internal INamedTypeSymbol SaveableDataAttribute { get; }
 		internal INamedTypeSymbol CopyableDataAttribute { get; }
+
+		private static INamedTypeSymbol GetRequired(Compilation compilation, string metadataName) {
+			return compilation.GetTypeByMetadataName(metadataName)
+				?? throw new InvalidOperationException("Canonical engine type " + metadataName + " is unavailable.");
+		}
 	}
 
-	internal static IEnumerable<InstanceFieldSpec> GetInstanceFields(INamedTypeSymbol instanceSymbol, Compilation compilation, ICollection<Diagnostic> diagnostics) {
+	internal static IEnumerable<InstanceFieldSpec> GetInstanceFields(INamedTypeSymbol? instanceSymbol, Compilation compilation, ICollection<Diagnostic> diagnostics) {
 		if (instanceSymbol is null) {
 			return Array.Empty<InstanceFieldSpec>();
 		}
@@ -339,7 +346,7 @@ internal static class Analyzer {
 		KnownTypeSymbols knownTypes,
 		ICollection<Diagnostic> diagnostics,
 		out InstanceFieldSpec spec,
-		out Diagnostic error) {
+		out Diagnostic? error) {
 		var hasSaveableData = HasMemberAttribute(member, knownTypes.SaveableDataAttribute, SaveableDataAttributeName, diagnostics);
 		var hasCopyableData = HasMemberAttribute(member, knownTypes.CopyableDataAttribute, CopyableDataAttributeName, diagnostics);
 		if (!hasSaveableData && !hasCopyableData) {
@@ -380,7 +387,7 @@ internal static class Analyzer {
 
 	private static bool HasMemberAttribute(ISymbol member, INamedTypeSymbol expectedSymbol, string expectedAttributeName, ICollection<Diagnostic> diagnostics) {
 		var found = false;
-		var expectedFullName = expectedSymbol?.ToDisplayString();
+		var expectedFullName = expectedSymbol.ToDisplayString();
 		foreach (var attr in member.GetAttributes()) {
 			var attrClass = attr.AttributeClass;
 			if (attrClass is null) {
@@ -390,27 +397,22 @@ internal static class Analyzer {
 			if (!string.Equals(simpleName, expectedAttributeName, StringComparison.Ordinal)) {
 				continue;
 			}
-			if (expectedSymbol is not null
-				&& (SymbolEqualityComparer.Default.Equals(attrClass, expectedSymbol)
-					|| string.Equals(attrClass.ToDisplayString(), expectedFullName, StringComparison.Ordinal))) {
+			if (SymbolEqualityComparer.Default.Equals(attrClass, expectedSymbol)
+				|| string.Equals(attrClass.ToDisplayString(), expectedFullName, StringComparison.Ordinal)) {
 				found = true;
 				continue;
 			}
-			if (expectedSymbol is not null) {
-				diagnostics.Add(Diagnostic.Create(
-					AttributeShadowingDescriptor,
-					member.Locations.FirstOrDefault(),
-					expectedAttributeName,
-					attrClass.ToDisplayString(),
-					expectedSymbol.ToDisplayString()));
-			} else {
-				found = true;
-			}
+			diagnostics.Add(Diagnostic.Create(
+				AttributeShadowingDescriptor,
+				member.Locations.FirstOrDefault() ?? Location.None,
+				expectedAttributeName,
+				attrClass.ToDisplayString(),
+				expectedSymbol.ToDisplayString()));
 		}
 		return found;
 	}
 
-	private static string GetUnsupportedMemberReason(ISymbol member) {
+	private static string? GetUnsupportedMemberReason(ISymbol member) {
 		switch (member) {
 			case IFieldSymbol field when field.IsStatic:
 				return "it is static";
@@ -459,7 +461,7 @@ internal static class Analyzer {
 			member.Name,
 			Parser.GetInitializer(member) ?? "default",
 			member.Type,
-			member.Locations.FirstOrDefault(),
+			member.Locations.FirstOrDefault() ?? Location.None,
 			knownTypes,
 			diagnostics,
 			includeInSaveLoad,
@@ -476,7 +478,7 @@ internal static class Analyzer {
 			member.Name,
 			Parser.GetInitializer(member) ?? "default",
 			member.Type,
-			member.Locations.FirstOrDefault(),
+			member.Locations.FirstOrDefault() ?? Location.None,
 			knownTypes,
 			diagnostics,
 			includeInSaveLoad,
@@ -612,8 +614,8 @@ internal static class Analyzer {
 		internal TemplateFamily Family { get; }
 		internal string NamespaceName { get; }
 		internal Compilation Compilation { get; }
-		internal INamedTypeSymbol InstanceSymbol { get; set; }
-		internal INamedTypeSymbol DefSymbol { get; set; }
+		internal INamedTypeSymbol? InstanceSymbol { get; set; }
+		internal INamedTypeSymbol? DefSymbol { get; set; }
 		internal bool InstanceCopyAllowed { get; set; } = true;
 	}
 }

@@ -74,11 +74,9 @@ until #1382.)
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 
-A second, unrelated generation pass produces six files directly under the
+A second, unrelated generation pass currently produces five files directly under the
 `moriaengine/Generated/` folder:
 
-- `CompiledScriptHolders.Generated.cs` - one generated dispatch class per `[SteamFunction]`
-  method, so a chat command like `.Reveal` resolves to the right method.
 - `CompiledTriggerGroups.Generated.cs` - compiled-C# trigger group dispatch.
 - `PluginTriggerGroups.Generated.cs` - same idea for plugin trigger groups.
 - `DecoratedClassesSaveImplementors.Generated.cs` - save/load glue for `[SaveableClass]`
@@ -89,13 +87,16 @@ A second, unrelated generation pass produces six files directly under the
   [viewable-classes-and-info-dialog.md](viewable-classes-and-info-dialog.md)).
 
 This is driven by `GameCore/CompiledScripts/GeneratedCodeUtil.cs`'s `WriteOutAndCompile`,
-which runs a loop of registered `ISteamCSCodeGenerator` instances (one per file above - see
-e.g. `CompiledScriptHolderGenerator` in `GameCore/CompiledScripts/CompiledScriptHolder.cs`).
+which runs a loop of registered `ISteamCSCodeGenerator` instances (one per file above).
 Each generator's `WriteSources()` emits CodeDom-built C# from whatever it has already
 collected via reflection; `ClassManager` (`GameCore/CompiledScripts/ClassManager.cs`) is what
 actually does that reflection - after the scripts assembly is compiled, it walks
-`assembly.GetTypes()` and, for example, calls `CompiledScriptHolderGenerator.AddCompiledSHType`
-for every method carrying `[SteamFunctionAttribute]`.
+`assembly.GetTypes()`.
+
+`[SteamFunction]` dispatch is now generated at scripts compile time by the Roslyn source
+generator `Tools/SteamEngine.Generators/CompiledScriptHolders/Generator.cs` (see
+`docs/current/02-engine-core/code generators/compiled-script-holder-generator.md`), not by the
+CodeDom `Generated/*.Generated.cs` pass.
 
 ### One boot does both
 
@@ -103,11 +104,11 @@ A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
 
 1. the scripts project is compiled and loaded (including build-time template generation);
 2. `ClassManager` reflects over it, feeding each generator;
-3. `GeneratedCodeUtil.WriteOutAndCompile` writes the six `Generated/*.Generated.cs` files and
+3. `GeneratedCodeUtil.WriteOutAndCompile` writes the five `Generated/*.Generated.cs` files and
    compiles the Generated project against the scripts assembly just loaded, then loads it.
 
 So a new `[SteamFunction]`, `[ViewableClass]` member, or template field/attribute change is
-picked up by the next boot, once. Checked 2026-11-10: with all six
+picked up by the next boot, once. Checked 2026-11-10: with all central generated
 `Generated/*.Generated.cs` files deleted, one boot came up, passed `BootLogTests` and wrote
 them again.
 

@@ -14,7 +14,7 @@ internal static class Parser {
 	private static readonly string PluginDefTemplateAttributeName = StripAttributeSuffix("PluginDefTemplateAttribute");
 	private static readonly string DefFieldAttributeName = StripAttributeSuffix("DefFieldAttribute");
 
-	internal static TemplateDiscoveryResult DiscoverCandidate(GeneratorSyntaxContext context) {
+	internal static TemplateDiscoveryResult? DiscoverCandidate(GeneratorSyntaxContext context) {
 		if (context.Node is not ClassDeclarationSyntax declaration) {
 			return null;
 		}
@@ -58,7 +58,7 @@ internal static class Parser {
 
 				var actualMetadataName = actualType.ToDisplayString();
 				if (!string.Equals(actualMetadataName, expectedMetadataName, StringComparison.Ordinal)) {
-					diagnostics.Add(CreateAttributeShadowingDiagnostic(attribute.GetLocation(), simpleName, actualType, expectedMetadataName));
+					diagnostics.Add(CreateAttributeShadowingDiagnostic(attribute.GetLocation(), simpleName, actualType, expectedMetadataName ?? string.Empty));
 					continue;
 				}
 
@@ -80,7 +80,7 @@ internal static class Parser {
 
 	private static bool TryMapTemplateAttribute(
 		string simpleName,
-		out string expectedMetadataName,
+		out string? expectedMetadataName,
 		out TemplateKind kind,
 		out TemplateFamily family) {
 		expectedMetadataName = null;
@@ -153,7 +153,7 @@ internal static class Parser {
 			: name;
 	}
 
-	internal static IEnumerable<DefFieldSpec> GetDefFields(INamedTypeSymbol defSymbol, Compilation compilation, ICollection<Diagnostic> diagnostics) {
+	internal static IEnumerable<DefFieldSpec> GetDefFields(INamedTypeSymbol? defSymbol, Compilation compilation, ICollection<Diagnostic> diagnostics) {
 		if (defSymbol is null) {
 			return Array.Empty<DefFieldSpec>();
 		}
@@ -173,7 +173,7 @@ internal static class Parser {
 		return fields;
 	}
 
-	internal static string GetInitializer(IFieldSymbol field) {
+	internal static string? GetInitializer(IFieldSymbol field) {
 		foreach (var syntaxRef in field.DeclaringSyntaxReferences) {
 			if (syntaxRef.GetSyntax() is VariableDeclaratorSyntax declarator && declarator.Initializer?.Value is { } value) {
 				return value.ToString();
@@ -182,7 +182,7 @@ internal static class Parser {
 		return null;
 	}
 
-	internal static string GetInitializer(IPropertySymbol property) {
+	internal static string? GetInitializer(IPropertySymbol property) {
 		foreach (var syntaxRef in property.DeclaringSyntaxReferences) {
 			if (syntaxRef.GetSyntax() is PropertyDeclarationSyntax declaration && declaration.Initializer?.Value is { } value) {
 				return value.ToString();
@@ -241,12 +241,12 @@ internal static class Parser {
 		}
 	}
 
-	private static AttributeSyntax FindCanonicalDefFieldAttribute(
+	private static AttributeSyntax? FindCanonicalDefFieldAttribute(
 		SyntaxList<AttributeListSyntax> lists,
 		SemanticModel semanticModel,
 		INamedTypeSymbol expectedDefFieldAttribute,
 		ICollection<Diagnostic> diagnostics) {
-		var expectedMetadataName = expectedDefFieldAttribute?.ToDisplayString();
+		var expectedMetadataName = expectedDefFieldAttribute?.ToDisplayString() ?? string.Empty;
 		foreach (var list in lists) {
 			foreach (var attr in list.Attributes) {
 				var simpleName = GetAttributeSimpleName(attr.Name);

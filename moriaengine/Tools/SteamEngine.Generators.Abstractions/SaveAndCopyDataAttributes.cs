@@ -11,15 +11,16 @@ namespace SteamEngine {
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	public sealed class SaveableDataAttribute : Attribute {
-		private readonly string description;
+		private readonly string? description;
 
-		public string Description {
+		public string? Description {
 			get {
 				return this.description;
 			}
 		}
 
 		public SaveableDataAttribute() {
+			this.description = null;
 		}
 
 		public SaveableDataAttribute(string description) {
