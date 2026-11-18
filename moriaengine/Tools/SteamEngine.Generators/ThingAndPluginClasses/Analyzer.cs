@@ -75,6 +75,13 @@ internal static class Analyzer {
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
+	internal static readonly DiagnosticDescriptor DuplicateTemplateNameDescriptor = new(
+		"SEGEN010",
+		"Duplicate template name",
+		"Template name '{0}' for family '{1}' is declared by both '{2}' and '{3}' (names must be globally unique, case-insensitive)",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
 
 	private static readonly string SaveableDataAttributeName = Parser.StripAttributeSuffix("SaveableDataAttribute");
 	private static readonly string CopyableDataAttributeName = Parser.StripAttributeSuffix("CopyableDataAttribute");
@@ -136,9 +143,14 @@ internal static class Analyzer {
 		foreach (var candidate in candidates) {
 			AddCandidateToPairs(symbolPairs, candidate, diagnostics);
 		}
+		var conflictingPairKeys = ValidateUniqueTemplateNames(symbolPairs, diagnostics);
 
 		var templatePairs = new List<TemplatePair>();
-		foreach (var symbolPair in symbolPairs.Values) {
+		foreach (var pairEntry in symbolPairs) {
+			if (conflictingPairKeys.Contains(pairEntry.Key)) {
+				continue;
+			}
+			var symbolPair = pairEntry.Value;
 			if (!TryCreateRenderPair(symbolPair, diagnostics, out var renderPair)) {
 				continue;
 			}
@@ -147,6 +159,35 @@ internal static class Analyzer {
 			}
 		}
 		return templatePairs;
+	}
+
+	private static HashSet<string> ValidateUniqueTemplateNames(
+		IReadOnlyDictionary<string, TemplatePairSymbols> symbolPairs,
+		ICollection<Diagnostic> diagnostics) {
+		var seenByName = new Dictionary<string, (string PairKey, TemplatePairSymbols Pair)>(StringComparer.OrdinalIgnoreCase);
+		var conflicts = new HashSet<string>(StringComparer.Ordinal);
+
+		foreach (var pairEntry in symbolPairs) {
+			var pair = pairEntry.Value;
+			var nameKey = pair.Family + "|" + pair.InstanceName;
+			if (!seenByName.TryGetValue(nameKey, out var existing)) {
+				seenByName[nameKey] = (pairEntry.Key, pair);
+				continue;
+			}
+
+			conflicts.Add(existing.PairKey);
+			conflicts.Add(pairEntry.Key);
+
+			diagnostics.Add(Diagnostic.Create(
+				DuplicateTemplateNameDescriptor,
+				GetTemplatePairLocation(pair),
+				pair.InstanceName,
+				pair.Family.ToString(),
+				GetTemplatePairDisplay(existing.Pair),
+				GetTemplatePairDisplay(pair)));
+		}
+
+		return conflicts;
 	}
 
 	private static void AddCandidateToPairs(IDictionary<string, TemplatePairSymbols> pairs, TemplateCandidate candidate, ICollection<Diagnostic> diagnostics) {
@@ -200,6 +241,17 @@ internal static class Analyzer {
 		var existingName = (existingPair.InstanceSymbol ?? existingPair.DefSymbol)?.ToDisplayString() ?? existingPair.InstanceName;
 		var location = conflictingSymbol.Locations.FirstOrDefault();
 		return Diagnostic.Create(TemplatePairConflictDescriptor, location, conflictingName, existingName, reason);
+	}
+
+	private static Location? GetTemplatePairLocation(TemplatePairSymbols pair) {
+		return pair.InstanceSymbol?.Locations.FirstOrDefault()
+			?? pair.DefSymbol?.Locations.FirstOrDefault()
+			?? Location.None;
+	}
+
+	private static string GetTemplatePairDisplay(TemplatePairSymbols pair) {
+		return (pair.InstanceSymbol ?? pair.DefSymbol)?.ToDisplayString()
+			?? pair.InstanceName;
 	}
 
 	private static bool TryGetBaseTypeNames(TemplatePairSymbols pair, out string instanceBaseName, out string defBaseName) {

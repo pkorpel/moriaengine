@@ -29,11 +29,10 @@ public class MagicThingDef : global::SteamEngine.ThingDef { }
 public class EffectPlugin : Plugin { }
 public class EffectPluginDef : PluginDef { }
 
-public delegate void ReturnCopy(object copy);
 public delegate void LoadObject(object resolvedObject, string filename, int line);
 
 public static class DeepCopyFactory {
-	public static object GetCopyDelayed(object input, ReturnCopy callback) => input;
+	public static object GetCopyDelayed(object input, System.Action<object> callback) => input;
 }
 
 public static class ObjectSaver {
@@ -234,9 +233,9 @@ public partial class DelayedRelicBeaconDef : MagicThingDef {
 		var run = RunGenerator(nameof(ThingFields_UseDelayedLoadAndDeepCopyForNonSimpleTypes), source);
 		var generated = JoinGeneratedSources(run);
 		AssertGeneratedContains(generated,
-			"private void DelayedCopy_Payload(object copy)",
+			"private void DelayedCopy_Payload(object copiedValue)",
 			"this.mode = copyFrom.mode;",
-			"DeepCopyFactory.GetCopyDelayed(copyFrom.payload, new ReturnCopy(this.DelayedCopy_Payload))",
+			"DeepCopyFactory.GetCopyDelayed(copyFrom.payload, this.DelayedCopy_Payload)",
 			"private void DelayedLoad_Mode(object resolvedObject, string filename, int line)",
 			"private void DelayedLoad_Payload(object resolvedObject, string filename, int line)",
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Mode), filename, line)",
@@ -288,7 +287,7 @@ public partial class LinkedShrineBeaconDef : MagicThingDef {
 			"this.linked = copyFrom.linked;",
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Linked), filename, line)");
 		AssertGeneratedOmits(generated,
-			"DeepCopyFactory.GetCopyDelayed(copyFrom.linked, new ReturnCopy(this.DelayedCopy_Linked))");
+			"DeepCopyFactory.GetCopyDelayed(copyFrom.linked, this.DelayedCopy_Linked)");
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
 	}
 
@@ -320,7 +319,7 @@ public partial class NoCopyBeaconDef : MagicThingDef {
 			"[DeepCopyImplementation]",
 			"this.charges = copyFrom.charges;",
 			"this.payload = copyFrom.payload;",
-			"private void DelayedCopy_Payload(object copy)");
+			"private void DelayedCopy_Payload(object copiedValue)");
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
 	}
 
@@ -449,45 +448,6 @@ public partial class BadIndexerBeaconDef : MagicThingDef {
 	}
 
 	[Fact]
-	public void NamespacedTemplatesWithSameClassName_GenerateIndependently() {
-		const string source = """
-namespace A {
-	[ThingTemplate]
-	public partial class SharedBeacon : MagicThing {
-		[SaveableData]
-		private int charge = 1;
-	}
-
-	[ThingDefTemplate]
-	public partial class SharedBeaconDef : MagicThingDef {
-	}
-}
-
-namespace B {
-	[ThingTemplate]
-	public partial class SharedBeacon : MagicThing {
-		[SaveableData]
-		private int charge = 2;
-	}
-
-	[ThingDefTemplate]
-	public partial class SharedBeaconDef : MagicThingDef {
-	}
-}
-""";
-
-		var run = RunGenerator(nameof(NamespacedTemplatesWithSameClassName_GenerateIndependently), source);
-		var generated = JoinGeneratedSources(run);
-		AssertGeneratedContains(generated,
-			"namespace A {",
-			"namespace B {",
-			"if (this.charge != 1) output.WriteValue(\"charge\", this.charge);",
-			"if (this.charge != 2) output.WriteValue(\"charge\", this.charge);");
-		Assert.Equal(2, run.GeneratedSources.Count);
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
-	}
-
-	[Fact]
 	public void SaveableMembersDifferingOnlyByCase_ReportConflict() {
 		const string source = """
 namespace ScriptSandbox;
@@ -575,6 +535,38 @@ public partial class TypeConflictBeaconDef : MagicThingDef {
 		Assert.NotEmpty(errors);
 		Assert.Contains(errors, d => d.GetMessage().Contains("SteamEngine.Thing", StringComparison.Ordinal));
 		Assert.Contains(errors, d => d.GetMessage().Contains("SteamEngine.AbstractAccount", StringComparison.Ordinal));
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void DuplicateTemplateNamesAcrossNamespaces_ReportConflict() {
+		const string sourceA = """
+namespace A;
+
+[ThingTemplate]
+public partial class SharedBeacon : MagicThing {
+}
+
+[ThingDefTemplate]
+public partial class SharedBeaconDef : MagicThingDef {
+}
+""";
+
+		const string sourceB = """
+namespace B;
+
+[ThingTemplate]
+public partial class sharedbeacon : MagicThing {
+}
+
+[ThingDefTemplate]
+public partial class sharedbeaconDef : MagicThingDef {
+}
+""";
+
+		var run = RunGenerator(nameof(DuplicateTemplateNamesAcrossNamespaces_ReportConflict), sourceA, sourceB);
+		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN010");
+		Assert.Contains("SharedBeacon", error.GetMessage(), StringComparison.OrdinalIgnoreCase);
 		Assert.Empty(run.GeneratedSources);
 	}
 

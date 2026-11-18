@@ -3,38 +3,40 @@
 `SteamEngine.Generators.CompiledScriptHolders.Generator` is the build-time generator for
 `[SteamFunction]` dispatch classes.
 
-For shared architecture/phasing rules used across generators, see
-[`generator-architecture-guidance.md`](./generator-architecture-guidance.md).
-
 ## Why we need this generator
 
-- **Build-time feedback** for invalid `[SteamFunction]` declarations.
-- **Deterministic generated dispatch** in the scripts compilation, instead of runtime CodeDom output.
-- **Simpler authoring**: script authors expose command/functions by adding `[SteamFunction]` to
-  public static methods, without writing registration glue.
+- lets script authors add functions with one attribute instead of writing holder classes manually,
+- validates function declarations at compile time,
+- keeps dispatch registration deterministic and consistent across builds.
 
-## Input contract
+## How to use it
 
-- Methods marked with `SteamEngine.CompiledScripts.SteamFunctionAttribute`.
-- Valid methods must be `public static`.
-- Function name comes from:
-  - `SteamFunction("name")` when provided and non-empty,
-  - otherwise the method name.
-- Optional method XML docs are used as description text for the generated holder.
+Add `[SteamFunction]` to a `public static` method:
 
-## Output contract
+```csharp
+using SteamEngine.CompiledScripts;
 
-For each valid function, the generator emits one sealed class under
-`namespace SteamEngine.CompiledScripts`:
+public static class AdminCommands {
+	/// <summary>Reveal hidden entities around self.</summary>
+	[SteamFunction("reveal")]
+	public static int Reveal(object self, int range) {
+		return range;
+	}
+}
+```
 
-- class name: `GeneratedScriptHolder_*` (stable, sanitized from function name),
-- base type: `CompiledScriptHolder`,
-- ctor: calls base with function name + description and then `RegisterAsFunction()`,
-- `Run(object self, ScriptArgs sa)`: invokes the target static method with parameter mapping:
-  - parameter 0 from `self`,
-  - remaining parameters from `sa.Argv`,
-  - special 2-parameter form `(object self, ScriptArgs sa)` passes `sa` directly,
-  - numeric/date/enum parameters use `System.Convert` conversion.
+The generated holder is created automatically and registered as a script function (`"reveal"` in
+the example).
+
+## Authoring rules that matter
+
+- Method must be `public static`.
+- Function name is:
+  - `SteamFunction("name")` when non-empty, otherwise
+  - method name.
+- Function names are globally unique, case-insensitive.
+- First parameter maps from `self`; remaining parameters map from `ScriptArgs.Argv`.
+- Optional method XML docs become generated function description text.
 
 ## Current diagnostics
 
@@ -42,3 +44,5 @@ For each valid function, the generator emits one sealed class under
 - `SEGEN102`: duplicate function names (case-insensitive).
 - `SEGEN103`: required `SteamFunctionAttribute` declaration is missing.
 - `SEGEN104`: shadowed non-canonical `SteamFunction` attribute symbol.
+
+If generation fails, fix the reported `SEGEN10x` diagnostics and rebuild.

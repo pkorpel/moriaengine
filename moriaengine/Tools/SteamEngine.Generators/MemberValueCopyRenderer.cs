@@ -23,7 +23,7 @@ internal static class MemberValueCopyRenderer {
 		}
 
 		var methodName = "DelayedCopy_" + GetPascal(fieldName);
-		builder.AppendLine($"\t\t\tDeepCopyFactory.GetCopyDelayed(copyFrom.{fieldName}, new ReturnCopy(this.{methodName}));");
+		builder.AppendLine($"\t\t\tDeepCopyFactory.GetCopyDelayed(copyFrom.{fieldName}, this.{methodName});");
 	}
 
 	internal static void AppendDelayedMethod(
@@ -36,16 +36,40 @@ internal static class MemberValueCopyRenderer {
 		}
 
 		var methodName = "DelayedCopy_" + GetPascal(fieldName);
-		builder.AppendLine($"\t\tprivate void {methodName}(object copy) {{");
-		builder.AppendLine($"\t\t\tthis.{fieldName} = {GetDelayedExpression(kind, typeName)};");
+		builder.AppendLine($"\t\tprivate void {methodName}(object copiedValue) {{");
+		builder.AppendLine($"\t\t\tthis.{fieldName} = {GetDelayedAssignmentExpression(kind, typeName)};");
 		builder.AppendLine("\t\t}");
 		builder.AppendLine();
 	}
 
-	private static string GetDelayedExpression(MemberValueKind kind, string typeName) {
+	internal static void AppendDelayedMethodWithSelfParameter(
+		StringBuilder builder,
+		MemberValueKind kind,
+		string methodName,
+		string ownerTypeName,
+		string targetMemberName,
+		string typeName) {
+		if (!NeedsDelayed(kind)) {
+			throw GetUnsupportedKindException(kind);
+		}
+
+		builder.AppendLine($"\t\tpublic void {methodName}(object copiedValue, object self) {{");
+		builder.AppendLine($"\t\t\t{ownerTypeName} copyConverted = ({ownerTypeName}) self;");
+		builder.AppendLine($"\t\t\tcopyConverted.{targetMemberName} = {GetDelayedAssignmentExpression(kind, typeName)};");
+		builder.AppendLine("\t\t}");
+		builder.AppendLine();
+	}
+
+	internal static string GetDelayedAssignmentExpression(
+		MemberValueKind kind,
+		string typeName) {
+		if (!NeedsDelayed(kind)) {
+			throw GetUnsupportedKindException(kind);
+		}
+
 		return kind switch {
-			MemberValueKind.Object => "copy",
-			MemberValueKind.Fallback => $"({typeName}) copy",
+			MemberValueKind.Object => "copiedValue",
+			MemberValueKind.Fallback => $"({typeName}) copiedValue",
 			_ => throw GetUnsupportedKindException(kind)
 		};
 	}
