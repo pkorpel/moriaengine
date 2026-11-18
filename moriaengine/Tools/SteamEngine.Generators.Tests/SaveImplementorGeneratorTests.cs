@@ -110,6 +110,40 @@ public sealed class ArenaState {
 	}
 
 	[Fact]
+	public void LoadSectionFactory_GeneratesLoadSectionFactoryInvocation() {
+		const string source = """
+using SteamEngine;
+using SteamEngine.Persistence;
+
+namespace ScriptSandbox;
+
+public class ArenaBase {
+	[LoadSection]
+	public static object Load(PropsSection input) {
+		return new ArenaState();
+	}
+}
+
+[SaveableClass]
+public sealed class ArenaState : ArenaBase {
+	[SaveableData]
+	public int Counter;
+
+	[Save]
+	public void Save(SaveStream output) {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(LoadSectionFactory_GeneratesLoadSectionFactoryInvocation), source);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		var generated = string.Join("\n\n", run.GeneratedSources);
+		Assert.Contains("global::ScriptSandbox.ArenaState loadedObject = (global::ScriptSandbox.ArenaState) global::ScriptSandbox.ArenaBase.Load(input);", generated);
+		Assert.DoesNotContain("TryPopPropsLine(\"Counter\")", generated);
+		Assert.Contains("castObjToSave.Save(writer);", generated);
+	}
+
+	[Fact]
 	public void MissingInitializerAndLoadSection_ReportsDiagnostic() {
 		const string source = """
 using SteamEngine.Persistence;

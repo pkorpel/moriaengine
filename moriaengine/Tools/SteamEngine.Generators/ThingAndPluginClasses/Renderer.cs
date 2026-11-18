@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using DeepCopyImplementorRenderer = SteamEngine.Generators.DeepCopyImplementors.Renderer;
+using SaveImplementorRenderer = SteamEngine.Generators.SaveImplementors.Renderer;
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
@@ -45,12 +47,16 @@ internal static class Renderer {
 	}
 
 	private static void AppendDefBootstrap(StringBuilder builder, TemplatePair pair) {
-		builder.AppendLine("\t\tpublic static new void Bootstrap() {");
+		builder.AppendLine($"\t\tstatic {pair.DefName}() {{");
 		if (pair.Family == TemplateFamily.Thing) {
 			builder.AppendLine($"\t\t\tThingDef.RegisterThingDef(typeof({pair.DefName}), typeof({pair.InstanceName}));");
 		} else {
 			builder.AppendLine($"\t\t\tPluginDef.RegisterPluginDef(typeof({pair.DefName}), typeof({pair.InstanceName}));");
 		}
+		builder.AppendLine("\t\t}");
+		builder.AppendLine();
+
+		builder.AppendLine("\t\tpublic static new void Bootstrap() {");
 		builder.AppendLine("\t\t}");
 		builder.AppendLine();
 	}
@@ -87,12 +93,6 @@ internal static class Renderer {
 	}
 
 	private static void RenderInstancePartial(StringBuilder builder, TemplatePair pair) {
-		if (pair.InstanceCopyAllowed)
-		{
-			builder.AppendLine("\t\t[DeepCopyableClass]");
-		}
-
-		builder.AppendLine("\t[SaveableClass]");
 		builder.AppendLine($"\tpublic partial class {pair.InstanceName} : {pair.InstanceBaseName} {{");
 		builder.AppendLine($"\t\tpublic new {pair.DefName} TypeDef => ({pair.DefName}) base.Def;");
 		builder.AppendLine();
@@ -105,9 +105,64 @@ internal static class Renderer {
 		builder.AppendLine("\t}");
 	}
 
+	internal static bool TryRenderSaveImplementor(TemplatePair pair, out string hintName, out string source) {
+		hintName = string.Empty;
+		source = string.Empty;
+
+		// The template generator owns save wiring for template-derived types and feeds
+		// the SaveImplementors renderer directly instead of relying on cross-generator
+		// attribute discovery. Load-factory semantics are pre-resolved in Analyzer.
+		var generatedTypeName = "GeneratedSaveImplementor_" + IdentifierSanitizer.Sanitize(pair.InstanceName);
+		var loadFactoryKind = pair.LoadFactory.Kind == TemplateLoadFactoryKind.Constructor
+			? global::SteamEngine.Generators.SaveImplementors.SaveFactoryKind.Constructor
+			: global::SteamEngine.Generators.SaveImplementors.SaveFactoryKind.StaticMethod;
+		var loadFactory = new global::SteamEngine.Generators.SaveImplementors.SaveFactoryMethod(
+			loadFactoryKind,
+			pair.LoadFactory.DeclaringTypeName ?? pair.QualifiedInstanceTypeName,
+			pair.LoadFactory.MethodName ?? pair.InstanceName,
+			pair.LoadFactory.TakesPropsSection,
+			pair.LoadFactory.RequiresCast);
+		var saveableMembers = new List<global::SteamEngine.Generators.SaveImplementors.SaveableMemberModel>();
+		var model = new global::SteamEngine.Generators.SaveImplementors.SaveImplementorModel(
+			generatedTypeName,
+			pair.QualifiedInstanceTypeName,
+			pair.InstanceName,
+			loadFactory,
+			loadLineMethodName: pair.Family == TemplateFamily.Plugin ? "LoadLine" : null,
+			loadingFinalizerMethodName: pair.LoadingFinalizerMethodName,
+			saveMethodName: "Save",
+			saveableMembers);
+		hintName = SaveImplementorRenderer.GetHintName(model);
+		return SaveImplementorRenderer.TryRender(model, out source);
+	}
+
+	internal static bool TryRenderDeepCopyImplementor(TemplatePair pair, out string hintName, out string source) {
+		hintName = string.Empty;
+		source = string.Empty;
+		if (!pair.InstanceCopyAllowed) {
+			return false;
+		}
+
+		// Same ownership model as save implementors: emit deep-copy implementors here
+		// from template metadata so we avoid depending on generated class-level attributes
+		// being re-discovered by a different source generator in the same compilation.
+		var generatedTypeName = "GeneratedDeepCopyImplementor_" + IdentifierSanitizer.Sanitize(pair.InstanceName);
+		var members = new List<global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyMemberModel>();
+		var initializer = new global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyInitializerModel(
+			global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyInitializerKind.Constructor,
+			pair.InstanceName,
+			acceptsSourceParameter: true);
+		var model = new global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyModel(
+			generatedTypeName,
+			pair.QualifiedInstanceTypeName,
+			initializer,
+			members);
+		hintName = DeepCopyImplementorRenderer.GetHintName(model);
+		return DeepCopyImplementorRenderer.TryRender(model, out source);
+	}
+
 	private static void AppendPrimaryConstructor(StringBuilder builder, TemplatePair pair) {
 		if (pair.Family == TemplateFamily.Plugin) {
-			builder.AppendLine("\t\t[LoadingInitializer]");
 			builder.AppendLine($"\t\tpublic {pair.InstanceName}() {{");
 			builder.AppendLine("\t\t}");
 			builder.AppendLine();
@@ -123,7 +178,6 @@ internal static class Renderer {
 		if (!pair.InstanceCopyAllowed) {
 			return;
 		}
-		builder.AppendLine("\t\t[DeepCopyImplementation]");
 		builder.AppendLine($"\t\tpublic {pair.InstanceName}({pair.InstanceName} copyFrom) : base(copyFrom) {{");
 		foreach (var field in fields) {
 			AppendCopyAssignment(builder, field);

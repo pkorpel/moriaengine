@@ -207,7 +207,12 @@ internal static class Analyzer {
 			: SaveFactoryKind.StaticMethod;
 		var requiresCast = kind == SaveFactoryKind.StaticMethod
 			&& !SymbolEqualityComparer.Default.Equals(targetType, method.ReturnType);
-		return new SaveFactoryMethod(kind, method.Name, takesPropsSection, requiresCast);
+		return new SaveFactoryMethod(
+			kind,
+			method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			method.Name,
+			takesPropsSection,
+			requiresCast);
 	}
 
 	private static IMethodSymbol? ResolveSingleAttributedMethod(
