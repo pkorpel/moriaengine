@@ -1,69 +1,57 @@
 # ThingAndPluginClasses `Generator`
 
-`SteamEngine.Generators.ThingAndPluginClasses.Generator` replaces runtime class-template generation for
-`[ThingTemplate]` and `[PluginTemplate]` with build-time Roslyn generation.
-
-For reusable conventions that should guide other generator work, see
-[`generator-architecture-guidance.md`](./generator-architecture-guidance.md).
+`SteamEngine.Generators.ThingAndPluginClasses.Generator` generates the boilerplate around
+`[ThingTemplate]` / `[PluginTemplate]` pairs at build time.
 
 ## Why we need this generator
 
-- **Build-time feedback**: template wiring errors surface during normal compile, not at server boot.
-- **IDE support**: generated members are visible to the compiler and navigation features while editing.
-- **Deterministic output**: the same source inputs produce the same generated partials every build.
-- **Runtime simplification**: less generator logic has to run during script/runtime initialization.
+- eliminates repetitive save/load/deep-copy template glue,
+- catches template mistakes during build instead of at boot,
+- keeps generated behavior deterministic and visible to IDE tooling.
 
-## How it works
+## How to use it
 
-The generator runs as an analyzer in `scripts/SteamEngine.Scripts.csproj` via a project reference
-to `Tools/SteamEngine.Generators` with `OutputItemType="Analyzer"`.
+1. Define instance template class with `[ThingTemplate]` or `[PluginTemplate]`.
+2. Define matching def template class with `[ThingDefTemplate]` or `[PluginDefTemplate]`.
+3. Opt-in instance fields/properties with `[SaveableData]` / `[CopyableData]`.
+4. Declare def fields as private `FieldValue` plus `[DefField(...)]`.
 
-During compilation it:
+Example:
 
-1. Finds classes marked with template attributes (`ThingTemplate`, `ThingDefTemplate`,
-   `PluginTemplate`, `PluginDefTemplate`).
-2. Pairs instance/def classes by naming convention (`Xxx` + `XxxDef`), even when only one side
-   is authored.
-3. Emits partial classes that provide legacy class-template behavior.
+```csharp
+[ThingTemplate]
+public partial class ArcaneBeacon : MagicThing {
+	[SaveableData, CopyableData]
+	private int charge = 3;
+}
 
-The generated source is injected directly into the current compilation; generation is no longer
-a runtime file-emission step.
+[ThingDefTemplate]
+public partial class ArcaneBeaconDef : MagicThingDef {
+	[DefField(typeof(int), DefaultExpression = "9")]
+	private FieldValue maxCharge;
+}
+```
 
-## How fields are authored
+From this, the generator provides the expected registration/bootstrap wiring, typed def property
+(`MaxCharge`), instance save/load handling for `charge`, and deep-copy support for opted-in
+members.
 
-- **Instance members are opt-in**. Only fields/properties explicitly annotated with
-  `[SaveableData]` and/or `[CopyableData]` on the template class
-  (`[ThingTemplate]` / `[PluginTemplate]`) participate in generated persistence/copy logic.
-  Unannotated members are ignored by the generator.
-- **Def class fields** are authored as private `FieldValue` fields on the def template class
-  (`[ThingDefTemplate]` / `[PluginDefTemplate]`) and must use `[DefField(...)]`, for example:
-  - `[DefField(typeof(int), DefaultExpression = "5")]`
-  - `private FieldValue pulseSeconds;`
-  From this, the generator emits constructor initialization through `InitTypedField(...)`
-  and a typed property wrapper (for example `int PulseSeconds`).
+## Authoring rules that matter
 
-## What it generates
+- Template names are globally unique per family (`Thing`/`Plugin`), case-insensitive.
+- `[SaveableData]` and `[CopyableData]` are opt-in: unannotated members are ignored.
+- Unsupported member shapes (for example indexers, static members) produce diagnostics.
+- Duplicate save/load keys (case-insensitive) produce diagnostics.
 
-- **Def partials**:
-  - `Bootstrap()` registration (`ThingDef.RegisterThingDef` / `PluginDef.RegisterPluginDef`)
-  - typed field initialization from `[DefField]`
-  - typed property wrappers for def fields
-  - `CreateImpl()` wiring
-- **Instance partials**:
-  - `TypeDef` helper
-  - required constructor (`Thing` takes def, `Plugin` gets loading initializer ctor)
-  - optional copy constructor with deep-copy wiring (or omitted when `Copy = false`)
-  - `Save`/`LoadLine` for template-managed fields
-  - delayed load/copy helper methods when needed
-  - parity attributes such as `DeepCopyableClass`, `SaveableClass`, and copy implementation markers
+## Troubleshooting
+
+If generation fails, fix the reported `SEGEN00x` diagnostics in the template declarations and
+rebuild. Most errors are wiring/shape issues in attributes, naming, or member eligibility.
 
 ## Visual Studio view of generated files
 
-The generator does not maintain source-adjacent `*.Generated.cs` files anymore.
-In Visual Studio, generated files are visible under the scripts project’s:
+Generated files are not written next to your source files. In Visual Studio, view them under:
 
 - **Dependencies**
   - **Analyzers**
     - `SteamEngine.Generators`
-
-and can be opened from there when navigating generated symbols.

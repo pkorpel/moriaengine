@@ -1,0 +1,75 @@
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
+
+namespace SteamEngine.Generators.DeepCopyImplementors;
+
+internal sealed class DeepCopyCandidate {
+	internal DeepCopyCandidate(INamedTypeSymbol symbol) {
+		Symbol = symbol;
+	}
+
+	internal INamedTypeSymbol Symbol { get; }
+}
+
+internal sealed class DeepCopyDiscoveryResult {
+	internal DeepCopyDiscoveryResult(DeepCopyCandidate? candidate, IReadOnlyList<Diagnostic> diagnostics) {
+		Candidate = candidate;
+		Diagnostics = diagnostics;
+	}
+
+	internal DeepCopyCandidate? Candidate { get; }
+	internal IReadOnlyList<Diagnostic> Diagnostics { get; }
+}
+
+internal sealed class DeepCopyModel {
+	internal DeepCopyModel(
+		string generatedTypeName,
+		string qualifiedTypeName,
+		DeepCopyInitializerModel initializer,
+		IReadOnlyList<DeepCopyMemberModel> members) {
+		GeneratedTypeName = generatedTypeName;
+		QualifiedTypeName = qualifiedTypeName;
+		Initializer = initializer;
+		Members = members;
+	}
+
+	internal string GeneratedTypeName { get; }
+	internal string QualifiedTypeName { get; }
+	internal DeepCopyInitializerModel Initializer { get; }
+	internal IReadOnlyList<DeepCopyMemberModel> Members { get; }
+}
+
+internal sealed class DeepCopyInitializerModel {
+	internal DeepCopyInitializerModel(
+		DeepCopyInitializerKind kind,
+		string initializerName,
+		bool acceptsSourceParameter) {
+		Kind = kind;
+		InitializerName = initializerName;
+		AcceptsSourceParameter = acceptsSourceParameter;
+	}
+
+	internal DeepCopyInitializerKind Kind { get; }
+	internal string InitializerName { get; }
+	internal bool AcceptsSourceParameter { get; }
+}
+
+internal enum DeepCopyInitializerKind {
+	Constructor,
+	StaticMethod
+}
+
+internal sealed class DeepCopyMemberModel {
+	internal DeepCopyMemberModel(
+		string memberName,
+		string memberTypeName,
+		MemberValueKind valueKind) {
+		MemberName = memberName;
+		MemberTypeName = memberTypeName;
+		ValueKind = valueKind;
+	}
+
+	internal string MemberName { get; }
+	internal string MemberTypeName { get; }
+	internal MemberValueKind ValueKind { get; }
+}

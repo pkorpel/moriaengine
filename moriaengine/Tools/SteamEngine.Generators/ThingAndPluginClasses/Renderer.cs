@@ -8,13 +8,9 @@ namespace SteamEngine.Generators.ThingAndPluginClasses;
 
 internal static class Renderer {
 	internal static string GetHintName(TemplatePair pair) {
-		var key = $"{pair.NamespaceName}.{pair.Family}.{pair.InstanceName}";
-		var builder = new StringBuilder(key.Length + 20);
-		foreach (var c in key) {
-			builder.Append(char.IsLetterOrDigit(c) ? c : '_');
-		}
-		builder.Append(".TemplatePairing.g.cs");
-		return builder.ToString();
+		var family = SanitizeHintPathSegment(pair.Family.ToString());
+		var instance = SanitizeHintPathSegment(pair.InstanceName);
+		return $"ThingAndPluginClasses/{family}/{instance}.TemplatePairing.g.cs";
 	}
 
 	internal static bool TryRenderPair(TemplatePair pair, out string source) {
@@ -220,5 +216,17 @@ internal static class Renderer {
 			return name;
 		}
 		return char.ToUpperInvariant(name[0]) + name.Substring(1);
+	}
+
+	private static string SanitizeHintPathSegment(string value) {
+		if (string.IsNullOrEmpty(value)) {
+			return "_";
+		}
+
+		var builder = new StringBuilder(value.Length);
+		foreach (var ch in value) {
+			builder.Append(char.IsLetterOrDigit(ch) || ch == '_' || ch == '-' ? ch : '_');
+		}
+		return builder.ToString();
 	}
 }
