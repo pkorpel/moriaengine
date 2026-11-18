@@ -12,7 +12,7 @@ compiles `moriaengine/scripts/` **from disk**.
 
 ```bash
 scripts/test-full.sh "FullyQualifiedName~ClassA|FullyQualifiedName~ClassB"   # targeted, one dotnet test
-scripts/test-full.sh                                                       # everything, ~3 h, once per batch
+scripts/test-full.sh                                                       # everything, ~3 h, once per batch, post the result on the issue
 scripts/test-full.sh --kill-stale                                          # clean up leftovers, then exit
 ```
 
@@ -68,9 +68,8 @@ scripts/test-full.sh "..."; rc=$?; [ $rc -eq 0 ] || exit 1   # before writing th
 5. The full suite runs each class in its own `dotnet test`, so a green suite says nothing about failures
    seen only in mixed runs (#890 BankerDialog, #1313 ThingErrand).
 
-Known failing classes on main (last full suite, 2026-11-07): AttrFlag, ContentRestoration,
-LevelingIsolated, LocalizationVerification, Notoriety (Healer since fixed). Update this list when a full
-suite says otherwise.
+Classes that already fail on main: read the latest full-suite result, which is posted on the issue that
+ran it (search issues for "full protocol suite"). Don't keep a list here: it goes stale.
 
 ## Hangs
 

@@ -44,15 +44,16 @@ Install once per clone: `pre-commit install`.
   full-boot `Tests/Protocol`, ~10–25 min).
 - If no push/PR run shows up for a PR's head commit within 3 minutes, `/task-ship`
   dispatches the fast tier on the branch and gates the merge on that run instead.
-- Private repo on Free: 2000 Actions minutes / month, so the full suite runs locally
-  in `/task-run` (`scripts/test-full.sh`) instead of on every push.
+- Private repo on Free: 2000 Actions minutes / month, so full-boot tests run locally
+  (`scripts/test-full.sh`): the area's classes per PR, the whole suite (~3 h) once at the
+  end of a batch of work.
 
 ## Tests
 
 | Tier | Where | Run | Time |
 |---|---|---|---|
 | Fast | `moriaengine/Tests/*.cs`, `Tests/Fixtures/` | `scripts/test-fast.sh [filter]` | seconds |
-| Full-boot | `moriaengine/Tests/Protocol/*` (+ server-side helpers in `moriaengine/scripts/Tests/`) | `scripts/test-full.sh [filter]` | ~10 min all |
+| Full-boot | `moriaengine/Tests/Protocol/*` (+ server-side helpers in `moriaengine/scripts/Tests/`) | `scripts/test-full.sh [filter]` | ~3 h all (run once per batch; per PR, the area's classes) |
 
 The full-boot fixture (`GameServerPairFixture`) starts real AuxiliaryServer +
 GameCore processes on fixed ports 2593/2595. `scripts/test-full.sh` holds a

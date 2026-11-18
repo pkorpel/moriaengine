@@ -33,7 +33,6 @@ How to run a regen: the `converter-regen` skill.
 - `passthroughTriggers` takes only bodies this engine can run (plain single calls). Don't widen it
   opportunistically.
 - `.def` values from a `[Flags]` enum are written as `DamageType.X|DamageType.Y`, never via `ToString()`.
-- Sphere ids are unsigned 32-bit: parse headers with `TryParseUInt32` plus `unchecked((int))`.
 - Typename constants and string arrays are written quoted (see `lscript.md`).
 - Archive data quirks: `COLOR=` after `ITEMNEWBIE=`/`Equip=` colours that item. `ITEMNEWBIE` gear is
   newbie and never drops. Hex-keyed blocks can carry `DEFNAME=` aliases, so index diffs by both. Loot

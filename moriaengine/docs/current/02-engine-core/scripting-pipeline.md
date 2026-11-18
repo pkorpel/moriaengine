@@ -146,6 +146,7 @@ A plain `dotnet build` of the solution (an IDE, the test scripts, the pre-push h
 the scripts and Generated projects from the generated files already on disk. On a fresh
 checkout there are none, so `build.ps1`'s `Invoke-ScriptGeneration` boots GameCore first (twice
 when the first boot has to write `steamengine.ini` and exits), and again whenever a `.cs`
-source is newer than `Generated/generated-at.txt`. After a change that removes or renames something a generated file refers to (a
-`[SteamFunction]` method, a generated field/property), the old generated file can fail such a
-build until the next boot rewrites it.
+source is newer than `Generated/generated-at.txt`. After a change that removes or renames something a boot-generated file refers to (a
+compiled trigger group's method, a `[ViewableClass]` member), the old generated file can fail such a
+build until the next boot rewrites it. `[SteamFunction]` dispatch, deep copy and save code come from
+the Roslyn generators at compile time, so they never go stale this way.

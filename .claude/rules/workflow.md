@@ -8,7 +8,8 @@ rules learned the hard way on top of it.
 - Raise the issue **before** any investigation or code, for bugs you find yourself too. Don't ask first.
 - Comment on the issue as things land: root cause, options and the one chosen, why something was or
   wasn't ported from Erebor, scope cuts. The thread should read as the story of the work.
-- Close it only when the PR has merged, and reference the PR. To close, use a separate update call:
+- Close it only when the PR has merged, and reference the PR (the PR body says `Part of #<n>`, so the merge
+  doesn't close it; `/task-run` closes after its local-boot verify). To close, use a separate update call:
   `issue_write create` with `state: closed` leaves the issue open. Check the real state afterwards.
 - Stay inside the issue's scope. A bug found along the way gets its own issue and PR.
 - Only the maintainer moves an issue to `status:ready`.
@@ -44,16 +45,19 @@ rules learned the hard way on top of it.
   too) and a generous set of protocol classes for the area (see the `protocol-tests` skill).
 - The PR body lists only checks that ran on the final code. After a fix made since the last run, run
   again.
-- Merge with `gh pr merge --squash` once local checks and CI are green. When CI can't run (no runners or
-  minutes), `--admin` after full local verification is authorized.
+- Merge with `gh pr merge --squash` once local checks and CI are green. When CI can't run (the run fails in
+  seconds with no runner allocated: out of minutes), `--admin` after full local verification is
+  authorized; say so in the PR. A red CI run is never merged.
 - After the merge: close the issue with the PR reference, delete the branch, and remove the worktree
   when you're done with it.
 - New player-facing commands go on the allowlist in the same PR (see `engine-patterns.md`). New tunables
   go on `.settings` in the same PR, not as a follow-up.
-- Docs: a change to a documented system updates its `moriaengine/docs/current/` page in the same PR.
+- Docs: a change to a documented system updates its `moriaengine/docs/current/` page in the same PR. A
+  new page is linked from `docs/current/README.md`. A plain bugfix with no lasting "why" needs none.
   A durable design decision also goes in `docs/current/08-history/design-decisions-log.md`, and a known
   gap in `known-gaps-and-tech-debt.md`. Docs explain how and why and link the issue; they don't tell the
-  bug's story.
+  bug's story. The wiki (`docs/wiki/`) changes in the same branch as the scripts, hooks, CI, commands or
+  agents it describes.
 
 ## Full protocol suite
 

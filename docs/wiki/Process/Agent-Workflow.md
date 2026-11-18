@@ -26,7 +26,7 @@ findings as they land). A standing rule changes through a PR to the file that ho
                                               │
                                    /task-run <n>  (or /task-pick + work + /task-ship)
                                               │
- claim → worktree → red tests → build → full suite → review → PR → green CI → merge
+ claim → worktree → red tests → build → area's tests → review → PR → green CI → merge
                                               │
                     verify on a local boot of main → closed (or left in review)
 ```
@@ -38,7 +38,7 @@ findings as they land). A standing rule changes through a PR to the file that ho
 | `/task-new <idea>` | issue from a template, labels, analyst pass | creating it without your OK |
 | `/task-refine <n>` | analyst rewrites a triage issue into criteria | marking it ready (only you do) |
 | `/task-pick [n]` | claims a ready issue, plan comment, worktree | pushing |
-| `/task-ship` | push, full suite locally, PR, waits for CI, squash-merges on green | opening a PR without a full-suite run (standing rule, 2026-10-17 - skip only if the user says so for that one case) / merging on red / no CI run |
+| `/task-ship` | push, the area's protocol classes locally, PR, waits for CI, squash-merges on green (`--admin` only when CI has no runners) | opening a PR without the area's protocol classes run / merging on red |
 | `/task-run <n>` | all of the above with agents, plus local verify and close | any stop rule |
 | `/status-weekly` | status page in `docs/wiki/Status/Weekly/` via a docs PR | — |
 

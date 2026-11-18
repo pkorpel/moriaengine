@@ -5,7 +5,7 @@ Part of #
 ## How it was checked
 
 - [ ] pre-push passed (build + fast tier)
-- [ ] Full suite (`scripts/test-full.sh`) passed, or not needed because: 
+- [ ] Protocol classes for the area (`scripts/test-full.sh "<filter>"`) passed, or not needed because: 
 - [ ] New behaviour has a test
 
 ## Review

@@ -8,13 +8,15 @@ GitHub issues; history is git, PRs and `docs/history/`.
 
 ## Where the rules are
 
-- `.claude/rules/*.md` load automatically. Area rules (testing, converter, LScript, localization,
+- `.claude/rules/*.md` load automatically. `workflow.md` and `erebor-port.md` load in every session. The
+  area rules (`engine-patterns.md` for `moriaengine/**/*.cs`, testing, converter, LScript, localization,
   world setup) load only when you touch matching files. To change a rule, edit its file in a PR.
 - Skills (`.claude/skills/`) are loaded on demand:
   `protocol-tests` (running and debugging full-boot tests), `converter-regen`, `debug-hang`, `erebor-reference`.
 - Commands (`.claude/commands/`): `/task-new`, `/task-refine`, `/task-pick`, `/task-run`, `/task-ship`,
   `/status-weekly`. Role agents: `.claude/agents/` (analyst, developer, reviewer, tester).
 - What a rule must never stop doing goes in a hook (`.claude/settings.json`, `scripts/hooks/`), not in prose.
+- GitHub: the `github` MCP server (`.mcp.json` → `scripts/mcp-github.sh`) or `gh`.
 
 ## Session continuity
 
@@ -61,10 +63,12 @@ Sessions die (OOM, mount drops), so the trail must exist before the work does:
 ## Editing files
 
 - **Check line endings before any scripted edit:** `open(p,'rb')`, then count `b'\r\n'`. A text-mode
-  Python read hides CRLF, and a write turns the whole file into LF (`Player.cs`, `NPC.cs`,
-  `ConvertedCharDef.cs` and others are CRLF). Edit as bytes, and look at `git diff --stat` before
+  Python read hides CRLF, and a write turns the whole file into LF (`Player.cs`, `ConvertedCharDef.cs`
+  and others are CRLF; most files are LF). Edit as bytes, and look at `git diff --stat` before
   committing.
-- Some sources aren't UTF-8 (`PlayerVendor.cs`; `Common/Tools.cs` is UTF-16). Search with `grep -a`.
+- About 20 sources aren't UTF-8 (`GameCore/Gump.cs`, `GameCore/DenyResult.cs`,
+  `scripts/Basic/Roles/Role.cs`; `Common/Tools.cs` is UTF-16). Grep skips them silently, so search with
+  `grep -a`, and keep each file's encoding when editing.
 - A retried scripted edit applies twice if its replacement contains the search text.
 
 ## Git hazards here
@@ -77,8 +81,9 @@ Sessions die (OOM, mount drops), so the trail must exist before the work does:
 - The stash stack is shared by every worktree and session: don't use bare `git stash`/`pop`.
 - A worktree made right after a merge needs `git fetch` first, or it starts from the old main.
   `scripts/worktree-add.sh` fetches for you.
-- `git rebase` misbehaves here. Rebuild a branch with `reset --hard origin/main` plus cherry-picks, after
-  making a backup branch.
+- `git rebase` misbehaves here (it stops with "Could not apply" on clean picks). Bring a branch up to date
+  with a backup branch, then `reset --hard origin/main` plus cherry-picks. An already pushed branch then
+  needs a force push, which is denied for Claude, so ask the maintainer.
 
 ## Subagents
 

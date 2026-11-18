@@ -9,9 +9,8 @@ Gondor/Mordor realms, Carn Dûm, etc).
 SteamEngine project's own historical material (LScript language notes, CVS history, trigger
 lists, old Erebor planning pages) - useful background, not maintained, not guaranteed
 accurate against the current code. Everything in `docs/current/` is written against the
-code as it stands today and is expected to be kept that way - see the rule in the
-repo-root `AGENTS.md` ("every code change that touches a documented system must update the
-relevant page here in the same change").
+code as it stands today and is expected to be kept that way - see "Docs in the same PR" in the
+repo-root `AGENTS.md`: a change to a documented system updates its page here in the same PR.
 
 ## How to use this
 

@@ -28,6 +28,8 @@ generated output.
 - Every code-made def is an `instance` on its def class and registered before the world loads
   (`CheckCodeMadeDefs` reports misses). A hand-written def class needs a `Bootstrap()`, marked `new`.
   `GetByDefname` inside a static initializer caches null.
+- Sphere ids are unsigned 32-bit: def headers and defnames parse with `ConvertTools.TryParseUInt32` plus
+  `unchecked((int))` (`AbstractDef.cs`, `ThingDef.cs`). `ConvertTools.TryParseInt32` stays strict.
 - Two defs on one numeric `[Def 0xHEX]` slot: the loser's whole block, `DEFNAME` included, is dropped
   silently, or shows up as a confusing FormatException.
 - `SingletonScript<T>.Instance` matches **any subclass** of T. For dialogs, use an abstract base with

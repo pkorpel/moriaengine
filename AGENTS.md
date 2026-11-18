@@ -21,7 +21,8 @@ whatever tool you use.
 - `moriaengine/Tests/` is xUnit: the fast unit tier, plus `Tests/Protocol/`, which boots real servers.
   `moriaengine/scripts/Tests/` holds the server-side test commands.
 - `uo-files/` holds the UO client files the server needs at runtime. They are checked in, not build output.
-- `bin/` at the repo root holds tracked legacy tools, not build output. Never delete it.
+- `moriaengine/bin/` holds 19 tracked legacy tools and libraries, not build output (whatever
+  `.gitignore`'s `[Bb]in/` suggests). Never delete it.
 - Docs: `moriaengine/docs/current/` is the reference for how each system works and why.
   `docs/wiki/` covers process and runbooks. `docs/history/` holds the old CLAUDE.md work log, read-only.
   The older `moriaengine/docs/*` files are legacy and not reliable.
@@ -31,11 +32,10 @@ whatever tool you use.
 ```bash
 cd moriaengine && pwsh ./build.ps1 [-Configuration Release] [-Run Both]   # source of truth for builds
 scripts/test-fast.sh [filter]     # build + fast tier: the CI gate and the pre-push hook
+scripts/test-fast.sh "FullyQualifiedName~SomeTest"   # one fast-tier test (the filter is ANDed with the tier)
 scripts/test-full.sh [filter]     # fast tier + each Tests/Protocol class in its own run (~3 h for all)
 scripts/run-local.sh start|status|logs|stop    # local shard on ports 2593 (aux) / 2595 (game)
 scripts/worktree-add.sh <n>-<slug>             # sparse worktree ../moria-<n> from origin/main
-# one fast-tier test, after a build:
-dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "FullyQualifiedName~SomeTest"
 ```
 
 - Full-boot tests use fixed ports, so run one `test-full.sh` at a time and never a raw `dotnet test` on
@@ -43,8 +43,9 @@ dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --fil
   anything.
 - Build with the scripts. They source `scripts/lean-build-env.sh`, which stops idle MSBuild and compiler
   processes. A bare `dotnet build`/`dotnet test` leaves them behind.
-- After removing or renaming something that generated code refers to (a `[SteamFunction]`, a generated
-  field), the old boot-generated files can break a plain build until the next boot. `build.ps1` handles it.
+- After removing or renaming something the boot-generated `Generated/` files refer to (a compiled trigger
+  group's method, a `[ViewableClass]` member), the old files can break a plain build until the next boot.
+  `build.ps1` handles it. The Roslyn generators run at compile time and don't have this problem.
 - `steamengine.ini`/`steamaux.ini` are local and not committed. The first boot writes them and exits.
 
 ## How changes land
@@ -53,18 +54,25 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests) an
 `docs/wiki/Process/Agent-Workflow.md` (agent flow).
 
 1. **Issue first.** Every piece of work has a GitHub issue before work starts. Findings, decisions and
-   progress go on the issue as comments while you work. Close it with the PR.
+   progress go on the issue as comments while you work. Close it once the PR has merged, referencing the
+   PR (`/task-run` closes it after its local-boot verify).
 2. **Branch** `<n>-<slug>`, in its own worktree `../moria-<n>`. `main` takes changes only through PRs,
    which are squash-merged.
-3. **Hooks:** run `pre-commit install` once per clone. Never use `--no-verify`. Commit subject: imperative,
-   at most 72 characters, issue number at the end (`... (#1234)`), and never a leading `#`, because git
-   reads that as a comment. No `Co-Authored-By` or session trailers: the commit-msg hook rejects them.
+3. **Hooks:** run `pre-commit install` once per clone. Never use `--no-verify`. Commit subject:
+   `area: what changed (#1234)`, imperative, at most 72 characters, issue number at the end, and never a
+   leading `#`, because git reads that as a comment. No `Co-Authored-By` or session trailers: the
+   commit-msg hook rejects them.
 4. **Tests:** a fix gets a test that fails without it. Run the fast tier plus the protocol classes for the
-   area you touched. The PR body lists only the checks that really ran, on the final code.
-5. **Review:** every change to anything other than `*.md` gets an independent review before merge, and the
-   PR body has a `## Review` section saying what it found. For Claude a hook enforces this.
+   area you touched. The full suite (~3 h) runs once at the end of a batch of work, not per PR. The PR
+   body lists only the checks that really ran, on the final code.
+5. **Review:** every change to code gets an independent review before merge, and the PR body has a
+   `## Review` section saying what it found. Code is anything other than `*.md`: C#, `.def`/`.scp`,
+   scripts, hooks, CI, `.claude/settings.json`. `.claude/` command, agent, rule and skill pages are `.md`,
+   so they count as docs. For Claude a hook enforces this.
 6. **Docs in the same PR:** a change to a system documented in `moriaengine/docs/current/` updates that
-   page in the same PR. A new system gets a new page.
+   page in the same PR. A new system gets a new page, linked from `moriaengine/docs/current/README.md`. A
+   plain bugfix with no lasting "why" needs no doc change. The wiki (`docs/wiki/`) also changes in the
+   same branch as the scripts, hooks, CI or commands it describes.
 
 ## Rules that hold everywhere
 

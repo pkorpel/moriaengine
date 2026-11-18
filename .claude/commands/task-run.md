@@ -28,8 +28,10 @@ end. Don't retry a stopped step another way.
    order. A developer that returns a question: answer it from the issue if the
    issue answers it, otherwise stop.
 4. **Suite.** In the worktree: `scripts/test-fast.sh`, then `scripts/test-full.sh`
-   (fast tier + every full-boot class on its own, ~15 min, waits for the
-   machine-wide lock; prints a per-class summary). A `FAIL` in a class the branch
+   with the protocol classes for the area the branch touches, chosen generously
+   (waits for the machine-wide lock; prints a per-class summary; see the
+   `protocol-tests` skill). The whole suite (~3 h) runs once at the end of a batch,
+   not per issue (user, 2026-11-05). A `FAIL` in a class the branch
    didn't touch that passes on a rerun of that class alone is a known flake (wiki
    Process/Dev-Process): note it in the PR. `HANG (twice)` in an untouched class:
    rerun that class once more, then treat it like a FAIL. Red for real: one

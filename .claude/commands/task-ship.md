@@ -1,5 +1,5 @@
 ---
-description: Push the issue branch, run the full suite locally, open the PR into main, wait for CI and merge it
+description: Push the issue branch, run the area's protocol classes locally, open the PR into main, wait for CI and merge it
 ---
 
 Ship the current issue branch as a pull request into `main` of
@@ -12,16 +12,19 @@ commit (a private repo on GitHub Free has no branch protection or required check
 1. Branch must be `<n>-<slug>`; take the issue number from it. On `main`: stop.
 2. Working tree clean, at least one commit ahead of `origin/main`. Check the commit
    subjects: imperative, `area: what changed`, ≤ 72 characters, no attribution.
-3. `git fetch origin` and rebase onto `origin/main` if behind. Resolve conflicts or
-   ask.
-4. `git push -u origin HEAD` (after a rebase of an already pushed branch:
-   `--force-with-lease` is denied for the agent, so ask the user to push it). The
+3. `git fetch origin`. If behind `origin/main` and it matters (conflicts, or main
+   changed what the branch touches): make a backup branch, then `git reset --hard
+   origin/main` and cherry-pick the branch's commits (`git rebase` misbehaves in this
+   container). Resolve conflicts or ask.
+4. `git push -u origin HEAD` (a rewritten, already pushed branch needs
+   `--force-with-lease`, which is denied for the agent, so ask the user to push it). The
    pre-push hook builds and runs the fast tier (~30 s). If it fails, fix and push
    again; never skip it.
-5. Run `scripts/test-full.sh` (fast tier + every full-boot class, ~15 min) before
-   opening the PR - standing rule (2026-10-17), not just for branches that look
-   risky. Skip it only if the user explicitly says to skip it for this one case; a
-   missing full-boot result is not a silent default. If a wave of unrelated classes
+5. Run the protocol classes for the area the branch touches, chosen generously:
+   `scripts/test-full.sh "FullyQualifiedName~A|FullyQualifiedName~B"` (see the
+   `protocol-tests` skill). The whole suite (~3 h) is not run per PR: it runs once at
+   the end of a batch of work, or when the user asks (user, 2026-11-05). A missing
+   result for the area's classes is not a silent default. If a wave of unrelated classes
    suddenly fails, check `moriaengine/saves/` for a stale dated snapshot FIRST (wiki
    `Process/Dev-Process.md`, "Flaky full-boot tests") before suspecting this branch -
    a stale non-baseline snapshot causes a misleading login-denial cascade, a known
@@ -63,7 +66,10 @@ commit (a private repo on GitHub Free has no branch protection or required check
      inputs `{"tier": "fast"}`; only if the workflow has that `tier` input, otherwise
      stop and report) — and wait for that run instead. It counts only if its
      `head_sha` is the PR's current head. Still none after 5 more minutes: stop and
-     report — never merge without a green run.
+     report;
+   - runs that fail in seconds with no runner allocated (Actions minutes used up):
+     merge with `gh pr merge --squash --admin` only after the local checks above all
+     passed, and say so in the PR. Never merge a run that actually ran and went red.
 10. Report: PR link, CI result, merged or not (and why), and the next step — verify
    on a local boot of main (`/task-run` does it; by hand: the tester agent, mode
    `verify`).
