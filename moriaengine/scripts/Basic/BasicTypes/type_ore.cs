@@ -19,11 +19,11 @@ using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_ore : CompiledTriggerGroup {
+	public partial class t_ore : CompiledTriggerGroup {
 
 	}
 
-	public class t_ingot : CompiledTriggerGroup {
+	public partial class t_ingot : CompiledTriggerGroup {
 		//public bool on_playDropSound(Item self, Character droppingChar) {
 		//    self.SoundTo((ushort) SoundNames.DroppingSomethingWhichBouncesSlightly, droppingChar);
 		//    return true;

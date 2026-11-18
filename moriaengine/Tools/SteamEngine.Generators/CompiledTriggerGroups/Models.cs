@@ -16,16 +16,43 @@ internal sealed class CompiledTriggerGroupCandidate {
 internal sealed class CompiledTriggerGroupModel {
 	internal CompiledTriggerGroupModel(
 		string namespaceName,
+		IReadOnlyList<ContainingTypeModel> containingTypes,
+		string typeAccessibility,
 		string typeName,
 		IReadOnlyList<CompiledTriggerMethodModel> triggerMethods) {
 		NamespaceName = namespaceName;
+		ContainingTypes = containingTypes;
+		TypeAccessibility = typeAccessibility;
 		TypeName = typeName;
 		TriggerMethods = triggerMethods;
 	}
 
 	internal string NamespaceName { get; }
+	internal IReadOnlyList<ContainingTypeModel> ContainingTypes { get; }
+	internal string TypeAccessibility { get; }
 	internal string TypeName { get; }
 	internal IReadOnlyList<CompiledTriggerMethodModel> TriggerMethods { get; }
+}
+
+internal sealed class ContainingTypeModel {
+	internal ContainingTypeModel(
+		string accessibility,
+		bool isStatic,
+		bool isAbstract,
+		bool isSealed,
+		string typeName) {
+		Accessibility = accessibility;
+		IsStatic = isStatic;
+		IsAbstract = isAbstract;
+		IsSealed = isSealed;
+		TypeName = typeName;
+	}
+
+	internal string Accessibility { get; }
+	internal bool IsStatic { get; }
+	internal bool IsAbstract { get; }
+	internal bool IsSealed { get; }
+	internal string TypeName { get; }
 }
 
 internal sealed class CompiledTriggerMethodModel {

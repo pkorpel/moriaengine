@@ -27,19 +27,6 @@ namespace SteamEngine.CompiledScripts {
 			This class provides automatic linking of methods intended for use as triggers
 	*/
 	public abstract class CompiledTriggerGroup : TriggerGroup {
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void Bootstrap() {
-			ClassManager.RegisterSupplySubclasses<CompiledTriggerGroup>(ShouldDeferRegistration);
-		}
-
-		private static bool ShouldDeferRegistration(Type type) {
-			if (type.Name.StartsWith("GeneratedTriggerGroup_", StringComparison.Ordinal)) {
-				return false;
-			}
-
-			return (!type.IsAbstract) && (!type.IsSealed);
-		}
-
 		public override object Run(object self, TriggerKey tk, ScriptArgs sa) {
 			throw new SEException("CompiledTriggerGroup without overriden Run method?! This should not happen.");
 		}

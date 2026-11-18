@@ -217,7 +217,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>t_deed_vendor. Erebor's worked anywhere; the user's rule: only in a stall its user rents, one vendor a stall.</summary>
-	public class t_deed_erebor_vendor : CompiledTriggerGroup {
+	public partial class t_deed_erebor_vendor : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
 			if (!(clicker is Player player) || (self.TopObj() != player)) {
 				return;

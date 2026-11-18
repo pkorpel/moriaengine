@@ -119,7 +119,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1463 - @denyDeath: a probe that keeps its holder alive and counts @death.</summary>
-	public class E_DenyDeathProbe : CompiledTriggerGroup {
+	public partial class E_DenyDeathProbe : CompiledTriggerGroup {
 		internal static int denied, died, hostile;
 		internal static Character killer;
 
@@ -141,7 +141,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1464 - on the outer victim: its @denyDeath sets another's hits to 0 (no killer given), and reads what that
 	/// one's probe saw.</summary>
-	public class E_NestedDeathProbe : CompiledTriggerGroup {
+	public partial class E_NestedDeathProbe : CompiledTriggerGroup {
 		internal static NPC inner;
 		internal static Character innerKiller;
 		internal static bool ran;
@@ -155,7 +155,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_TestThrows : CompiledTriggerGroup {
+	public partial class E_TestThrows : CompiledTriggerGroup {
 		public void On_TestThrow(PluginHolder self) {
 			throw new InvalidOperationException("TESTTHROW from a trigger group");
 		}

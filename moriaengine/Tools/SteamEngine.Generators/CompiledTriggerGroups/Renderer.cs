@@ -8,37 +8,67 @@ internal static class Renderer {
 
 	internal static bool TryRender(CompiledTriggerGroupModel model, out string source) {
 		var builder = new StringBuilder();
+		var indentLevel = 0;
 		if (model.NamespaceName.Length > 0) {
 			builder.AppendLine($"namespace {model.NamespaceName} {{");
+			indentLevel++;
 		}
-		builder.AppendLine($"\tpartial class {model.TypeName} {{");
+
+		foreach (var containingType in model.ContainingTypes) {
+			builder.AppendLine($"{Indent(indentLevel)}{containingType.Accessibility} {RenderModifiers(containingType.IsStatic, containingType.IsAbstract, containingType.IsSealed)}partial class {containingType.TypeName} {{");
+			indentLevel++;
+		}
+
+		builder.AppendLine($"{Indent(indentLevel)}{model.TypeAccessibility} partial class {model.TypeName} {{");
 		builder.AppendLine();
-		builder.AppendLine("\t\tpublic override object Run(object self, global::SteamEngine.TriggerKey tk, global::SteamEngine.ScriptArgs sa) {");
+		builder.AppendLine($"{Indent(indentLevel + 1)}public override object Run(object self, global::SteamEngine.TriggerKey tk, global::SteamEngine.ScriptArgs sa) {{");
 
 		if (model.TriggerMethods.Count > 0) {
 			foreach (var method in model.TriggerMethods) {
-				builder.AppendLine($"\t\t\tif (tk is not null && global::System.StringComparer.OrdinalIgnoreCase.Equals(tk.Name, {ToCSharpStringLiteral(method.TriggerName)})) {{");
+				builder.AppendLine($"{Indent(indentLevel + 2)}if (global::System.Object.ReferenceEquals(tk, global::SteamEngine.TriggerKey.Acquire({ToCSharpStringLiteral(method.TriggerName)}))) {{");
 				var args = string.Join(", ", method.Parameters.Select((parameter, index) => RenderArgumentExpression(parameter, index)));
 				var invocation = "this." + method.MethodName + "(" + args + ")";
 				if (method.ReturnsVoid) {
-					builder.AppendLine("\t\t\t\t" + invocation + ";");
-					builder.AppendLine("\t\t\t\treturn null;");
+					builder.AppendLine($"{Indent(indentLevel + 3)}{invocation};");
+					builder.AppendLine($"{Indent(indentLevel + 3)}return null;");
 				} else {
-					builder.AppendLine("\t\t\t\treturn " + invocation + ";");
+					builder.AppendLine($"{Indent(indentLevel + 3)}return {invocation};");
 				}
-				builder.AppendLine("\t\t\t}");
+				builder.AppendLine($"{Indent(indentLevel + 2)}}}");
 			}
 		}
 
-		builder.AppendLine("\t\t\treturn null;");
-		builder.AppendLine("\t\t}");
-		builder.AppendLine("\t}");
+		builder.AppendLine($"{Indent(indentLevel + 2)}return null;");
+		builder.AppendLine($"{Indent(indentLevel + 1)}}}");
+		builder.AppendLine($"{Indent(indentLevel)}}}");
+		for (var i = model.ContainingTypes.Count - 1; i >= 0; i--) {
+			indentLevel--;
+			builder.AppendLine($"{Indent(indentLevel)}}}");
+		}
 		if (model.NamespaceName.Length > 0) {
-			builder.AppendLine("}");
+			indentLevel--;
+			builder.AppendLine($"{Indent(indentLevel)}}}");
 		}
 
 		source = builder.ToString();
 		return true;
+	}
+
+	private static string RenderModifiers(bool isStatic, bool isAbstract, bool isSealed) {
+		if (isStatic) {
+			return "static ";
+		}
+		if (isAbstract && !isSealed) {
+			return "abstract ";
+		}
+		if (isSealed && !isAbstract) {
+			return "sealed ";
+		}
+		return string.Empty;
+	}
+
+	private static string Indent(int level) {
+		return new string('\t', level);
 	}
 
 	private static string RenderArgumentExpression(InvocationParameterModel parameter, int parameterIndex) {

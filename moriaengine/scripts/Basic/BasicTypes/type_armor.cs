@@ -17,19 +17,19 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_armor : CompiledTriggerGroup {
+	public partial class t_armor : CompiledTriggerGroup {
 
 	}
 
-	public class t_armor_leather : CompiledTriggerGroup {
+	public partial class t_armor_leather : CompiledTriggerGroup {
 
 	}
 
-	public class t_shield : CompiledTriggerGroup {
+	public partial class t_shield : CompiledTriggerGroup {
 
 	}
 
-	public class t_clothing : CompiledTriggerGroup {
+	public partial class t_clothing : CompiledTriggerGroup {
 
 	}
 }

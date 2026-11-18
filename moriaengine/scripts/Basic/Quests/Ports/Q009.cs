@@ -172,7 +172,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1475 - i_q009_ring_tailor's own @equip and @unequip.</summary>
-	public class E_Q009Ring : CompiledTriggerGroup {
+	public partial class E_Q009Ring : CompiledTriggerGroup {
 		public void On_Equip(Item self, ItemInCharArgs args) {
 			if (args.Cont is Character ch) {
 				Q009.OnEquip(ch, self);
@@ -253,7 +253,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1270 - Talathwen's double click (Erebor's spk_q009_krejci only spoke; a click does the same).</summary>
-	public class E_Q009Tailor : CompiledTriggerGroup {
+	public partial class E_Q009Tailor : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;

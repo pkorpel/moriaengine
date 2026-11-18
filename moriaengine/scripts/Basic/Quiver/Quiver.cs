@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - Erebor's i_toulec: holds up to 5000 arrows of one kind, poison and all. It only stores them, a bow
 	/// doesn't shoot out of it.</summary>
-	public class t_quiver : CompiledTriggerGroup {
+	public partial class t_quiver : CompiledTriggerGroup {
 		internal const int MostArrows = 5000;
 		internal static readonly TagKey countTK = TagKey.Acquire("arrows");
 		internal static readonly TagKey kindTK = TagKey.Acquire("type_arrows");

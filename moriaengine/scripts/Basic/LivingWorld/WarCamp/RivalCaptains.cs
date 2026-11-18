@@ -702,7 +702,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1280 - a captain's double click.</summary>
-	public class E_WarCaptain : CompiledTriggerGroup {
+	public partial class E_WarCaptain : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;

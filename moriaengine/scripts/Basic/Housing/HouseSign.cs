@@ -4,7 +4,7 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#941 - a house's sign, any item of Erebor's type t_housemenu. One house can have several.</summary>
-	public class t_housemenu : CompiledTriggerGroup {
+	public partial class t_housemenu : CompiledTriggerGroup {
 		private static readonly TagKey houseTK = TagKey.Acquire("_house_of_sign_");
 		private static readonly TagKey levelTK = TagKey.Acquire("_house_sign_level_");
 

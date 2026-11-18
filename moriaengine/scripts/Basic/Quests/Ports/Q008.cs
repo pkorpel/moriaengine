@@ -435,7 +435,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1274 - Ancam's double click.</summary>
-	public class E_Q008Ancam : CompiledTriggerGroup {
+	public partial class E_Q008Ancam : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;
@@ -448,7 +448,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1274 - i_q008_benda_regy: a double click asks for a reagent to put in.</summary>
-	public class E_Q008Crate : CompiledTriggerGroup {
+	public partial class E_Q008Crate : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (clicker is Player player) {
 				player.SysMessage("Jaky reagent chces pridat do Ancamovy bedny?");
@@ -487,7 +487,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1274 - the corral gate, i_q008_vrata_1: a trigger group on the gate itself (setup adds it), so it runs before its
 	/// locked door's own and no key is asked for.</summary>
-	public class E_Q008Gate : CompiledTriggerGroup {
+	public partial class E_Q008Gate : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (clicker is Player player) {
 				Q008.UseGate(self, player);
@@ -497,7 +497,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1274 - the corral's step pads.</summary>
-	public class E_Q008Pad : CompiledTriggerGroup {
+	public partial class E_Q008Pad : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			if (!(stepping is Player player)) {
 				return;

@@ -265,7 +265,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1307 - the ferryman's double click: his destinations and the fare.</summary>
-	public class E_Ferryman : CompiledTriggerGroup {
+	public partial class E_Ferryman : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if ((clicker is Player player) && QuestNpc.IsCloseEnough(self, player) && !MysticHypnosis.RefusesMenu(player)) {
 				string refusal = Ferry.Refusal(player);

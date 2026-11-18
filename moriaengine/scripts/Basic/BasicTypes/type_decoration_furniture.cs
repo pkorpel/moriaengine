@@ -17,15 +17,15 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_bedroll : CompiledTriggerGroup {
+	public partial class t_bedroll : CompiledTriggerGroup {
 
 	}
 
-	public class t_bed : CompiledTriggerGroup {
+	public partial class t_bed : CompiledTriggerGroup {
 
 	}
 
-	public class t_table : CompiledTriggerGroup {
+	public partial class t_table : CompiledTriggerGroup {
 
 	}
 }

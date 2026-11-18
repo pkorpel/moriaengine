@@ -461,7 +461,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1445 - a blow of 40 at @getHit, so a real swing always hurts and kills no one.</summary>
-	public class E_BlowOf40 : CompiledTriggerGroup {
+	public partial class E_BlowOf40 : CompiledTriggerGroup {
 		public void On_GetHit(Character self, WeaponSwingArgs swingArgs) {
 			swingArgs.DamageAfterAC = 40;
 		}

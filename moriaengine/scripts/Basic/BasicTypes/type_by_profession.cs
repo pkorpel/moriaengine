@@ -17,18 +17,18 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_bee_hive : CompiledTriggerGroup {
+	public partial class t_bee_hive : CompiledTriggerGroup {
 
 	}
 
-	public class t_food : CompiledTriggerGroup {
+	public partial class t_food : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			PlayerHunger.Eat(self, dclicker);
 			return TriggerResult.Cancel;
 		}
 	}
 
-	public class t_food_raw : CompiledTriggerGroup {
+	public partial class t_food_raw : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			if (dclicker is Player) {
 				((Player) dclicker).Target(SingletonScript<Targ_CookOn>.Instance, self);
@@ -37,11 +37,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_container : CompiledTriggerGroup {
+	public partial class t_container : CompiledTriggerGroup {
 
 	}
 
-	public class t_container_locked : CompiledTriggerGroup {
+	public partial class t_container_locked : CompiledTriggerGroup {
 		private const int ThatIsLocked = 501281, LockedButYouMayOpen = 501286;
 
 		//#962 - Sphere's double click: no key, no way in, but for a GM
@@ -82,18 +82,18 @@ namespace SteamEngine.CompiledScripts {
 		//}
 	}
 
-	public class t_fruit : CompiledTriggerGroup {
+	public partial class t_fruit : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			PlayerHunger.Eat(self, dclicker);
 			return TriggerResult.Cancel;
 		}
 	}
 
-	public class t_drink : CompiledTriggerGroup {
+	public partial class t_drink : CompiledTriggerGroup {
 
 	}
 
-	public class t_meat_raw : CompiledTriggerGroup {
+	public partial class t_meat_raw : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			if (dclicker is Player) {
 				((Player) dclicker).Target(SingletonScript<Targ_CookOn>.Instance, self);
@@ -102,162 +102,162 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_water_wash : CompiledTriggerGroup {
+	public partial class t_water_wash : CompiledTriggerGroup {
 
 	}
 
-	public class t_fish_pole : CompiledTriggerGroup {
+	public partial class t_fish_pole : CompiledTriggerGroup {
 
 	}
 
-	public class t_fish : CompiledTriggerGroup {
+	public partial class t_fish : CompiledTriggerGroup {
 
 	}
 
-	public class t_scissors : CompiledTriggerGroup {
+	public partial class t_scissors : CompiledTriggerGroup {
 
 	}
 
-	public class t_game_board : CompiledTriggerGroup {
+	public partial class t_game_board : CompiledTriggerGroup {
 
 	}
 
-	public class t_yarn : CompiledTriggerGroup {
+	public partial class t_yarn : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			return ClothMaking.Ask(self, dclicker);
 		}
 	}
 
-	public class t_hair_dye : CompiledTriggerGroup {
+	public partial class t_hair_dye : CompiledTriggerGroup {
 
 	}
 
-	public class t_crystal_ball : CompiledTriggerGroup {
+	public partial class t_crystal_ball : CompiledTriggerGroup {
 
 	}
 
 	//The functions of t_musical are implemented in the Musical item type.
-	public class t_musical : CompiledTriggerGroup {
+	public partial class t_musical : CompiledTriggerGroup {
 
 		//public void on_create(Item self) {
 		//    throw new ScriptException("t_musical is obsolete and should not be used: Musical instruments' defs should be defined as [Musical i_foobar], and they don't need a type. (Musical is defined in scripts/defaults/classtemplates/professionItems.ct)");
 		//}
 	}
 
-	public class t_shovel : CompiledTriggerGroup {
+	public partial class t_shovel : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_arrow : CompiledTriggerGroup {
+	public partial class t_weapon_arrow : CompiledTriggerGroup {
 
 	}
 
-	public class t_cloth_bolt : CompiledTriggerGroup {
+	public partial class t_cloth_bolt : CompiledTriggerGroup {
 
 	}	
 
-	public class t_thread : CompiledTriggerGroup {
+	public partial class t_thread : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			return ClothMaking.Ask(self, dclicker);
 		}
 	}
 
-	public class t_dye : CompiledTriggerGroup {
+	public partial class t_dye : CompiledTriggerGroup {
 
 	}
 
-	public class t_dye_vat : CompiledTriggerGroup {
+	public partial class t_dye_vat : CompiledTriggerGroup {
 
 	}
 		
-	public class t_book : CompiledTriggerGroup {
+	public partial class t_book : CompiledTriggerGroup {
 
 	}
 
-	public class t_archery_butte : CompiledTriggerGroup {
+	public partial class t_archery_butte : CompiledTriggerGroup {
 
 	}
 
-	public class t_spinwheel : CompiledTriggerGroup {
+	public partial class t_spinwheel : CompiledTriggerGroup {
 
 	}
 
-	public class t_feather : CompiledTriggerGroup {
+	public partial class t_feather : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Fletching);
 			return TriggerResult.Continue;
 		}
 	}		
 
-	public class t_clock : CompiledTriggerGroup {
+	public partial class t_clock : CompiledTriggerGroup {
 
 	}
 
-	public class t_sextant : CompiledTriggerGroup {
+	public partial class t_sextant : CompiledTriggerGroup {
 
 	}
 
-	public class t_loom : CompiledTriggerGroup {
+	public partial class t_loom : CompiledTriggerGroup {
 
 	}
 
-	public class t_leather : CompiledTriggerGroup {
+	public partial class t_leather : CompiledTriggerGroup {
 
 	}
 
-	public class t_train_dummy : CompiledTriggerGroup {
+	public partial class t_train_dummy : CompiledTriggerGroup {
 
 	}
 
-	public class t_hide : CompiledTriggerGroup {
+	public partial class t_hide : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_fence : CompiledTriggerGroup {
+	public partial class t_weapon_fence : CompiledTriggerGroup {
 
 	}
 
-	public class t_fur : CompiledTriggerGroup {
+	public partial class t_fur : CompiledTriggerGroup {
 
 	}
 
-	public class t_grain : CompiledTriggerGroup {
+	public partial class t_grain : CompiledTriggerGroup {
 
 	}
 
-	public class t_map : CompiledTriggerGroup {
+	public partial class t_map : CompiledTriggerGroup {
 
 	}
 
-	public class t_chair : CompiledTriggerGroup {
+	public partial class t_chair : CompiledTriggerGroup {
 
 	}
 
-	public class t_cloth : CompiledTriggerGroup {
+	public partial class t_cloth : CompiledTriggerGroup {
 
 	}
 
-	public class t_light_out : CompiledTriggerGroup {
+	public partial class t_light_out : CompiledTriggerGroup {
 
 	}
 
-	public class t_reagent_raw : CompiledTriggerGroup {
+	public partial class t_reagent_raw : CompiledTriggerGroup {
 
 	}
 
-	public class t_crops : CompiledTriggerGroup {
+	public partial class t_crops : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_bolt : CompiledTriggerGroup {
+	public partial class t_weapon_bolt : CompiledTriggerGroup {
 
 	}
 
-	public class t_train_pickpocket : CompiledTriggerGroup {
+	public partial class t_train_pickpocket : CompiledTriggerGroup {
 
 	}
 
-	public class t_arock : CompiledTriggerGroup {
+	public partial class t_arock : CompiledTriggerGroup {
 
 	}
 }

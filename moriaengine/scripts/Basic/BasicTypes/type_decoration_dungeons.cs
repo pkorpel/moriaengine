@@ -17,19 +17,19 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_sign_gump : CompiledTriggerGroup {
+	public partial class t_sign_gump : CompiledTriggerGroup {
 
 	}
 
-	public class t_trap : CompiledTriggerGroup {
+	public partial class t_trap : CompiledTriggerGroup {
 
 	}
 
-	public class t_blood : CompiledTriggerGroup {
+	public partial class t_blood : CompiledTriggerGroup {
 
 	}
 
-	public class t_bone : CompiledTriggerGroup {
+	public partial class t_bone : CompiledTriggerGroup {
 
 	}
 }

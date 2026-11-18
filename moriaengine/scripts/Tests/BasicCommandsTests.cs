@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#102 - notes that its ring was double clicked.</summary>
-	public class E_TestNotingRing : CompiledTriggerGroup {
+	public partial class E_TestNotingRing : CompiledTriggerGroup {
 		internal static readonly TagKey UsedTK = TagKey.Acquire("_testRingUsed_");
 
 		public void On_DClick(Item self, Character clicker) {

@@ -24,7 +24,7 @@ using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	[HasSavedMembers]
-	public static class DbManager {
+	public static partial class DbManager {
 		/// <summary>
 		/// This will appear as a subdialog in the settings dialog, allowing us to set 
 		/// database parametes online.
@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public class E_DbConnection_Global : CompiledTriggerGroup {
+		public partial class E_DbConnection_Global : CompiledTriggerGroup {
 			public void On_Shutdown(Globals ignored1, ScriptArgs ignored2) {
 				// Only touch CloseConnection() (and therefore only JIT/resolve
 				// MySqlConnection) when DB use is actually enabled. With useDb
