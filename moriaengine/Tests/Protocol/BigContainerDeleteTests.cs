@@ -48,7 +48,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("wasOpen=True gone=True", this.LastLine("BIGDELETE_VIEWDELETED:"));
 				List<uint> deletes = ReadDeletes(game, TimeSpan.FromSeconds(3));
 				Assert.True(deletes.Contains(chest), "the client never got the chest's delete");
-				Assert.Equal(0, deletes.FindAll(daggers.Contains).Count);
+				Assert.Empty(deletes.FindAll(daggers.Contains));
 			}
 		}
 
