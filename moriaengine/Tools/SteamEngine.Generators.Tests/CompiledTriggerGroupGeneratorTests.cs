@@ -147,6 +147,31 @@ public static class Outer {
 		Assert.Empty(run.GeneratedSources);
 	}
 
+	[Fact]
+	public void DuplicateShortTypeNames_ReportDiagnostic() {
+		const string source = """
+using SteamEngine.CompiledScripts;
+
+namespace ScriptSandbox.A {
+	public partial class SharedNameTriggerGroup : CompiledTriggerGroup {
+		public void on_DClick(object self) {
+		}
+	}
+}
+
+namespace ScriptSandbox.B {
+	public partial class SharedNameTriggerGroup : CompiledTriggerGroup {
+		public void on_DClick(object self) {
+		}
+	}
+}
+""";
+
+		var run = RunGenerator(source);
+		Assert.Equal(2, run.Diagnostics.Count(d => d.Id == "SEGEN405"));
+		Assert.Empty(run.GeneratedSources);
+	}
+
 	private static GeneratorRunSnapshot RunGenerator(string source) {
 		var syntaxTrees = new List<SyntaxTree> {
 			CSharpSyntaxTree.ParseText(GeneratorTestStubs.CanonicalEngineTypes)

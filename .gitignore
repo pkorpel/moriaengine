@@ -11,6 +11,9 @@
 *.userosscache
 *.sln.docstates
 
+# Visual Studio Code
+.vscode/
+
 # Build output
 [Bb]in/
 [Oo]bj/
