@@ -170,7 +170,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1286 - a beacon's double click: lights it if it's the next.</summary>
-	public class E_EventBeacon : CompiledTriggerGroup {
+	public partial class E_EventBeacon : CompiledTriggerGroup {
 		internal const int Reach = 2;
 
 		public TriggerResult On_DClick(Item self, Character clicker) {

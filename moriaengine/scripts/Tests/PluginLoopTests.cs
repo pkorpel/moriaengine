@@ -274,7 +274,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_LoopTestFront : CompiledTriggerGroup {
+	public partial class E_LoopTestFront : CompiledTriggerGroup {
 		internal enum Action { None, RemoveSelf, RemoveBoth, DeleteHolder }
 		internal static Action action;
 		internal static int heard;
@@ -296,7 +296,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_LoopTestBack : CompiledTriggerGroup {
+	public partial class E_LoopTestBack : CompiledTriggerGroup {
 		internal static int heard;
 
 		public void On_LoopTest(PluginHolder self) {

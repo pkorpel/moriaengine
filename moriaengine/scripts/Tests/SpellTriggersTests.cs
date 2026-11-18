@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_SpellTriggersProbe : CompiledTriggerGroup {
+	public partial class E_SpellTriggersProbe : CompiledTriggerGroup {
 		public void On_SpellPower(Character self, SpellPowerArgs args) {
 			if (args.TargetChar == null) {
 				SpellTriggersTests.groundPowers++;

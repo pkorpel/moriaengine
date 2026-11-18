@@ -20,14 +20,14 @@ namespace SteamEngine.CompiledScripts {
 
 	//t_rock is in type_buildings_floors.cs instead.
 
-	public class t_dirt : GroundTileType {
+	public partial class t_dirt : GroundTileType {
 		public override bool IsTypeOfMapTile(int mapTileId) {
 			return (IsMapTileInRange(mapTileId, 0x0009, 0x0015)) ||
 					(IsMapTileInRange(mapTileId, 0x0150, 0x015c));
 		}
 	}
 
-	public class t_grass : GroundTileType {
+	public partial class t_grass : GroundTileType {
 		public override bool IsTypeOfMapTile(int mapTileId) {
 			//This should be faster than having a bunch of [if (foo) return true;] lines.
 			//But perhaps the ranges should be sorted by how many map tiles each has (not tileIDs, the actual number
@@ -60,20 +60,20 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_lava : GroundTileType {
+	public partial class t_lava : GroundTileType {
 		public override bool IsTypeOfMapTile(int mapTileId) {
 			return (IsMapTileInRange(mapTileId, 0x01f4, 0x01f7));
 		}
 	}
 
-	public class t_water : CompiledTriggerGroup {
+	public partial class t_water : CompiledTriggerGroup {
 		//public override bool IsTypeOfMapTile(int mapTileId) {
 		//	return	(IsMapTileInRange(mapTileId, 0x00a8, 0x00ac)) ||
 		//			(IsMapTileInRange(mapTileId, 0x0136, 0x0137));
 		//}
 	}
 
-	public class t_rock : GroundTileType {
+	public partial class t_rock : GroundTileType {
 		public override bool IsTypeOfMapTile(int mapTileId) {
 			//This should be faster than having a bunch of [if (foo) return true;] lines.
 			//But perhaps the ranges should be sorted by how many map tiles each has (not tileIDs, the actual number

@@ -18,40 +18,40 @@
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
-	public class t_mortar : CompiledTriggerGroup {
+	public partial class t_mortar : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Alchemy);
 			return TriggerResult.Continue;
 		}
 	}
 
-	public class t_anvil : CompiledTriggerGroup {
+	public partial class t_anvil : CompiledTriggerGroup {
 		//nothing to click on: repairing needs one near, smithing needs a forge
 	}
 
-	public class t_weapon_mace_smith : CompiledTriggerGroup {
+	public partial class t_weapon_mace_smith : CompiledTriggerGroup {
 		//the weapon smith hammer is primarily for fixing things
 	}
 
-	public class t_forge : CompiledTriggerGroup {
+	public partial class t_forge : CompiledTriggerGroup {
 		//forge is for smelting ore (and training blacksmithy through it)
 	}
 
-	public class t_shaft : CompiledTriggerGroup {
+	public partial class t_shaft : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Fletching);
 			return TriggerResult.Continue;
 		}
 	}
 
-	public class t_carpentry : CompiledTriggerGroup {
+	public partial class t_carpentry : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Carpentry);
 			return TriggerResult.Continue;
 		}
 	}
 
-	public class t_sewing_kit : CompiledTriggerGroup {
+	public partial class t_sewing_kit : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			if (dclicker is Player) {
 				((Player) dclicker).Target(SingletonScript<Targ_SewingKit>.Instance);
@@ -61,16 +61,16 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	//#962 - marks for what a recipe needs at hand, as Erebor's empty typedefs: questy/noe.scp
-	public class t_bottle_form : CompiledTriggerGroup {
+	public partial class t_bottle_form : CompiledTriggerGroup {
 	}
 
-	public class t_book_bottle : CompiledTriggerGroup {
+	public partial class t_book_bottle : CompiledTriggerGroup {
 	}
 
-	public class t_book_shrink : CompiledTriggerGroup {
+	public partial class t_book_shrink : CompiledTriggerGroup {
 	}
 
-	public class t_tinker_tools : CompiledTriggerGroup {
+	public partial class t_tinker_tools : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Tinkering);
 			return TriggerResult.Continue;

@@ -268,7 +268,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1289 - the festival host's double click: the guest's festival food.</summary>
-	public class E_FestivalHost : CompiledTriggerGroup {
+	public partial class E_FestivalHost : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if ((clicker is Player player) && !player.Flag_Dead && (WorldEvents.EventOf(self) is Festival festival) && !festival.Ended
 					&& QuestNpc.IsCloseEnough(self, player)) {
@@ -279,7 +279,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1289 - the runaway animal's double click: caught, if the player is right beside it.</summary>
-	public class E_FestivalAnimal : CompiledTriggerGroup {
+	public partial class E_FestivalAnimal : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if ((clicker is Player player) && !player.Flag_Dead && (WorldEvents.EventOf(self) is Festival festival) && !festival.Ended && (festival.Animal == self)) {
 				if (!player.IsGM && !WorldEvents.IsOnCitysSide(player, festival.City)) {

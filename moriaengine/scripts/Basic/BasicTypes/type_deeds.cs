@@ -17,7 +17,7 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_deed : CompiledTriggerGroup {
+	public partial class t_deed : CompiledTriggerGroup {
 		/// <summary>#884 - Sphere's deed: pick a spot and the stone stands there.</summary>
 		public void On_DClick(Item self, Character clicker) {
 			Player player = clicker as Player;
@@ -27,11 +27,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_stone_town : CompiledTriggerGroup {
+	public partial class t_stone_town : CompiledTriggerGroup {
 
 	}
 
-	public class t_normal : CompiledTriggerGroup {
+	public partial class t_normal : CompiledTriggerGroup {
 
 	}
 }

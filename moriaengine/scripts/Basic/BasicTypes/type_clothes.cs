@@ -17,7 +17,7 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_jewelry : CompiledTriggerGroup {
+	public partial class t_jewelry : CompiledTriggerGroup {
 
 	}
 }

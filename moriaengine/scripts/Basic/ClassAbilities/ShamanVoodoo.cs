@@ -288,7 +288,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1070 - i_flesh_head, i_flesh_head_2: double click, then a potion on it for the shaman's good voodoo.</summary>
-	public class t_flesh_head : CompiledTriggerGroup {
+	public partial class t_flesh_head : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			if (dclicker is Player player) {
 				player.Target(SingletonScript<Targ_VoodooHead>.Instance, self);

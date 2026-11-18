@@ -317,7 +317,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1266 - @UserDClick of q007's NPCs.</summary>
-	public class E_Q007Npc : CompiledTriggerGroup {
+	public partial class E_Q007Npc : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			Player player = clicker as Player;
 			if (player == null) {
@@ -331,7 +331,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1266 - the pirates' chest, Erebor's TM_poklad_piratu.</summary>
-	public class E_Q007Chest : CompiledTriggerGroup {
+	public partial class E_Q007Chest : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (clicker is Player player) {
 				if (Point2D.GetSimpleDistance(self, player) > QuestNpc.TalkDistance) {
@@ -345,7 +345,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1475 - i_adamantinum_kladivko's own @equip and @unequip.</summary>
-	public class E_Q007Hammer : CompiledTriggerGroup {
+	public partial class E_Q007Hammer : CompiledTriggerGroup {
 		public void On_Equip(Item self, ItemInCharArgs args) {
 			if (args.Cont is Character ch) {
 				Q007.OnEquip(ch, self);
@@ -360,7 +360,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1266 - i_rune_tinker, the blank rune: with the magic pen a recall rune.</summary>
-	public class E_Q007BlankRune : CompiledTriggerGroup {
+	public partial class E_Q007BlankRune : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			return ((clicker is Player player) && Q007.TryInscribeRune(self, player)) ? TriggerResult.Cancel : TriggerResult.Continue;
 		}

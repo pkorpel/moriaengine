@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_bandage : CompiledTriggerGroup {
+	public partial class t_bandage : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if ((player != null) && !MysticHypnosis.RefusesUse(player, self)) {
@@ -51,7 +51,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_bandage_blood : CompiledTriggerGroup {
+	public partial class t_bandage_blood : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if (player != null) {

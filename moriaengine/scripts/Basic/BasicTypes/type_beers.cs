@@ -17,7 +17,7 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_booze : CompiledTriggerGroup {
+	public partial class t_booze : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character dclicker) {
 			dclicker.Emote("Hic!");
 			self.Delete();

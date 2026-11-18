@@ -764,7 +764,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1429 - a probe on both: the attacker's @swingLanding sets the blow, the defender's @getHit reads it.</summary>
-	public class E_SwingLandingProbe : CompiledTriggerGroup {
+	public partial class E_SwingLandingProbe : CompiledTriggerGroup {
 		public void On_SwingLanding(Character self, WeaponSwingArgs swingArgs) {
 			if (ClassAbilityTests.setTheBlow) {
 				swingArgs.DamageAfterAC = 1000;

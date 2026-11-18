@@ -17,7 +17,7 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_l2map : CompiledTriggerGroup {
+	public partial class t_l2map : CompiledTriggerGroup {
 
 	}
 }

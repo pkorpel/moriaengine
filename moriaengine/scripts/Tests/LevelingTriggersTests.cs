@@ -92,7 +92,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_KillCreditProbe : CompiledTriggerGroup {
+	public partial class E_KillCreditProbe : CompiledTriggerGroup {
 		public void On_KillCredit(Character self, KillCreditArgs args) {
 			LevelingTriggersTests.credits++;
 			LevelingTriggersTests.creditVictim = args.victim;

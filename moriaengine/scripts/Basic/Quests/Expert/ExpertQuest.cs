@@ -349,7 +349,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#833 - i_expert_quest_first @userdclick: start the Expert quest.</summary>
-	public class E_ExpertQuestStartStone : CompiledTriggerGroup {
+	public partial class E_ExpertQuestStartStone : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if (player != null) {
@@ -360,7 +360,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#833 - i_expert_quest_second @userdclick (GMs): target the start stone this quest site belongs to.</summary>
-	public class E_ExpertQuestSite : CompiledTriggerGroup {
+	public partial class E_ExpertQuestSite : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			Player gm = clicker as Player;
 			if ((gm != null) && gm.IsGM) {
@@ -372,7 +372,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#833 - i_expert_quest_sign @userdclick: GMs target the quest site the sign belongs to, players read it.</summary>
-	public class E_ExpertQuestSign : CompiledTriggerGroup {
+	public partial class E_ExpertQuestSign : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if (player == null) {
@@ -393,7 +393,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#833 - c_quest_expert @UserDClick: the same as greeting it. Anyone else gets the usual paperdoll.</summary>
-	public class E_ExpertQuestMaster : CompiledTriggerGroup {
+	public partial class E_ExpertQuestMaster : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			Player player = clicker as Player;
 			return ((player != null) && ExpertQuest.TryTalk(self, player)) ? TriggerResult.Cancel : TriggerResult.Continue;

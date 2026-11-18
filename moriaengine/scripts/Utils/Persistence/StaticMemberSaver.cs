@@ -45,8 +45,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	//[HasSavedMembers]
-	public static class StaticMemberSaver {
-		public class E_StaticMemberSaver_Global : CompiledTriggerGroup {
+	public static partial class StaticMemberSaver {
+		public partial class E_StaticMemberSaver_Global : CompiledTriggerGroup {
 			public void On_BeforeSave(Globals ignored) {
 				SaveMembers();
 			}

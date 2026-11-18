@@ -207,7 +207,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1286 - a fire's double click: a blow at it.</summary>
-	public class E_EventFire : CompiledTriggerGroup {
+	public partial class E_EventFire : CompiledTriggerGroup {
 		internal const int Reach = 2, MaxHeight = 15;
 
 		public TriggerResult On_DClick(Item self, Character clicker) {

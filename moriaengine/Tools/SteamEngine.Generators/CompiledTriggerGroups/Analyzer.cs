@@ -68,11 +68,39 @@ internal static class Analyzer {
 		var namespaceName = candidate.TypeSymbol.ContainingNamespace.IsGlobalNamespace
 			? string.Empty
 			: candidate.TypeSymbol.ContainingNamespace.ToDisplayString();
+		var containingTypes = GetContainingTypes(candidate.TypeSymbol);
 		model = new CompiledTriggerGroupModel(
 			namespaceName,
+			containingTypes,
+			ToAccessibilityKeyword(candidate.TypeSymbol.DeclaredAccessibility),
 			candidate.TypeSymbol.Name,
 			methods);
 		return true;
+	}
+
+	private static IReadOnlyList<ContainingTypeModel> GetContainingTypes(INamedTypeSymbol typeSymbol) {
+		var types = new Stack<ContainingTypeModel>();
+		for (var containing = typeSymbol.ContainingType; containing is not null; containing = containing.ContainingType) {
+			types.Push(new ContainingTypeModel(
+				ToAccessibilityKeyword(containing.DeclaredAccessibility),
+				containing.IsStatic,
+				containing.IsAbstract,
+				containing.IsSealed,
+				containing.Name));
+		}
+		return types.ToList();
+	}
+
+	private static string ToAccessibilityKeyword(Accessibility accessibility) {
+		return accessibility switch {
+			Accessibility.Public => "public",
+			Accessibility.Internal => "internal",
+			Accessibility.Private => "private",
+			Accessibility.Protected => "protected",
+			Accessibility.ProtectedOrInternal => "protected internal",
+			Accessibility.ProtectedAndInternal => "private protected",
+			_ => "internal"
+		};
 	}
 
 	private static CompiledTriggerMethodModel BuildMethodModel(IMethodSymbol method, INamedTypeSymbol scriptArgsType) {

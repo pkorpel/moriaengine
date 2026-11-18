@@ -32,14 +32,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_shaft_multi : CompiledTriggerGroup {
+	public partial class t_shaft_multi : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			ItemBundle.Unpack(self, dclicker, ItemBundle.CountOf(self));
 			return TriggerResult.Cancel;
 		}
 	}
 
-	public class t_arrow_piercing_multi : CompiledTriggerGroup {
+	public partial class t_arrow_piercing_multi : CompiledTriggerGroup {
 		internal const int ArrowsInBundle = 20;
 
 		public TriggerResult On_Dclick(Item self, Character dclicker) {

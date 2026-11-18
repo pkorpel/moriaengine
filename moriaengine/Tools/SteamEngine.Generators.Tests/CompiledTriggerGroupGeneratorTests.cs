@@ -39,9 +39,9 @@ public partial class ArenaTriggerGroup : BaseTriggerGroup {
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
 		var generated = Assert.Single(run.GeneratedSources);
 		Assert.Contains("partial class ArenaTriggerGroup", generated);
-		Assert.Contains("global::System.StringComparer.OrdinalIgnoreCase.Equals(tk.Name, \"DClick\")", generated);
+		Assert.Contains("global::System.Object.ReferenceEquals(tk, global::SteamEngine.TriggerKey.Acquire(\"DClick\"))", generated);
 		Assert.Contains("this.On_DClick(self, global::System.Convert.ToInt32(sa.Argv[0]));", generated);
-		Assert.Contains("global::System.StringComparer.OrdinalIgnoreCase.Equals(tk.Name, \"Login\")", generated);
+		Assert.Contains("global::System.Object.ReferenceEquals(tk, global::SteamEngine.TriggerKey.Acquire(\"Login\"))", generated);
 		Assert.Contains("return this.on_Login(self, sa);", generated);
 		Assert.DoesNotContain("InternalFirstGetDefname", generated);
 	}
@@ -101,6 +101,49 @@ public class ArenaTriggerGroup : CompiledTriggerGroup {
 
 		var run = RunGenerator(source);
 		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN403");
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void NestedCompiledTriggerGroup_WithPartialContainingType_GeneratesNestedPartial() {
+		const string source = """
+using SteamEngine.CompiledScripts;
+
+namespace ScriptSandbox;
+
+public static partial class Outer {
+	public partial class NestedTriggerGroup : CompiledTriggerGroup {
+		public void on_DClick(object self) {
+		}
+	}
+}
+""";
+
+		var run = RunGenerator(source);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		var generated = Assert.Single(run.GeneratedSources);
+		Assert.Contains("public static partial class Outer", generated);
+		Assert.Contains("public partial class NestedTriggerGroup", generated);
+		Assert.Contains("this.on_DClick(self);", generated);
+	}
+
+	[Fact]
+	public void NestedCompiledTriggerGroup_WithNonPartialContainingType_ReportsDiagnostic() {
+		const string source = """
+using SteamEngine.CompiledScripts;
+
+namespace ScriptSandbox;
+
+public static class Outer {
+	public partial class NestedTriggerGroup : CompiledTriggerGroup {
+		public void on_DClick(object self) {
+		}
+	}
+}
+""";
+
+		var run = RunGenerator(source);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN404");
 		Assert.Empty(run.GeneratedSources);
 	}
 

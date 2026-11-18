@@ -17,39 +17,39 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_weapon_mace_staff : CompiledTriggerGroup {
+	public partial class t_weapon_mace_staff : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_xbow : CompiledTriggerGroup {
+	public partial class t_weapon_xbow : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_mace_crook : CompiledTriggerGroup {
+	public partial class t_weapon_mace_crook : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_axe : CompiledTriggerGroup {
+	public partial class t_weapon_axe : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_sword : CompiledTriggerGroup {
+	public partial class t_weapon_sword : CompiledTriggerGroup {
 
 	}
 
-	public class t_wand : CompiledTriggerGroup {
+	public partial class t_wand : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_mace_sharp : CompiledTriggerGroup {
+	public partial class t_weapon_mace_sharp : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_bow : CompiledTriggerGroup {
+	public partial class t_weapon_bow : CompiledTriggerGroup {
 
 	}
 
-	public class t_weapon_mace_pick : CompiledTriggerGroup {
+	public partial class t_weapon_mace_pick : CompiledTriggerGroup {
 
 	}
 }

@@ -24,7 +24,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - Erebor's i_scroll_case (systems/svitkovac.scp): counts of scrolls by spell, on tags. Sound scrolls go
 	/// in by dropping, by the cursor or a whole container at a time.</summary>
-	public class t_svitkovac : CompiledTriggerGroup {
+	public partial class t_svitkovac : CompiledTriggerGroup {
 		private const int MostScrolls = 999999; //maxscrolls
 		internal const int MostAtOnce = 60000; //an amount overflows past 65535
 		internal const int LastSphereScroll = 70, ManaShieldId = 104;

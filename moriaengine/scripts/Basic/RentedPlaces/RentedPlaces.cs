@@ -290,7 +290,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>A stall's sign: within 3 tiles or in its region, as Erebor.</summary>
-	public class t_vendormenu : CompiledTriggerGroup {
+	public partial class t_vendormenu : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
 			FlaggedRegion region = self.GetMap().GetRegionFor(self) as FlaggedRegion;
 			if ((Point2D.GetSimpleDistance(self, clicker) > 3) && (clicker.Region != region)) {
@@ -302,7 +302,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>A field's sign: Erebor checked no distance.</summary>
-	public class t_fieldmenu : CompiledTriggerGroup {
+	public partial class t_fieldmenu : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
 			t_housemenu.Use(self, clicker);
 		}

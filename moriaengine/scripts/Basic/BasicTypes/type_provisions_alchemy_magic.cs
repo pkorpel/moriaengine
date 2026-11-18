@@ -17,22 +17,22 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_scroll_blank : CompiledTriggerGroup {
+	public partial class t_scroll_blank : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Inscribe);
 			return TriggerResult.Continue;
 		}
 	}	
 
-	public class t_spellbook : CompiledTriggerGroup {
+	public partial class t_spellbook : CompiledTriggerGroup {
 
 	}
 
-	public class t_potion_empty : CompiledTriggerGroup {
+	public partial class t_potion_empty : CompiledTriggerGroup {
 
 	}
 
-	public class t_rune : CompiledTriggerGroup {
+	public partial class t_rune : CompiledTriggerGroup {
 
 	}
 }
