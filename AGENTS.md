@@ -73,8 +73,9 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests, re
    3. a new test that fails without the fix (A/B), the fast tier, and the area's protocol classes, with the
       PR listing only what ran (the full suite, ~3 h, runs once per batch);
    4. **engine core** (`GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`,
-      `Tools/SteamEngine.Generators*`) **approved by janslav** (`.github/CODEOWNERS`, `needs-core-review`);
-   5. CI green and merged;
+      `Tools/SteamEngine.Generators*`) **approved by janslav**, or by pkorpel when janslav wrote it
+      (`.github/CODEOWNERS`, `needs-core-review`);
+   5. CI green, merged, and the branch and worktree removed;
    6. the issue closed with a summary comment, and `needs-in-game-check` if it hasn't been tried in a real
       client.
 

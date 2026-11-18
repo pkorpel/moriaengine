@@ -13,7 +13,7 @@ GitHub issues; history is git, PRs and `docs/history/`.
   world setup) load only when you touch matching files. To change a rule, edit its file in a PR.
 - Skills (`.claude/skills/`) are loaded on demand:
   `protocol-tests` (running and debugging full-boot tests), `converter-regen`, `debug-hang`, `erebor-reference`.
-- Agent definition: `.claude/agents/reviewer.md`, the read-only review agent run before every code merge.
+- Agent definition: `.claude/agents/reviewer.md`, the read-only review agent run before every merge, docs included.
 - What a rule must never stop doing goes in a hook (`.claude/settings.json`, `scripts/hooks/`), not in prose.
 - GitHub: the `github` MCP server (`.mcp.json` → `scripts/mcp-github.sh`) or `gh`.
 

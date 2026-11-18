@@ -21,23 +21,29 @@ What "done" means, step by step, is in [Tasks](Tasks.md). What enforces it:
   missing or empty; see [Agent workflow](Agent-Workflow.md).
 - **Engine core (#1559):** a PR changing `moriaengine/GameCore/`, `Common/`, `Communication/`,
   `AuxiliaryServer/` or `Tools/SteamEngine.Generators*` needs janslav's approval (pkorpel's for janslav's
-  own PRs). `.github/CODEOWNERS` lists the paths and asks for the review. The ruleset on `main`
-  ("Require review from Code Owners", no bypass) enforces it on GitHub, and the same hook checks it before
-  Claude merges. Label such a PR `needs-core-review`.
+  own PRs). `.github/CODEOWNERS` lists the paths (janslav and pkorpel as owners) and asks for the review.
+  GitHub's ruleset requires an approval from *a* code owner. That it's janslav's (pkorpel's only for
+  janslav's own PRs) is our rule, which the merge hook checks before Claude merges. Label such a PR
+  `needs-core-review`.
 - **Locally:** `pre-commit` refuses commits on `main`, and `.claude/settings.json` denies pushes to `main`,
   force pushes and `--no-verify` for Claude.
 
 The repo is public, so GitHub Free gives branch rulesets and code-owner reviews.
 
-### Ruleset on `main` (set once by the admin)
+### Ruleset on `main`
 
-Settings → Rules → Rulesets → New branch ruleset: name `main`, enforcement **Active**, bypass list
-**empty**, target the default branch. Rules:
+The ruleset named `default` (Settings → Rules → Rulesets) targets the default branch, is active, and has an
+empty bypass list. It already restricts deletions, blocks force pushes and requires a pull request with 0
+approvals. For #1559 the admin edits it:
 
-- Restrict deletions; block force pushes.
-- Require a pull request before merging: **required approvals 0**, **Require review from Code Owners** on,
-  allowed merge method squash. With 0 approvals only PRs touching a CODEOWNERS path need one.
-- Require status checks to pass: `build-and-unit-test` (the `.NET Build` workflow's fast-tier job).
+- Require a pull request: turn on **Require review from Code Owners**, keep required approvals at 0 (so only
+  PRs touching a CODEOWNERS path need an approval), and allow only the **squash** merge method.
+- Require status checks to pass: add `build-and-unit-test` (the `.NET Build` workflow's fast-tier job). It
+  runs on every PR, docs-only ones too. "Require branches to be up to date" is already on, so a PR behind
+  `main` is updated (GitHub's "Update branch" button) before it can merge.
+
+Check afterwards that a PR touching `moriaengine/GameCore/` shows "Code owner review required". The other
+ruleset, `NonMain`, targets every branch and has no rules.
 
 ## Hooks (`.pre-commit-config.yaml`)
 

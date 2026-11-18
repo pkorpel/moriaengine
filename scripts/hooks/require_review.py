@@ -15,14 +15,17 @@ heading inside a comment or a code fence. This hook checks that section at the m
     else the hook's cwd) and its `-R/--repo`; `--disable-auto` merges nothing;
   - mcp__github__merge_pull_request: owner, repo, pullNumber.
 
-The PR's files and body come from `gh pr view --json files,changedFiles,body,author,latestReviews`.
+The PR's files and body come from `gh pr view --json files,changedFiles,body,author,reviews`.
 A PR without the section is denied, whatever it changes.
 
-Engine core (#1559): a PR changing a non-`*.md` file under CORE_PATHS (the same paths
-as .github/CODEOWNERS) needs an approving review, as the latest review of its
-reviewer, from the core owner: janslav, or pkorpel when janslav wrote the PR. A cut
-file list (over 100 files) counts as touching core. GitHub's ruleset on main enforces
-the same for everyone; this catches it before the merge call. The body is read before
+Engine core (#1559): a PR changing any file under CORE_PATHS (the same paths as
+.github/CODEOWNERS) needs an approval from the core owner: janslav, or pkorpel when
+janslav wrote the PR. A reviewer's standing opinion is their last APPROVED,
+CHANGES_REQUESTED or DISMISSED review, as GitHub counts it; a later comment-only review
+doesn't cancel an approval. A cut file list (over 100 files) counts as touching core.
+Not seen: a file renamed out of a core path (gh lists only the new path). GitHub's
+ruleset on main requires a code owner's approval for everyone (janslav or pkorpel);
+which owner it must be is this hook's rule, for Claude's merges. The body is read before
 the command runs, so `gh pr edit --body-file x && gh pr merge` in one call is denied:
 edit first, merge in the next call.
 
@@ -80,7 +83,7 @@ def has_review(body):
 
 def core_files(files, changed):
     """The PR's core files; a cut list (gh stops at 100) may hide some, so it counts as one."""
-    found = [f for f in files if f.startswith(CORE_PATHS) and not f.lower().endswith(".md")]
+    found = [f for f in files if f.startswith(CORE_PATHS)]
     if not found and len(files) != changed:
         return ["(file list cut at %d of %s)" % (len(files), changed)]
     return found
@@ -164,14 +167,17 @@ def fetch(selector, repo, cwd):
     """(files, changed file count, body, author, logins whose latest review approves) of the PR,
     or None when gh can't say."""
     cmd = ["gh", "pr", "view"] + ([selector] if selector else []) + (["-R", repo] if repo else [])
-    cmd += ["--json", "files,changedFiles,body,author,latestReviews"]
+    cmd += ["--json", "files,changedFiles,body,author,reviews"]
     try:
         out = subprocess.run(cmd, cwd=cwd or None, capture_output=True, text=True, timeout=8)
         if out.returncode != 0:
             return None
         pr = json.loads(out.stdout)
-        approved = {(r.get("author") or {}).get("login") for r in pr.get("latestReviews") or []
-                    if r.get("state") == "APPROVED"}
+        opinion = {}  # reviews come oldest first; comment-only reviews don't change an opinion
+        for r in pr.get("reviews") or []:
+            if r.get("state") in ("APPROVED", "CHANGES_REQUESTED", "DISMISSED"):
+                opinion[(r.get("author") or {}).get("login")] = r.get("state")
+        approved = {login for login, state in opinion.items() if state == "APPROVED"}
         return ([f.get("path", "") for f in pr.get("files") or []], pr.get("changedFiles"), pr.get("body") or "",
                 (pr.get("author") or {}).get("login"), approved)
     except Exception:

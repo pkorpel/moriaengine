@@ -1,6 +1,6 @@
 # Telegram session
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-11-18
 
 A Telegram bot used for two things:
 

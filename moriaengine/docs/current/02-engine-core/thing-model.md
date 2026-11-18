@@ -116,7 +116,8 @@ already inside, when there is one (`TryStackToAnyInside` -> `Trigger_StackInCont
 `@stackOnItem`/`@itemStackOn` triggers, the waiting stack's `Amount` grows by the incoming item's and the incoming item
 is deleted. Setting `Amount` after such a merge throws on the deleted item (#709), so the `Amount` goes first.
 `ItemDef.Create(container)` doesn't stack. Two items stack when both are stackable, have the same def, color and
-model, both `CanStackWith` each other (errand items don't, #1260) and the sum doesn't overflow (`CouldBeStacked`).
+model, and both `CanStackWith` each other (errand items don't, #1260) (`CouldBeStacked`). A merge whose sum would
+overflow `Amount` doesn't happen (`Trigger_StackInCont`'s `checked` addition).
 
 A real, specific gotcha worth knowing here: `Trigger_EnterRegion` requires the thing to
 already be in limbo state, and - critically for anyone writing code against these hooks -

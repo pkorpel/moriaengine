@@ -137,9 +137,12 @@ class CoreReview(unittest.TestCase):
                      "moriaengine/Tools/SteamEngine.Generators.Tests/Y.cs"):
             self.assertIsNotNone(self.decide([path]), path)
 
-    def test_non_core_and_core_docs_pass_without_approval(self):
+    def test_non_core_passes_without_approval(self):
         self.assertIsNone(self.decide(["moriaengine/scripts/Basic/x.cs", "moriaengine/Tools/perf/x.cs"]))
-        self.assertIsNone(self.decide(["moriaengine/GameCore/README.md", "moriaengine/scripts/Basic/x.cs"]))
+
+    def test_docs_under_a_core_path_count_as_core(self):
+        # as in CODEOWNERS, which covers every file under the path
+        self.assertIsNotNone(self.decide(["moriaengine/GameCore/README.md"]))
 
     def test_a_missing_review_section_is_reported_first(self):
         found = self.decide(CORE, body="no section")
@@ -210,13 +213,17 @@ class Fetch(unittest.TestCase):
     def test_reads_files_count_body_author_and_approvals(self):
         out = subprocess.CompletedProcess([], 0, json.dumps(
             {"files": [{"path": "a.cs"}], "changedFiles": 1, "body": "b", "author": {"login": "pkorpel"},
-             "latestReviews": [{"author": {"login": "janslav"}, "state": "APPROVED"},
-                               {"author": {"login": "jablonskyv"}, "state": "CHANGES_REQUESTED"},
-                               {"author": {"login": "x"}, "state": "COMMENTED"}]}), "")
+             "reviews": [{"author": {"login": "janslav"}, "state": "APPROVED"},
+                         {"author": {"login": "janslav"}, "state": "COMMENTED"},  # doesn't cancel it
+                         {"author": {"login": "jablonskyv"}, "state": "APPROVED"},
+                         {"author": {"login": "jablonskyv"}, "state": "CHANGES_REQUESTED"},
+                         {"author": {"login": "x"}, "state": "APPROVED"},
+                         {"author": {"login": "x"}, "state": "DISMISSED"},
+                         {"author": {"login": "y"}, "state": "COMMENTED"}]}), "")
         got, calls = self.run_gh(out)
         self.assertEqual(got, (["a.cs"], 1, "b", "pkorpel", {"janslav"}))
         self.assertEqual(calls, [(["gh", "pr", "view", "7", "-R", "o/r", "--json",
-                                   "files,changedFiles,body,author,latestReviews"], "/w/m")])
+                                   "files,changedFiles,body,author,reviews"], "/w/m")])
 
     def test_failures_are_none(self):
         for result, error in ((subprocess.CompletedProcess([], 1, "", "no pr"), None),
