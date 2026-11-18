@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -6,8 +8,16 @@ namespace SteamEngine.Generators.CompiledTriggerGroups;
 
 // Generates CompiledTriggerGroup dispatch wrappers for non-abstract, non-sealed
 // subclasses by mapping public instance on_* methods to trigger dispatch.
-[Microsoft.CodeAnalysis.Generator]
+[Generator]
 public sealed class CompiledTriggerGroupsGenerator : IIncrementalGenerator {
+	internal static readonly DiagnosticDescriptor DuplicateTypeNameDescriptor = new(
+		"SEGEN405",
+		"Compiled trigger group type name is not unique",
+		"Compiled trigger group type name '{0}' is used by multiple types; names must be distinct for code generation",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
 		var declarations = context.SyntaxProvider
 			.CreateSyntaxProvider(
@@ -41,7 +51,23 @@ public sealed class CompiledTriggerGroupsGenerator : IIncrementalGenerator {
 				candidates.Add(candidate);
 			}
 
-			var models = Analyzer.BuildModels(candidates, diagnostics, requiredSymbols);
+			var duplicateNames = candidates
+				.GroupBy(c => c.TypeSymbol.Name, StringComparer.Ordinal)
+				.Where(g => g.Count() > 1)
+				.ToDictionary(g => g.Key, g => g.ToList(), StringComparer.Ordinal);
+			foreach (var duplicate in duplicateNames) {
+				foreach (var candidate in duplicate.Value) {
+					diagnostics.Add(Diagnostic.Create(
+						DuplicateTypeNameDescriptor,
+						candidate.TypeSymbol.Locations.FirstOrDefault(),
+						duplicate.Key));
+				}
+			}
+
+			var uniqueCandidates = candidates
+				.Where(c => !duplicateNames.ContainsKey(c.TypeSymbol.Name))
+				.ToList();
+			var models = Analyzer.BuildModels(uniqueCandidates, diagnostics, requiredSymbols);
 			foreach (var model in models) {
 				if (!Renderer.TryRender(model, out var source)) {
 					continue;
