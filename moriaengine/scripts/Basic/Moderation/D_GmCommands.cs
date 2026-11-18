@@ -20,18 +20,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		internal sealed class Group {
+		internal sealed class CommandGroup {
 			internal readonly string title;
 			internal readonly Entry[] entries;
 
-			internal Group(string title, params Entry[] entries) {
+			internal CommandGroup(string title, params Entry[] entries) {
 				this.title = title;
 				this.entries = entries;
 			}
 		}
 
-		internal static readonly Group[] groups = {
-			new Group("Moderace",
+		internal static readonly CommandGroup[] groups = {
+			new CommandGroup("Moderace",
 				new Entry("jail", "zavrit do vezeni (kurzor)"),
 				new Entry("forgive", "propustit z vezeni (kurzor)"),
 				new Entry("lagr", "do lagru za prohresek (kurzor)"),
@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("afklog", "AFK log, volitelne filtr", Arg.Text),
 				new Entry("kick", "vyhodit ze hry (kurzor)"),
 				new Entry("blockip", "zablokovat IP adresu")),
-			new Group("Hraci",
+			new CommandGroup("Hraci",
 				new Entry("clients", "hraci ve hre, s tlacitky"),
 				new Entry("goname", "jit za postavou podle jmena", Arg.Text),
 				new Entry("gouid", "jit k veci podle uid", Arg.Number),
@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("info", "info dialog (kurzor)"),
 				new Entry("rprank", "RP rank hrace (kurzor)"),
 				new Entry("kill", "zabit (kurzor)")),
-			new Group("GM",
+			new CommandGroup("GM",
 				new Entry("gm", "GM rezim zapnout / vypnout"),
 				new Entry("invis", "neviditelnost zapnout / vypnout"),
 				new Entry("invul", "nesmrtelnost zapnout / vypnout"),
@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("sethome", "domov NPC: kam se vraci (2 kurzory)"),
 				new Entry("flip", "otocit vec (kurzor)"),
 				new Entry("addbooster", "dat booster, druh 0-5 (kurzor)", Arg.Number)),
-			new Group("Svet",
+			new CommandGroup("Svet",
 				new Entry("settings", "nastaveni serveru"),
 				new Entry("save", "ulozit svet"),
 				new Entry("nextsave", "kdy bude dalsi automaticke ulozeni"),
@@ -78,7 +78,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("housemove", "presunout cedulku domu (kurzor)"),
 				new Entry("portzonepoint", "sem posilat mrtve z PvP areny"),
 				new Entry("nazgulgateto", "brana jen pro vyvolene: jak na ni (i_varGate)")),
-			new Group("Mesta", //#1312 - the living world's (#1237)
+			new CommandGroup("Mesta", //#1312 - the living world's (#1237)
 				new Entry("venue", "oznacit / upravit misto, kde stojis"),
 				new Entry("venues", "mista ve meste; vse, navrh, obsadit, export", Arg.Text),
 				new Entry("resident", "obyvatel mesta (kurzor)"),
@@ -94,7 +94,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static Entry[] All {
 			get {
 				System.Collections.Generic.List<Entry> all = new System.Collections.Generic.List<Entry>();
-				foreach (Group group in groups) {
+				foreach (CommandGroup group in groups) {
 					all.AddRange(group.entries);
 				}
 				return all.ToArray();

@@ -124,7 +124,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>d_captain_executioner: "Nepratel : n", a row per name with its remove button (100+i), "Pridat cloveka" (3).</summary>
 	public class D_KeepBans : CompiledGumpDef {
-		private const int Width = 260, PageRows = 7, RowHeight = 20, FirstRow = 40, FirstRowButton = 100, AddButton = 3, TextHue = 2301;
+		private const int Width = 260, PageRows = 7, RowHeight = 20, FirstRow = 40, FirstRowButton = 100, AddingButton = 3, TextHue = 2301;
 
 		internal static void Show(KeepState keep, Player player) {
 			player.Dialog(player, SingletonScript<D_KeepBans>.Instance, new DialogArgs(keep));
@@ -138,7 +138,7 @@ namespace SteamEngine.CompiledScripts {
 			this.AddBackground(0, 0, Width, bottom + 36, 2620);
 			this.AddLabel(14, 12, 0x481, "Nepratel : " + keep.bans.Count);
 			this.AddButton(Width - 45, 12, 0xfb1, 0xfb3, 0, GumpButtonType.Reply, 0);
-			this.AddButton(14, bottom + 8, 4005, 4007, AddButton, GumpButtonType.Reply, 0);
+			this.AddButton(14, bottom + 8, 4005, 4007, AddingButton, GumpButtonType.Reply, 0);
 			this.AddLabel(50, bottom + 8, 955, "Pridat cloveka");
 			int pages = Math.Max(1, (keep.bans.Count + PageRows - 1) / PageRows);
 			for (int page = 0; page < pages; page++) {
@@ -165,7 +165,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!KeepCaptains.IsChief(player, keep)) {
 				return;
 			}
-			if (button == AddButton) {
+			if (button == AddingButton) {
 				player.SysMessage("Koho chces pridat na blacklist?");
 				player.Target(SingletonScript<Targ_KeepBan>.Instance, keep);
 			} else if ((button >= FirstRowButton) && ((button - FirstRowButton) < keep.bans.Count)) {
