@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""PreToolUse hook: no merge of a code change without a review (#1230, see AGENTS.md
+"""PreToolUse hook: no merge without a review (#1230; docs too since #1559, see AGENTS.md
 "How changes land" and CLAUDE.md "Subagents"), and no merge of an engine core change
 without the core owner's approval (#1559).
 
-Every code change gets an independent review agent before it merges, and the PR body
+Every change, code or docs, gets an independent review agent before it merges, and the PR body
 says what the review found under a `## Review` heading (`## Reviews`, any heading
 level, any case) with some text under it, up to the next heading of the same level
 or higher: an HTML comment alone, as in the PR template, doesn't count, nor does a
@@ -15,9 +15,8 @@ heading inside a comment or a code fence. This hook checks that section at the m
     else the hook's cwd) and its `-R/--repo`; `--disable-auto` merges nothing;
   - mcp__github__merge_pull_request: owner, repo, pullNumber.
 
-The PR's files and body come from `gh pr view --json files,changedFiles,body`. A PR
-whose files are all `*.md` is docs only and passes (when gh lists every file: it
-stops at 100). Anything else without the section is denied.
+The PR's files and body come from `gh pr view --json files,changedFiles,body,author,latestReviews`.
+A PR without the section is denied, whatever it changes.
 
 Engine core (#1559): a PR changing a non-`*.md` file under CORE_PATHS (the same paths
 as .github/CODEOWNERS) needs an approving review, as the latest review of its
@@ -52,8 +51,8 @@ CORE_REASON = ("PR {pr} changes engine core ({paths}) and has no approving revie
                "Core changes need {owner}'s approval (#1559, AGENTS.md): label the PR needs-core-review, "
                "request the review (gh pr edit --add-reviewer {owner}), and merge once approved.")
 
-REASON = ("PR {pr} changes code but its body has no '## Review' section with text under it. "
-          "Every code change gets an independent review agent before merge (#1230, AGENTS.md): "
+REASON = ("PR {pr} has no '## Review' section with text under it in its body. "
+          "Every change, docs included, gets an independent review agent before merge (#1230, #1559, AGENTS.md): "
           "run the review, fix or answer its findings, add '## Review' with what it found to "
           "the PR body (gh pr edit --body-file, in its own call), then merge.")
 
@@ -77,10 +76,6 @@ def has_review(body):
         if body[heading.end():end].strip():
             return True
     return False
-
-
-def docs_only(files, changed):
-    return bool(files) and len(files) == changed and all(f.lower().endswith(".md") for f in files)
 
 
 def core_files(files, changed):
@@ -191,7 +186,7 @@ def denial(data, fetch=fetch):
             continue
         files, changed, body = pr[:3]
         name = selector or "of this branch"
-        if not docs_only(files, changed) and not has_review(body):
+        if not has_review(body):
             return name, REASON.format(pr=name)
         if len(pr) >= 5:  # approvals known
             author, approved = pr[3], pr[4]

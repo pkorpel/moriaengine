@@ -87,10 +87,10 @@ Sessions die (OOM, mount drops), so the trail must exist before the work does:
 
 ## Subagents
 
-- **Review before merge** (every non-`*.md` change): the `reviewer` agent (or another fresh read-only agent)
+- **Review before merge** (every change, docs included): the `reviewer` agent (or another fresh read-only agent)
   gets the issue, the worktree and `git diff origin/main...HEAD`, **not your conclusions**. Verify each finding yourself, fix
   the real ones, re-run what they touch, and write what it found under `## Review` in the PR body (the
-  `require_review.py` hook checks for it). A numbers-heavy docs page gets a fact-check agent.
+  `require_review.py` hook checks for it). For docs, the review checks every stated fact against the code.
 - Briefs for research agents and forks say explicitly "read-only: do not edit, commit or push". Forks
   inherit the whole conversation and have implemented and merged work on their own. Check `git log` and
   `git status` after one returns.

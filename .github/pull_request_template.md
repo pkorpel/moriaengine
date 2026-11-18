@@ -13,7 +13,7 @@ Closes #
 
 ## Review
 
-<!-- Required for any change beyond *.md (#1230; the merge hook denies an empty section):
+<!-- Required for every change, docs included (#1230, #1559; the merge hook denies an empty section):
 what the independent review agent found and what changed because of it, "no defects" included. -->
 
 ## Before merge

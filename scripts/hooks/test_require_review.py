@@ -75,14 +75,11 @@ class Decision(unittest.TestCase):
         filled = template[:at] + template[at:].replace("-->\n", "-->\nNo defects; one comment clarified.\n", 1)
         self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, filled)})))
 
-    def test_docs_only_passes(self):
-        self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({"7": pr(DOCS, "docs")})))
-
-    def test_no_files_is_not_docs_only(self):
+    def test_docs_need_a_review_too(self):
+        # #1559: docs-only PRs are no longer exempt
+        self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(DOCS, "docs")})), "7")
+        self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({"7": pr(DOCS, REVIEWED)})))
         self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr([], "")})), "7")
-
-    def test_a_cut_file_list_is_not_docs_only(self):
-        self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": (["a.md"] * 100, 140, "")})), "7")
 
     def test_lookup_failure_fails_open(self):
         self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({})))

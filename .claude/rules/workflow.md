@@ -46,8 +46,8 @@ In this order:
    - A durable decision goes to `docs/current/08-history/design-decisions-log.md`.
    - A plain bugfix with no lasting "why" needs no doc.
 2. **The review agent has checked it, and every finding is addressed** (fixed, or answered in the PR). A
-   substantial fix gets reviewed again. The PR body's `## Review` says what was found. `*.md`-only changes get a
-   fact-check agent instead when they state facts or numbers.
+   substantial fix gets reviewed again. The PR body's `## Review` says what was found. Docs get reviewed too
+   (#1559): every stated fact checked against the code, plus clarity and contradictions with other pages.
 3. **Tested.**
    - A new test, red-checked: A/B with only the fix reverted, failing with the reported symptom.
    - The fast tier.

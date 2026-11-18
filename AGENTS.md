@@ -68,8 +68,8 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests, re
 5. **Done means, in order:**
    1. code and its docs in the same PR (a changed system updates its `moriaengine/docs/current/` page, a new
       page is linked from its README, and the wiki changes with the scripts, hooks or process it describes);
-   2. an independent review of every code change (anything but `*.md`), with every finding addressed and
-      the PR's `## Review` section saying what it found;
+   2. an independent review of every change, docs included (for docs it checks the stated facts against the
+      code), with every finding addressed and the PR's `## Review` section saying what it found;
    3. a new test that fails without the fix (A/B), the fast tier, and the area's protocol classes, with the
       PR listing only what ran (the full suite, ~3 h, runs once per batch);
    4. **engine core** (`GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`,

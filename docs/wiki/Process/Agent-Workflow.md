@@ -21,12 +21,12 @@ findings as they land). A standing rule changes through a PR to the file that ho
 
 ## Review agent
 
-- Every code change (anything but `*.md`) gets an independent, read-only review before merge (#1230): the
+- Every change, docs included (#1230, #1559), gets an independent, read-only review before merge: the
   `reviewer` agent (`.claude/agents/reviewer.md`) or another fresh agent. It gets the issue, the worktree and
   the diff, not the author's conclusions. Each finding is fixed or answered, and a substantial fix is reviewed
   again. The PR body's `## Review` section says what it found.
 - `scripts/hooks/require_review.py` (PreToolUse on `gh pr merge` and `merge_pull_request`) denies the merge
-  when that section is missing or empty. It also denies it when the PR changes engine core without
+  when that section is missing or empty, whatever the PR changes. It also denies it when the PR changes engine core without
   janslav's approval (#1559). It fails open when `gh` can't look the PR up. Its tests:
   `python3 scripts/hooks/test_require_review.py`.
 - Agents don't see the conversation: the caller passes the worktree path, the issue and what to check, and

@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Read-only code reviewer for pkorpel/moriaengine. Checks an issue branch against its issue in two passes, first spec (what the issue asks, nothing extra, an existing system reused) then quality (correctness, concurrency, fit with the code), and returns blocking and non-blocking findings. Run it before merging any change that isn't only *.md.
+description: Read-only reviewer for pkorpel/moriaengine. Checks an issue branch against its issue in two passes, first spec (what the issue asks, nothing extra, an existing system reused) then quality (correctness, concurrency, fit with the code; for docs, every stated fact against the code), and returns blocking and non-blocking findings. Run it before merging every change, docs included.
 tools: Read, Grep, Glob, Bash, mcp__github__issue_read
 model: opus
 effort: high
@@ -53,6 +53,13 @@ Only on code the diff touches:
   `trigger-system-architecture.md` section 8 and be agreed on its issue (#1558).
 - engine core (`GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`, the generators): say so in
   your return, since the PR then needs janslav's approval.
+
+## Docs (`*.md`) in the diff
+
+Every factual statement the diff adds or changes (behaviour, file/class/method names, numbers, issue
+numbers, paths, commands) is checked against the code. Wrong → blocking; imprecise or unverifiable →
+non-blocking with the evidence. Also flag a contradiction with another doc page or rule file, and a page
+that stopped being true because of the code in the same diff.
 
 Don't report style nits or taste.
 

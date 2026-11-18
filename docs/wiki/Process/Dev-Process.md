@@ -15,8 +15,8 @@ Last reviewed: 2026-11-18
 What "done" means, step by step, is in [Tasks](Tasks.md). What enforces it:
 
 - **CI:** a PR merges only after the `.NET Build` run on its head commit is green.
-- **Review (#1230):** every code change (anything but `*.md`) gets an independent review agent before
-  merge, and the PR body says what it found under `## Review`. For Claude,
+- **Review (#1230, docs too since #1559):** every change gets an independent review agent before merge (for
+  docs, it checks the stated facts against the code), and the PR body says what it found under `## Review`. For Claude,
   `scripts/hooks/require_review.py` denies `gh pr merge` / `merge_pull_request` while that section is
   missing or empty; see [Agent workflow](Agent-Workflow.md).
 - **Engine core (#1559):** a PR changing `moriaengine/GameCore/`, `Common/`, `Communication/`,
