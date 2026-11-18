@@ -3,7 +3,10 @@ namespace SteamEngine.Generators.Tests;
 internal static class GeneratorTestStubs {
 	internal const string CanonicalEngineTypes = """
 namespace SteamEngine {
-	public class Thing { }
+	public class Thing {
+		[global::SteamEngine.Persistence.LoadSection]
+		public static object Load(global::SteamEngine.PropsSection input) => new Thing();
+	}
 	public class FieldValue { }
 	public class ThingDef {
 		protected FieldValue InitTypedField(string name, object value, System.Type type) => new FieldValue();

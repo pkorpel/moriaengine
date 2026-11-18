@@ -48,6 +48,13 @@ public sealed partial class ThingAndPluginClassesGenerator : IIncrementalGenerat
 					continue;
 				}
 				context.AddSource(Renderer.GetHintName(pair), source);
+
+				if (Renderer.TryRenderSaveImplementor(pair, out var saveHintName, out var saveSource)) {
+					context.AddSource(saveHintName, saveSource);
+				}
+				if (Renderer.TryRenderDeepCopyImplementor(pair, out var deepCopyHintName, out var deepCopySource)) {
+					context.AddSource(deepCopyHintName, deepCopySource);
+				}
 			}
 		}
 

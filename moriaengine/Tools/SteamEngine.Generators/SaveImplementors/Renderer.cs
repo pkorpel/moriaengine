@@ -123,8 +123,8 @@ internal static class Renderer {
 
 	private static string GetStaticFactoryExpression(SaveImplementorModel model, string arg) {
 		var invocation = arg.Length == 0
-			? $"{model.QualifiedTypeName}.{model.LoadFactory.MethodName}()"
-			: $"{model.QualifiedTypeName}.{model.LoadFactory.MethodName}({arg})";
+			? $"{model.LoadFactory.DeclaringTypeName}.{model.LoadFactory.MethodName}()"
+			: $"{model.LoadFactory.DeclaringTypeName}.{model.LoadFactory.MethodName}({arg})";
 		return model.LoadFactory.RequiresCast
 			? $"({model.QualifiedTypeName}) {invocation}"
 			: invocation;

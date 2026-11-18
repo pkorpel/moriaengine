@@ -62,6 +62,20 @@ internal static class Analyzer {
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
+	internal static readonly DiagnosticDescriptor ForbiddenTemplateLoadFactoryAttributeDescriptor = new(
+		"SEGEN012",
+		"Template declares generated load-factory attribute",
+		"Template member '{0}' on '{1}' uses [{2}], but template load factories are generated automatically",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+	internal static readonly DiagnosticDescriptor InvalidTemplateLoadingFinalizerDescriptor = new(
+		"SEGEN013",
+		"Invalid template loading finalizer",
+		"Member '{0}' on '{1}' has [LoadingFinalizer] but {2}",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
 
 	internal static IReadOnlyList<TemplatePair> BuildTemplatePairs(
 		IReadOnlyCollection<TemplateCandidate> candidates,
@@ -217,19 +231,149 @@ internal static class Analyzer {
 			instanceFields.Where(f => f.IncludeInSaveLoad).ToList(),
 			diagnostics);
 		var copyMembers = instanceFields.Where(f => f.IncludeInCopy).ToList();
+		// Template pairs own their loading strategy end-to-end. We intentionally reject
+		// user-declared [LoadSection]/[LoadingInitializer] here and feed a fixed load
+		// factory model into the satellite save implementor renderer for deterministic
+		// parity with legacy template behavior.
+		if (!ValidateNoUserLoadFactoryAttributes(symbolPair.InstanceSymbol, requiredSymbols, diagnostics)) {
+			renderPair = null;
+			return false;
+		}
+		if (!TryResolveLoadingFinalizerMethodName(symbolPair.InstanceSymbol, requiredSymbols, diagnostics, out var loadingFinalizerMethodName)) {
+			renderPair = null;
+			return false;
+		}
+		var loadFactory = CreateTemplateLoadFactory(symbolPair.Family, requiredSymbols);
 
 		renderPair = new TemplatePair(
 			symbolPair.InstanceName,
+			GetQualifiedTypeName(symbolPair.NamespaceName, symbolPair.InstanceName),
 			symbolPair.DefName,
 			symbolPair.Family,
 			symbolPair.NamespaceName,
 			instanceBaseName,
 			defBaseName,
 			symbolPair.InstanceCopyAllowed,
+			loadFactory,
+			loadingFinalizerMethodName,
 			defFields,
 			saveLoadMembers,
 			copyMembers);
 		return true;
+	}
+
+	private static string GetQualifiedTypeName(string namespaceName, string typeName) {
+		if (string.IsNullOrEmpty(namespaceName)) {
+			return "global::" + typeName;
+		}
+		return "global::" + namespaceName + "." + typeName;
+	}
+
+	private static TemplateLoadFactory CreateTemplateLoadFactory(
+		TemplateFamily family,
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
+		// Plugin templates are generated with a public parameterless constructor and
+		// therefore load via constructor path in the save implementor model.
+		if (family == TemplateFamily.Plugin) {
+			return new TemplateLoadFactory(
+				TemplateLoadFactoryKind.Constructor,
+				methodName: null,
+				declaringTypeName: null,
+				takesPropsSection: false,
+				requiresCast: false);
+		}
+
+		// Thing templates must load through the canonical static Thing.Load(PropsSection)
+		return new TemplateLoadFactory(
+			TemplateLoadFactoryKind.StaticMethod,
+			methodName: "Load",
+			declaringTypeName: requiredSymbols.CanonicalTypes.ThingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			takesPropsSection: true,
+			requiresCast: true);
+	}
+
+	private static bool ValidateNoUserLoadFactoryAttributes(
+		INamedTypeSymbol? instanceSymbol,
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		ICollection<Diagnostic> diagnostics) {
+		if (instanceSymbol is null) {
+			return true;
+		}
+
+		var valid = true;
+		// Guardrail: these attributes are consumed by SaveImplementors, but template
+		// generation now drives that renderer directly with fixed factory semantics.
+		// Allowing template-defined attributes here would create conflicting load paths.
+		foreach (var member in instanceSymbol.GetMembers().OfType<IMethodSymbol>()) {
+			if (AttributeUsageValidator.HasCanonicalAttribute(member, requiredSymbols.Attributes.LoadSectionAttribute, diagnostics)) {
+				diagnostics.Add(Diagnostic.Create(
+					ForbiddenTemplateLoadFactoryAttributeDescriptor,
+					member.Locations.FirstOrDefault(),
+					member.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+					instanceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+					"LoadSection"));
+				valid = false;
+			}
+			if (AttributeUsageValidator.HasCanonicalAttribute(member, requiredSymbols.Attributes.LoadingInitializerAttribute, diagnostics)) {
+				diagnostics.Add(Diagnostic.Create(
+					ForbiddenTemplateLoadFactoryAttributeDescriptor,
+					member.Locations.FirstOrDefault(),
+					member.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+					instanceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+					"LoadingInitializer"));
+				valid = false;
+			}
+		}
+
+		return valid;
+	}
+
+	private static bool TryResolveLoadingFinalizerMethodName(
+		INamedTypeSymbol? instanceSymbol,
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		ICollection<Diagnostic> diagnostics,
+		out string? loadingFinalizerMethodName) {
+		loadingFinalizerMethodName = null;
+		if (instanceSymbol is null) {
+			return true;
+		}
+
+		var method = SingleAttributedMethodResolver.Resolve(
+			GetLoadingFinalizerSearchMembers(instanceSymbol),
+			requiredSymbols.Attributes.LoadingFinalizerAttribute,
+			diagnostics,
+			instanceSymbol,
+			"LoadingFinalizer");
+		if (method is null) {
+			return true;
+		}
+
+		if (method.MethodKind != MethodKind.Ordinary || method.IsStatic || method.Parameters.Length != 0) {
+			diagnostics.Add(Diagnostic.Create(
+				InvalidTemplateLoadingFinalizerDescriptor,
+				method.Locations.FirstOrDefault(),
+				method.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+				instanceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				"it must be an instance method with no parameters"));
+			return false;
+		}
+
+		loadingFinalizerMethodName = method.Name;
+		return true;
+	}
+
+	private static IEnumerable<ISymbol> GetLoadingFinalizerSearchMembers(INamedTypeSymbol instanceSymbol) {
+		foreach (var member in instanceSymbol.GetMembers()) {
+			yield return member;
+		}
+
+		for (var current = instanceSymbol.BaseType; current is not null; current = current.BaseType) {
+			foreach (var member in current.GetMembers()) {
+				if (member.DeclaredAccessibility == Accessibility.Public) {
+					yield return member;
+				}
+			}
+		}
 	}
 
 	internal static List<InstanceFieldSpec> ValidateDistinctSaveLoadKeys(List<InstanceFieldSpec> saveLoadMembers, ICollection<Diagnostic> diagnostics) {

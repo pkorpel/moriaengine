@@ -26,7 +26,10 @@ public class PluginDef {
 
 public class MagicThing : global::SteamEngine.Thing { }
 public class MagicThingDef : global::SteamEngine.ThingDef { }
-public class EffectPlugin : Plugin { }
+public class EffectPlugin : Plugin {
+	[global::SteamEngine.Persistence.LoadingFinalizer]
+	public void FinishLoadingFromBasePlugin() { }
+}
 public class EffectPluginDef : PluginDef { }
 
 public delegate void LoadObject(object resolvedObject, string filename, int line);
@@ -101,18 +104,28 @@ public partial class ArcaneBeaconDef : MagicThingDef {
 		AssertGeneratedContains(generated,
 			"partial class ArcaneBeacon : MagicThing",
 			"partial class ArcaneBeaconDef : MagicThingDef",
-			"[DeepCopyableClass]",
-			"[SaveableClass]",
+			"GeneratedDeepCopyImplementor_ArcaneBeacon",
+			"GeneratedSaveImplementor_ArcaneBeacon",
+			"class GeneratedSaveImplementor_ArcaneBeacon",
+			"class GeneratedDeepCopyImplementor_ArcaneBeacon",
+			"public sealed class GeneratedSaveImplementor_ArcaneBeacon : global::SteamEngine.Persistence.DecoratedClassesSaveImplementor",
+			"public sealed class GeneratedDeepCopyImplementor_ArcaneBeacon : global::SteamEngine.IDeepCopyImplementor",
+			"global::ScriptSandbox.ArcaneBeacon loadedObject = (global::ScriptSandbox.ArcaneBeacon) global::SteamEngine.Thing.Load(input);",
+			"castObjToSave.Save(writer);",
+			"public object DeepCopy(object copyFrom)",
+			"global::ScriptSandbox.ArcaneBeacon copy = new global::ScriptSandbox.ArcaneBeacon(copyFromConverted);",
+			"global::ScriptSandbox.ArcaneBeacon loadedObject = (global::ScriptSandbox.ArcaneBeacon) global::SteamEngine.Thing.Load(input);",
 			"public new ArcaneBeaconDef TypeDef",
 			"public override void Save(",
 			"public override void LoadLine(",
-			"[DeepCopyImplementation]",
 			"public ArcaneBeacon(ArcaneBeaconDef myDef)",
 			"public ArcaneBeacon(ArcaneBeacon copyFrom)",
 			"public int MaxCharge",
 			"public string School",
 			"InitTypedField(\"maxCharge\", 9, typeof(int))",
 			"InitTypedField(\"school\", \"Arcane\", typeof(string))",
+			"static ArcaneBeaconDef() {",
+			"public static new void Bootstrap() {",
 			"ThingDef.RegisterThingDef(typeof(ArcaneBeaconDef), typeof(ArcaneBeacon))");
 		AssertGeneratedOmits(generated, "RegisterPluginDef(");
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
@@ -143,15 +156,28 @@ public partial class EchoWardDef : EffectPluginDef {
 		AssertGeneratedContains(generated,
 			"partial class EchoWard : EffectPlugin",
 			"partial class EchoWardDef : EffectPluginDef",
+			"GeneratedDeepCopyImplementor_EchoWard",
+			"GeneratedSaveImplementor_EchoWard",
+			"class GeneratedSaveImplementor_EchoWard",
+			"class GeneratedDeepCopyImplementor_EchoWard",
+			"public sealed class GeneratedSaveImplementor_EchoWard : global::SteamEngine.Persistence.DecoratedClassesSaveImplementor",
+			"public sealed class GeneratedDeepCopyImplementor_EchoWard : global::SteamEngine.IDeepCopyImplementor",
+			"global::ScriptSandbox.EchoWard loadedObject = new global::ScriptSandbox.EchoWard();",
+			"this.LoadSectionLines(input, loadedObject);",
+			"loadedObject.FinishLoadingFromBasePlugin();",
+			"castObjToSave.Save(writer);",
+			"public object DeepCopy(object copyFrom)",
+			"global::ScriptSandbox.EchoWard copy = new global::ScriptSandbox.EchoWard(copyFromConverted);",
 			"public new EchoWardDef TypeDef",
 			"public override void Save(",
 			"public override void LoadLine(",
-			"[LoadingInitializer]",
 			"public EchoWard()",
 			"public int PulseSeconds",
 			"this.pulseSeconds = SteamEngine.Common.ConvertTools.ParseInt32(valueString);",
 			"this.label = (string) ObjectSaver.OptimizedLoad_String(valueString);",
 			"InitTypedField(\"pulseSeconds\", 5, typeof(int))",
+			"static EchoWardDef() {",
+			"public static new void Bootstrap() {",
 			"PluginDef.RegisterPluginDef(typeof(EchoWardDef), typeof(EchoWard))");
 		AssertGeneratedOmits(generated, "RegisterThingDef(");
 		AssertGeneratedOmits(generated, "Convert.ChangeType(");
@@ -175,14 +201,14 @@ public partial class WhisperNodeDef : MagicThingDef {
 		AssertGeneratedContains(generated,
 			"partial class WhisperNode : MagicThing",
 			"partial class WhisperNodeDef : MagicThingDef",
+			"class GeneratedSaveImplementor_WhisperNode",
 			"public WhisperNode(WhisperNodeDef myDef)",
 			"public new WhisperNodeDef TypeDef",
 			"public int Pulse",
 			"InitTypedField(\"pulse\", 1, typeof(int))",
+			"static WhisperNodeDef() {",
+			"public static new void Bootstrap() {",
 			"ThingDef.RegisterThingDef(typeof(WhisperNodeDef), typeof(WhisperNode))");
-		AssertGeneratedOmits(generated,
-			"Save(",
-			"LoadLine(");
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
 	}
 
@@ -203,6 +229,8 @@ public partial class EmberGlyph : EffectPlugin {
 		AssertGeneratedContains(generated,
 			"partial class EmberGlyph : EffectPlugin",
 			"partial class EmberGlyphDef : EffectPluginDef",
+			"static EmberGlyphDef() {",
+			"public static new void Bootstrap() {",
 			"PluginDef.RegisterPluginDef(typeof(EmberGlyphDef), typeof(EmberGlyph))",
 			"public new EmberGlyphDef TypeDef",
 			"public EmberGlyph()");
@@ -336,6 +364,7 @@ public partial class NoCopyBeaconDef : MagicThingDef {
 		AssertGeneratedOmits(generated,
 			"public NoCopyBeacon(NoCopyBeacon copyFrom)",
 			"[DeepCopyImplementation]",
+			"GeneratedDeepCopyImplementor_NoCopyBeacon",
 			"this.charges = copyFrom.charges;",
 			"this.payload = copyFrom.payload;",
 			"private void DelayedCopy_Payload(object copiedValue)");
@@ -361,6 +390,37 @@ public partial class CopyExpressionBeaconDef : MagicThingDef {
 		var run = RunGenerator(nameof(TemplateCopyNonLiteral_ReportsDiagnostic), source);
 		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN006");
 		Assert.Contains("!false", error.GetMessage(), StringComparison.Ordinal);
+	}
+
+	[Fact]
+	public void TemplateDeclaringLoadFactoryAttributes_ReportsDiagnostic() {
+		const string source = """
+namespace ScriptSandbox;
+
+[ThingTemplate]
+public partial class BadLoadFactoryBeacon : MagicThing {
+	[SaveableData]
+	private int charges = 1;
+
+	[SteamEngine.Persistence.LoadSection]
+	public static object Load(global::SteamEngine.PropsSection input) {
+		return null;
+	}
+
+	[SteamEngine.Persistence.LoadingInitializer]
+	public BadLoadFactoryBeacon() {
+	}
+}
+
+[ThingDefTemplate]
+public partial class BadLoadFactoryBeaconDef : MagicThingDef {
+}
+""";
+
+		var run = RunGenerator(nameof(TemplateDeclaringLoadFactoryAttributes_ReportsDiagnostic), source);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadSection", StringComparison.Ordinal));
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadingInitializer", StringComparison.Ordinal));
+		Assert.Empty(run.GeneratedSources);
 	}
 
 	[Fact]
