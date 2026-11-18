@@ -15,16 +15,6 @@ internal sealed class ScriptHolderCandidate {
 	internal string? Description { get; }
 }
 
-internal sealed class ScriptHolderDiscoveryResult {
-	internal ScriptHolderDiscoveryResult(ScriptHolderCandidate? candidate, IReadOnlyList<Diagnostic> diagnostics) {
-		Candidate = candidate;
-		Diagnostics = diagnostics;
-	}
-
-	internal ScriptHolderCandidate? Candidate { get; }
-	internal IReadOnlyList<Diagnostic> Diagnostics { get; }
-}
-
 internal sealed class ScriptHolderModel {
 	internal ScriptHolderModel(
 		string generatedTypeName,

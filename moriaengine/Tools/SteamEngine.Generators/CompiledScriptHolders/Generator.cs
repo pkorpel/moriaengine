@@ -1,18 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
+// Generates compiled script-holder registry classes from public static methods
+// marked with [SteamFunction], including optional custom function names.
 [Microsoft.CodeAnalysis.Generator]
-public sealed class Generator : IIncrementalGenerator {
+public sealed class CompiledScriptHoldersGenerator : IIncrementalGenerator {
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
 		var methods = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (node, _) => node is MethodDeclarationSyntax mds && mds.AttributeLists.Count > 0,
-				static (ctx, _) => Parser.DiscoverCandidate(ctx))
-			.Where(static r => r is not null)
+				static (ctx, _) => (MethodDeclarationSyntax) ctx.Node)
 			.Collect();
 
 		context.RegisterSourceOutput(
@@ -23,26 +23,21 @@ public sealed class Generator : IIncrementalGenerator {
 	private static void Execute(
 		SourceProductionContext context,
 		Compilation compilation,
-		IReadOnlyCollection<ScriptHolderDiscoveryResult> discoveries) {
+		IReadOnlyCollection<MethodDeclarationSyntax> methodDeclarations) {
 		var diagnostics = new List<Diagnostic>();
-		var hasRequiredDeclarations = Analyzer.ValidateRequiredDeclarations(compilation, diagnostics);
-		var hasRequiredCanonicalTypes = Analyzer.ValidateRequiredCanonicalTypes(compilation, diagnostics);
+		var requiredSymbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
 
-		if (hasRequiredDeclarations && hasRequiredCanonicalTypes) {
-
+		if (requiredSymbols is not null) {
 			var candidates = new List<ScriptHolderCandidate>();
-			foreach (var discovery in discoveries) {
-				if (discovery is null) {
+			foreach (var declaration in methodDeclarations) {
+				var candidate = Parser.DiscoverCandidate(compilation, declaration, requiredSymbols, diagnostics);
+				if (candidate is null) {
 					continue;
 				}
-
-				diagnostics.AddRange(discovery.Diagnostics);
-				if (discovery.Candidate is not null) {
-					candidates.Add(discovery.Candidate);
-				}
+				candidates.Add(candidate);
 			}
 
-			var models = Analyzer.BuildModels(candidates, diagnostics, compilation);
+			var models = Analyzer.BuildModels(candidates, diagnostics, requiredSymbols);
 			foreach (var model in models) {
 				if (!Renderer.TryRender(model, out var source)) {
 					continue;
