@@ -13,8 +13,7 @@ GitHub issues; history is git, PRs and `docs/history/`.
   world setup) load only when you touch matching files. To change a rule, edit its file in a PR.
 - Skills (`.claude/skills/`) are loaded on demand:
   `protocol-tests` (running and debugging full-boot tests), `converter-regen`, `debug-hang`, `erebor-reference`.
-- Commands (`.claude/commands/`): `/task-new`, `/task-refine`, `/task-pick`, `/task-run`, `/task-ship`,
-  `/status-weekly`. Role agents: `.claude/agents/` (analyst, developer, reviewer, tester).
+- Agent definition: `.claude/agents/reviewer.md`, the read-only review agent run before every code merge.
 - What a rule must never stop doing goes in a hook (`.claude/settings.json`, `scripts/hooks/`), not in prose.
 - GitHub: the `github` MCP server (`.mcp.json` → `scripts/mcp-github.sh`) or `gh`.
 
@@ -22,8 +21,9 @@ GitHub issues; history is git, PRs and `docs/history/`.
 
 Sessions die (OOM, mount drops), so the trail must exist before the work does:
 
-1. **First action on any task:** the GitHub issue exists, and its first comment says what was asked and
-   the plan. This replaces the old rule of writing an IN PROGRESS entry into CLAUDE.md.
+1. **First action on any task:** the GitHub issue exists, labelled, and a **"Picking this up"** comment says
+   what was asked, the plan and the branch. This replaces the old rule of writing an IN PROGRESS entry into
+   CLAUDE.md.
 2. While working, comment on the issue when something real lands: root cause, a decision, a scope cut,
    "done in PR, review said X". Those comments are the resume point.
 3. **Resuming after a crash:** run `git worktree list`, then `git status` in each `../moria-*` worktree.
@@ -87,8 +87,8 @@ Sessions die (OOM, mount drops), so the trail must exist before the work does:
 
 ## Subagents
 
-- **Review before merge** (every non-`*.md` change): a fresh read-only agent gets the issue,
-  `git diff origin/main...HEAD` and the files, **not your conclusions**. Verify each finding yourself, fix
+- **Review before merge** (every non-`*.md` change): the `reviewer` agent (or another fresh read-only agent)
+  gets the issue, the worktree and `git diff origin/main...HEAD`, **not your conclusions**. Verify each finding yourself, fix
   the real ones, re-run what they touch, and write what it found under `## Review` in the PR body (the
   `require_review.py` hook checks for it). A numbers-heavy docs page gets a fact-check agent.
 - Briefs for research agents and forks say explicitly "read-only: do not edit, commit or push". Forks

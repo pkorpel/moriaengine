@@ -50,29 +50,33 @@ scripts/worktree-add.sh <n>-<slug>             # sparse worktree ../moria-<n> fr
 
 ## How changes land
 
-Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests) and
-`docs/wiki/Process/Agent-Workflow.md` (agent flow).
+Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests, review) and
+`docs/wiki/Process/Tasks.md` (issues, labels, definition of done). Agents: `.claude/rules/workflow.md`.
 
-1. **Issue first.** Every piece of work has a GitHub issue before work starts. Findings, decisions and
-   progress go on the issue as comments while you work. Close it once the PR has merged, referencing the
-   PR (`/task-run` closes it after its local-boot verify).
-2. **Branch** `<n>-<slug>`, in its own worktree `../moria-<n>`. `main` takes changes only through PRs,
-   which are squash-merged.
-3. **Hooks:** run `pre-commit install` once per clone. Never use `--no-verify`. Commit subject:
-   `area: what changed (#1234)`, imperative, at most 72 characters, issue number at the end, and never a
-   leading `#`, because git reads that as a comment. No `Co-Authored-By` or session trailers: the
-   commit-msg hook rejects them.
-4. **Tests:** a fix gets a test that fails without it. Run the fast tier plus the protocol classes for the
-   area you touched. The full suite (~3 h) runs once at the end of a batch of work, not per PR. The PR
-   body lists only the checks that really ran, on the final code.
-5. **Review:** every change to code gets an independent review before merge, and the PR body has a
-   `## Review` section saying what it found. Code is anything other than `*.md`: C#, `.def`/`.scp`,
-   scripts, hooks, CI, `.claude/settings.json`. `.claude/` command, agent, rule and skill pages are `.md`,
-   so they count as docs. For Claude a hook enforces this.
-6. **Docs in the same PR:** a change to a system documented in `moriaengine/docs/current/` updates that
-   page in the same PR. A new system gets a new page, linked from `moriaengine/docs/current/README.md`. A
-   plain bugfix with no lasting "why" needs no doc change. The wiki (`docs/wiki/`) also changes in the
-   same branch as the scripts, hooks, CI or commands it describes.
+1. **Issue first, labelled.** Every piece of work has a GitHub issue before it starts, with exactly one
+   `type:` (bug, feature, chore, docs, research), one `prio:` (1-3) and the `area:` labels that apply.
+2. **"Picking this up"** is the first comment when work starts: the plan and the branch. Findings and
+   decisions go on the issue as comments while you work.
+3. **A feature investigates the existing system first** and plugs into it: an "Existing system" comment on
+   the issue covering the engine (its `docs/current/` page, the code, the original `a27bbf6`) and Erebor. If
+   the existing piece is broken, it's fixed first in its own issue, never replaced. A new system, or one
+   touching more than one existing system, gets a design note the maintainer OKs first.
+4. **Branch** `<n>-<slug>`, in its own worktree `../moria-<n>`. `main` takes changes only through
+   squash-merged PRs. Run `pre-commit install` once per clone, and never `--no-verify`. Commit subject:
+   `area: what changed (#1234)`, imperative, at most 72 characters, never a leading `#`. No `Co-Authored-By`
+   or session trailers: the commit-msg hook rejects them.
+5. **Done means, in order:**
+   1. code and its docs in the same PR (a changed system updates its `moriaengine/docs/current/` page, a new
+      page is linked from its README, and the wiki changes with the scripts, hooks or process it describes);
+   2. an independent review of every code change (anything but `*.md`), with every finding addressed and
+      the PR's `## Review` section saying what it found;
+   3. a new test that fails without the fix (A/B), the fast tier, and the area's protocol classes, with the
+      PR listing only what ran (the full suite, ~3 h, runs once per batch);
+   4. **engine core** (`GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`,
+      `Tools/SteamEngine.Generators*`) **approved by janslav** (`.github/CODEOWNERS`, `needs-core-review`);
+   5. CI green and merged;
+   6. the issue closed with a summary comment, and `needs-in-game-check` if it hasn't been tried in a real
+      client.
 
 ## Rules that hold everywhere
 

@@ -1,65 +1,73 @@
 # Workflow
 
-The process itself is in `docs/wiki/Process/Dev-Process.md` and `Agent-Workflow.md`. This file holds the
-rules learned the hard way on top of it.
+The lifecycle every piece of work follows (#1559). The full process, for people too, is in
+`docs/wiki/Process/Dev-Process.md` and `Tasks.md`.
 
-## Issues
+## 1. Issue, with labels
 
 - Raise the issue **before** any investigation or code, for bugs you find yourself too. Don't ask first.
-- Comment on the issue as things land: root cause, options and the one chosen, why something was or
-  wasn't ported from Erebor, scope cuts. The thread should read as the story of the work.
-- Close it only when the PR has merged, and reference the PR (the PR body says `Part of #<n>`, so the merge
-  doesn't close it; `/task-run` closes after its local-boot verify). To close, use a separate update call:
-  `issue_write create` with `state: closed` leaves the issue open. Check the real state afterwards.
-- Stay inside the issue's scope. A bug found along the way gets its own issue and PR.
-- Only the maintainer moves an issue to `status:ready`.
+- Labels when raising it: exactly one `type:` (`bug`, `feature`, `chore`, `docs`, `research`), exactly one
+  `prio:` (1 urgent, 2 next, 3 some day), and every `area:` that applies (`combat`, `skills`, `magic`,
+  `economy`, `npc`, `world`, `quests`, `admin`, `login`, `infra`). Use the issue templates' sections.
+- The maintainer's go-ahead in chat makes it ready. There is no ready label.
 
-## Before you build
+## 2. Picking it up
 
-- **Verify claims in code.** "Shipped" in an old note, an audit's "X doesn't work", or "already exists"
-  can each be wrong. Read the current code. When the maintainer says something exists that a search
-  missed, read the whole relevant directory instead of grepping again.
-- Before porting what changes a thing's state, check what that state actually does. One audit's
-  "doesn't unlock" turned out to mean nothing was ever locked.
-- Reusing an existing mechanism (a curve, a delay, a timer): check that its math really fits the source.
-  Don't force a fit.
-- Don't invent tuning numbers. Where the source gives none, put the value on `.settings` and say it's a
-  guess. Configuration that isn't filled in defaults to permissive (an empty allow-list means
-  unrestricted).
+- The first comment when work starts: **"Picking this up"**, with the plan and the branch/worktree. That
+  comment is the resume point after a crash.
+- Comment as things land: root cause, options and the one chosen, why something was or wasn't ported from
+  Erebor, scope cuts. The thread should read as the story of the work.
+- Stay inside the issue's scope. A bug found along the way gets its own issue (labelled) and PR.
 
-## Fixing
+## 3. Before building
 
-- **Fix by category, not by instance.** A tiledata, LOS or movement bug is fixed for the UO flag it
-  carries (`Surface`, `Roof`, `Noshoot`...), never for one model number. If a fix touches only one half
-  of a symmetric check, check the other half too.
-- For a live bug report, reproduce it at the reported coordinates, with real tiledata (a throwaway
-  diagnostic command is fine). A synthetic test that passes doesn't close the report.
-- When the maintainer says "still broken", first prove the fix still changes the outcome (disable it and
-  see the test fail) before blaming old data.
-- A tuning change also updates the tests that hard-code the old number.
+- **Feature or port: investigate the existing system first.** Post an "Existing system" comment: how the
+  engine already does it or something close (its `docs/current/` page, the code, the original in `a27bbf6`),
+  and how Erebor does it. Then plug into that system and never reinvent it. **If the existing piece is broken,
+  file it and fix it first, never replace it.** The review agent blocks a second mechanism.
+- A feature that adds a new system or touches more than one existing one: a short design note on the issue,
+  OKed by the maintainer, before building.
+- **Bug:** reproduce it at the reported spot. The test must fail with the reported symptom. Fix by
+  category, not instance: a tiledata/LOS/movement bug is fixed for the UO flag it carries, never one model
+  number; if a fix touches one half of a symmetric check, check the other half.
+- **Research:** the output is a docs page, no code, until the maintainer picks items.
+- **Verify claims in code.** "Shipped" in an old note, an audit's "X doesn't work", "already exists": read the
+  current code. When the maintainer says something exists that a search missed, read the whole directory.
+- Don't invent tuning numbers: where the source gives none, put the value on `.settings` and say it's a guess.
 
-## Shipping
+## 4. Definition of done
 
-- Each PR has its own new test, red-checked: revert just the fix, see the test fail with the reported
-  symptom, then restore it. It also gets the fast tier (`scripts/test-fast.sh`, which compiles Release
-  too) and a generous set of protocol classes for the area (see the `protocol-tests` skill).
-- The PR body lists only checks that ran on the final code. After a fix made since the last run, run
-  again.
-- Merge with `gh pr merge --squash` once local checks and CI are green. When CI can't run (the run fails in
-  seconds with no runner allocated: out of minutes), `--admin` after full local verification is
-  authorized; say so in the PR. A red CI run is never merged.
-- After the merge: close the issue with the PR reference, delete the branch, and remove the worktree
-  when you're done with it.
-- New player-facing commands go on the allowlist in the same PR (see `engine-patterns.md`). New tunables
-  go on `.settings` in the same PR, not as a follow-up.
-- Docs: a change to a documented system updates its `moriaengine/docs/current/` page in the same PR. A
-  new page is linked from `docs/current/README.md`. A plain bugfix with no lasting "why" needs none.
-  A durable design decision also goes in `docs/current/08-history/design-decisions-log.md`, and a known
-  gap in `known-gaps-and-tech-debt.md`. Docs explain how and why and link the issue; they don't tell the
-  bug's story. The wiki (`docs/wiki/`) changes in the same branch as the scripts, hooks, CI, commands or
-  agents it describes.
+In this order:
 
-## Full protocol suite
+1. **Code and its docs are done, in the same PR.**
+   - A changed system updates its `moriaengine/docs/current/` page; a new page is linked from
+     `docs/current/README.md`.
+   - Scripts, hooks, CI or process update `docs/wiki/`.
+   - A durable decision goes to `docs/current/08-history/design-decisions-log.md`.
+   - A plain bugfix with no lasting "why" needs no doc.
+2. **The review agent has checked it, and every finding is addressed** (fixed, or answered in the PR). A
+   substantial fix gets reviewed again. The PR body's `## Review` says what was found. `*.md`-only changes get a
+   fact-check agent instead when they state facts or numbers.
+3. **Tested.**
+   - A new test, red-checked: A/B with only the fix reverted, failing with the reported symptom.
+   - The fast tier.
+   - The protocol classes for the area, chosen generously (`protocol-tests` skill).
+   - The PR lists only what ran on the final code; run again after any later fix.
+4. **Core approval:** a PR touching `moriaengine/GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`
+   or `Tools/SteamEngine.Generators*` gets the `needs-core-review` label and a review request to janslav
+   (`gh pr edit --add-reviewer janslav`), and waits for his approval. A ruleset on `main` and the merge hook
+   enforce it. Carry on with other work meanwhile.
+5. **Merged:** CI green, then `gh pr merge --squash`. Commit subject `area: what changed (#n)`. Delete the
+   branch, and remove the worktree when done.
+6. **Issue closed with a summary comment**: what shipped, the PR, follow-up issues, and what isn't tried in a
+   real client (then also the `needs-in-game-check` label). The PR says `Closes #n`. Close with a separate
+   update call where needed: `issue_write create` with `state: closed` leaves an issue open.
 
-The whole suite takes about 3 h. Don't run it per PR: run it once at the end of a planned batch, or when
-the maintainer asks. Per PR, run the targeted classes.
+## Batches
+
+When the maintainer gives a list and says to carry on, go from item to item without asking. Park questions
+that are truly theirs, and ask them together at the end. Never decide on your own a design call that would
+silently change behaviour project-wide. Work they deferred or parked isn't started until they pick it up.
+
+The full protocol suite (~3 h) runs once at the end of a batch, or when the maintainer asks, not per PR.
+Post its result on the batch's issue.

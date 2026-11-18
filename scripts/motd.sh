@@ -58,10 +58,10 @@ if not isinstance(issues, list): sys.exit()
 issues = [i for i in issues if "pull_request" not in i]
 count = {}
 for i in issues:
-    st = next((l["name"][7:] for l in i["labels"] if l["name"].startswith("status:")), "triage")
-    count[st] = count.get(st, 0) + 1
+    kind = next((l["name"][5:] for l in i["labels"] if l["name"].startswith("type:")), "unlabelled")
+    count[kind] = count.get(kind, 0) + 1
     if str(i["number"]) == iid:
-        print(f"issue_status={st}")
+        print(f"issue_status={kind}")
         print("issue_title=" + shlex.quote(i["title"][:50]))
 print("board=" + shlex.quote(" ".join(f"{k}:{v}" for k, v in sorted(count.items()))))
 pr = load("pr")
@@ -72,7 +72,7 @@ EOF
 
 if [ "$mode" = line ]; then
   cache="${common:-/tmp}/moria-statusline.$(printf '%s' "$branch" | tr '/' '_')"
-  if [ ! -f "$cache" ] || [ $(( $(date +%s) - $(stat -f %m "$cache" 2>/dev/null || stat -c %Y "$cache" 2>/dev/null || echo 0) )) -gt "$TTL" ]; then
+  if [ ! -f "$cache" ] || [ $(( $(date +%s) - $(stat -c %Y "$cache" 2>/dev/null || stat -f %m "$cache" 2>/dev/null || echo 0) )) -gt "$TTL" ]; then
     remote > "$cache.tmp" 2>/dev/null && mv "$cache.tmp" "$cache"
   fi
   issue_status= pr= board=
@@ -88,16 +88,16 @@ fi
 issue_status= issue_title= pr= board=
 eval "$(remote 2>/dev/null)"
 
-next="/task-pick to start a status:ready issue, or /task-new to file one"
+next="pick an issue (comment \"Picking this up\" with the plan), or file one with labels"
 case "$branch" in
   main) [ "$dirty" -gt 0 ] && next="uncommitted changes on main: move them to an issue branch" ;;
   [0-9]*-*)
-    if [ -n "$pr" ]; then next="PR #$pr is open: /task-ship waits for CI and merges it"
-    elif [ "$ahead" != n/a ] && [ "$ahead" -gt 0 ]; then next="$ahead commit(s) on #$iid: /task-ship when done"
-    else next="work on #$iid, then /task-ship"; fi ;;
+    if [ -n "$pr" ]; then next="PR #$pr is open: review agent, CI, core approval if needed, then merge"
+    elif [ "$ahead" != n/a ] && [ "$ahead" -gt 0 ]; then next="$ahead commit(s) on #$iid: tests, review agent, then a PR"
+    else next="work on #$iid"; fi ;;
 esac
 
-text="$PREFIX · issue → branch → PR → main → verified locally → closed
+text="$PREFIX · issue → picking up → branch → PR → review → merged → closed
   checkout  $branch$( [ "$dirty" -gt 0 ] && echo " ($dirty changed)")$( [ "$ahead" != n/a ] && echo ", $ahead ahead of origin/main")
   issue     $( [ -n "$iid" ] && echo "#$iid ${issue_status:-?} ${issue_title:-}" || echo none)
   board     ${board:-n/a (no GitHub token, or no access to $REPO)}

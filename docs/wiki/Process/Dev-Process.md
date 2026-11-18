@@ -1,6 +1,6 @@
 # Dev process
 
-Last reviewed: 2026-10-17
+Last reviewed: 2026-11-18
 
 ## Branches
 
@@ -12,18 +12,32 @@ Last reviewed: 2026-10-17
 
 ## The merge gate
 
-`/task-ship` is the gate, whatever the plan: on GitHub Free a private repo has no
-branch protection or required checks (if yours has them, they apply on top). So:
+What "done" means, step by step, is in [Tasks](Tasks.md). What enforces it:
 
-- `/task-ship` merges a PR only after the `.NET Build` run on the PR's head commit is
-  green.
-- Locally, `pre-commit` refuses commits on `main`, and `.claude/settings.json`
-  denies pushes to `main`, force pushes and `--no-verify` for Claude.
-- Every code change (anything but `*.md`) gets an independent review agent before
-  merge, and the PR body says what it found under `## Review` (#1230). For Claude,
-  `scripts/hooks/require_review.py` denies `gh pr merge` / `merge_pull_request`
-  while that section is missing or empty; see [Agent workflow](Agent-Workflow.md).
-- A person can still push to `main` directly — don't.
+- **CI:** a PR merges only after the `.NET Build` run on its head commit is green.
+- **Review (#1230):** every code change (anything but `*.md`) gets an independent review agent before
+  merge, and the PR body says what it found under `## Review`. For Claude,
+  `scripts/hooks/require_review.py` denies `gh pr merge` / `merge_pull_request` while that section is
+  missing or empty; see [Agent workflow](Agent-Workflow.md).
+- **Engine core (#1559):** a PR changing `moriaengine/GameCore/`, `Common/`, `Communication/`,
+  `AuxiliaryServer/` or `Tools/SteamEngine.Generators*` needs janslav's approval (pkorpel's for janslav's
+  own PRs). `.github/CODEOWNERS` lists the paths and asks for the review. The ruleset on `main`
+  ("Require review from Code Owners", no bypass) enforces it on GitHub, and the same hook checks it before
+  Claude merges. Label such a PR `needs-core-review`.
+- **Locally:** `pre-commit` refuses commits on `main`, and `.claude/settings.json` denies pushes to `main`,
+  force pushes and `--no-verify` for Claude.
+
+The repo is public, so GitHub Free gives branch rulesets and code-owner reviews.
+
+### Ruleset on `main` (set once by the admin)
+
+Settings → Rules → Rulesets → New branch ruleset: name `main`, enforcement **Active**, bypass list
+**empty**, target the default branch. Rules:
+
+- Restrict deletions; block force pushes.
+- Require a pull request before merging: **required approvals 0**, **Require review from Code Owners** on,
+  allowed merge method squash. With 0 approvals only PRs touching a CODEOWNERS path need one.
+- Require status checks to pass: `build-and-unit-test` (the `.NET Build` workflow's fast-tier job).
 
 ## Hooks (`.pre-commit-config.yaml`)
 
@@ -42,11 +56,11 @@ Install once per clone: `pre-commit install`.
 - Manual runs (`workflow_dispatch`, Actions → ".NET Build" → Run workflow) take a
   `tier`: `fast` (default, same job as push/PR) or `full` (entire suite incl.
   full-boot `Tests/Protocol`, ~10–25 min).
-- If no push/PR run shows up for a PR's head commit within 3 minutes, `/task-ship`
-  dispatches the fast tier on the branch and gates the merge on that run instead.
-- Private repo on Free: 2000 Actions minutes / month, so full-boot tests run locally
-  (`scripts/test-full.sh`): the area's classes per PR, the whole suite (~3 h) once at the
-  end of a batch of work.
+- If no push/PR run shows up for a PR's head commit within 3 minutes, dispatch the fast tier on the
+  branch (`gh workflow run dotnet.yml --ref <branch> -f tier=fast`) and gate the merge on that run.
+- The repo is public, so Actions minutes aren't limited. The full-boot tests still run locally
+  (`scripts/test-full.sh`) because the whole suite takes ~3 h: the area's classes per PR, the whole suite
+  once at the end of a batch of work.
 
 ## Tests
 
@@ -82,7 +96,7 @@ leftovers, and a run refuses to start while any exist. Details:
 moriaengine/docs/current/07-testing/test-infrastructure.md (#785).
 
 Saves: unless the fixture gives each test class its own temp save directory,
-full-boot runs write into `moriaengine/saves/`, and a dirty tree stops `/task-ship`.
+full-boot runs write into `moriaengine/saves/` and leave a dirty tree.
 Don't run full-boot tests with plain `dotnet test`.
 
 Rule for a PR: a `FAIL` in a class the branch didn't touch that passes when rerun
@@ -133,5 +147,5 @@ only when the why isn't obvious. Areas follow the code: `combat:`, `skills:`,
 
 ## Wiki
 
-These pages change in the same branch as what they describe; `/task-ship` checks
+These pages change in the same branch as what they describe, and the review checks
 it. Every page has a `Last reviewed:` date.

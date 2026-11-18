@@ -14,9 +14,9 @@ repos:
       - id: check-added-large-files
         args: [--maxkb=1024]
       - id: detect-private-key
-      # main and the integration branch take changes only through pull requests
+      # main takes changes only through pull requests
       - id: no-commit-to-branch
-        args: [--branch, main, --branch, agent-kit-trial]
+        args: [--branch, main]
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1

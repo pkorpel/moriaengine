@@ -30,6 +30,14 @@ def pr(files, body):
     return files, len(files), body
 
 
+def pr_by(files, body, author="pkorpel", approved=()):
+    """A PR whose author and approvals are known, as fetch returns it."""
+    return files, len(files), body, author, set(approved)
+
+
+CORE = ["moriaengine/GameCore/Timers/Timer.cs", "moriaengine/scripts/Basic/x.cs"]
+
+
 def prs(table):
     """A fake fetch: selector -> (files, changed, body); unknown selectors can't be looked up."""
     return lambda selector, repo, cwd: table.get(selector)
@@ -63,7 +71,8 @@ class Decision(unittest.TestCase):
             self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, body)})), "7", body)
         for body in ("```\n## Review\nfoo\n```\n", "<!--\n## Review\nfoo\n-->", "#\nReviews are welcome\n"):
             self.assertEqual(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, body)})), "7", body)
-        filled = template.replace("-->\n", "-->\nNo defects; one comment clarified.\n", 1)
+        at = template.index("## Review")  # fill the comment under the Review heading, not an earlier one
+        filled = template[:at] + template[at:].replace("-->\n", "-->\nNo defects; one comment clarified.\n", 1)
         self.assertIsNone(rr.denied(bash("gh pr merge 7"), prs({"7": pr(CODE, filled)})))
 
     def test_docs_only_passes(self):
@@ -100,6 +109,53 @@ class Decision(unittest.TestCase):
                     "tool_input": {"owner": "pkorpel", "repo": "moriaengine", "pullNumber": number}}
             self.assertEqual(rr.denied(data, fetch), "7")
         self.assertEqual(seen, [("7", "pkorpel/moriaengine")] * 2)
+
+
+class CoreReview(unittest.TestCase):
+    """#1559: engine core needs janslav's approval (pkorpel's when janslav wrote it)."""
+
+    def decide(self, files, author="pkorpel", approved=(), body=REVIEWED):
+        return rr.denial(bash("gh pr merge 7"), prs({"7": pr_by(files, body, author, approved)}))
+
+    def test_core_without_approval_is_denied(self):
+        found = self.decide(CORE)
+        self.assertEqual(found[0], "7")
+        self.assertIn("janslav", found[1])
+        self.assertIn("moriaengine/GameCore/Timers/Timer.cs", found[1])
+
+    def test_core_approved_by_janslav_passes(self):
+        self.assertIsNone(self.decide(CORE, approved=["janslav"]))
+
+    def test_another_approver_is_not_enough(self):
+        self.assertIsNotNone(self.decide(CORE, approved=["pkorpel", "bozyman3000"]))
+
+    def test_janslavs_own_core_pr_needs_pkorpel(self):
+        self.assertIsNotNone(self.decide(CORE, author="janslav", approved=["janslav"]))
+        self.assertIsNone(self.decide(CORE, author="janslav", approved=["pkorpel"]))
+
+    def test_every_core_path_counts(self):
+        for path in ("moriaengine/Common/Tools.cs", "moriaengine/Communication/TCP/TCPServer.cs",
+                     "moriaengine/AuxiliaryServer/Commands.cs",
+                     "moriaengine/Tools/SteamEngine.Generators/X.cs",
+                     "moriaengine/Tools/SteamEngine.Generators.Tests/Y.cs"):
+            self.assertIsNotNone(self.decide([path]), path)
+
+    def test_non_core_and_core_docs_pass_without_approval(self):
+        self.assertIsNone(self.decide(["moriaengine/scripts/Basic/x.cs", "moriaengine/Tools/perf/x.cs"]))
+        self.assertIsNone(self.decide(["moriaengine/GameCore/README.md", "moriaengine/scripts/Basic/x.cs"]))
+
+    def test_a_missing_review_section_is_reported_first(self):
+        found = self.decide(CORE, body="no section")
+        self.assertIn("## Review", found[1])
+
+    def test_a_cut_file_list_counts_as_core(self):
+        files = ["moriaengine/scripts/Basic/x%d.cs" % i for i in range(100)]
+        found = rr.denial(bash("gh pr merge 7"), prs({"7": (files, 140, REVIEWED, "pkorpel", set())}))
+        self.assertIn("cut", found[1])
+        self.assertIsNone(rr.denial(bash("gh pr merge 7"), prs({"7": (files, 140, REVIEWED, "pkorpel", {"janslav"})})))
+
+    def test_unknown_approvals_fail_open(self):
+        self.assertIsNone(rr.denial(bash("gh pr merge 7"), prs({"7": pr(CORE, REVIEWED)})))
 
 
 class Parsing(unittest.TestCase):
@@ -154,12 +210,16 @@ class Fetch(unittest.TestCase):
             got = rr.fetch("7", "o/r", "/w/m")
         return got, calls
 
-    def test_reads_files_count_and_body(self):
+    def test_reads_files_count_body_author_and_approvals(self):
         out = subprocess.CompletedProcess([], 0, json.dumps(
-            {"files": [{"path": "a.cs"}], "changedFiles": 1, "body": "b"}), "")
+            {"files": [{"path": "a.cs"}], "changedFiles": 1, "body": "b", "author": {"login": "pkorpel"},
+             "latestReviews": [{"author": {"login": "janslav"}, "state": "APPROVED"},
+                               {"author": {"login": "jablonskyv"}, "state": "CHANGES_REQUESTED"},
+                               {"author": {"login": "x"}, "state": "COMMENTED"}]}), "")
         got, calls = self.run_gh(out)
-        self.assertEqual(got, (["a.cs"], 1, "b"))
-        self.assertEqual(calls, [(["gh", "pr", "view", "7", "-R", "o/r", "--json", "files,changedFiles,body"], "/w/m")])
+        self.assertEqual(got, (["a.cs"], 1, "b", "pkorpel", {"janslav"}))
+        self.assertEqual(calls, [(["gh", "pr", "view", "7", "-R", "o/r", "--json",
+                                   "files,changedFiles,body,author,latestReviews"], "/w/m")])
 
     def test_failures_are_none(self):
         for result, error in ((subprocess.CompletedProcess([], 1, "", "no pr"), None),
@@ -171,8 +231,8 @@ class Fetch(unittest.TestCase):
 
 class Main(unittest.TestCase):
     def run_main(self, payload, table):
-        saved = rr.denied.__defaults__
-        rr.denied.__defaults__ = (prs(table),)  # the default is bound at definition, so patch it there
+        saved = rr.denial.__defaults__
+        rr.denial.__defaults__ = (prs(table),)  # the default is bound at definition, so patch it there
         out = io.StringIO()
         sys.stdin = io.StringIO(payload)
         try:
@@ -180,13 +240,19 @@ class Main(unittest.TestCase):
                 rr.main()
         finally:
             sys.stdin = sys.__stdin__
-            rr.denied.__defaults__ = saved
+            rr.denial.__defaults__ = saved
         return out.getvalue()
 
     def test_deny_output(self):
         decision = json.loads(self.run_main(json.dumps(bash("gh pr merge 7")), {"7": pr(CODE, "")}))["hookSpecificOutput"]
         self.assertEqual(decision["permissionDecision"], "deny")
         self.assertIn("## Review", decision["permissionDecisionReason"])
+
+    def test_core_deny_output(self):
+        out = self.run_main(json.dumps(bash("gh pr merge 7")), {"7": pr_by(CORE, REVIEWED)})
+        decision = json.loads(out)["hookSpecificOutput"]
+        self.assertEqual(decision["permissionDecision"], "deny")
+        self.assertIn("needs-core-review", decision["permissionDecisionReason"])
 
     def test_allow_and_malformed_print_nothing(self):
         self.assertEqual(self.run_main(json.dumps(bash("gh pr merge 7")), {"7": pr(CODE, REVIEWED)}), "")

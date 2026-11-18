@@ -1,10 +1,10 @@
 # Agent workflow
 
-Last reviewed: 2026-10-17
+Last reviewed: 2026-11-18
 
-Claude Code drives issues from idea to closed with slash commands
-(`.claude/commands/`) and role agents (`.claude/agents/`). Installed from the
-moria-agent-kit; "dev" is a local boot of `main`.
+How Claude Code works in this repo. The process itself (issues, labels, done) is the same for people and
+agents: [Tasks](Tasks.md) and [Dev process](Dev-Process.md). The October agent kit (`/task-*` commands, role
+agents, status labels) was dropped on 2026-11-18 (#1559); its trial notes are in `docs/history/agent-kit-trial.md`.
 
 ## Where agent instructions live (#1554)
 
@@ -19,69 +19,27 @@ moria-agent-kit; "dev" is a local boot of `main`.
 None of these files holds status or history. Work state lives on the issue (plan comment first, then
 findings as they land). A standing rule changes through a PR to the file that holds it.
 
-## Flow
+## Review agent
 
-```
-/task-new ──► triage ──/task-refine──► (user) status:ready
-                                              │
-                                   /task-run <n>  (or /task-pick + work + /task-ship)
-                                              │
- claim → worktree → red tests → build → area's tests → review → PR → green CI → merge
-                                              │
-                    verify on a local boot of main → closed (or left in review)
-```
+- Every code change (anything but `*.md`) gets an independent, read-only review before merge (#1230): the
+  `reviewer` agent (`.claude/agents/reviewer.md`) or another fresh agent. It gets the issue, the worktree and
+  the diff, not the author's conclusions. Each finding is fixed or answered, and a substantial fix is reviewed
+  again. The PR body's `## Review` section says what it found.
+- `scripts/hooks/require_review.py` (PreToolUse on `gh pr merge` and `merge_pull_request`) denies the merge
+  when that section is missing or empty. It also denies it when the PR changes engine core without
+  janslav's approval (#1559). It fails open when `gh` can't look the PR up. Its tests:
+  `python3 scripts/hooks/test_require_review.py`.
+- Agents don't see the conversation: the caller passes the worktree path, the issue and what to check, and
+  checks the branch the agent reports.
 
-## Commands
+## Existing patterns first (#1366, #1559)
 
-| Command | Does | Stops before |
-|---|---|---|
-| `/task-new <idea>` | issue from a template, labels, analyst pass | creating it without your OK |
-| `/task-refine <n>` | analyst rewrites a triage issue into criteria | marking it ready (only you do) |
-| `/task-pick [n]` | claims a ready issue, plan comment, worktree | pushing |
-| `/task-ship` | push, the area's protocol classes locally, PR, waits for CI, squash-merges on green (`--admin` only when CI has no runners) | opening a PR without the area's protocol classes run / merging on red |
-| `/task-run <n>` | all of the above with agents, plus local verify and close | any stop rule |
-| `/status-weekly` | status page in `docs/wiki/Status/Weekly/` via a docs PR | — |
-
-Running `/task-run` or `/task-ship` is the go-ahead to push and merge for that issue.
-
-## Role agents
-
-| Agent | Model | Can | Can't |
-|---|---|---|---|
-| analyst | opus / medium | read code, read + edit the issue body, comment | Bash, files, labels |
-| tester | opus / high | write tests (`Tests/`, `scripts/Tests/`), run them, verify on local boot | production code |
-| developer | sonnet / medium | edit code, build, run tests, commit in its worktree | GitHub, `Tests/` (hook), push |
-| reviewer | opus / high | read the diff and code, read the issue | edit anything |
-
-- The developer's ban on test files is enforced by `scripts/hooks/protect_tests.py`
-  (PreToolUse hook): any path with a `tests` segment, any case.
-- Every code change gets the reviewer (or another independent, read-only review
-  agent) before merge, inside `/task-run` or not (standing rule since 2026-11-07,
-  #1230). `scripts/hooks/require_review.py` (PreToolUse on `gh pr merge` and
-  `merge_pull_request`) denies merging a PR that changes anything but `*.md` when
-  its body has no `## Review` heading with text under it (the template's empty one
-  doesn't count). It fails open when `gh` can't look the PR up.
-  Its tests: `python3 scripts/hooks/test_require_review.py`.
-- The analyst and reviewer are kept read-only by their tool lists: GitHub goes
-  through the MCP server, so they get only the issue tools they need.
-- Agents don't see the conversation: the orchestrator passes worktree path, issue,
-  plan and step in each prompt and checks the branch each agent reports.
-
-## Existing patterns first (#1366)
-
-Before work uses or changes an engine system or pattern (plugins, code-made defs, `.ct`
-fields, tags, triggers, timers), its current form and use are written down from the
-existing code, with examples, in its page under `moriaengine/docs/current/` (the original
-engine is commit `a27bbf6`). New code then follows that pattern. A bug found in a pattern is
-fixed in the pattern, not worked around with a new mechanism. The developer agent follows
-this; the reviewer agent blocks a second way of doing what the engine already does.
-
-## Stop rule (`/task-run`)
-
-On any stop: comment on the issue what happened and what's needed, set
-`status:blocked` if it can't continue without you, notify Telegram, end. No retrying
-a stopped step another way. Limits: two review rounds, one fix run for a red suite,
-two red CI runs.
+Before work uses or changes an engine system or pattern (plugins, code-made defs, def fields, tags,
+triggers, timers), its current form and use are written down from the existing code, with examples, in its
+page under `moriaengine/docs/current/` (the original engine is commit `a27bbf6`). New code then follows that
+pattern. A bug found in a pattern is fixed in the pattern, not worked around with a new mechanism. A feature
+starts with an "Existing system" comment on its issue, and a broken existing piece is fixed first, never
+replaced. The reviewer blocks a second way of doing what the engine already does.
 
 ## GitHub access
 
@@ -96,7 +54,7 @@ two red CI runs.
 
 ## Session helpers
 
-- SessionStart hook: `scripts/motd.sh --hook` — branch, issue, board counts, next step.
+- SessionStart hook: `scripts/motd.sh --hook` — branch, issue, open issues by type, next step.
 - Status line: `scripts/motd.sh --line`.
 - Notifications: `scripts/telegram-session.sh notify "#<n> …"` (see
   [Telegram session](../Runbooks/Telegram-Session.md)).

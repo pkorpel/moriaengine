@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """PreToolUse hook: no merge of a code change without a review (#1230, see AGENTS.md
-"How changes land" and CLAUDE.md "Subagents").
+"How changes land" and CLAUDE.md "Subagents"), and no merge of an engine core change
+without the core owner's approval (#1559).
 
 Every code change gets an independent review agent before it merges, and the PR body
 says what the review found under a `## Review` heading (`## Reviews`, any heading
@@ -16,7 +17,13 @@ heading inside a comment or a code fence. This hook checks that section at the m
 
 The PR's files and body come from `gh pr view --json files,changedFiles,body`. A PR
 whose files are all `*.md` is docs only and passes (when gh lists every file: it
-stops at 100). Anything else without the section is denied. The body is read before
+stops at 100). Anything else without the section is denied.
+
+Engine core (#1559): a PR changing a non-`*.md` file under CORE_PATHS (the same paths
+as .github/CODEOWNERS) needs an approving review, as the latest review of its
+reviewer, from the core owner: janslav, or pkorpel when janslav wrote the PR. A cut
+file list (over 100 files) counts as touching core. GitHub's ruleset on main enforces
+the same for everyone; this catches it before the merge call. The body is read before
 the command runs, so `gh pr edit --body-file x && gh pr merge` in one call is denied:
 edit first, merge in the next call.
 
@@ -37,6 +44,13 @@ import re
 import shlex
 import subprocess
 import sys
+
+CORE_PATHS = ("moriaengine/GameCore/", "moriaengine/Common/", "moriaengine/Communication/",
+              "moriaengine/AuxiliaryServer/", "moriaengine/Tools/SteamEngine.Generators")
+CORE_OWNER, CORE_OWNER_OF_OWN = "janslav", "pkorpel"
+CORE_REASON = ("PR {pr} changes engine core ({paths}) and has no approving review from {owner}. "
+               "Core changes need {owner}'s approval (#1559, AGENTS.md): label the PR needs-core-review, "
+               "request the review (gh pr edit --add-reviewer {owner}), and merge once approved.")
 
 REASON = ("PR {pr} changes code but its body has no '## Review' section with text under it. "
           "Every code change gets an independent review agent before merge (#1230, AGENTS.md): "
@@ -67,6 +81,18 @@ def has_review(body):
 
 def docs_only(files, changed):
     return bool(files) and len(files) == changed and all(f.lower().endswith(".md") for f in files)
+
+
+def core_files(files, changed):
+    """The PR's core files; a cut list (gh stops at 100) may hide some, so it counts as one."""
+    found = [f for f in files if f.startswith(CORE_PATHS) and not f.lower().endswith(".md")]
+    if not found and len(files) != changed:
+        return ["(file list cut at %d of %s)" % (len(files), changed)]
+    return found
+
+
+def core_owner(author):
+    return CORE_OWNER_OF_OWN if author == CORE_OWNER else CORE_OWNER
 
 
 def commands(command):
@@ -140,41 +166,59 @@ def targets(data):
 
 
 def fetch(selector, repo, cwd):
-    """(files, changed file count, body) of the PR, or None when gh can't say."""
+    """(files, changed file count, body, author, logins whose latest review approves) of the PR,
+    or None when gh can't say."""
     cmd = ["gh", "pr", "view"] + ([selector] if selector else []) + (["-R", repo] if repo else [])
-    cmd += ["--json", "files,changedFiles,body"]
+    cmd += ["--json", "files,changedFiles,body,author,latestReviews"]
     try:
         out = subprocess.run(cmd, cwd=cwd or None, capture_output=True, text=True, timeout=8)
         if out.returncode != 0:
             return None
         pr = json.loads(out.stdout)
-        return [f.get("path", "") for f in pr.get("files") or []], pr.get("changedFiles"), pr.get("body") or ""
+        approved = {(r.get("author") or {}).get("login") for r in pr.get("latestReviews") or []
+                    if r.get("state") == "APPROVED"}
+        return ([f.get("path", "") for f in pr.get("files") or []], pr.get("changedFiles"), pr.get("body") or "",
+                (pr.get("author") or {}).get("login"), approved)
     except Exception:
         return None
 
 
-def denied(data, fetch=fetch):
-    """The PR a merge is denied for, or None."""
+def denial(data, fetch=fetch):
+    """(the PR a merge is denied for, the reason), or None."""
     for selector, repo, cwd in targets(data):
         pr = fetch(selector, repo, cwd)
         if pr is None:
             continue
-        files, changed, body = pr
+        files, changed, body = pr[:3]
+        name = selector or "of this branch"
         if not docs_only(files, changed) and not has_review(body):
-            return selector or "of this branch"
+            return name, REASON.format(pr=name)
+        if len(pr) >= 5:  # approvals known
+            author, approved = pr[3], pr[4]
+            core = core_files(files, changed)
+            owner = core_owner(author)
+            if core and owner not in approved:
+                shown = ", ".join(core[:3]) + (", ..." if len(core) > 3 else "")
+                return name, CORE_REASON.format(pr=name, paths=shown, owner=owner)
     return None
+
+
+def denied(data, fetch=fetch):
+    """The PR a merge is denied for, or None."""
+    found = denial(data, fetch)
+    return found[0] if found else None
 
 
 def main():
     try:
-        pr = denied(json.load(sys.stdin))
+        found = denial(json.load(sys.stdin))
     except Exception:
         return
-    if pr:
+    if found:
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "permissionDecision": "deny",
-            "permissionDecisionReason": REASON.format(pr=pr),
+            "permissionDecisionReason": found[1],
         }}))
 
 

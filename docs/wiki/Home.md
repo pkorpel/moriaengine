@@ -1,15 +1,15 @@
 # MoriaEngine wiki
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-11-18
 
 Server for the Moria/Erebor Ultima Online shard (SteamEngine, .NET 8). These pages
 live in the code repo and change through the same pull requests as the code.
 
 ## Process
 
-- [Dev process](Process/Dev-Process.md): branching, hooks, CI, flaky tests
-- [Agent workflow](Process/Agent-Workflow.md): `/task-*` commands and role agents
-- [Tasks](Process/Tasks.md): issue labels and lifecycle
+- [Dev process](Process/Dev-Process.md): branching, the merge gate, hooks, CI, flaky tests
+- [Agent workflow](Process/Agent-Workflow.md): where agent instructions live, review, GitHub access
+- [Tasks](Process/Tasks.md): issue labels, lifecycle, definition of done
 
 ## Runbooks
 
@@ -19,7 +19,3 @@ live in the code repo and change through the same pull requests as the code.
 ## Architecture
 
 (one page per component, added as they change)
-
-## Status
-
-(`/status-weekly` links the four newest weeks here.)

@@ -1,12 +1,15 @@
-Part of #
+Closes #
 
 ## What and why
 
 ## How it was checked
 
-- [ ] pre-push passed (build + fast tier)
+<!-- Only what really ran, on the final code. -->
+
+- [ ] New test, red-checked: it fails with the fix reverted (A/B)
+- [ ] Fast tier passed (pre-push or `scripts/test-fast.sh`)
 - [ ] Protocol classes for the area (`scripts/test-full.sh "<filter>"`) passed, or not needed because: 
-- [ ] New behaviour has a test
+- [ ] Not tried in a real client (the issue gets `needs-in-game-check`), or tried in: 
 
 ## Review
 
@@ -15,5 +18,7 @@ what the independent review agent found and what changed because of it, "no defe
 
 ## Before merge
 
-- [ ] Rebased on main
-- [ ] Wiki (`docs/wiki/`) updated, if a script, CI, hooks, commands or a component changed (pages: )
+- [ ] Docs updated in this PR: `moriaengine/docs/current/` for a changed system, `docs/wiki/` for scripts, CI,
+      hooks or process (pages: )
+- [ ] Engine core touched (`GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`, the generators):
+      labelled `needs-core-review` and approved by janslav
