@@ -21,8 +21,9 @@ files, and typed def fields over tags.
 | Area | Page |
 |---|---|
 | Things, defs, def names, containment, stacking, deletion | `02-engine-core/thing-model.md` |
-| Plugins, their trigger order, deleting them | `02-engine-core/plugins.md` |
-| Triggers, deny chains, which trigger fires when | `trigger-system-architecture.md`, `trigger-catalog.md`, `triggers-and-deny-chains.md` |
+| Triggers: how they work, adding one, TriggerGroup vs plugin | `02-engine-core/trigger-system-architecture.md` |
+| Which triggers exist | `02-engine-core/trigger-catalog.md` (lists the state before the AI-added triggers, #1558) |
+| Plugin details (declaring, saving, deleting) | `02-engine-core/plugins.md`. It and `triggers-and-deny-chains.md` are disputed (PR #1532, #1558): where they disagree with the two pages above, those win |
 | Timers, tags, lock order | `02-engine-core/tags-and-timers.md` |
 | Saving, loading, code-made defs | `02-engine-core/persistence-and-saving.md` |
 | Generated code (Roslyn generators, boot-time `Generated/`) | `02-engine-core/scripting-pipeline.md`, `code generators/` |
@@ -32,6 +33,14 @@ files, and typed def fields over tags.
 | Threads | `02-engine-core/multithreading-and-stm.md` |
 | Gumps | `03-admin-tooling/dialogs-framework.md` |
 | A gameplay system | its page under `04-gameplay-systems/` |
+
+## Adding a trigger
+
+Check `trigger-catalog.md` for an existing one first. A new trigger is agreed on its issue before it's added:
+the naming and chaining convention is still open (#1558), and earlier AI-added triggers were criticised as
+ad-hoc. Build it as `trigger-system-architecture.md` section 8 says: pick the semantic type (notification, deny,
+implementation, calculation), and write a `Trigger_X` method that raises `@X` with the matching dispatch and
+then calls `On_X`. Never drop a bare `TryTrigger` call into gameplay code.
 
 ## Rules whose breakage is silent
 
