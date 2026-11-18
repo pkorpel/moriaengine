@@ -44,16 +44,19 @@ internal sealed class SaveImplementorModel {
 internal sealed class SaveFactoryMethod {
 	internal SaveFactoryMethod(
 		SaveFactoryKind kind,
+		string declaringTypeName,
 		string methodName,
 		bool takesPropsSection,
 		bool requiresCast) {
 		Kind = kind;
+		DeclaringTypeName = declaringTypeName;
 		MethodName = methodName;
 		TakesPropsSection = takesPropsSection;
 		RequiresCast = requiresCast;
 	}
 
 	internal SaveFactoryKind Kind { get; }
+	internal string DeclaringTypeName { get; }
 	internal string MethodName { get; }
 	internal bool TakesPropsSection { get; }
 	internal bool RequiresCast { get; }
