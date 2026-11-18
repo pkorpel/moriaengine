@@ -11,53 +11,7 @@ using Xunit;
 namespace SteamEngine.Generators.Tests;
 
 public sealed class CompiledScriptHolderGeneratorTests {
-	private const string SharedStubs = """
-namespace SteamEngine {
-	public class ScriptArgs {
-		public ScriptArgs(params object[] argv) {
-			Argv = argv ?? System.Array.Empty<object>();
-		}
-
-		public object[] Argv { get; }
-	}
-
-	public abstract class ScriptHolder {
-		protected ScriptHolder(string name) {
-		}
-
-		protected internal void RegisterAsFunction() {
-		}
-
-		public abstract string Description { get; }
-		public abstract object Run(object self, ScriptArgs sa);
-	}
-}
-
-namespace SteamEngine.CompiledScripts {
-	public abstract class CompiledScriptHolder : SteamEngine.ScriptHolder {
-		private readonly string desc;
-
-		protected CompiledScriptHolder(string name, string description)
-			: base(name) {
-			desc = description;
-		}
-
-		public override string Description => desc;
-	}
-
-	[System.AttributeUsage(System.AttributeTargets.Method)]
-	public sealed class SteamFunctionAttribute : System.Attribute {
-		public SteamFunctionAttribute() {
-		}
-
-		public SteamFunctionAttribute(string newFunctionName) {
-			NewFunctionName = newFunctionName;
-		}
-
-		public string NewFunctionName { get; }
-	}
-}
-""";
+	private const string SharedStubs = "";
 
 	private sealed class GeneratorRunSnapshot {
 		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
@@ -183,13 +137,35 @@ public static class CommandScriptsB {
 	}
 
 	[Fact]
+	public void NonLiteralSteamFunctionName_ReportsDiagnostic() {
+		const string source = """
+using SteamEngine.CompiledScripts;
+
+namespace ScriptSandbox;
+
+public static class CommandScripts {
+	private const string Alias = "cast_spell";
+
+	[SteamFunction(Alias)]
+	public static int Cast(object self, int range) {
+		return range;
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(NonLiteralSteamFunctionName_ReportsDiagnostic), source);
+		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN103");
+		Assert.Contains("Alias", error.GetMessage(), StringComparison.Ordinal);
+	}
+
+	[Fact]
 	public void MissingSteamFunctionAttributeDeclaration_ReportsDiagnostic() {
 		var run = RunGeneratorWithoutSharedStubs(
 			nameof(MissingSteamFunctionAttributeDeclaration_ReportsDiagnostic),
 			string.Empty);
-		var attributeError = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN103");
-		Assert.Contains("SteamEngine.CompiledScripts.SteamFunctionAttribute", attributeError.GetMessage());
-		Assert.Equal(3, run.Diagnostics.Count(d => d.Id == "SEGEN106"));
+		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
+		Assert.Contains(run.Diagnostics, d => d.GetMessage().Contains("SteamEngine.CompiledScripts.SteamFunctionAttribute", StringComparison.Ordinal));
+		Assert.Equal(20, run.Diagnostics.Count(d => d.Id == "SEGEN901"));
 		Assert.Empty(run.GeneratedSources);
 	}
 
@@ -204,17 +180,32 @@ public static class CommandScriptsB {
 	}
 
 	private static GeneratorRunSnapshot RunGenerator(string scenarioName, string source) {
-		return RunGeneratorInternal(scenarioName, source, includeSharedStubs: true);
+		return RunGeneratorInternal(
+			scenarioName,
+			source,
+			includeSharedStubs: true,
+			includeGeneratorAbstractionsReference: true);
 	}
 
 	private static GeneratorRunSnapshot RunGeneratorWithoutSharedStubs(string scenarioName, string source) {
-		return RunGeneratorInternal(scenarioName, source, includeSharedStubs: false);
+		return RunGeneratorInternal(
+			scenarioName,
+			source,
+			includeSharedStubs: false,
+			includeGeneratorAbstractionsReference: false);
 	}
 
-	private static GeneratorRunSnapshot RunGeneratorInternal(string scenarioName, string source, bool includeSharedStubs) {
+	private static GeneratorRunSnapshot RunGeneratorInternal(
+		string scenarioName,
+		string source,
+		bool includeSharedStubs,
+		bool includeGeneratorAbstractionsReference) {
 		var syntaxTrees = new List<SyntaxTree>();
 		if (includeSharedStubs) {
-			syntaxTrees.Add(CSharpSyntaxTree.ParseText(SharedStubs));
+			syntaxTrees.Add(CSharpSyntaxTree.ParseText(GeneratorTestStubs.CanonicalEngineTypes));
+			if (!string.IsNullOrEmpty(SharedStubs)) {
+				syntaxTrees.Add(CSharpSyntaxTree.ParseText(SharedStubs));
+			}
 		}
 		if (!string.IsNullOrEmpty(source)) {
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
@@ -223,10 +214,10 @@ public static class CommandScriptsB {
 		var compilation = CSharpCompilation.Create(
 			"GeneratorTestAssembly",
 			syntaxTrees,
-			GetMetadataReferences(),
+			GetMetadataReferences(includeGeneratorAbstractionsReference),
 			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new Generator());
+		GeneratorDriver driver = CSharpGeneratorDriver.Create(new CompiledScriptHoldersGenerator());
 		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
 		var run = driver.GetRunResult();
 		var single = run.Results.Single();
@@ -257,10 +248,15 @@ public static class CommandScriptsB {
 		}
 	}
 
-	private static IEnumerable<MetadataReference> GetMetadataReferences() {
+	private static IEnumerable<MetadataReference> GetMetadataReferences(bool includeGeneratorAbstractionsReference) {
 		yield return MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
 		yield return MetadataReference.CreateFromFile(typeof(System.Attribute).Assembly.Location);
 		yield return MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
 		yield return MetadataReference.CreateFromFile(typeof(ImmutableArray<>).Assembly.Location);
+		yield return MetadataReference.CreateFromFile(typeof(System.Runtime.GCSettings).Assembly.Location);
+		yield return MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.Binder).Assembly.Location);
+		if (includeGeneratorAbstractionsReference) {
+			yield return MetadataReference.CreateFromFile(typeof(SteamEngine.CompiledScripts.SteamFunctionAttribute).Assembly.Location);
+		}
 	}
 }

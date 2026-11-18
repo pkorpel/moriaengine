@@ -57,7 +57,7 @@ internal static class MemberValueLoadRenderer {
 		builder.AppendLine();
 	}
 
-	private static string GetDelayedExpression(MemberValueKind kind, string typeName) {
+	internal static string GetDelayedExpression(MemberValueKind kind, string typeName) {
 		return kind switch {
 			MemberValueKind.Enum => $"({typeName}) Convert.ToInt32(resolvedObject)",
 			MemberValueKind.Object => "resolvedObject",

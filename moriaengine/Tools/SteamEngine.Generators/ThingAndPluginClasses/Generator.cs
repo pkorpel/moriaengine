@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -10,15 +9,14 @@ namespace SteamEngine.Generators.ThingAndPluginClasses;
 // and their Def counterparts. The generator replaces legacy .ct generator (Still present, to be phased out)
 // Implemented as Roslyn incremental generation, so once fully migrated scripts will compile without runtime codegen.
 [Microsoft.CodeAnalysis.Generator]
-public sealed partial class Generator : IIncrementalGenerator {
+public sealed partial class ThingAndPluginClassesGenerator : IIncrementalGenerator {
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
 		// Only inspect classes that already have attributes; template participation is
 		// attribute-driven and this keeps syntax filtering cheap during design-time builds.
 		var classes = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (node, _) => node is ClassDeclarationSyntax cds && cds.AttributeLists.Count > 0,
-				static (ctx, _) => Parser.DiscoverCandidate(ctx))
-			.Where(static r => r is not null)
+				static (ctx, _) => (ClassDeclarationSyntax) ctx.Node)
 			.Collect();
 
 		context.RegisterSourceOutput(
@@ -29,25 +27,22 @@ public sealed partial class Generator : IIncrementalGenerator {
 	private static void Execute(
 		SourceProductionContext context,
 		Compilation compilation,
-		IReadOnlyCollection<TemplateDiscoveryResult> discoveries) {
+		IReadOnlyCollection<ClassDeclarationSyntax> classDeclarations) {
 		// Build all template pairs first, then emit in a single deterministic pass.
 		var diagnostics = new List<Diagnostic>();
+		var requiredSymbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
 
-		if (Analyzer.ValidateRequiredDeclarations(compilation, diagnostics)
-			&& Analyzer.ValidateRequiredCanonicalTypes(compilation, diagnostics)) {
-
+		if (requiredSymbols is not null) {
 			var candidates = new List<TemplateCandidate>();
-			foreach (var discovery in discoveries) {
-				if (discovery is null) {
+			foreach (var declaration in classDeclarations) {
+				var candidate = Parser.DiscoverCandidate(compilation, declaration, requiredSymbols, diagnostics);
+				if (candidate is null) {
 					continue;
 				}
-				diagnostics.AddRange(discovery.Diagnostics);
-				if (discovery.Candidate is not null) {
-					candidates.Add(discovery.Candidate);
-				}
+				candidates.Add(candidate);
 			}
 
-			var pairs = Analyzer.BuildTemplatePairs(candidates, diagnostics);
+			var pairs = Analyzer.BuildTemplatePairs(candidates, diagnostics, requiredSymbols);
 			foreach (var pair in pairs) {
 				if (!Renderer.TryRenderPair(pair, out var source)) {
 					continue;

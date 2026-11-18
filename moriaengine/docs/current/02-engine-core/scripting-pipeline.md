@@ -74,13 +74,11 @@ until #1382.)
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 
-A second, unrelated generation pass currently produces four files directly under the
+A second, unrelated generation pass currently produces three files directly under the
 `moriaengine/Generated/` folder:
 
 - `CompiledTriggerGroups.Generated.cs` - compiled-C# trigger group dispatch.
 - `PluginTriggerGroups.Generated.cs` - same idea for plugin trigger groups.
-- `DecoratedClassesSaveImplementors.Generated.cs` - save/load glue for `[SaveableClass]`
-  types that are hand-written (settings categories, hand-written timers, etc).
 - `ViewableClasses.Generated.cs` - reflection metadata backing the `.info` dialog's property
   discovery for every `[ViewableClass]` type (see
   [viewable-classes-and-info-dialog.md](viewable-classes-and-info-dialog.md)).
@@ -100,6 +98,10 @@ CodeDom `Generated/*.Generated.cs` pass.
 Deep-copy implementors are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/DeepCopyImplementors/Generator.cs`. See
 `docs/current/02-engine-core/code generators/deep-copy-implementor-generator.md`.
+
+Save implementors for `[SaveableClass]` types are now generated at scripts compile time by
+`Tools/SteamEngine.Generators/SaveImplementors/Generator.cs`. See
+`docs/current/02-engine-core/code generators/save-implementor-generator.md`.
 
 ### One boot does both
 

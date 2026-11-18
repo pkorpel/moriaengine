@@ -11,16 +11,6 @@ internal sealed class DeepCopyCandidate {
 	internal INamedTypeSymbol Symbol { get; }
 }
 
-internal sealed class DeepCopyDiscoveryResult {
-	internal DeepCopyDiscoveryResult(DeepCopyCandidate? candidate, IReadOnlyList<Diagnostic> diagnostics) {
-		Candidate = candidate;
-		Diagnostics = diagnostics;
-	}
-
-	internal DeepCopyCandidate? Candidate { get; }
-	internal IReadOnlyList<Diagnostic> Diagnostics { get; }
-}
-
 internal sealed class DeepCopyModel {
 	internal DeepCopyModel(
 		string generatedTypeName,

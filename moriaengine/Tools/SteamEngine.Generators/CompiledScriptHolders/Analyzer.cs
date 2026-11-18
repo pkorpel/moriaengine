@@ -2,14 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
 internal static class Analyzer {
-	internal const string SteamFunctionAttributeMetadataName = "SteamEngine.CompiledScripts.SteamFunctionAttribute";
-
 	internal static readonly DiagnosticDescriptor SteamFunctionMustBePublicStaticDescriptor = new(
 		"SEGEN101",
 		"SteamFunction must be public static",
@@ -26,26 +23,10 @@ internal static class Analyzer {
 		DiagnosticSeverity.Error,
 		true);
 
-	internal static readonly DiagnosticDescriptor MissingSteamFunctionAttributeDescriptor = new(
+	internal static readonly DiagnosticDescriptor InvalidSteamFunctionNameArgumentDescriptor = new(
 		"SEGEN103",
-		"Missing SteamFunction attribute declaration",
-		"Required generator attribute declaration '{0}' was not found",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
-	internal static readonly DiagnosticDescriptor AttributeShadowingDescriptor = new(
-		"SEGEN104",
-		"Shadowed generator attribute",
-		"Attribute '{0}' resolves to '{1}', but this generator expects '{2}'",
-		"Usage",
-		DiagnosticSeverity.Warning,
-		true);
-
-	internal static readonly DiagnosticDescriptor MissingCanonicalEngineTypeDescriptor = new(
-		"SEGEN106",
-		"Missing canonical engine type",
-		"Required canonical engine type '{0}' was not found",
+		"Invalid SteamFunction name argument",
+		"SteamFunction name argument must be a string literal, but was '{0}'",
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
@@ -53,11 +34,11 @@ internal static class Analyzer {
 	internal static IReadOnlyList<ScriptHolderModel> BuildModels(
 		IReadOnlyCollection<ScriptHolderCandidate> candidates,
 		ICollection<Diagnostic> diagnostics,
-		Compilation compilation) {
-		var valid = new List<ScriptHolderCandidate>();
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
+		var valid = new List<(ScriptHolderCandidate Candidate, string FunctionName)>();
 		foreach (var candidate in candidates) {
 			if (IsPublicStatic(candidate.MethodSymbol)) {
-				valid.Add(candidate);
+				valid.Add((candidate, candidate.FunctionName));
 				continue;
 			}
 
@@ -67,26 +48,24 @@ internal static class Analyzer {
 				candidate.MethodSymbol.ToDisplayString()));
 		}
 
-		var unique = new Dictionary<string, ScriptHolderCandidate>(StringComparer.OrdinalIgnoreCase);
 		var ordered = valid.OrderBy(c => c.FunctionName, StringComparer.OrdinalIgnoreCase)
-			.ThenBy(c => c.MethodSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
+			.ThenBy(c => c.Candidate.MethodSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
 			.ToList();
+		var conflictingFunctionNames = DuplicateNameValidator.Validate(
+			ordered.Select(candidate => (
+				Name: candidate.FunctionName,
+				Symbol: (ISymbol) candidate.Candidate.MethodSymbol)),
+			DuplicateSteamFunctionNameDescriptor,
+			diagnostics);
+
+		var emittedFunctions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var models = new List<ScriptHolderModel>();
 		foreach (var candidate in ordered) {
-			if (unique.TryGetValue(candidate.FunctionName, out var existing)) {
-				diagnostics.Add(Diagnostic.Create(
-					DuplicateSteamFunctionNameDescriptor,
-					candidate.MethodSymbol.Locations.FirstOrDefault(),
-					candidate.FunctionName,
-					existing.MethodSymbol.ToDisplayString(),
-					candidate.MethodSymbol.ToDisplayString()));
+			if (!emittedFunctions.Add(candidate.FunctionName)) {
 				continue;
 			}
-			unique[candidate.FunctionName] = candidate;
-		}
 
-		var models = new List<ScriptHolderModel>();
-		foreach (var candidate in unique.Values) {
-			models.Add(BuildModel(candidate, compilation));
+			models.Add(BuildModel(candidate.Candidate, candidate.FunctionName, requiredSymbols.CanonicalTypes.ScriptArgsType));
 		}
 
 		return models
@@ -95,50 +74,14 @@ internal static class Analyzer {
 			.ToList();
 	}
 
-	internal static bool ValidateRequiredDeclarations(Compilation compilation, ICollection<Diagnostic> diagnostics) {
-		if (compilation.GetTypeByMetadataName(SteamFunctionAttributeMetadataName) is not null) {
-			return true;
-		}
-
-		diagnostics.Add(Diagnostic.Create(
-			MissingSteamFunctionAttributeDescriptor,
-			Location.None,
-			SteamFunctionAttributeMetadataName));
-		return false;
-	}
-
-	internal static bool ValidateRequiredCanonicalTypes(Compilation compilation, ICollection<Diagnostic> diagnostics) {
-		var requiredMetadataNames = new[] {
-			"SteamEngine.ScriptHolder",
-			"SteamEngine.ScriptArgs",
-			"SteamEngine.CompiledScripts.CompiledScriptHolder"
-		};
-
-		var allPresent = true;
-		foreach (var metadataName in requiredMetadataNames) {
-			if (compilation.GetTypeByMetadataName(metadataName) is not null) {
-				continue;
-			}
-
-			diagnostics.Add(Diagnostic.Create(
-				MissingCanonicalEngineTypeDescriptor,
-				Location.None,
-				metadataName));
-			allPresent = false;
-		}
-		return allPresent;
-	}
-
 	private static bool IsPublicStatic(IMethodSymbol methodSymbol) {
 		return methodSymbol.IsStatic && methodSymbol.DeclaredAccessibility == Accessibility.Public;
 	}
 
-	private static ScriptHolderModel BuildModel(ScriptHolderCandidate candidate, Compilation compilation) {
+	private static ScriptHolderModel BuildModel(ScriptHolderCandidate candidate, string functionName, INamedTypeSymbol scriptArgsType) {
 		var method = candidate.MethodSymbol;
 		var invocationParameters = new List<InvocationParameterModel>();
 		var parameters = method.Parameters;
-		var scriptArgsType = compilation.GetTypeByMetadataName("SteamEngine.ScriptArgs")
-			?? throw new InvalidOperationException("Canonical engine type SteamEngine.ScriptArgs is unavailable.");
 
 		for (var i = 0; i < parameters.Length; i++) {
 			if (i == 0) {
@@ -162,8 +105,8 @@ internal static class Analyzer {
 		}
 
 		return new ScriptHolderModel(
-			CreateGeneratedTypeName(candidate.FunctionName),
-			candidate.FunctionName,
+			CreateGeneratedTypeName(functionName),
+			functionName,
 			candidate.Description,
 			method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 			method.Name,
@@ -247,14 +190,6 @@ internal static class Analyzer {
 	}
 
 	private static string CreateGeneratedTypeName(string functionName) {
-		var builder = new StringBuilder("GeneratedScriptHolder_");
-		if (string.IsNullOrEmpty(functionName)) {
-			builder.Append("Unnamed");
-		} else {
-			foreach (var ch in functionName) {
-				builder.Append(char.IsLetterOrDigit(ch) ? ch : '_');
-			}
-		}
-		return builder.ToString();
+		return "GeneratedScriptHolder_" + IdentifierSanitizer.Sanitize(functionName);
 	}
 }

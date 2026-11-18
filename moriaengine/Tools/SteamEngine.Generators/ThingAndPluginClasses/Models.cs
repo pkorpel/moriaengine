@@ -29,16 +29,6 @@ internal sealed class TemplateCandidate {
 	internal Compilation Compilation { get; }
 }
 
-internal sealed class TemplateDiscoveryResult {
-	internal TemplateDiscoveryResult(TemplateCandidate? candidate, IReadOnlyList<Diagnostic> diagnostics) {
-		Candidate = candidate;
-		Diagnostics = diagnostics;
-	}
-
-	internal TemplateCandidate? Candidate { get; }
-	internal IReadOnlyList<Diagnostic> Diagnostics { get; }
-}
-
 internal sealed class TemplatePair {
 	internal TemplatePair(
 		string instanceName,
@@ -95,7 +85,7 @@ internal readonly struct InstanceFieldSpec {
 		bool includeInSaveLoad,
 		bool includeInCopy,
 		MemberValueKind valueKind,
-		Location location) {
+		Location? location) {
 		Name = name;
 		TypeName = typeName;
 		DefaultExpression = defaultExpression;
@@ -111,6 +101,6 @@ internal readonly struct InstanceFieldSpec {
 	internal bool IncludeInSaveLoad { get; }
 	internal bool IncludeInCopy { get; }
 	internal MemberValueKind ValueKind { get; }
-	internal Location Location { get; }
+	internal Location? Location { get; }
 }
 
