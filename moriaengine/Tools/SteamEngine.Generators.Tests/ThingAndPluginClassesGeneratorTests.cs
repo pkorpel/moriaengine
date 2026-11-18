@@ -260,6 +260,25 @@ public partial class BrokenDef : DefLikeWithoutSuffix {
 	}
 
 	[Fact]
+	public void DefFieldDefaultExpression_NonLiteral_ReportsDiagnostic() {
+		const string source = """
+namespace ScriptSandbox;
+
+[ThingDefTemplate]
+public partial class ArcaneBeaconDef : MagicThingDef {
+	private const string DefaultExpr = "5";
+
+	[DefField(typeof(int), DefaultExpression = DefaultExpr)]
+	private FieldValue maxCharge;
+}
+""";
+
+		var run = RunGenerator(nameof(DefFieldDefaultExpression_NonLiteral_ReportsDiagnostic), source);
+		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN011");
+		Assert.Contains("DefaultExpr", error.GetMessage(), StringComparison.Ordinal);
+	}
+
+	[Fact]
 	public void ThingTypedField_UsesDirectCopyButDelayedLoad() {
 		const string source = """
 namespace ScriptSandbox;
@@ -489,7 +508,7 @@ public partial class FakeTemplateBeacon : MagicThing {
 """;
 
 		var run = RunGenerator(nameof(ShadowedTemplateAttribute_ReportsDiagnostic), source);
-		var warning = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN004");
+		var warning = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN902");
 		Assert.Contains("ThingTemplate", warning.GetMessage(), StringComparison.Ordinal);
 	}
 
@@ -497,7 +516,7 @@ public partial class FakeTemplateBeacon : MagicThing {
 	public void MissingTemplateAttributeDeclaration_ReportsDiagnostic() {
 		var run = RunGeneratorWithoutGeneratorAbstractions(
 			nameof(MissingTemplateAttributeDeclaration_ReportsDiagnostic));
-		Assert.Equal(5, run.Diagnostics.Count(d => d.Id == "SEGEN008"));
+		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
 		Assert.Empty(run.GeneratedSources);
 	}
 
@@ -531,7 +550,7 @@ public partial class TypeConflictBeaconDef : MagicThingDef {
 	public void MissingCanonicalEngineTypes_ReportErrors() {
 		var run = RunGeneratorWithoutCanonicalEngineTypes(
 			nameof(MissingCanonicalEngineTypes_ReportErrors));
-		var errors = run.Diagnostics.Where(d => d.Id == "SEGEN009").ToList();
+		var errors = run.Diagnostics.Where(d => d.Id == "SEGEN901").ToList();
 		Assert.NotEmpty(errors);
 		Assert.Contains(errors, d => d.GetMessage().Contains("SteamEngine.Thing", StringComparison.Ordinal));
 		Assert.Contains(errors, d => d.GetMessage().Contains("SteamEngine.AbstractAccount", StringComparison.Ordinal));
@@ -605,7 +624,7 @@ public partial class sharedbeaconDef : MagicThingDef {
 			GetMetadataReferences(true),
 			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-		var generator = new Generator();
+		var generator = new ThingAndPluginClassesGenerator();
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
 		var run = driver.GetRunResult();
@@ -641,7 +660,7 @@ public partial class sharedbeaconDef : MagicThingDef {
 			GetMetadataReferences(includeGeneratorAbstractionsReference),
 			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-		var generator = new Generator();
+		var generator = new ThingAndPluginClassesGenerator();
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
 		var run = driver.GetRunResult();

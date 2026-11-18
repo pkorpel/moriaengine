@@ -8,113 +8,62 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
 internal static class Parser {
-	private static readonly string ThingTemplateAttributeName = StripAttributeSuffix("ThingTemplateAttribute");
-	private static readonly string ThingDefTemplateAttributeName = StripAttributeSuffix("ThingDefTemplateAttribute");
-	private static readonly string PluginTemplateAttributeName = StripAttributeSuffix("PluginTemplateAttribute");
-	private static readonly string PluginDefTemplateAttributeName = StripAttributeSuffix("PluginDefTemplateAttribute");
-	private static readonly string DefFieldAttributeName = StripAttributeSuffix("DefFieldAttribute");
+	private static readonly string DefFieldAttributeName = AttributeUsageValidator.StripAttributeSuffix("DefFieldAttribute");
 
-	internal static TemplateDiscoveryResult? DiscoverCandidate(GeneratorSyntaxContext context) {
-		if (context.Node is not ClassDeclarationSyntax declaration) {
-			return null;
-		}
-		if (context.SemanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol) {
+	internal static TemplateCandidate? DiscoverCandidate(
+		Compilation compilation,
+		ClassDeclarationSyntax declaration,
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		ICollection<Diagnostic> diagnostics) {
+		var semanticModel = compilation.GetSemanticModel(declaration.SyntaxTree);
+		if (semanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol) {
 			return null;
 		}
 
-		var diagnostics = new List<Diagnostic>();
-		var classification = ClassifyTemplate(context.SemanticModel, declaration, diagnostics);
+		var classification = ClassifyTemplate(symbol, declaration, requiredSymbols, diagnostics);
 		if (classification is null) {
-			return diagnostics.Count == 0
-				? null
-				: new TemplateDiscoveryResult(null, diagnostics);
+			return null;
 		}
-		return new TemplateDiscoveryResult(
-			new TemplateCandidate(
-				symbol,
-				classification.Value.Kind,
-				classification.Value.Family,
-				classification.Value.CopyAllowed,
-				context.SemanticModel.Compilation),
-			diagnostics);
+
+		return new TemplateCandidate(
+			symbol,
+			classification.Value.Kind,
+			classification.Value.Family,
+			classification.Value.CopyAllowed,
+			compilation);
 	}
 
 	private static (TemplateKind Kind, TemplateFamily Family, bool? CopyAllowed)? ClassifyTemplate(
-		SemanticModel semanticModel,
+		INamedTypeSymbol symbol,
 		ClassDeclarationSyntax declaration,
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
 		ICollection<Diagnostic> diagnostics) {
-		foreach (var list in declaration.AttributeLists) {
-			foreach (var attribute in list.Attributes) {
-				var simpleName = GetAttributeSimpleName(attribute.Name);
-				if (!TryMapTemplateAttribute(simpleName, out var expectedMetadataName, out var kind, out var family)) {
-					continue;
-				}
-
-				var actualType = (semanticModel.GetSymbolInfo(attribute).Symbol as IMethodSymbol)?.ContainingType;
-				if (actualType is null) {
-					var copyAllowedWithoutSymbol = kind == TemplateKind.Instance ? GetTemplateCopySetting(attribute, diagnostics) : (bool?) null;
-					return (kind, family, copyAllowedWithoutSymbol);
-				}
-
-				var actualMetadataName = actualType.ToDisplayString();
-				if (!string.Equals(actualMetadataName, expectedMetadataName, StringComparison.Ordinal)) {
-					diagnostics.Add(CreateAttributeShadowingDiagnostic(attribute.GetLocation(), simpleName, actualType, expectedMetadataName ?? string.Empty));
-					continue;
-				}
-
-				var copyAllowed = kind == TemplateKind.Instance ? GetTemplateCopySetting(attribute, diagnostics) : (bool?) null;
-				return (kind, family, copyAllowed);
-			}
+		var thingTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.ThingTemplateAttribute, diagnostics);
+		if (thingTemplate is not null) {
+			return (TemplateKind.Instance, TemplateFamily.Thing, GetTemplateCopySetting(thingTemplate, diagnostics));
 		}
+
+		var thingDefTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.ThingDefTemplateAttribute, diagnostics);
+		if (thingDefTemplate is not null) {
+			return (TemplateKind.Def, TemplateFamily.Thing, null);
+		}
+
+		var pluginTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.PluginTemplateAttribute, diagnostics);
+		if (pluginTemplate is not null) {
+			return (TemplateKind.Instance, TemplateFamily.Plugin, GetTemplateCopySetting(pluginTemplate, diagnostics));
+		}
+
+		var pluginDefTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.PluginDefTemplateAttribute, diagnostics);
+		if (pluginDefTemplate is not null) {
+			return (TemplateKind.Def, TemplateFamily.Plugin, null);
+		}
+
 		return null;
 	}
 
-	private static Diagnostic CreateAttributeShadowingDiagnostic(Location location, string attributeName, INamedTypeSymbol actualType, string expectedTypeName) {
-		return Diagnostic.Create(
-			Analyzer.AttributeShadowingDescriptor,
-			location,
-			attributeName,
-			actualType.ToDisplayString(),
-			expectedTypeName);
-	}
-
-	private static bool TryMapTemplateAttribute(
-		string simpleName,
-		out string? expectedMetadataName,
-		out TemplateKind kind,
-		out TemplateFamily family) {
-		expectedMetadataName = null;
-		kind = default;
-		family = default;
-		if (simpleName == ThingTemplateAttributeName) {
-			expectedMetadataName = Analyzer.ThingTemplateAttributeMetadataName;
-			kind = TemplateKind.Instance;
-			family = TemplateFamily.Thing;
-			return true;
-		}
-		if (simpleName == ThingDefTemplateAttributeName) {
-			expectedMetadataName = Analyzer.ThingDefTemplateAttributeMetadataName;
-			kind = TemplateKind.Def;
-			family = TemplateFamily.Thing;
-			return true;
-		}
-		if (simpleName == PluginTemplateAttributeName) {
-			expectedMetadataName = Analyzer.PluginTemplateAttributeMetadataName;
-			kind = TemplateKind.Instance;
-			family = TemplateFamily.Plugin;
-			return true;
-		}
-		if (simpleName == PluginDefTemplateAttributeName) {
-			expectedMetadataName = Analyzer.PluginDefTemplateAttributeMetadataName;
-			kind = TemplateKind.Def;
-			family = TemplateFamily.Plugin;
-			return true;
-		}
-		return false;
-	}
-
-	private static bool GetTemplateCopySetting(AttributeSyntax attribute, ICollection<Diagnostic> diagnostics) {
-		if (attribute.ArgumentList is null) {
+	private static bool GetTemplateCopySetting(AttributeData attributeData, ICollection<Diagnostic> diagnostics) {
+		if (attributeData.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attribute
+			|| attribute.ArgumentList is null) {
 			return true;
 		}
 
@@ -144,21 +93,15 @@ internal static class Parser {
 			AliasQualifiedNameSyntax aliasQualified => aliasQualified.Name.Identifier.ValueText,
 			_ => nameSyntax.ToString()
 		};
-		return StripAttributeSuffix(name);
+		return AttributeUsageValidator.StripAttributeSuffix(name);
 	}
 
-	internal static string StripAttributeSuffix(string name) {
-		return name.EndsWith("Attribute", StringComparison.Ordinal)
-			? name.Substring(0, name.Length - "Attribute".Length)
-			: name;
-	}
-
-	internal static IEnumerable<DefFieldSpec> GetDefFields(INamedTypeSymbol? defSymbol, Compilation compilation, ICollection<Diagnostic> diagnostics) {
+	internal static IEnumerable<DefFieldSpec> GetDefFields(
+		INamedTypeSymbol? defSymbol,
+		Compilation compilation,
+		INamedTypeSymbol expectedDefFieldAttribute,
+		ICollection<Diagnostic> diagnostics) {
 		if (defSymbol is null) {
-			return Array.Empty<DefFieldSpec>();
-		}
-		var expectedDefFieldAttribute = compilation.GetTypeByMetadataName(Analyzer.DefFieldAttributeMetadataName);
-		if (expectedDefFieldAttribute is null) {
 			return Array.Empty<DefFieldSpec>();
 		}
 
@@ -198,11 +141,11 @@ internal static class Parser {
 		ICollection<Diagnostic> diagnostics) {
 		var fields = new List<DefFieldSpec>();
 		foreach (var field in classDeclaration.Members.OfType<FieldDeclarationSyntax>()) {
-			var attribute = FindCanonicalDefFieldAttribute(field.AttributeLists, semanticModel, expectedDefFieldAttribute, diagnostics);
+			var attribute = FindCanonicalDefFieldAttribute(field, semanticModel, expectedDefFieldAttribute, diagnostics);
 			if (attribute is null) {
 				continue;
 			}
-			var spec = ParseDefField(attribute);
+			var spec = ParseDefField(attribute, diagnostics);
 			foreach (var variable in field.Declaration.Variables) {
 				fields.Add(new DefFieldSpec(variable.Identifier.ValueText, spec.TypeName, spec.DefaultExpression));
 			}
@@ -210,19 +153,23 @@ internal static class Parser {
 		return fields;
 	}
 
-	private static (string TypeName, string DefaultExpression) ParseDefField(AttributeSyntax attribute) {
+	private static (string TypeName, string DefaultExpression) ParseDefField(AttributeSyntax attribute, ICollection<Diagnostic> diagnostics) {
 		var typeName = "object";
 		var defaultExpression = "default(object)";
 		if (attribute.ArgumentList is null) {
 			return (typeName, defaultExpression);
 		}
 		foreach (var arg in attribute.ArgumentList.Arguments) {
-			ApplyDefFieldArgument(arg, ref typeName, ref defaultExpression);
+			ApplyDefFieldArgument(arg, diagnostics, ref typeName, ref defaultExpression);
 		}
 		return (typeName, defaultExpression);
 	}
 
-	private static void ApplyDefFieldArgument(AttributeArgumentSyntax arg, ref string typeName, ref string defaultExpression) {
+	private static void ApplyDefFieldArgument(
+		AttributeArgumentSyntax arg,
+		ICollection<Diagnostic> diagnostics,
+		ref string typeName,
+		ref string defaultExpression) {
 		if (arg.NameEquals is null) {
 			if (arg.Expression is TypeOfExpressionSyntax typeOfExpression) {
 				typeName = typeOfExpression.Type.ToString();
@@ -238,37 +185,29 @@ internal static class Parser {
 		if (arg.Expression is LiteralExpressionSyntax literal
 			&& literal.IsKind(SyntaxKind.StringLiteralExpression)) {
 			defaultExpression = literal.Token.ValueText;
+			return;
 		}
+
+		diagnostics.Add(Diagnostic.Create(
+			Analyzer.InvalidDefFieldDefaultExpressionDescriptor,
+			arg.Expression.GetLocation(),
+			arg.Expression.ToString()));
 	}
 
 	private static AttributeSyntax? FindCanonicalDefFieldAttribute(
-		SyntaxList<AttributeListSyntax> lists,
+		FieldDeclarationSyntax fieldDeclaration,
 		SemanticModel semanticModel,
 		INamedTypeSymbol expectedDefFieldAttribute,
 		ICollection<Diagnostic> diagnostics) {
-		var expectedMetadataName = expectedDefFieldAttribute?.ToDisplayString() ?? string.Empty;
-		foreach (var list in lists) {
-			foreach (var attr in list.Attributes) {
-				var simpleName = GetAttributeSimpleName(attr.Name);
-				if (!string.Equals(simpleName, DefFieldAttributeName, StringComparison.Ordinal)) {
-					continue;
-				}
+		var firstVariable = fieldDeclaration.Declaration.Variables.FirstOrDefault();
+		if (firstVariable is null
+			|| semanticModel.GetDeclaredSymbol(firstVariable) is not IFieldSymbol fieldSymbol) {
+			return null;
+		}
 
-				var actualType = (semanticModel.GetSymbolInfo(attr).Symbol as IMethodSymbol)?.ContainingType;
-				if (actualType is null) {
-					return attr;
-				}
-
-				if (expectedDefFieldAttribute is not null
-					&& (SymbolEqualityComparer.Default.Equals(actualType, expectedDefFieldAttribute)
-						|| string.Equals(actualType.ToDisplayString(), expectedMetadataName, StringComparison.Ordinal))) {
-					return attr;
-				}
-
-				if (expectedDefFieldAttribute is not null) {
-					diagnostics.Add(CreateAttributeShadowingDiagnostic(attr.GetLocation(), DefFieldAttributeName, actualType, expectedMetadataName));
-				}
-			}
+		var canonicalAttribute = AttributeUsageValidator.FindCanonicalAttribute(fieldSymbol, expectedDefFieldAttribute, diagnostics);
+		if (canonicalAttribute?.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax canonicalAttributeSyntax) {
+			return canonicalAttributeSyntax;
 		}
 		return null;
 	}

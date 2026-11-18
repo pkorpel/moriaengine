@@ -11,41 +11,7 @@ using Xunit;
 namespace SteamEngine.Generators.Tests;
 
 public sealed class DeepCopyImplementorGeneratorTests {
-	private const string SharedStubs = """
-namespace SteamEngine {
-	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct)]
-	public sealed class DeepCopyableClassAttribute : System.Attribute { }
-
-	[System.AttributeUsage(System.AttributeTargets.Method | System.AttributeTargets.Constructor)]
-	public sealed class DeepCopyImplementationAttribute : System.Attribute { }
-
-	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property)]
-	public sealed class CopyableDataAttribute : System.Attribute { }
-
-	public interface IDeepCopyImplementor {
-		object DeepCopy(object copyFrom);
-		System.Type HandledType { get; }
-	}
-
-	public static class DeepCopyFactory {
-		public static bool IsNotCopied(System.Type type) => false;
-		public static void GetCopyDelayed(object copyFrom, System.Action<object, object> callback, object self) { }
-	}
-
-
-	public abstract class AbstractScript { }
-	public sealed class Globals { }
-	public interface IAbstractKey { }
-}
-
-namespace SteamEngine.Regions {
-	public sealed class Region { }
-}
-
-namespace SteamEngine {
-	public abstract class AbstractAccount { }
-}
-""";
+	private const string SharedStubs = "";
 
 	private sealed class GeneratorRunSnapshot {
 		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
@@ -145,7 +111,7 @@ public sealed class SpellState {
 """;
 
 		var run = RunGenerator(nameof(MultipleDeepCopyImplementations_ReportDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN204");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN904");
 		Assert.Contains("SpellState", diagnostic.GetMessage());
 	}
 
@@ -189,7 +155,7 @@ public sealed class SpellState {
 """;
 
 		var run = RunGenerator(nameof(ShadowedDeepCopyableAttribute_ReportsWarning), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN207");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN902");
 		Assert.Equal(DiagnosticSeverity.Warning, diagnostic.Severity);
 	}
 
@@ -202,7 +168,7 @@ public sealed class Placeholder {
 """;
 
 		var run = RunGeneratorWithoutSharedStubs(nameof(MissingCanonicalEngineTypes_ReportDiagnostics), source);
-		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN202");
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN901");
 	}
 
 	[Fact]
@@ -246,6 +212,7 @@ namespace SecondNamespace {
 	private static GeneratorRunSnapshot RunGeneratorInternal(string scenarioName, string source, bool includeSharedStubs) {
 		var syntaxTrees = new List<SyntaxTree>();
 		if (includeSharedStubs) {
+			syntaxTrees.Add(CSharpSyntaxTree.ParseText(GeneratorTestStubs.CanonicalEngineTypes));
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(SharedStubs));
 		}
 		if (!string.IsNullOrEmpty(source)) {
@@ -258,7 +225,7 @@ namespace SecondNamespace {
 			GetMetadataReferences(),
 			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new Generator());
+		GeneratorDriver driver = CSharpGeneratorDriver.Create(new DeepCopyImplementorsGenerator());
 		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
 		var run = driver.GetRunResult();
 		var single = run.Results.Single();
@@ -296,7 +263,7 @@ namespace SecondNamespace {
 			typeof(Enumerable).Assembly,
 			typeof(System.Runtime.GCSettings).Assembly,
 			typeof(Microsoft.CSharp.RuntimeBinder.Binder).Assembly,
-			typeof(SteamEngine.SaveableDataAttribute).Assembly
+			typeof(SteamEngine.DeepCopyableClassAttribute).Assembly
 		};
 
 		foreach (var assembly in assemblies) {

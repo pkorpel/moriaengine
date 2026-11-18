@@ -1,75 +1,87 @@
-using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
 internal static class Parser {
-	private const string SteamFunctionAttributeSimpleName = "SteamFunction";
-
-	internal static ScriptHolderDiscoveryResult? DiscoverCandidate(GeneratorSyntaxContext context) {
-		var diagnostics = new List<Diagnostic>();
-		if (context.Node is not MethodDeclarationSyntax) {
+	internal static ScriptHolderCandidate? DiscoverCandidate(
+		Compilation compilation,
+		MethodDeclarationSyntax methodDeclaration,
+		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		ICollection<Diagnostic> diagnostics) {
+		var semanticModel = compilation.GetSemanticModel(methodDeclaration.SyntaxTree);
+		if (semanticModel.GetDeclaredSymbol(methodDeclaration) is not IMethodSymbol methodSymbol) {
 			return null;
 		}
 
-		if (context.SemanticModel.GetDeclaredSymbol(context.Node) is not IMethodSymbol methodSymbol) {
-			return null;
-		}
-
-		var canonicalAttribute = context.SemanticModel.Compilation.GetTypeByMetadataName(Analyzer.SteamFunctionAttributeMetadataName);
+		var canonicalAttribute = AttributeUsageValidator.FindCanonicalAttribute(
+			methodSymbol,
+			requiredSymbols.Attributes.SteamFunctionAttribute,
+			diagnostics);
 		if (canonicalAttribute is null) {
 			return null;
 		}
 
-		AttributeData? steamFunctionAttribute = null;
-		foreach (var attribute in methodSymbol.GetAttributes()) {
-			var attributeClass = attribute.AttributeClass;
-			if (attributeClass is null) {
-				continue;
-			}
-
-			var simpleName = StripAttributeSuffix(attributeClass.Name);
-			if (!string.Equals(simpleName, SteamFunctionAttributeSimpleName, StringComparison.Ordinal)) {
-				continue;
-			}
-
-			if (SymbolEqualityComparer.Default.Equals(attributeClass, canonicalAttribute)) {
-				steamFunctionAttribute = attribute;
-				break;
-			}
-
-			var location = attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation();
-			if (location is null) {
-				location = methodSymbol.Locations.Length > 0 ? methodSymbol.Locations[0] : Location.None;
-			}
-			diagnostics.Add(Diagnostic.Create(
-				Analyzer.AttributeShadowingDescriptor,
-				location,
-				simpleName,
-				attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-				canonicalAttribute.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
-		}
-
-		if (steamFunctionAttribute is null) {
-			return diagnostics.Count == 0 ? null : new ScriptHolderDiscoveryResult(null, diagnostics);
-		}
-
-		var functionName = methodSymbol.Name;
-		if (steamFunctionAttribute.ConstructorArguments.Length == 1
-			&& steamFunctionAttribute.ConstructorArguments[0].Value is string configuredName
-			&& !string.IsNullOrEmpty(configuredName)) {
-			functionName = configuredName;
-		}
-
-		var candidate = new ScriptHolderCandidate(methodSymbol, functionName, GetDescription(methodSymbol));
-		return new ScriptHolderDiscoveryResult(candidate, diagnostics);
+		var candidate = new ScriptHolderCandidate(
+			methodSymbol,
+			GetFunctionName(methodSymbol, canonicalAttribute, diagnostics),
+			GetDescription(methodSymbol));
+		return candidate;
 	}
 
-	internal static string StripAttributeSuffix(string name) {
-		return name.EndsWith("Attribute", StringComparison.Ordinal) ? name.Substring(0, name.Length - "Attribute".Length) : name;
+	private static string GetFunctionName(IMethodSymbol methodSymbol, AttributeData canonicalAttribute, ICollection<Diagnostic> diagnostics) {
+		if (canonicalAttribute.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attributeSyntax) {
+			return methodSymbol.Name;
+		}
+
+		if (attributeSyntax.ArgumentList is null) {
+			return methodSymbol.Name;
+		}
+
+		foreach (var argument in attributeSyntax.ArgumentList.Arguments) {
+			if (argument.NameEquals is null) {
+				if (TryReadStringLiteral(argument.Expression, out var positionalName)) {
+					return positionalName;
+				}
+
+				ReportInvalidNameLiteral(argument.Expression);
+				continue;
+			}
+
+			if (argument.NameEquals.Name.Identifier.ValueText != "NewFunctionName") {
+				continue;
+			}
+
+			if (TryReadStringLiteral(argument.Expression, out var namedName)) {
+				return namedName;
+			}
+
+			ReportInvalidNameLiteral(argument.Expression);
+		}
+
+		return methodSymbol.Name;
+
+		void ReportInvalidNameLiteral(ExpressionSyntax expression) {
+			diagnostics.Add(Diagnostic.Create(
+				Analyzer.InvalidSteamFunctionNameArgumentDescriptor,
+				expression.GetLocation(),
+				expression.ToString()));
+		}
+	}
+
+	private static bool TryReadStringLiteral(ExpressionSyntax expression, out string value) {
+		if (expression is LiteralExpressionSyntax literal
+			&& literal.IsKind(SyntaxKind.StringLiteralExpression)
+			&& !string.IsNullOrWhiteSpace(literal.Token.ValueText)) {
+			value = literal.Token.ValueText;
+			return true;
+		}
+
+		value = string.Empty;
+		return false;
 	}
 
 	private static string? GetDescription(IMethodSymbol methodSymbol) {
