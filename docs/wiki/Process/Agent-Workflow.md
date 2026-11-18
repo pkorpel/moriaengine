@@ -6,6 +6,19 @@ Claude Code drives issues from idea to closed with slash commands
 (`.claude/commands/`) and role agents (`.claude/agents/`). Installed from the
 moria-agent-kit; "dev" is a local boot of `main`.
 
+## Where agent instructions live (#1554)
+
+| File | Read by | Holds |
+|---|---|---|
+| `AGENTS.md` | everyone: people, Claude Code, Copilot, other agents | repo shape, build/test, how changes land, rules that hold everywhere |
+| `CLAUDE.md` | Claude Code (imports `AGENTS.md`) | Claude-only rules: session continuity via issues, the dev container's limits, git hazards, subagents |
+| `.claude/rules/*.md` | Claude Code automatically (area rules only when matching files are touched); others by link | topic rules: workflow, Erebor porting, engine patterns, testing, converter, LScript, localization, world setup |
+| `.claude/skills/*/SKILL.md` | Claude Code, on demand | procedures: protocol tests, converter regen, hang debugging, Erebor lookups |
+| `docs/history/claude-md-log.md` | nobody routinely | the old CLAUDE.md work log (2026-10-12 to 2026-11-13), archived |
+
+None of these files holds status or history. Work state lives on the issue (plan comment first, then
+findings as they land). A standing rule changes through a PR to the file that holds it.
+
 ## Flow
 
 ```

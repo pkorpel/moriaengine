@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""PreToolUse hook: no merge of a code change without a review (#1230, see CLAUDE.md
-"Workflow conventions").
+"""PreToolUse hook: no merge of a code change without a review (#1230, see AGENTS.md
+"How changes land" and CLAUDE.md "Subagents").
 
 Every code change gets an independent review agent before it merges, and the PR body
 says what the review found under a `## Review` heading (`## Reviews`, any heading
@@ -39,7 +39,7 @@ import subprocess
 import sys
 
 REASON = ("PR {pr} changes code but its body has no '## Review' section with text under it. "
-          "Every code change gets an independent review agent before merge (#1230, CLAUDE.md): "
+          "Every code change gets an independent review agent before merge (#1230, AGENTS.md): "
           "run the review, fix or answer its findings, add '## Review' with what it found to "
           "the PR body (gh pr edit --body-file, in its own call), then merge.")
 

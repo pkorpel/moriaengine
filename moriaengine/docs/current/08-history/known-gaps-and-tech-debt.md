@@ -1,7 +1,7 @@
 # Known gaps & tech debt
 
 What's deliberately incomplete, deferred, or flagged as needing a future decision -
-consolidated from across `CLAUDE.md`'s session history so it's visible in one place
+consolidated from the old session log (`docs/history/claude-md-log.md`) so it's visible in one place
 rather than scattered across many issue numbers. Each entry notes whether it's a
 deliberate scope choice (not a bug) or a genuine gap worth picking up.
 

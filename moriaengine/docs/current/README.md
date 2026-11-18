@@ -9,8 +9,8 @@ Gondor/Mordor realms, Carn Dûm, etc).
 SteamEngine project's own historical material (LScript language notes, CVS history, trigger
 lists, old Erebor planning pages) - useful background, not maintained, not guaranteed
 accurate against the current code. Everything in `docs/current/` is written against the
-code as it stands today and is expected to be kept that way - see the workflow rule in the
-repo-root `CLAUDE.md` ("every code change that touches a documented system must update the
+code as it stands today and is expected to be kept that way - see the rule in the
+repo-root `AGENTS.md` ("every code change that touches a documented system must update the
 relevant page here in the same change").
 
 ## How to use this
@@ -21,9 +21,9 @@ and open gaps), without reproducing exact method signatures the code itself alre
 better. File:line references point at the real, current location of the thing being
 described - if a reference goes stale, that's a documentation bug, fix it.
 
-A lot of the "why" content here was mined from the session history in the repo-root
-`CLAUDE.md` - hard-won design reasoning that would otherwise eventually rotate out of a
-file whose job is session continuity, not permanent reference.
+A lot of the "why" content here was mined from the old session log, now archived as
+`docs/history/claude-md-log.md` - hard-won design reasoning that would otherwise have stayed
+buried in a log whose job was session continuity, not permanent reference.
 
 ## Table of contents
 

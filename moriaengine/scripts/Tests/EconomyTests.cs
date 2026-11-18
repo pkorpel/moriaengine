@@ -138,7 +138,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestSetupFarBankerForDialogCheck(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			// This test map's default spawn point has dense static placement nearby (same
-			// cramped-antechamber terrain documented elsewhere in CLAUDE.md, e.g. V-7/V-9/V-10's
+			// cramped-antechamber terrain documented elsewhere in docs/history/claude-md-log.md, e.g. V-7/V-9/V-10's
 			// own movement lessons and MagerySpellTests' ground-targeted casts) - a banker placed
 			// a naive 8 tiles away can end up with no LOS back to self, so Trigger_Hear never
 			// fires and this scenario silently tests nothing. Move to confirmed open ground first.
