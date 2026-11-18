@@ -38,7 +38,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_lockpick : CompiledTriggerGroup {
+	public partial class t_lockpick : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if ((player != null) && !player.Flag_Dead) {

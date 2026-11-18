@@ -22,7 +22,7 @@ using SteamEngine.Networking;
 //using MySql.Data.MySqlClient;
 
 namespace SteamEngine.CompiledScripts {
-	public static class DbMethods {
+	public static partial class DbMethods {
 		public static LoginLogsContainer loginLogs = new LoginLogsContainer();
 
 		public class LoginLogsContainer : MultiInsertContainer {
@@ -95,7 +95,7 @@ namespace SteamEngine.CompiledScripts {
 			loginLogs.SendAll();
 		}
 
-		public class E_DbMethods_Global : CompiledTriggerGroup {
+		public partial class E_DbMethods_Global : CompiledTriggerGroup {
 			public void On_AfterSave(Globals ignored1, ScriptArgs sa) {
 				bool success = Convert.ToBoolean(sa.Argv[1]);
 				if (success) {

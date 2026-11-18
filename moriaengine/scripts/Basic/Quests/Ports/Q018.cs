@@ -368,7 +368,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1270 - @UserDClick of q018's NPCs.</summary>
-	public class E_Q018Npc : CompiledTriggerGroup {
+	public partial class E_Q018Npc : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;
@@ -381,7 +381,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1270 - the golden rune in Osgiliath's ruins.</summary>
-	public class E_Q018Rune : CompiledTriggerGroup {
+	public partial class E_Q018Rune : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (clicker is Player player) {
 				Q018.UseRune(player);
@@ -391,7 +391,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1270 - the golden spinning wheel in the Pits of Death.</summary>
-	public class E_Q018Wheel : CompiledTriggerGroup {
+	public partial class E_Q018Wheel : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (clicker is Player player) {
 				Q018.UseWheel(self, player);

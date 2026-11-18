@@ -209,7 +209,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1274 - the cooks' double click.</summary>
-	public class E_Q31Cook : CompiledTriggerGroup {
+	public partial class E_Q31Cook : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;

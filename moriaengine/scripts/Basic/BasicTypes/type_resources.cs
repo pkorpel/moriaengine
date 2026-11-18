@@ -17,23 +17,23 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_wool : CompiledTriggerGroup {
+	public partial class t_wool : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			return ClothMaking.Ask(self, dclicker);
 		}
 	}
 
-	public class t_cotton : CompiledTriggerGroup {
+	public partial class t_cotton : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			return ClothMaking.Ask(self, dclicker);
 		}
 	}
 
-	public class t_web : CompiledTriggerGroup {
+	public partial class t_web : CompiledTriggerGroup {
 
 	}
 
-	public class t_coin : CompiledTriggerGroup {
+	public partial class t_coin : CompiledTriggerGroup {
 
 		//public bool on_playdropsound(Item self, Character droppingChar) {
 		//    if (self.Amount <= 1) {
@@ -49,7 +49,7 @@ namespace SteamEngine.CompiledScripts {
 		//}
 	}
 
-	public class t_gold : CompiledTriggerGroup {
+	public partial class t_gold : CompiledTriggerGroup {
 		//public bool on_playDropSound(Item self, Character droppingChar) {
 		//    if (self.Amount <= 1) {
 		//        self.SoundTo((ushort) SoundNames.DroppingASingleCoin2, droppingChar);
@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 		//}
 	}
 
-	public class t_gem : CompiledTriggerGroup {
+	public partial class t_gem : CompiledTriggerGroup {
 		//public bool on_playDropSound(Item self, Character droppingChar) {
 		//    if (self.Amount <= 1) {
 		//        self.SoundTo((ushort) SoundNames.DroppingGem3, droppingChar);
@@ -77,18 +77,18 @@ namespace SteamEngine.CompiledScripts {
 		//}
 	}
 
-	public class t_reagent : CompiledTriggerGroup {
+	public partial class t_reagent : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			CraftingSkillDef.OpenMenu(dclicker, SkillName.Alchemy);
 			return TriggerResult.Continue;
 		}
 	}
 
-	public class t_board : CompiledTriggerGroup {
+	public partial class t_board : CompiledTriggerGroup {
 
 	}
 
-	public class t_log : CompiledTriggerGroup {
+	public partial class t_log : CompiledTriggerGroup {
 
 	}
 }

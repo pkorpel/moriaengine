@@ -17,11 +17,11 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_hair : CompiledTriggerGroup {
+	public partial class t_hair : CompiledTriggerGroup {
 
 	}
 
-	public class t_beard : CompiledTriggerGroup {
+	public partial class t_beard : CompiledTriggerGroup {
 
 	}
 }

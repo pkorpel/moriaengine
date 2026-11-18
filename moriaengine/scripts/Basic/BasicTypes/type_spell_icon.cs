@@ -17,7 +17,7 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_spellicon : CompiledTriggerGroup {
+	public partial class t_spellicon : CompiledTriggerGroup {
 
 	}
 }

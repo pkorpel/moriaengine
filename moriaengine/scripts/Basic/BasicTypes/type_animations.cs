@@ -17,11 +17,11 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_light_lit : CompiledTriggerGroup {
+	public partial class t_light_lit : CompiledTriggerGroup {
 
 	}
 
-	public class t_telepad : CompiledTriggerGroup {	//Our script must extend 'CompiledTriggerGroup'
+	public partial class t_telepad : CompiledTriggerGroup {	//Our script must extend 'CompiledTriggerGroup'
 
 		/// <summary>#1022 - e_monster's @itemstep: telepads aren't for monsters, a pet follows its master.</summary>
 		internal static bool Refuses(Character steppingChar) {
@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 		//}
 	}
 
-	public class t_fire : CompiledTriggerGroup {
+	public partial class t_fire : CompiledTriggerGroup {
 
 		public void on_step(TagHolder self, Character steppingChar) {
 			//#1502 - no killer, as Sphere's scripted hits change: a step runs on a timer (an NPC's) or the movement thread,
@@ -69,11 +69,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_spell : CompiledTriggerGroup {
+	public partial class t_spell : CompiledTriggerGroup {
 
 	}
 
-	public class t_trap_active : CompiledTriggerGroup {
+	public partial class t_trap_active : CompiledTriggerGroup {
 
 	}
 }

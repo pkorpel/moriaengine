@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
-	public class E_CommandsAuthorization_Global : CompiledTriggerGroup {
+	public partial class E_CommandsAuthorization_Global : CompiledTriggerGroup {
 		/// <summary>
 		/// Use this const for all non-player functions where the plevel number has no special meaning 
 		/// except for differentiation 'player available function' / 'player forbidden function'

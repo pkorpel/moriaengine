@@ -162,7 +162,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1529 - records Globals.Src when a character steps on its item.</summary>
-	public class E_StepSrcProbe : CompiledTriggerGroup {
+	public partial class E_StepSrcProbe : CompiledTriggerGroup {
 		internal static object src;
 		internal static Character stepped;
 

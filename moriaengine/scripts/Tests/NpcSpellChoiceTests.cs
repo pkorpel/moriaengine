@@ -406,7 +406,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1518 - on the caster: whom @spellPower was worked out for.</summary>
-	public class E_AreaPowerProbe : CompiledTriggerGroup {
+	public partial class E_AreaPowerProbe : CompiledTriggerGroup {
 		internal static readonly List<Character> reached = new List<Character>();
 
 		public void On_SpellPower(Character self, SpellPowerArgs args) {
@@ -417,7 +417,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1420 - records the power a spell's effect arrives with, and cancels the effect.</summary>
-	public class E_SpellPowerProbe : CompiledTriggerGroup {
+	public partial class E_SpellPowerProbe : CompiledTriggerGroup {
 		internal static int power, spellPowerRaised;
 
 		public void On_SpellPower(Character self, SpellPowerArgs args) {

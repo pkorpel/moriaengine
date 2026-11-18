@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Breaks the next save's writes for TestShutdownBreakSaveWrites. As the save opens its first file, a folder is
 	/// made where each file is to go (both the .sav BackupsManager writes and WorldSaver's own .sav.tmp), so each File.Create
 	/// fails, whichever of this and BackupsManager runs first.</summary>
-	public class E_ShutdownSaveBreaker_Global : CompiledTriggerGroup {
+	public partial class E_ShutdownSaveBreaker_Global : CompiledTriggerGroup {
 		internal static bool breakWrites;
 		internal static string brokenFolder;
 

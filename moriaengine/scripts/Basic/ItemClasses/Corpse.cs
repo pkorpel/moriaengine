@@ -495,7 +495,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class T_Corpse : CompiledTriggerGroup {
+	public partial class T_Corpse : CompiledTriggerGroup {
 
 	}
 }

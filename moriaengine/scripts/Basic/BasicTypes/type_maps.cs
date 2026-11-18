@@ -17,7 +17,7 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_map_blank : CompiledTriggerGroup {
+	public partial class t_map_blank : CompiledTriggerGroup {
 
 	}
 }

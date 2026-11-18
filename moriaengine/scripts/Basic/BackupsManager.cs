@@ -27,7 +27,7 @@ using SteamEngine.Persistence;
 using ZipEntry = ICSharpCode.SharpZipLib.Zip.ZipEntry;
 
 namespace SteamEngine.CompiledScripts {
-	public class E_BackupsManager_Global : CompiledTriggerGroup {
+	public partial class E_BackupsManager_Global : CompiledTriggerGroup {
 
 		/// <summary>
 		/// The maximal size of the save folder on the disk (including the backups) in Megabytes.

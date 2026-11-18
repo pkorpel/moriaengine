@@ -338,7 +338,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public class ShipRegion : MultiRegion {
+	public partial class ShipRegion : MultiRegion {
 		public ShipRegion() {
 			throw new SEException("The constructor without paramaters is not supported");
 		}
@@ -371,7 +371,7 @@ namespace SteamEngine.CompiledScripts {
 			return result;
 		}
 
-		public class E_BeingOnShip : CompiledTriggerGroup {
+		public partial class E_BeingOnShip : CompiledTriggerGroup {
 			private Ship GetShipOnPoint(Map map, int x, int y) {
 				Region region = map.GetRegionFor(x, y);
 				ShipRegion shipRegion = region as ShipRegion;

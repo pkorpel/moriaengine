@@ -355,7 +355,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1278 - Podivin's double click.</summary>
-	public class E_Q099Podivin : CompiledTriggerGroup {
+	public partial class E_Q099Podivin : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;

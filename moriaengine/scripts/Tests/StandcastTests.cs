@@ -300,7 +300,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1386 - the power of a real cast on the test's target, from the caster's @causeSpellEffect.</summary>
-	public class E_StandcastPowerProbe : CompiledTriggerGroup {
+	public partial class E_StandcastPowerProbe : CompiledTriggerGroup {
 		internal static Character target;
 		internal static int power;
 

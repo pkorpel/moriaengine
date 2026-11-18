@@ -62,7 +62,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_HitProbe : CompiledTriggerGroup {
+	public partial class E_HitProbe : CompiledTriggerGroup {
 		public TriggerResult On_Hit(Character self, WeaponSwingArgs swingArgs) {
 			HitTriggersTests.hits++;
 			if (HitTriggersTests.cancelIt) {
@@ -77,7 +77,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_GetHitProbe : CompiledTriggerGroup {
+	public partial class E_GetHitProbe : CompiledTriggerGroup {
 		public void On_GetHit(Character self, WeaponSwingArgs swingArgs) {
 			HitTriggersTests.getHits++;
 			HitTriggersTests.getHitSaw = swingArgs.DamageAfterAC;

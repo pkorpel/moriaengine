@@ -469,7 +469,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#833 - @UserDClick of the quest's NPCs.</summary>
-	public class E_Q000Npc : CompiledTriggerGroup {
+	public partial class E_Q000Npc : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			Player player = clicker as Player;
 			if (player == null) {
@@ -482,7 +482,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_Q000Root : CompiledTriggerGroup {
+	public partial class E_Q000Root : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if (player != null) {
@@ -506,7 +506,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_Q000Alarm : CompiledTriggerGroup {
+	public partial class E_Q000Alarm : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			Player player = stepping as Player;
 			if (player != null) {
@@ -515,7 +515,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_Q000CageDoor : CompiledTriggerGroup {
+	public partial class E_Q000CageDoor : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if (player != null) {
@@ -525,7 +525,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_Q000CaveEntrance : CompiledTriggerGroup {
+	public partial class E_Q000CaveEntrance : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			Player player = stepping as Player;
 			if (player != null) {
@@ -534,7 +534,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_Q000CaveExit : CompiledTriggerGroup {
+	public partial class E_Q000CaveExit : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			Player player = stepping as Player;
 			if (player != null) {
