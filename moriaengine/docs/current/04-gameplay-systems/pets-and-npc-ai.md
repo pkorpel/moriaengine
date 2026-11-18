@@ -18,6 +18,11 @@ it (below `FleeHealthFraction = 0.2` health); otherwise wander loosely around it
 point. Target selection is delegated to `NPC.ShouldAggroOn`, kept overridable per
 NPC/NPCDef without touching the tick loop itself.
 
+An NPC takes at most one tile step per think (`TryStep`). Its speed is how often it thinks:
+`RescheduleForMoveRate` sets the think interval from the NPC's own `NPC.MoveRate` (seeded from
+`NPCDef.MoveRate`, editable live): `ThinkIntervalSeconds × 3 / MoveRate`, never below
+`MinThinkIntervalSeconds` (0.3 s), so the baseline 3 gives exactly 1.5 s (#590, #603).
+
 `AIState` (Idle/Wandering/Fighting/Fleeing/Following/GoingToPoint) is informational only
 - recomputed fresh every tick from current conditions, never persisted.
 

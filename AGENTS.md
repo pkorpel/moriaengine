@@ -102,9 +102,12 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests) an
 |---|---|
 | `workflow.md` | Issue lifecycle, merge safety, scope, questions, worktrees |
 | `erebor-port.md` | Mirroring Erebor, reference sources, what is not ported |
-| `engine-patterns.md` | Engine conventions and gotchas (C#) |
-| `testing.md` | Writing tests that prove something; protocol-test pitfalls |
-| `converter.md` | `scripts/converted/` and `SphereShardConverter` |
-| `lscript.md` | `.def`/`.scp` and LScript gotchas |
+| `engine-patterns.md` | Which engine doc to read first, rules whose breakage is silent (C#) |
+| `testing.md` | Writing tests that prove something |
+| `converter.md` | Never editing `scripts/converted/` |
+| `lscript.md` | `.def`/`.scp` |
 | `localization.md` | `.resx` and loc strings |
 | `world-setup.md` | `scripts/Setup` and `.SetupWorld` |
+
+How the engine and its systems work lives in `moriaengine/docs/current/`, not in these rules. The rules point
+there and add only what has to be followed.

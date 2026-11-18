@@ -236,6 +236,33 @@ character without resurrecting first. The second call's own assertions can appea
 because the feature under test correctly produced no change). See
 [Corpses & death](../04-gameplay-systems/corpses-and-death.md).
 
+## The test world around the spawn point
+
+- Test characters start at 4763,1363 on a floor at z 10 above land at z 0, a boxed-in spot with a static to its
+  east that blocks sight. Ground-targeted spells, item placement and multi-tile walks need open ground first:
+  `MovementSpeedTests.TestTeleportToOpenGround(self)`. That ground is only about 7-9 tiles clear, so keep
+  distances around 6 tiles and check line of sight.
+- The server only lets a client reach what it can see. A drag or a uid target inside a pack, chest or corpse the
+  client hasn't opened does nothing, so open it first, or use `Thing.Trigger_DClickFromAfar` server-side.
+- `P(...)` and `Go(...)` set the position directly: no `@step`/`@stepTaken` on the character, and no `Flag_Moving`
+  (only `AbstractCharacter.WalkRunOrFly` sets it). Items under the new spot still get `@step`, with
+  `MovementType.Teleporting` (`AbstractCharacter.Trigger_NewPosition`), and telepads ignore teleport moves
+  (`type_animations.cs`), while other step items don't. A test of walking takes real steps. A step in a new
+  direction only turns the character, so the first one doesn't move.
+- An NPC is deleted when it dies ([Corpses & death](../04-gameplay-systems/corpses-and-death.md)): read its position
+  and name before `CauseDeath`.
+- A restart test boots with `GameServerPairFixture.BootPreservingSaves()`. Its save is made while the system's timers
+  are still scheduled, so their own saving is part of what the test covers.
+
+## A gump response with any button id is accepted
+
+The server's gump response handler takes whatever button id the client sends, whether or not the gump drew that
+button. A test that sends a response for a new button therefore passes even when the button is missing (#1335).
+Assert that the layout draws it first, then respond:
+`Assert.Matches(@"<up>\s+<down>\s+1\s+0\s+<id>\b", dialog.LayoutText)` (the UO layout is
+`{button x y up down type page id}`). Likewise, a wait for "the next gump titled X" needs a title unique to the
+expected page, or a broken button that reopens another page with the same title passes.
+
 ## `[Flags]` enum `ToString()` order is declaration order, not set order
 
 A `[Flags]` enum's default `ToString()` lists set flags in the order they're **declared

@@ -107,6 +107,14 @@ SkillName)` checks both `LayerNames.Hand1`/`Hand2` for an `Equippable` whose def
 (confirmed via source read) - user explicitly confirmed wanting this gate anyway,
 applied consistently to all three gathering tools rather than just Mining.
 
+## What a single click says
+
+Text a single click shows goes through `Item.ClickMessage(clicker, text)` (`scripts/Basic/ItemClasses/Item.cs`,
+#958): overhead text over the item, sent to the one character. It isn't a SysMessage because TazUO's
+`ForceTooltipsOnOldClients` (on by default) sends a real single click (0x09) whenever the mouse rests on something
+and the server doesn't advertise tooltips, again and again. It puts overhead text into the tooltip, while a SysMessage
+would fill the journal. A click's side effects also run on every TazUO hover.
+
 ## Explicitly out of scope, flagged not guessed at
 
 - "Cut cloth with a knife/sword" and a staff's own "use" action - no existing mechanic
