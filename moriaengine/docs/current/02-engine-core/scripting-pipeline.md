@@ -74,14 +74,13 @@ until #1382.)
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 
-A second, unrelated generation pass currently produces five files directly under the
+A second, unrelated generation pass currently produces four files directly under the
 `moriaengine/Generated/` folder:
 
 - `CompiledTriggerGroups.Generated.cs` - compiled-C# trigger group dispatch.
 - `PluginTriggerGroups.Generated.cs` - same idea for plugin trigger groups.
 - `DecoratedClassesSaveImplementors.Generated.cs` - save/load glue for `[SaveableClass]`
   types that are hand-written (settings categories, hand-written timers, etc).
-- `DeepCopyImplementor.Generated.cs` - deep-copy glue for `[DeepCopyableClass]` types.
 - `ViewableClasses.Generated.cs` - reflection metadata backing the `.info` dialog's property
   discovery for every `[ViewableClass]` type (see
   [viewable-classes-and-info-dialog.md](viewable-classes-and-info-dialog.md)).
@@ -98,13 +97,17 @@ generator `Tools/SteamEngine.Generators/CompiledScriptHolders/Generator.cs` (see
 `docs/current/02-engine-core/code generators/compiled-script-holder-generator.md`), not by the
 CodeDom `Generated/*.Generated.cs` pass.
 
+Deep-copy implementors are now generated at scripts compile time by
+`Tools/SteamEngine.Generators/DeepCopyImplementors/Generator.cs`. See
+`docs/current/02-engine-core/code generators/deep-copy-implementor-generator.md`.
+
 ### One boot does both
 
 A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
 
 1. the scripts project is compiled and loaded (including build-time template generation);
 2. `ClassManager` reflects over it, feeding each generator;
-3. `GeneratedCodeUtil.WriteOutAndCompile` writes the five `Generated/*.Generated.cs` files and
+3. `GeneratedCodeUtil.WriteOutAndCompile` writes the four `Generated/*.Generated.cs` files and
    compiles the Generated project against the scripts assembly just loaded, then loads it.
 
 So a new `[SteamFunction]`, `[ViewableClass]` member, or template field/attribute change is

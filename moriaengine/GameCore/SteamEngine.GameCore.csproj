@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -24,6 +24,10 @@
     <ProjectReference Include="..\Communication\SteamEngine.Communication.csproj" />
     <ProjectReference Include="..\ThirdParty\SteamEngine.ThirdParty.csproj" />
     <ProjectReference Include="..\Tools\SteamEngine.Generators.Abstractions\SteamEngine.Generators.Abstractions.csproj" />
+
+    <ProjectReference Include="..\Tools\SteamEngine.Generators\SteamEngine.Generators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

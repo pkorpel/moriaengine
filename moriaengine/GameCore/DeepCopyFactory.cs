@@ -25,9 +25,6 @@ using SteamEngine.Regions;
 
 namespace SteamEngine {
 
-	public delegate void ReturnCopy(object copy);
-	public delegate void ReturnCopyParam(object copy, object additionalParameter);
-
 	//public interface IDeepCloneable {
 	//    object DeepClone();
 	//}
@@ -86,7 +83,7 @@ namespace SteamEngine {
 			return CopyImplementation(copyFrom);
 		}
 
-		public static void GetCopyDelayed(object copyFrom, ReturnCopy callback) {
+		public static void GetCopyDelayed(object copyFrom, Action<object> callback) {
 			if (copyFrom == null) {
 				callback(null);
 				return;
@@ -110,7 +107,7 @@ namespace SteamEngine {
 			}
 		}
 
-		public static void GetCopyDelayed(object copyFrom, ReturnCopyParam callback, object additionalParameter) {
+		public static void GetCopyDelayed(object copyFrom, Action<object, object> callback, object additionalParameter) {
 			if (copyFrom == null) {
 				callback(null, additionalParameter);
 				return;
@@ -218,9 +215,9 @@ namespace SteamEngine {
 		}
 
 		private class DelayedCopier_NoParam : DelayedCopier {
-			protected ReturnCopy deleg;
+			protected Action<object> deleg;
 
-			internal DelayedCopier_NoParam(object copyFrom, ReturnCopy deleg)
+			internal DelayedCopier_NoParam(object copyFrom, Action<object> deleg)
 				: base(copyFrom) {
 				this.deleg = deleg;
 			}
@@ -240,10 +237,10 @@ namespace SteamEngine {
 		}
 
 		private class DelayedCopier_Param : DelayedCopier {
-			protected ReturnCopyParam deleg;
+			protected Action<object, object> deleg;
 			protected object param;
 
-			internal DelayedCopier_Param(object copyFrom, ReturnCopyParam deleg, object param)
+			internal DelayedCopier_Param(object copyFrom, Action<object, object> deleg, object param)
 				: base(copyFrom) {
 				this.deleg = deleg;
 				this.param = param;
