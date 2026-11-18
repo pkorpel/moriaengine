@@ -72,7 +72,7 @@ namespace SteamEngine.CompiledScripts {
 	/// hour 203, OK 1; then the current war lord and the queue, with cancel (2) on one's own row.</summary>
 	public class D_DeclareWar : CompiledGumpDef {
 		internal const int OkButton = 1, CancelButton = 2, FortCheck = 101, DayEntry = 201, MonthEntry = 202, HourEntry = 203;
-		private const int Width = 400, Row = 22, Header = 0x481, Text = 955, LordHeader = 44, LordHue = 52, QueueHeader = 0x2e, QueueHue = 0x31;
+		private const int Width = 400, Row = 22, Header = 0x481, TextHue = 955, LordHeader = 44, LordHue = 52, QueueHeader = 0x2e, QueueHue = 0x31;
 
 		internal static void Open(Player player, WarFront front, string[] entered) {
 			player.Dialog(player, SingletonScript<D_DeclareWar>.Instance, new DialogArgs(front.realm, entered));
@@ -92,18 +92,18 @@ namespace SteamEngine.CompiledScripts {
 			this.AddLabel(10, y, Header, "Vyhlaseni valky " + ((target.StartsWith("Mordor", StringComparison.Ordinal)) ? "Mordorske" : "Gondorske") + " pevnosti");
 			this.AddButton(Width - 40, y, 0xfb1, 0xfb3, 0, GumpButtonType.Reply, 0);
 			y += Row;
-			this.AddLabel(10, y, Text, Conquest.AreaName(target));
+			this.AddLabel(10, y, TextHue, Conquest.AreaName(target));
 			this.AddCheck(Width - 40, y, 210, 211, true, FortCheck);
 			y += Row;
 			ConquestSettings settings = ConquestSettings.instance;
 			this.AddLabel(10, y, Header, "Mozne casy dobyvani: " + settings.warFromHour + "-" + settings.warToHour);
 			y += Row;
-			this.AddLabel(10, y, Text, "Den:");
-			this.AddTextEntry(50, y, 40, 20, Text, DayEntry, (entered != null) ? entered[0] : tomorrow.Day.ToString(CultureInfo.InvariantCulture));
-			this.AddLabel(110, y, Text, "Mesic:");
-			this.AddTextEntry(160, y, 40, 20, Text, MonthEntry, (entered != null) ? entered[1] : tomorrow.Month.ToString(CultureInfo.InvariantCulture));
-			this.AddLabel(220, y, Text, "Hodina:");
-			this.AddTextEntry(280, y, 40, 20, Text, HourEntry, (entered != null) ? entered[2] : settings.warFromHour.ToString(CultureInfo.InvariantCulture));
+			this.AddLabel(10, y, TextHue, "Den:");
+			this.AddTextEntry(50, y, 40, 20, TextHue, DayEntry, (entered != null) ? entered[0] : tomorrow.Day.ToString(CultureInfo.InvariantCulture));
+			this.AddLabel(110, y, TextHue, "Mesic:");
+			this.AddTextEntry(160, y, 40, 20, TextHue, MonthEntry, (entered != null) ? entered[1] : tomorrow.Month.ToString(CultureInfo.InvariantCulture));
+			this.AddLabel(220, y, TextHue, "Hodina:");
+			this.AddTextEntry(280, y, 40, 20, TextHue, HourEntry, (entered != null) ? entered[2] : settings.warFromHour.ToString(CultureInfo.InvariantCulture));
 			y += Row;
 			this.AddButton(10, y, 0xfb7, 0xfb9, OkButton, GumpButtonType.Reply, 0);
 			y += Row + 4;
