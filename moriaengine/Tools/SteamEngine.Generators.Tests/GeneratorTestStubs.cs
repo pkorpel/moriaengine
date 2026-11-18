@@ -14,6 +14,19 @@ namespace SteamEngine {
 	public class AbstractAccount { }
 	public interface IAbstractKey { }
 
+	public sealed class TriggerKey : IAbstractKey {
+		private TriggerKey(string name) {
+			Name = name;
+		}
+
+		public string Name { get; }
+		public int Uid => 0;
+
+		public static TriggerKey Acquire(string name) {
+			return new TriggerKey(name);
+		}
+	}
+
 	public interface IDeepCopyImplementor {
 		object DeepCopy(object copyFrom);
 		System.Type HandledType { get; }
@@ -71,6 +84,11 @@ namespace SteamEngine.Regions {
 }
 
 namespace SteamEngine.CompiledScripts {
+	public abstract class CompiledTriggerGroup {
+		public virtual object Run(object self, global::SteamEngine.TriggerKey tk, global::SteamEngine.ScriptArgs sa) => null;
+		protected virtual string InternalFirstGetDefname() => "";
+	}
+
 	public abstract class CompiledScriptHolder : SteamEngine.ScriptHolder {
 		private readonly string desc;
 

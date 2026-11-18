@@ -52,6 +52,7 @@ internal static class RequiredTypeValidator {
 		var scriptHolderType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.ScriptHolder, ref allPresent);
 		var scriptArgsType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.ScriptArgs, ref allPresent);
 		var compiledScriptHolderType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.CompiledScriptHolder, ref allPresent);
+		var compiledTriggerGroupType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.CompiledTriggerGroup, ref allPresent);
 		var decoratedClassesSaveImplementorType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.DecoratedClassesSaveImplementor, ref allPresent);
 		var propsSectionType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.PropsSection, ref allPresent);
 		var propsLineType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.PropsLine, ref allPresent);
@@ -76,6 +77,7 @@ internal static class RequiredTypeValidator {
 			ScriptHolderType = scriptHolderType!,
 			ScriptArgsType = scriptArgsType!,
 			CompiledScriptHolderType = compiledScriptHolderType!,
+			CompiledTriggerGroupType = compiledTriggerGroupType!,
 			DeepCopyFactoryType = deepCopyFactoryType!,
 			IDeepCopyImplementorType = iDeepCopyImplementorType!,
 			PropsSectionType = propsSectionType!,

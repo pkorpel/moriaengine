@@ -165,7 +165,7 @@ public static class CommandScripts {
 			string.Empty);
 		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
 		Assert.Contains(run.Diagnostics, d => d.GetMessage().Contains("SteamEngine.CompiledScripts.SteamFunctionAttribute", StringComparison.Ordinal));
-		Assert.Equal(20, run.Diagnostics.Count(d => d.Id == "SEGEN901"));
+		Assert.Equal(21, run.Diagnostics.Count(d => d.Id == "SEGEN901"));
 		Assert.Empty(run.GeneratedSources);
 	}
 
