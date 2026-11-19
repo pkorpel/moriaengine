@@ -4,11 +4,30 @@ using Microsoft.CodeAnalysis;
 namespace SteamEngine.Generators.SaveImplementors;
 
 internal sealed class SaveImplementorCandidate {
-	internal SaveImplementorCandidate(INamedTypeSymbol symbol) {
+	internal SaveImplementorCandidate(
+		INamedTypeSymbol symbol,
+		IMethodSymbol? loadingInitializer,
+		IMethodSymbol? loadSection,
+		IMethodSymbol? loadLine,
+		IMethodSymbol? loadingFinalizer,
+		IMethodSymbol? saveMethod,
+		IReadOnlyList<AttributedMember> saveableMembers) {
 		Symbol = symbol;
+		LoadingInitializer = loadingInitializer;
+		LoadSection = loadSection;
+		LoadLine = loadLine;
+		LoadingFinalizer = loadingFinalizer;
+		SaveMethod = saveMethod;
+		SaveableMembers = saveableMembers;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
+	internal IMethodSymbol? LoadingInitializer { get; }
+	internal IMethodSymbol? LoadSection { get; }
+	internal IMethodSymbol? LoadLine { get; }
+	internal IMethodSymbol? LoadingFinalizer { get; }
+	internal IMethodSymbol? SaveMethod { get; }
+	internal IReadOnlyList<AttributedMember> SaveableMembers { get; }
 }
 
 internal sealed class SaveImplementorModel {

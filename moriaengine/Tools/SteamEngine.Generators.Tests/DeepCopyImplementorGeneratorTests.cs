@@ -48,6 +48,46 @@ public sealed class SpellState {
 		Assert.Contains("new global::ScriptSandbox.SpellState(copyFromConverted)", generated);
 	}
 
+
+	[Fact]
+	public void ValidDeepCopyableClass_NoData() {
+		const string source = """
+using SteamEngine;
+
+namespace ScriptSandbox;
+
+[DeepCopyableClass]
+public sealed class SpellState {
+	[DeepCopyImplementation]
+	public SpellState(SpellState copyFrom) {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(ValidDeepCopyableClass_NoData), source);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		var generated = string.Join("\n\n", run.GeneratedSources);
+		Assert.Contains("GeneratedDeepCopyImplementor_SpellState", generated);
+		Assert.Contains("new global::ScriptSandbox.SpellState(copyFromConverted)", generated);
+	}
+
+	[Fact]
+	public void EmptyClass_ReportsDiagnostic() {
+		const string source = """
+using SteamEngine;
+
+namespace ScriptSandbox;
+
+[DeepCopyableClass]
+public sealed class SpellState {
+	
+}
+""";
+
+		var run = RunGenerator(nameof(EmptyClass_ReportsDiagnostic), source);
+		Assert.Single(run.Diagnostics, d => d.Id == "SEGEN205");
+	}
+
 	[Fact]
 	public void CopyableDataPrivateField_ReportsDiagnostic() {
 		const string source = """
@@ -67,7 +107,7 @@ public sealed class SpellState {
 """;
 
 		var run = RunGenerator(nameof(CopyableDataPrivateField_ReportsDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN206");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN905");
 		Assert.Contains("charges", diagnostic.GetMessage());
 	}
 
@@ -134,7 +174,7 @@ public sealed class SpellState {
 """;
 
 		var run = RunGenerator(nameof(CopyableDataPropertyWithoutPublicSetter_ReportsDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN206");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN905");
 		Assert.Contains("Payload", diagnostic.GetMessage());
 	}
 

@@ -340,11 +340,15 @@ internal static class Analyzer {
 			return true;
 		}
 
-		var method = AttributedMemberResolver.ResolveMethod(
+		var errorsBeforeResolve = diagnostics.Count(d => d.Severity == DiagnosticSeverity.Error);
+		var method = AttributedMemberResolver.FindMethodOrCtorWithAttribute(
 			instanceSymbol,
 			symbols.Attributes.LoadingFinalizerAttribute,
 			diagnostics,
 			includeInheritedTypes: true);
+		if (diagnostics.Count(d => d.Severity == DiagnosticSeverity.Error) > errorsBeforeResolve) {
+			return false;
+		}
 		if (method is null) {
 			return true;
 		}

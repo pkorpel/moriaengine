@@ -65,6 +65,7 @@ internal static class MemberValueKindClassifier {
 		INamedTypeSymbol canonicalType,
 		string expectedName,
 		Action<ITypeSymbol, INamedTypeSymbol> reportTypeNameConflict) {
+
 		for (var current = type as INamedTypeSymbol; current != null; current = current.BaseType) {
 			if (SymbolEqualityComparer.Default.Equals(current, canonicalType)) {
 				return true;

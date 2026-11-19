@@ -14,22 +14,6 @@ internal static class Analyzer {
 		DiagnosticSeverity.Error,
 		true);
 
-	internal static readonly DiagnosticDescriptor MissingDeepCopyImplementationDescriptor = new(
-		"SEGEN205",
-		"Missing deep-copy implementation member",
-		"Type '{0}' is marked with [DeepCopyableClass] but has no valid [DeepCopyImplementation] member",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
-	internal static readonly DiagnosticDescriptor UnsupportedCopyableMemberDescriptor = new(
-		"SEGEN206",
-		"Unsupported [CopyableData] member usage",
-		"Member '{0}' on '{1}' is marked with [CopyableData], but {2}",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
 	internal static readonly DiagnosticDescriptor DuplicateGeneratedImplementorNameDescriptor = new(
 		"SEGEN208",
 		"Duplicate deep-copyable type name",
@@ -63,11 +47,7 @@ internal static class Analyzer {
 				continue;
 			}
 
-			if (!TryBuildModel(
-				candidate.Symbol,
-				symbols,
-				diagnostics,
-				out var model)) {
+			if (!TryBuildModel(candidate, symbols, diagnostics, out var model)) {
 				continue;
 			}
 			models.Add(model);
@@ -77,27 +57,42 @@ internal static class Analyzer {
 	}
 
 	private static bool TryBuildModel(
-		INamedTypeSymbol typeSymbol,
+		DeepCopyCandidate candidate,
 		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		out DeepCopyModel model) {
+
 		model = null!;
+		var typeSymbol = candidate.Symbol;
 
-		var hasInitializer = TryResolveInitializer(
-			typeSymbol,
-			symbols.Attributes.DeepCopyImplementationAttribute,
-			diagnostics,
-			out var initializer);
-		var problemWithCopyableMembers = TryResolveCopyableMembers(
-			typeSymbol,
-			symbols.Attributes.CopyableDataAttribute,
-			symbols.CanonicalTypes,
-			diagnostics,
-			out var copyableMembers);
-
-		if (!hasInitializer || !problemWithCopyableMembers) {
+		if (candidate.InitializerMethod is null) {
 			return false;
 		}
+		var initializerMethod = candidate.InitializerMethod;
+		var validationError = ValidateInitializer(typeSymbol, initializerMethod);
+		if (validationError is not null) {
+			diagnostics.Add(Diagnostic.Create(
+				InvalidDeepCopyImplementationDescriptor,
+				initializerMethod.Locations.FirstOrDefault(),
+				initializerMethod.ToDisplayString(),
+				typeSymbol.ToDisplayString(),
+				validationError));
+			return false;
+		}
+
+		var initializerKind = initializerMethod.MethodKind == MethodKind.Constructor
+			? DeepCopyInitializerKind.Constructor
+			: DeepCopyInitializerKind.StaticMethod;
+		var initializer = new DeepCopyInitializerModel(
+			initializerKind,
+			initializerMethod.Name,
+			initializerMethod.Parameters.Length == 1);
+		var copyableMembers = candidate.CopyableMembers
+			.Select(member => new DeepCopyMemberModel(
+				member.Name,
+				member.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				GetMemberValueKind(member.Type, symbols.CanonicalTypes, diagnostics, member.Location)))
+			.ToList();
 
 		var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 		var generatedTypeName = "GeneratedDeepCopyImplementor_" + IdentifierSanitizer.Sanitize(typeSymbol.Name);
@@ -107,53 +102,6 @@ internal static class Analyzer {
 			typeName,
 			initializer,
 			copyableMembers);
-		return true;
-	}
-
-	private static bool TryResolveInitializer(
-		INamedTypeSymbol typeSymbol,
-		INamedTypeSymbol deepCopyImplementationAttribute,
-		ICollection<Diagnostic> diagnostics,
-		out DeepCopyInitializerModel initializer) {
-		initializer = null!;
-
-		var diagnosticsBeforeResolve = diagnostics.Count;
-		var methodSymbol = AttributedMemberResolver.ResolveMethod(
-			typeSymbol,
-			deepCopyImplementationAttribute,
-			diagnostics,
-			includeInheritedTypes: false);
-
-		if (methodSymbol is null && diagnostics.Count == diagnosticsBeforeResolve) {
-			diagnostics.Add(Diagnostic.Create(
-				MissingDeepCopyImplementationDescriptor,
-				typeSymbol.Locations.FirstOrDefault(),
-				typeSymbol.ToDisplayString()));
-			return false;
-		}
-
-		if (methodSymbol is null) {
-			return false;
-		}
-
-		var validationError = ValidateInitializer(typeSymbol, methodSymbol);
-		if (validationError is not null) {
-			diagnostics.Add(Diagnostic.Create(
-				InvalidDeepCopyImplementationDescriptor,
-				methodSymbol.Locations.FirstOrDefault(),
-				methodSymbol.ToDisplayString(),
-				typeSymbol.ToDisplayString(),
-				validationError));
-			return false;
-		}
-
-		var initializerKind = methodSymbol.MethodKind == MethodKind.Constructor
-			? DeepCopyInitializerKind.Constructor
-			: DeepCopyInitializerKind.StaticMethod;
-		initializer = new DeepCopyInitializerModel(
-			initializerKind,
-			methodSymbol.Name,
-			methodSymbol.Parameters.Length == 1);
 		return true;
 	}
 
@@ -174,29 +122,6 @@ internal static class Analyzer {
 		}
 
 		return null;
-	}
-
-	private static bool TryResolveCopyableMembers(
-		INamedTypeSymbol typeSymbol,
-		INamedTypeSymbol copyableDataAttribute,
-		CanonicalTypeSymbols knownTypes,
-		ICollection<Diagnostic> diagnostics,
-		out IReadOnlyList<DeepCopyMemberModel> members) {
-		var result = AttributedMemberResolver.CollectFieldsAndProperties(
-			typeSymbol,
-			copyableDataAttribute,
-			diagnostics,
-			typeSymbol,
-			UnsupportedCopyableMemberDescriptor,
-			includeInheritedTypes: false);
-
-		members = result.Items
-			.Select(member => new DeepCopyMemberModel(
-				member.Name,
-				member.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-				GetMemberValueKind(member.Type, knownTypes, diagnostics, member.Location)))
-			.ToList();
-		return !result.HasInvalidMembers;
 	}
 
 	private static MemberValueKind GetMemberValueKind(

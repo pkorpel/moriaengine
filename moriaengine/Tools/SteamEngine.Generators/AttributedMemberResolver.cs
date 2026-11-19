@@ -5,7 +5,27 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators;
 
+internal readonly struct AttributedMember {
+	internal AttributedMember(string name, ITypeSymbol type, Location? location) {
+		Name = name;
+		Type = type;
+		Location = location;
+	}
+
+	internal string Name { get; }
+	internal ITypeSymbol Type { get; }
+	internal Location? Location { get; }
+}
+
 internal static class AttributedMemberResolver {
+	internal static readonly DiagnosticDescriptor UnsupportedAttributedMemberDescriptor = new(
+		"SEGEN905",
+		"Unsupported attributed member",
+		"Member '{0}' on '{1}' is marked with [{2}], but {3}",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+
 	internal static readonly DiagnosticDescriptor InvalidAttributedMethodTargetDescriptor = new(
 		"SEGEN903",
 		"Invalid attributed method target",
@@ -23,72 +43,93 @@ internal static class AttributedMemberResolver {
 		true);
 
 	/// Resolves one attributed method, reporting invalid targets and duplicate attributed methods.
-	internal static IMethodSymbol? ResolveMethod(
+	internal static IMethodSymbol? FindMethodOrCtorWithAttribute(
 		INamedTypeSymbol parentClass,
 		INamedTypeSymbol expectedAttribute,
 		ICollection<Diagnostic> diagnostics,
 		bool includeInheritedTypes,
-		bool includeNonPublic = true) {
-		var members = includeInheritedTypes
-			? GetAttributedSearchMembers(parentClass, includeNonPublic)
-			: parentClass.GetMembers();
-		var methods = new List<IMethodSymbol>();
-		var attributeDisplayName = expectedAttribute.Name.EndsWith("Attribute", StringComparison.Ordinal)
-			? expectedAttribute.Name.Substring(0, expectedAttribute.Name.Length - "Attribute".Length)
-			: expectedAttribute.Name;
+		bool includePrivateOrProtected = true)
+	{
+		var members = ListMembers(
+			parentClass,
+			expectedAttribute,
+			diagnostics,
+			includeInheritedTypes,
+			includePrivateOrProtected);
+		if (members is null) {
+			return null;
+		}
 
-		foreach (var member in members) {
-			if (!AttributeUsageValidator.HasAttribute(member, expectedAttribute, diagnostics)) {
-				continue;
-			}
+		IMethodSymbol? foundMethod = null;
 
-			if (member is not IMethodSymbol methodSymbol) {
+		foreach (var member in members)
+		{
+			if (member is not IMethodSymbol methodSymbol)
+			{
 				diagnostics.Add(Diagnostic.Create(
 					InvalidAttributedMethodTargetDescriptor,
 					member.Locations.FirstOrDefault(),
 					member.ToDisplayString(),
 					parentClass.ToDisplayString(),
 					AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute)));
-				continue;
+				return null;
 			}
 
-			methods.Add(methodSymbol);
+			if (foundMethod is not null)
+			{
+				diagnostics.Add(Diagnostic.Create(
+					DuplicateAttributedMethodsDescriptor,
+					methodSymbol.Locations.FirstOrDefault() ?? parentClass.Locations.FirstOrDefault(),
+					parentClass.ToDisplayString(),
+					AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute)));
+				return null;
+			}
+
+			foundMethod = methodSymbol;
 		}
 
-		if (methods.Count > 1) {
-			diagnostics.Add(Diagnostic.Create(
-				DuplicateAttributedMethodsDescriptor,
-				methods[1].Locations.FirstOrDefault() ?? parentClass.Locations.FirstOrDefault(),
-				parentClass.ToDisplayString(),
-				attributeDisplayName));
-			return null;
-		}
-
-		if (methods.Count == 1) {
-			return methods[0];
-		}
-		return null;
+		return foundMethod;
 	}
 
-	/// Collects members from the source type and public inherited members for attributed-member resolution.
-	internal static IEnumerable<ISymbol> GetAttributedSearchMembers(
+	/// Lists members from the source type and optionally inherited members, respecting visibility and overrides.	
+	internal static IReadOnlyList<ISymbol>? ListMembers(
 		INamedTypeSymbol parentClass,
-		bool includeNonPublic) {
+		INamedTypeSymbol expectedAttribute,
+		ICollection<Diagnostic> diagnostics,
+		bool includeInheritedTypes,
+		bool includePrivateOrProtected) { // specify true if this is to be called from within the same class
 		var symbols = new List<ISymbol>();
 		var seen = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+		var expectedAttributeDisplay = AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute);
 
-		void AddMembers(INamedTypeSymbol symbol, bool includeNonPublicForType) {
+		bool AddMembers(INamedTypeSymbol symbol, bool excludePrivate, bool excludeProtected) {
 			foreach (var member in symbol.GetMembers()) {
 				if (member is IMethodSymbol { MethodKind: MethodKind.Constructor } constructor
 					&& !SymbolEqualityComparer.Default.Equals(constructor.ContainingType, parentClass)) {
 					continue;
 				}
-
-				if (!includeNonPublicForType && member.DeclaredAccessibility != Accessibility.Public) {
+				if (!AttributeUsageValidator.HasAttribute(member, expectedAttribute, diagnostics)) {
 					continue;
 				}
-
-				if (!includeNonPublicForType && IsOverriddenByExisting(member, symbols)) {
+				if (excludePrivate && member.DeclaredAccessibility == Accessibility.Private) {
+					ReportInvalidMember(
+						diagnostics,
+						member,
+						parentClass,
+						expectedAttributeDisplay,
+						"private members are not accessible to generated code");
+					return false;
+				}
+				if (excludeProtected && member.DeclaredAccessibility == Accessibility.Protected) {
+					ReportInvalidMember(
+						diagnostics,
+						member,
+						parentClass,
+						expectedAttributeDisplay,
+						"protected members are not accessible to generated code");
+					return false;
+				}
+				if (IsOverriddenByExisting(member, symbols)) {
 					continue;
 				}
 
@@ -96,17 +137,28 @@ internal static class AttributedMemberResolver {
 					symbols.Add(member);
 				}
 			}
+			return true;
 		}
 
-		AddMembers(parentClass, includeNonPublic);
-		for (var current = parentClass.BaseType; current is not null; current = current.BaseType) {
-			AddMembers(current, false);
+		if (!AddMembers(parentClass, !includePrivateOrProtected, !includePrivateOrProtected)) {
+			return null;
+		}
+
+		if (includeInheritedTypes)
+		{
+			for (var current = parentClass.BaseType; current is not null; current = current.BaseType)
+			{
+				// For base types, always exclude private members as they are not accessible from the declaring class
+				if (!AddMembers(current, excludePrivate: true, excludeProtected: !includePrivateOrProtected)) {
+					return null;
+				}
+			}
 		}
 
 		return symbols;
 	}
 
-	/// Checks whether a base member is already represented by an overriding or property implementation.
+	/// Checks whether a base member is already represented by an overriding implementation.
 	private static bool IsOverriddenByExisting(ISymbol baseMember, List<ISymbol> existingMembers) {
 		if (baseMember is IMethodSymbol baseMethod) {
 			foreach (var existing in existingMembers.OfType<IMethodSymbol>()) {
@@ -132,57 +184,36 @@ internal static class AttributedMemberResolver {
 		return false;
 	}
 
-	internal readonly struct AttributedMember {
-		internal AttributedMember(string name, ITypeSymbol type, Location? location) {
-			Name = name;
-			Type = type;
-			Location = location;
-		}
-
-		internal string Name { get; }
-		internal ITypeSymbol Type { get; }
-		internal Location? Location { get; }
-	}
-
-	internal readonly struct CollectionResult<T> {
-		internal CollectionResult(IReadOnlyList<T> items, bool hasInvalidMembers) {
-			Items = items;
-			HasInvalidMembers = hasInvalidMembers;
-		}
-
-		internal IReadOnlyList<T> Items { get; }
-		internal bool HasInvalidMembers { get; }
-	}
-
 	/// Collects attributed fields and properties from the supplied or inherited member search.
-	internal static CollectionResult<AttributedMember> CollectFieldsAndProperties(
+	internal static IReadOnlyList<AttributedMember>? CollectFieldsAndProperties(
 		INamedTypeSymbol parentClass,
 		INamedTypeSymbol expectedAttribute,
 		ICollection<Diagnostic> diagnostics,
 		INamedTypeSymbol containingType,
-		DiagnosticDescriptor invalidMemberDescriptor,
 		bool includeInheritedTypes,
-		bool includeNonPublic = true) {
-		var members = includeInheritedTypes
-			? GetAttributedSearchMembers(parentClass, includeNonPublic)
-			: parentClass.GetMembers();
-		var items = new List<AttributedMember>();
-		var hasInvalidMembers = false;
-		foreach (var member in members) {
-			if (!AttributeUsageValidator.HasAttribute(member, expectedAttribute, diagnostics)) {
-				continue;
-			}
+		bool includePrivateOrProtected = true) {
 
+		var members = ListMembers(
+			parentClass,
+			expectedAttribute,
+			diagnostics,
+			includeInheritedTypes,
+			includePrivateOrProtected);
+		if (members is null) {
+			return null;
+		}
+		var expectedAttributeDisplay = AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute);
+		var items = new List<AttributedMember>();
+		foreach (var member in members) {
 			if (member is IFieldSymbol fieldSymbol) {
 				if (fieldSymbol.IsStatic || fieldSymbol.DeclaredAccessibility != Accessibility.Public) {
 					ReportInvalidMember(
-						invalidMemberDescriptor,
 						diagnostics,
 						fieldSymbol,
 						containingType,
+						expectedAttributeDisplay,
 						"only public instance fields are supported");
-					hasInvalidMembers = true;
-					continue;
+					return null;
 				}
 
 				items.Add(new AttributedMember(
@@ -197,13 +228,12 @@ internal static class AttributedMemberResolver {
 				var setterPublic = propertySymbol.SetMethod?.DeclaredAccessibility == Accessibility.Public;
 				if (propertySymbol.IsStatic || propertySymbol.Parameters.Length != 0 || !getterPublic || !setterPublic) {
 					ReportInvalidMember(
-						invalidMemberDescriptor,
 						diagnostics,
 						propertySymbol,
 						containingType,
+						expectedAttributeDisplay,
 						"only non-indexer public instance properties with public getter and setter are supported");
-					hasInvalidMembers = true;
-					continue;
+					return null;
 				}
 
 				items.Add(new AttributedMember(
@@ -214,28 +244,29 @@ internal static class AttributedMemberResolver {
 			}
 
 			ReportInvalidMember(
-				invalidMemberDescriptor,
 				diagnostics,
 				member,
 				containingType,
+				expectedAttributeDisplay,
 				"only fields and properties are supported");
-			hasInvalidMembers = true;
+			return null;
 		}
 
-		return new CollectionResult<AttributedMember>(items, hasInvalidMembers);
+		return items;
 	}
 
 	private static void ReportInvalidMember(
-		DiagnosticDescriptor descriptor,
 		ICollection<Diagnostic> diagnostics,
 		ISymbol member,
 		INamedTypeSymbol containingType,
+		string expectedAttributeDisplay,
 		string reason) {
 		diagnostics.Add(Diagnostic.Create(
-			descriptor,
+			UnsupportedAttributedMemberDescriptor,
 			member.Locations.FirstOrDefault(),
 			member.ToDisplayString(),
 			containingType.ToDisplayString(),
+			expectedAttributeDisplay,
 			reason));
 	}
 }

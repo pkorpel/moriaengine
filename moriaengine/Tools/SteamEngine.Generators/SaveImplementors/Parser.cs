@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -27,7 +28,40 @@ internal static class Parser {
 			return null;
 		}
 
-		return new SaveImplementorCandidate(symbol);
+		IMethodSymbol? ResolveMethod(INamedTypeSymbol expectedAttribute) {
+			return AttributedMemberResolver.FindMethodOrCtorWithAttribute(
+				symbol,
+				expectedAttribute,
+				diagnostics,
+				includeInheritedTypes: true,
+				includePrivateOrProtected: false); // can't access private from outside
+		}
+
+		var loadingInitializer = ResolveMethod(symbols.Attributes.LoadingInitializerAttribute);
+		var loadSection = ResolveMethod(symbols.Attributes.LoadSectionAttribute);
+		var loadLine = ResolveMethod(symbols.Attributes.LoadLineAttribute);
+		var loadingFinalizer = ResolveMethod(symbols.Attributes.LoadingFinalizerAttribute);
+		var saveMethod = ResolveMethod(symbols.Attributes.SaveAttribute);
+		var saveableMembers = AttributedMemberResolver.CollectFieldsAndProperties(
+			symbol,
+			symbols.Attributes.SaveableDataAttribute,
+			diagnostics,
+			symbol,
+			includeInheritedTypes: true,
+			includePrivateOrProtected: true); // collect private members to report unsupported usage
+
+		if (saveableMembers is null) {
+			return null;
+		}
+
+		return new SaveImplementorCandidate(
+			symbol,
+			loadingInitializer,
+			loadSection,
+			loadLine,
+			loadingFinalizer,
+			saveMethod,
+			saveableMembers);
 	}
 
 }
