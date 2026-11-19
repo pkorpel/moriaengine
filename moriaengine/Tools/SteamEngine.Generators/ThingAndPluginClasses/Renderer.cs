@@ -114,16 +114,16 @@ internal static class Renderer {
 		// attribute discovery. Load-factory semantics are pre-resolved in Analyzer.
 		var generatedTypeName = "GeneratedSaveImplementor_" + IdentifierSanitizer.Sanitize(pair.InstanceName);
 		var loadFactoryKind = pair.LoadFactory.Kind == TemplateLoadFactoryKind.Constructor
-			? global::SteamEngine.Generators.SaveImplementors.SaveFactoryKind.Constructor
-			: global::SteamEngine.Generators.SaveImplementors.SaveFactoryKind.StaticMethod;
-		var loadFactory = new global::SteamEngine.Generators.SaveImplementors.SaveFactoryMethod(
+			? SaveImplementors.SaveFactoryKind.Constructor
+			: SaveImplementors.SaveFactoryKind.StaticMethod;
+		var loadFactory = new SaveImplementors.SaveFactoryMethod(
 			loadFactoryKind,
 			pair.LoadFactory.DeclaringTypeName ?? pair.QualifiedInstanceTypeName,
 			pair.LoadFactory.MethodName ?? pair.InstanceName,
 			pair.LoadFactory.TakesPropsSection,
 			pair.LoadFactory.RequiresCast);
-		var saveableMembers = new List<global::SteamEngine.Generators.SaveImplementors.SaveableMemberModel>();
-		var model = new global::SteamEngine.Generators.SaveImplementors.SaveImplementorModel(
+
+		var model = new SaveImplementors.SaveImplementorModel(
 			generatedTypeName,
 			pair.QualifiedInstanceTypeName,
 			pair.InstanceName,
@@ -131,7 +131,7 @@ internal static class Renderer {
 			loadLineMethodName: pair.Family == TemplateFamily.Plugin ? "LoadLine" : null,
 			loadingFinalizerMethodName: pair.LoadingFinalizerMethodName,
 			saveMethodName: "Save",
-			saveableMembers);
+			saveableMembers: []); // generated type already saves/loads its own properties/fields
 		hintName = SaveImplementorRenderer.GetHintName(model);
 		return SaveImplementorRenderer.TryRender(model, out source);
 	}

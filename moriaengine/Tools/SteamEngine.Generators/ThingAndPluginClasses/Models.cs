@@ -20,13 +20,17 @@ internal sealed class TemplateCandidate {
 		TemplateFamily family,
 		bool? copyAllowed,
 		IReadOnlyList<DefFieldSpec> defFields,
-		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions) {
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions,
+		IMethodSymbol? loadSectionMethod,
+		IMethodSymbol? loadingFinalizerMethod) {
 		Symbol = symbol;
 		Kind = kind;
 		Family = family;
 		CopyAllowed = copyAllowed;
 		DefFields = defFields;
 		InstanceFieldDefaultExpressions = instanceFieldDefaultExpressions;
+		LoadSectionMethod = loadSectionMethod;
+		LoadingFinalizerMethod = loadingFinalizerMethod;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
@@ -35,8 +39,9 @@ internal sealed class TemplateCandidate {
 	internal bool? CopyAllowed { get; }
 	internal IReadOnlyList<DefFieldSpec> DefFields { get; }
 	// Parser-captured source initializer expressions keyed by declared symbol.
-	// Analyzer uses these verbatim strings when emitting default member values.
 	internal IReadOnlyDictionary<ISymbol, string> InstanceFieldDefaultExpressions { get; }
+	internal IMethodSymbol? LoadSectionMethod { get; }
+	internal IMethodSymbol? LoadingFinalizerMethod { get; }
 }
 
 internal sealed class TemplatePair {

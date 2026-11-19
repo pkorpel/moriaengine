@@ -64,8 +64,8 @@ internal static class Analyzer {
 		true);
 	internal static readonly DiagnosticDescriptor ForbiddenTemplateLoadFactoryAttributeDescriptor = new(
 		"SEGEN012",
-		"Template declares generated load-factory attribute",
-		"Template member '{0}' on '{1}' uses [{2}], but template load factories are generated automatically",
+		"Invalid template loading method",
+		"Template member '{0}' on '{1}' uses [{2}], but {3}",
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
@@ -144,7 +144,29 @@ internal static class Analyzer {
 			pair = new TemplatePairSymbols(instanceName, defName, candidate.Family, namespaceName);
 			pairs[pairKey] = pair;
 		}
+		if (!ValidateTemplateMethods(candidate, diagnostics)) {
+			pair.HasInvalidMethods = true;
+		}
 		UpdatePair(pair, candidate, isDef, diagnostics);
+	}
+
+	private static bool ValidateTemplateMethods(TemplateCandidate candidate, ICollection<Diagnostic> diagnostics) {
+		if (candidate.Kind == TemplateKind.Def) {
+			return true;
+		}
+
+		var valid = true;
+
+		if (candidate is { Family: TemplateFamily.Plugin, LoadSectionMethod: not null }) {
+			ReportForbiddenLoadingMethod(
+				candidate.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				candidate.LoadSectionMethod,
+				"LoadSection",
+				"plugin templates load through their generated parameterless constructor",
+				diagnostics);
+			valid = false;
+		}
+		return valid;
 	}
 
 	private static string GetInstanceName(string className, bool isDef) {
@@ -167,6 +189,7 @@ internal static class Analyzer {
 			pair.DefSymbol = candidate.Symbol;
 			pair.DefName = candidate.Symbol.Name;
 			pair.DefFields = candidate.DefFields;
+			pair.LoadSectionMethod ??= candidate.LoadSectionMethod;
 			return;
 		}
 
@@ -177,7 +200,9 @@ internal static class Analyzer {
 		pair.InstanceSymbol = candidate.Symbol;
 		pair.InstanceName = candidate.Symbol.Name;
 		pair.InstanceCopyAllowed = candidate.CopyAllowed ?? true;
-		pair.InstanceInstanceFieldDefaultExpressions = candidate.InstanceFieldDefaultExpressions;
+		pair.InstanceFieldDefaultExpressions = candidate.InstanceFieldDefaultExpressions;
+		pair.LoadSectionMethod = candidate.LoadSectionMethod;
+		pair.LoadingFinalizerMethod = candidate.LoadingFinalizerMethod;
 	}
 
 	private static Diagnostic CreateTemplatePairDiagnostic(INamedTypeSymbol conflictingSymbol, TemplatePairSymbols existingPair, string reason) {
@@ -221,11 +246,19 @@ internal static class Analyzer {
 			renderPair = null;
 			return false;
 		}
+		if (symbolPair.HasInvalidMethods) {
+			renderPair = null;
+			return false;
+		}
+		if (!ValidateLoadingMethods(symbolPair, symbols, diagnostics, out var loadFactory)) {
+			renderPair = null;
+			return false;
+		}
 
 		var defFields = symbolPair.DefFields;
 		var instanceFields = GetInstanceFields(
 			symbolPair.InstanceSymbol,
-			symbolPair.InstanceInstanceFieldDefaultExpressions,
+			symbolPair.InstanceFieldDefaultExpressions,
 			symbols,
 			diagnostics).ToList();
 		WarnCopyableDataWithCopyDisabled(symbolPair.InstanceCopyAllowed, symbolPair.InstanceSymbol?.Name ?? string.Empty, instanceFields, diagnostics);
@@ -233,20 +266,10 @@ internal static class Analyzer {
 			instanceFields.Where(f => f.IncludeInSaveLoad).ToList(),
 			diagnostics);
 		var copyMembers = instanceFields.Where(f => f.IncludeInCopy).ToList();
-		// Template pairs own their loading strategy end-to-end. We intentionally reject
-		// user-declared [LoadSection]/[LoadingInitializer] here and feed a fixed load
-		// factory model into the satellite save implementor renderer for deterministic
-		// parity with legacy template behavior.
-		if (!ValidateNoUserLoadFactoryAttributes(symbolPair.InstanceSymbol, symbols, diagnostics)) {
+		if (!TryResolveLoadingFinalizerMethodName(symbolPair.InstanceSymbol, symbolPair.LoadingFinalizerMethod, diagnostics, out var loadingFinalizerMethodName)) {
 			renderPair = null;
 			return false;
 		}
-		if (!TryResolveLoadingFinalizerMethodName(symbolPair.InstanceSymbol, symbols, diagnostics, out var loadingFinalizerMethodName)) {
-			renderPair = null;
-			return false;
-		}
-		var loadFactory = CreateTemplateLoadFactory(symbolPair.Family, symbols);
-
 		renderPair = new TemplatePair(
 			symbolPair.InstanceName,
 			GetQualifiedTypeName(symbolPair.NamespaceName, symbolPair.InstanceName),
@@ -271,68 +294,81 @@ internal static class Analyzer {
 		return "global::" + namespaceName + "." + typeName;
 	}
 
-	private static TemplateLoadFactory CreateTemplateLoadFactory(
-		TemplateFamily family,
-		RequiredSymbols symbols) {
-		// Plugin templates are generated with a public parameterless constructor and
-		// therefore load via constructor path in the save implementor model.
-		if (family == TemplateFamily.Plugin) {
-			return new TemplateLoadFactory(
+	private static bool ValidateLoadingMethods(
+		TemplatePairSymbols pair,
+		RequiredSymbols symbols,
+		ICollection<Diagnostic> diagnostics,
+		out TemplateLoadFactory loadFactory) {
+		loadFactory = null!;
+		if (pair.Family == TemplateFamily.Plugin) {
+			loadFactory = new TemplateLoadFactory(
 				TemplateLoadFactoryKind.Constructor,
 				methodName: null,
 				declaringTypeName: null,
 				takesPropsSection: false,
 				requiresCast: false);
-		}
-
-		// Thing templates must load through the canonical static Thing.Load(PropsSection)
-		return new TemplateLoadFactory(
-			TemplateLoadFactoryKind.StaticMethod,
-			methodName: "Load",
-			declaringTypeName: symbols.CanonicalTypes.ThingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-			takesPropsSection: true,
-			requiresCast: true);
-	}
-
-	private static bool ValidateNoUserLoadFactoryAttributes(
-		INamedTypeSymbol? instanceSymbol,
-		RequiredSymbols symbols,
-		ICollection<Diagnostic> diagnostics) {
-		if (instanceSymbol is null) {
 			return true;
 		}
 
-		var valid = true;
-		// Guardrail: these attributes are consumed by SaveImplementors, but template
-		// generation now drives that renderer directly with fixed factory semantics.
-		// Allowing template-defined attributes here would create conflicting load paths.
-		foreach (var member in instanceSymbol.GetMembers().OfType<IMethodSymbol>()) {
-			if (AttributeUsageValidator.HasAttribute(member, symbols.Attributes.LoadSectionAttribute, diagnostics)) {
-				diagnostics.Add(Diagnostic.Create(
-					ForbiddenTemplateLoadFactoryAttributeDescriptor,
-					member.Locations.FirstOrDefault(),
-					member.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
-					instanceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-					"LoadSection"));
-				valid = false;
-			}
-			if (AttributeUsageValidator.HasAttribute(member, symbols.Attributes.LoadingInitializerAttribute, diagnostics)) {
-				diagnostics.Add(Diagnostic.Create(
-					ForbiddenTemplateLoadFactoryAttributeDescriptor,
-					member.Locations.FirstOrDefault(),
-					member.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
-					instanceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-					"LoadingInitializer"));
-				valid = false;
-			}
+		var loadSectionMethod = pair.LoadSectionMethod;
+		if (loadSectionMethod is null) {
+			ReportMissingThingLoadSection(pair, diagnostics);
+			return false;
+		}
+		if (loadSectionMethod.Parameters.Length != 1
+			|| !SymbolEqualityComparer.Default.Equals(loadSectionMethod.Parameters[0].Type, symbols.CanonicalTypes.PropsSectionType)
+			|| (loadSectionMethod.MethodKind != MethodKind.Constructor && (loadSectionMethod.MethodKind != MethodKind.Ordinary || !loadSectionMethod.IsStatic))) {
+			ReportForbiddenLoadingMethod(
+				pair.InstanceSymbol?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? pair.InstanceName,
+				loadSectionMethod,
+				"LoadSection",
+				"it must be a constructor or static method with exactly one PropsSection parameter",
+				diagnostics);
+			return false;
 		}
 
-		return valid;
+		var takesPropsSection = loadSectionMethod.Parameters.Length == 1;
+		var kind = loadSectionMethod.MethodKind == MethodKind.Constructor
+			? TemplateLoadFactoryKind.Constructor
+			: TemplateLoadFactoryKind.StaticMethod;
+		loadFactory = new TemplateLoadFactory(
+			kind,
+			kind == TemplateLoadFactoryKind.Constructor ? null : loadSectionMethod.Name,
+			kind == TemplateLoadFactoryKind.Constructor ? null : loadSectionMethod.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			takesPropsSection,
+			kind == TemplateLoadFactoryKind.StaticMethod
+				&& !SymbolEqualityComparer.Default.Equals(pair.InstanceSymbol, loadSectionMethod.ReturnType));
+		return true;
+	}
+
+	private static void ReportForbiddenLoadingMethod(
+		string templateTypeName,
+		IMethodSymbol method,
+		string attributeName,
+		string reason,
+		ICollection<Diagnostic> diagnostics) {
+		diagnostics.Add(Diagnostic.Create(
+			ForbiddenTemplateLoadFactoryAttributeDescriptor,
+			method.Locations.FirstOrDefault(),
+			method.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+			templateTypeName,
+			attributeName,
+			reason));
+	}
+
+	private static void ReportMissingThingLoadSection(TemplatePairSymbols pair, ICollection<Diagnostic> diagnostics) {
+		diagnostics.Add(Diagnostic.Create(
+			ForbiddenTemplateLoadFactoryAttributeDescriptor,
+			pair.InstanceSymbol?.Locations.FirstOrDefault(),
+			pair.InstanceName,
+			pair.InstanceSymbol?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? pair.InstanceName,
+			"LoadSection",
+			"a Thing template must resolve one inherited LoadSection factory"));
 	}
 
 	private static bool TryResolveLoadingFinalizerMethodName(
 		INamedTypeSymbol? instanceSymbol,
-		RequiredSymbols symbols,
+		IMethodSymbol? method,
 		ICollection<Diagnostic> diagnostics,
 		out string? loadingFinalizerMethodName) {
 		loadingFinalizerMethodName = null;
@@ -340,15 +376,6 @@ internal static class Analyzer {
 			return true;
 		}
 
-		var errorsBeforeResolve = diagnostics.Count(d => d.Severity == DiagnosticSeverity.Error);
-		var method = AttributedMemberResolver.FindMethodOrCtorWithAttribute(
-			instanceSymbol,
-			symbols.Attributes.LoadingFinalizerAttribute,
-			diagnostics,
-			includeInheritedTypes: true);
-		if (diagnostics.Count(d => d.Severity == DiagnosticSeverity.Error) > errorsBeforeResolve) {
-			return false;
-		}
 		if (method is null) {
 			return true;
 		}
@@ -427,7 +454,14 @@ internal static class Analyzer {
 
 		var fields = new List<InstanceFieldSpec>();
 		foreach (var member in instanceSymbol.GetMembers()) {
-			if (!TryCreateInstanceFieldSpec(instanceSymbol, member, instanceFieldDefaultExpressions, symbols, diagnostics, out var spec, out var error)) {
+			if (!TryCreateInstanceFieldSpec(
+				instanceSymbol,
+				member,
+				instanceFieldDefaultExpressions,
+				symbols,
+				diagnostics,
+				out var spec,
+				out var error)) {
 				if (error is not null) {
 					diagnostics.Add(error);
 				}
@@ -618,9 +652,12 @@ internal static class Analyzer {
 		internal INamedTypeSymbol? DefSymbol { get; set; }
 		internal bool InstanceCopyAllowed { get; set; } = true;
 		internal IReadOnlyList<DefFieldSpec> DefFields { get; set; } = Array.Empty<DefFieldSpec>();
-		// Parser result for instance-member initializer text; consumed during member spec creation.
-		internal IReadOnlyDictionary<ISymbol, string> InstanceInstanceFieldDefaultExpressions { get; set; } =
+		// Parser result for instance-member initializer text.
+		internal IReadOnlyDictionary<ISymbol, string> InstanceFieldDefaultExpressions { get; set; } =
 			new Dictionary<ISymbol, string>(SymbolEqualityComparer.Default);
+		internal IMethodSymbol? LoadSectionMethod { get; set; }
+		internal IMethodSymbol? LoadingFinalizerMethod { get; set; }
+		internal bool HasInvalidMethods { get; set; }
 	}
 }
 

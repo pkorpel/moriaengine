@@ -181,7 +181,7 @@ public partial class EchoWardDef : EffectPluginDef {
 			"PluginDef.RegisterPluginDef(typeof(EchoWardDef), typeof(EchoWard))");
 		AssertGeneratedOmits(generated, "RegisterThingDef(");
 		AssertGeneratedOmits(generated, "Convert.ChangeType(");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -209,7 +209,7 @@ public partial class WhisperNodeDef : MagicThingDef {
 			"static WhisperNodeDef() {",
 			"public static new void Bootstrap() {",
 			"ThingDef.RegisterThingDef(typeof(WhisperNodeDef), typeof(WhisperNode))");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -235,7 +235,7 @@ public partial class EmberGlyph : EffectPlugin {
 			"public new EmberGlyphDef TypeDef",
 			"public EmberGlyph()");
 		AssertGeneratedOmits(generated, "RegisterThingDef(");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -269,7 +269,7 @@ public partial class DelayedRelicBeaconDef : MagicThingDef {
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Mode), filename, line)",
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Payload), filename, line)",
 			"this.charges = SteamEngine.Common.ConvertTools.ParseInt32(valueString);");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -335,7 +335,7 @@ public partial class LinkedShrineBeaconDef : MagicThingDef {
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Linked), filename, line)");
 		AssertGeneratedOmits(generated,
 			"DeepCopyFactory.GetCopyDelayed(copyFrom.linked, this.DelayedCopy_Linked)");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -393,32 +393,38 @@ public partial class CopyExpressionBeaconDef : MagicThingDef {
 	}
 
 	[Fact]
-	public void TemplateDeclaringLoadFactoryAttributes_ReportsDiagnostic() {
+	public void TemplateDeclaringLoadSectionAttributes_ReportsDiagnostic() {
 		const string source = """
 namespace ScriptSandbox;
 
-[ThingTemplate]
-public partial class BadLoadFactoryBeacon : MagicThing {
-	[SaveableData]
-	private int charges = 1;
-
+[PluginTemplate]
+public partial class BadLoadFactoryBeacon : EffectPlugin {
 	[SteamEngine.Persistence.LoadSection]
 	public static object Load(global::SteamEngine.PropsSection input) {
 		return null;
 	}
+}
+""";
 
+		var run = RunGenerator(nameof(TemplateDeclaringLoadSectionAttributes_ReportsDiagnostic), source);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadSection", StringComparison.Ordinal));
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void TemplateDeclaringLoadingInitializerAttributes_ReportsDiagnostic() {
+		const string source = """
+namespace ScriptSandbox;
+
+[PluginTemplate]
+public partial class BadLoadFactoryBeacon : EffectPlugin {
 	[SteamEngine.Persistence.LoadingInitializer]
 	public BadLoadFactoryBeacon() {
 	}
 }
-
-[ThingDefTemplate]
-public partial class BadLoadFactoryBeaconDef : MagicThingDef {
-}
 """;
 
-		var run = RunGenerator(nameof(TemplateDeclaringLoadFactoryAttributes_ReportsDiagnostic), source);
-		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadSection", StringComparison.Ordinal));
+		var run = RunGenerator(nameof(TemplateDeclaringLoadingInitializerAttributes_ReportsDiagnostic), source);
 		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadingInitializer", StringComparison.Ordinal));
 		Assert.Empty(run.GeneratedSources);
 	}
@@ -450,7 +456,7 @@ public partial class OptInBeaconDef : MagicThingDef {
 		AssertGeneratedOmits(generated,
 			"ignoredCharge",
 			"case \"ignoredcharge\":");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -476,7 +482,7 @@ public partial class PropertyBeaconDef : MagicThingDef {
 			"this.Charges = copyFrom.Charges;",
 			"case \"charges\":",
 			"this.Charges = SteamEngine.Common.ConvertTools.ParseInt32(valueString);");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]

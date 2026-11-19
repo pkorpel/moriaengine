@@ -43,21 +43,23 @@ internal static class AttributedMemberResolver {
 		true);
 
 	/// Resolves one attributed method, reporting invalid targets and duplicate attributed methods.
-	internal static IMethodSymbol? FindMethodOrCtorWithAttribute(
+	internal static bool TryFindMethodOrCtorWithAttribute(
 		INamedTypeSymbol parentClass,
 		INamedTypeSymbol expectedAttribute,
 		ICollection<Diagnostic> diagnostics,
 		bool includeInheritedTypes,
+		out IMethodSymbol? method,
 		bool includePrivateOrProtected = true)
 	{
-		var members = ListMembers(
+		method = null;
+		if (!TryListMembers(
 			parentClass,
 			expectedAttribute,
 			diagnostics,
 			includeInheritedTypes,
-			includePrivateOrProtected);
-		if (members is null) {
-			return null;
+			out var members,
+			includePrivateOrProtected)) {
+			return false;
 		}
 
 		IMethodSymbol? foundMethod = null;
@@ -72,7 +74,7 @@ internal static class AttributedMemberResolver {
 					member.ToDisplayString(),
 					parentClass.ToDisplayString(),
 					AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute)));
-				return null;
+				return false;
 			}
 
 			if (foundMethod is not null)
@@ -82,21 +84,23 @@ internal static class AttributedMemberResolver {
 					methodSymbol.Locations.FirstOrDefault() ?? parentClass.Locations.FirstOrDefault(),
 					parentClass.ToDisplayString(),
 					AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute)));
-				return null;
+				return false;
 			}
 
 			foundMethod = methodSymbol;
 		}
 
-		return foundMethod;
+		method = foundMethod;
+		return true;
 	}
 
 	/// Lists members from the source type and optionally inherited members, respecting visibility and overrides.	
-	internal static IReadOnlyList<ISymbol>? ListMembers(
+	internal static bool TryListMembers(
 		INamedTypeSymbol parentClass,
 		INamedTypeSymbol expectedAttribute,
 		ICollection<Diagnostic> diagnostics,
 		bool includeInheritedTypes,
+		out IReadOnlyList<ISymbol> members,
 		bool includePrivateOrProtected) { // specify true if this is to be called from within the same class
 		var symbols = new List<ISymbol>();
 		var seen = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
@@ -141,7 +145,8 @@ internal static class AttributedMemberResolver {
 		}
 
 		if (!AddMembers(parentClass, !includePrivateOrProtected, !includePrivateOrProtected)) {
-			return null;
+			members = Array.Empty<ISymbol>();
+			return false;
 		}
 
 		if (includeInheritedTypes)
@@ -150,12 +155,14 @@ internal static class AttributedMemberResolver {
 			{
 				// For base types, always exclude private members as they are not accessible from the declaring class
 				if (!AddMembers(current, excludePrivate: true, excludeProtected: !includePrivateOrProtected)) {
-					return null;
+					members = Array.Empty<ISymbol>();
+					return false;
 				}
 			}
 		}
 
-		return symbols;
+		members = symbols;
+		return true;
 	}
 
 	/// Checks whether a base member is already represented by an overriding implementation.
@@ -185,22 +192,24 @@ internal static class AttributedMemberResolver {
 	}
 
 	/// Collects attributed fields and properties from the supplied or inherited member search.
-	internal static IReadOnlyList<AttributedMember>? CollectFieldsAndProperties(
+	internal static bool TryCollectFieldsAndProperties(
 		INamedTypeSymbol parentClass,
 		INamedTypeSymbol expectedAttribute,
 		ICollection<Diagnostic> diagnostics,
 		INamedTypeSymbol containingType,
 		bool includeInheritedTypes,
+		out IReadOnlyList<AttributedMember> attributedMembers,
 		bool includePrivateOrProtected = true) {
 
-		var members = ListMembers(
+		attributedMembers = Array.Empty<AttributedMember>();
+		if (!TryListMembers(
 			parentClass,
 			expectedAttribute,
 			diagnostics,
 			includeInheritedTypes,
-			includePrivateOrProtected);
-		if (members is null) {
-			return null;
+			out var members,
+			includePrivateOrProtected)) {
+			return false;
 		}
 		var expectedAttributeDisplay = AttributeUsageValidator.GetAttributeDisplayString(expectedAttribute);
 		var items = new List<AttributedMember>();
@@ -213,7 +222,7 @@ internal static class AttributedMemberResolver {
 						containingType,
 						expectedAttributeDisplay,
 						"only public instance fields are supported");
-					return null;
+					return false;
 				}
 
 				items.Add(new AttributedMember(
@@ -233,7 +242,7 @@ internal static class AttributedMemberResolver {
 						containingType,
 						expectedAttributeDisplay,
 						"only non-indexer public instance properties with public getter and setter are supported");
-					return null;
+					return false;
 				}
 
 				items.Add(new AttributedMember(
@@ -249,10 +258,11 @@ internal static class AttributedMemberResolver {
 				containingType,
 				expectedAttributeDisplay,
 				"only fields and properties are supported");
-			return null;
+			return false;
 		}
 
-		return items;
+		attributedMembers = items;
+		return true;
 	}
 
 	private static void ReportInvalidMember(
