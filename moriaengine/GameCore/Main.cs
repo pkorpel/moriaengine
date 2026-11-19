@@ -158,8 +158,8 @@ namespace SteamEngine {
 				AuxServerPipeClient.Init();
 				Thread.Sleep(1000);//wait before namedpipe link to auxserver is initialised. 1 second should be enough
 
-				Console.WriteLine($"Starting SteamEngine ({Globals.Version}, {Build.Type} build)" + " - " + Globals.ServerName);
-				Console.WriteLine("https://sourceforge.net/projects/steamengine/");
+				Console.WriteLine($"Starting SteamEngine ({Globals.Version}, {Build.Type} build, PID {Environment.ProcessId})" + " - " + Globals.ServerName);
+				Console.WriteLine("https://github.com/pkorpel/moriaengine/");
 				Console.WriteLine($"Running under {Environment.OSVersion}, Framework version: {Environment.Version}.");
 
 				Globals.Init(); //reads .ini

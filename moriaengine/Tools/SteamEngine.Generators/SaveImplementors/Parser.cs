@@ -28,29 +28,33 @@ internal static class Parser {
 			return null;
 		}
 
-		IMethodSymbol? ResolveMethod(INamedTypeSymbol expectedAttribute) {
-			return AttributedMemberResolver.FindMethodOrCtorWithAttribute(
+		bool ResolveMethod(INamedTypeSymbol expectedAttribute, out IMethodSymbol? method, bool includeInheritedTypes = true) {
+			return AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
 				symbol,
 				expectedAttribute,
 				diagnostics,
-				includeInheritedTypes: true,
+				includeInheritedTypes: includeInheritedTypes,
+				out method,
 				includePrivateOrProtected: false); // can't access private from outside
 		}
 
-		var loadingInitializer = ResolveMethod(symbols.Attributes.LoadingInitializerAttribute);
-		var loadSection = ResolveMethod(symbols.Attributes.LoadSectionAttribute);
-		var loadLine = ResolveMethod(symbols.Attributes.LoadLineAttribute);
-		var loadingFinalizer = ResolveMethod(symbols.Attributes.LoadingFinalizerAttribute);
-		var saveMethod = ResolveMethod(symbols.Attributes.SaveAttribute);
-		var saveableMembers = AttributedMemberResolver.CollectFieldsAndProperties(
+		if (!ResolveMethod(symbols.Attributes.LoadingInitializerAttribute, out var loadingInitializer)
+			|| !ResolveMethod(symbols.Attributes.LoadSectionAttribute, out var loadSection, includeInheritedTypes: true)
+			|| !ResolveMethod(symbols.Attributes.LoadLineAttribute, out var loadLine)
+			|| !ResolveMethod(symbols.Attributes.LoadingFinalizerAttribute, out var loadingFinalizer)
+			|| !ResolveMethod(symbols.Attributes.SaveAttribute, out var saveMethod)) {
+			return null;
+		}
+		var foundSaveableMembers = AttributedMemberResolver.TryCollectFieldsAndProperties(
 			symbol,
 			symbols.Attributes.SaveableDataAttribute,
 			diagnostics,
 			symbol,
 			includeInheritedTypes: true,
-			includePrivateOrProtected: true); // collect private members to report unsupported usage
+			out var saveableMembers,
+			includePrivateOrProtected: false);
 
-		if (saveableMembers is null) {
+		if (!foundSaveableMembers) {
 			return null;
 		}
 
