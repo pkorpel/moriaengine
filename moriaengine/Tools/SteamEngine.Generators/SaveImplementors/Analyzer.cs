@@ -30,22 +30,6 @@ internal static class Analyzer {
 		DiagnosticSeverity.Error,
 		true);
 
-	internal static readonly DiagnosticDescriptor UnsupportedSaveableMemberDescriptor = new(
-		"SEGEN307",
-		"Unsupported [SaveableData] member",
-		"Member '{0}' on '{1}' is marked with [SaveableData], but {2}",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
-	internal static readonly DiagnosticDescriptor MissingSavePathDescriptor = new(
-		"SEGEN308",
-		"Missing save path",
-		"Type '{0}' is marked with [SaveableClass] but has no [Save] method and no valid [SaveableData] members",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
 	internal static readonly DiagnosticDescriptor DuplicateSaveableTypeNameDescriptor = new(
 		"SEGEN309",
 		"Duplicate saveable type name",
@@ -79,7 +63,7 @@ internal static class Analyzer {
 			}
 
 			if (!TryBuildModel(
-				candidate.Symbol,
+				candidate,
 				symbols,
 				diagnostics,
 				out var model)) {
@@ -93,51 +77,53 @@ internal static class Analyzer {
 	}
 
 	private static bool TryBuildModel(
-		INamedTypeSymbol typeSymbol,
+		SaveImplementorCandidate candidate,
 		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		out SaveImplementorModel model) {
 		model = null!;
+		var typeSymbol = candidate.Symbol;
 		var hasErrors = false;
 
-		var loadingInitializer = ResolveSingleAttributedMethod(
+		var loadingInitializer = ValidateAttributedMethod(
 			typeSymbol,
-			symbols.Attributes.LoadingInitializerAttribute,
+			candidate.LoadingInitializer,
 			"LoadingInitializer",
 			static m => ValidateLoadingInitializer(m),
 			diagnostics,
 			ref hasErrors);
-		var loadSection = ResolveSingleAttributedMethod(
+		var loadSection = ValidateAttributedMethod(
 			typeSymbol,
-			symbols.Attributes.LoadSectionAttribute,
+			candidate.LoadSection,
 			"LoadSection",
 			m => ValidateLoadSection(typeSymbol, m, symbols.CanonicalTypes.PropsSectionType),
 			diagnostics,
 			ref hasErrors);
-		var loadLine = ResolveSingleAttributedMethod(
+		var loadLine = ValidateAttributedMethod(
 			typeSymbol,
-			symbols.Attributes.LoadLineAttribute,
+			candidate.LoadLine,
 			"LoadLine",
 			static m => ValidateLoadLine(m),
 			diagnostics,
 			ref hasErrors);
-		var loadingFinalizer = ResolveSingleAttributedMethod(
+		var loadingFinalizer = ValidateAttributedMethod(
 			typeSymbol,
-			symbols.Attributes.LoadingFinalizerAttribute,
+			candidate.LoadingFinalizer,
 			"LoadingFinalizer",
 			static m => ValidateLoadingFinalizer(m),
 			diagnostics,
 			ref hasErrors);
-		var saveMethod = ResolveSingleAttributedMethod(
+		var saveMethod = ValidateAttributedMethod(
 			typeSymbol,
-			symbols.Attributes.SaveAttribute,
+			candidate.SaveMethod,
 			"Save",
 			m => ValidateSave(typeSymbol, m, symbols.CanonicalTypes.SaveStreamType),
 			diagnostics,
 			ref hasErrors);
 
-		var saveableMembers = ResolveSaveableMembers(typeSymbol, symbols.Attributes.SaveableDataAttribute, symbols.CanonicalTypes, diagnostics, ref hasErrors);
+		var saveableMembers = ResolveSaveableMembers(typeSymbol, candidate.SaveableMembers, symbols.CanonicalTypes, diagnostics, ref hasErrors);
 
+		// when there's LoadSection, there should not be LoadingInitializer or LoadLine
 		if (loadSection is not null) {
 			if (loadingInitializer is not null || loadLine is not null) {
 				diagnostics.Add(Diagnostic.Create(
@@ -155,23 +141,6 @@ internal static class Analyzer {
 					typeSymbol.ToDisplayString()));
 				hasErrors = true;
 			}
-
-			if (loadLine is null && saveableMembers.Count == 0) {
-				diagnostics.Add(Diagnostic.Create(
-					InvalidLoadConfigurationDescriptor,
-					typeSymbol.Locations.FirstOrDefault(),
-					typeSymbol.ToDisplayString(),
-					"no [LoadLine] method and no valid [SaveableData] members"));
-				hasErrors = true;
-			}
-		}
-
-		if (saveMethod is null && saveableMembers.Count == 0) {
-			diagnostics.Add(Diagnostic.Create(
-				MissingSavePathDescriptor,
-				typeSymbol.Locations.FirstOrDefault(),
-				typeSymbol.ToDisplayString()));
-			hasErrors = true;
 		}
 
 		if (hasErrors) {
@@ -212,24 +181,13 @@ internal static class Analyzer {
 			requiresCast);
 	}
 
-	private static IMethodSymbol? ResolveSingleAttributedMethod(
+	private static IMethodSymbol? ValidateAttributedMethod(
 		INamedTypeSymbol typeSymbol,
-		INamedTypeSymbol expectedAttribute,
+		IMethodSymbol? method,
 		string attributeDisplayName,
 		Func<IMethodSymbol, string?> validator,
 		ICollection<Diagnostic> diagnostics,
 		ref bool hasErrors) {
-		var diagnosticsBeforeResolve = diagnostics.Count;
-		var method = AttributedMemberResolver.ResolveMethod(
-			typeSymbol,
-			expectedAttribute,
-			diagnostics,
-			includeInheritedTypes: true);
-
-		if (diagnostics.Count > diagnosticsBeforeResolve) {
-			hasErrors = true;
-		}
-
 		if (method is null) {
 			return null;
 		}
@@ -252,22 +210,12 @@ internal static class Analyzer {
 
 	private static List<SaveableMemberModel> ResolveSaveableMembers(
 		INamedTypeSymbol typeSymbol,
-		INamedTypeSymbol saveableDataAttribute,
+		IReadOnlyList<AttributedMember> collectedMembers,
 		CanonicalTypeSymbols knownTypes,
 		ICollection<Diagnostic> diagnostics,
 		ref bool hasErrors) {
-		var collection = AttributedMemberResolver.CollectFieldsAndProperties(
-			typeSymbol,
-			saveableDataAttribute,
-			diagnostics,
-			typeSymbol,
-			UnsupportedSaveableMemberDescriptor,
-			includeInheritedTypes: true);
-
-		hasErrors |= collection.HasInvalidMembers;
-
 		var unique = new Dictionary<string, SaveableMemberModel>(StringComparer.OrdinalIgnoreCase);
-		foreach (var member in collection.Items
+		foreach (var member in collectedMembers
 			.Select(collected => new SaveableMemberModel(
 				collected.Name,
 				collected.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
