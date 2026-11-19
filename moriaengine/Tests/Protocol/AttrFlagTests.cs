@@ -222,7 +222,7 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>#222: each magic/crafting-quality flag prepends its own name - flags+display
-		/// only, no mechanical effect (confirmed scope, see CLAUDE.md). Also confirms the
+		/// only, no mechanical effect (confirmed scope, see docs/history/claude-md-log.md). Also confirms the
 		/// precedence rule (reforged beats magic) on one item carrying both at once. Compares
 		/// against the plain control item's own reported base name rather than a hardcoded
 		/// literal, since i_rock_plain's real display name comes from client tiledata, not a

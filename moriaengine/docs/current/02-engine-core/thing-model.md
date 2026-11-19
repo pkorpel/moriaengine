@@ -47,6 +47,19 @@ Uids survive save/load - the same item keeps the same uid across a server restar
 what lets test code (and GM tooling) hold onto a uid across a save/reload cycle and expect to
 find the same object again.
 
+## Def names
+
+- `AbstractScript.GetByDefname` looks a name up case-insensitively (`byDefname`, `OrdinalIgnoreCase`,
+  `GameCore/AbstractScript.cs`).
+- A ThingDef's name is stored lowercased as its section loads (`ThingDef.cs`, `HeaderName.ToLowerInvariant()`):
+  `[CharDef c_Haradir]` is the def `c_haradir`.
+- A numeric header (`[ItemDef 0x19b7]`) is parsed as an unsigned 32-bit id and reinterpreted as an `int`
+  (`ConvertTools.TryParseUInt32` + `unchecked((int))` in `ThingDef.ParseDefnames`), so ids above `Int32.MaxValue`
+  load. Such a def's `Defname` becomes `i_0x…`/`c_0x…` (other defs: `AbstractDef.DeNumerizeDefname`); `PrettyDefname`
+  returns its `DEFNAME=` alias when it has one (`AbstractDef.PrettyDefname`).
+- A def's name string therefore isn't a reliable thing to compare with; code compares the def object
+  (`npc.Def == ThingDef.GetByDefname("c_haradir")`).
+
 ## Instances vs. defs: the template split
 
 Every `Item` has a `TypeDef` (its `ItemDef`); every `Character`/`NPC` has a `Def`
@@ -97,6 +110,14 @@ matching `Trigger_Leave*`/`On_Leave*` hook) before it's moved somewhere else. Se
 trigger pattern, and [item-decay.md](../04-gameplay-systems/item-decay.md) for a concrete,
 non-trivial example of code hooking `On_EnterRegion`/`On_LeaveRegion` to track "is this
 currently on the ground."
+
+Setting a stackable item's `Cont` to a container, or a client dropping it into one, merges it into a matching stack
+already inside, when there is one (`TryStackToAnyInside` -> `Trigger_StackInCont`, same file): after the cancellable
+`@stackOnItem`/`@itemStackOn` triggers, the waiting stack's `Amount` grows by the incoming item's and the incoming item
+is deleted. Setting `Amount` after such a merge throws on the deleted item (#709), so the `Amount` goes first.
+`ItemDef.Create(container)` doesn't stack. Two items stack when both are stackable, have the same def, color and
+model, and both `CanStackWith` each other (errand items don't, #1260) (`CouldBeStacked`). A merge whose sum would
+overflow `Amount` doesn't happen (`Trigger_StackInCont`'s `checked` addition).
 
 A real, specific gotcha worth knowing here: `Trigger_EnterRegion` requires the thing to
 already be in limbo state, and - critically for anyone writing code against these hooks -

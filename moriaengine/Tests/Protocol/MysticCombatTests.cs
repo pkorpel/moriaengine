@@ -192,7 +192,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// <summary>Separate fixture/account from MysticCombatTests above, purely to stay under
 	/// AbstractAccount.maxCharactersPerGameAccount (a hard 5) - MysticCombatTests' own account
 	/// is already exactly at that cap from its own 5 Facts (same class of mistake #421's own
-	/// GatheringDelaySystemTests hit, per CLAUDE.md).</summary>
+	/// GatheringDelaySystemTests hit, per docs/history/claude-md-log.md).</summary>
 	[Collection(MysticCombatRangeCollection.Name)]
 	public class MysticCombatRangeTests {
 		private const string Account = "mystictestb";

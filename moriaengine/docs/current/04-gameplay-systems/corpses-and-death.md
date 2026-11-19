@@ -82,6 +82,10 @@ this is an instance of.
 `RegisterMurder` here), plays the death sound, creates and populates the corpse, then
 branches: a player becomes a ghost, an NPC gets deleted.
 
+The killer argument (`CauseDeath(Character killedBy)`) can be `null`: a kill with no source character
+(`Globals.SrcCharacter` null, e.g. `InstaKill`) and tests pass none, so death handlers (`On_Death`, plugins'
+`@death`) can't assume one.
+
 **No-op once already dead**: a second `CauseDeath` call on an already-`Flag_Dead`
 character does nothing. This is working as designed, but it's a real test-authoring
 trap - a test that kills the same character twice without resurrecting in between will

@@ -32,7 +32,7 @@ The practical consequence for day-to-day script work: **adding a plain public fi
 property to a `[ViewableClass]`-marked type is enough to make it show up in `.info`,
 with zero other wiring** - this is exactly how `Player.Level`/`Player.Experience`
 (leveling system, #126) ended up visible with no explicit dialog code at all, and it's
-also why an earlier pass in this session's own history (see CLAUDE.md's #154 section)
+also why an earlier pass in this session's own history (see `docs/history/claude-md-log.md`'s #154 section)
 mistakenly assumed a NEW `.info`-surfacing mechanism needed to be built, when a working
 one already existed and just needed noticing.
 

@@ -66,6 +66,12 @@ public Region GetRegionFor(int x, int y) {
 }
 ```
 
+The static rectangles are sorted when the sector's region rectangles are set up
+(`Sector.cs`, the rectangle comparer): by the region's `HierarchyIndex`, and at the same depth by
+how many of the sector's tiles each covers, larger first. Read from the end, a deeper region wins,
+and of two at the same depth the smaller one wins, as in Sphere, so a house's area isn't hidden
+by the city around it (#941). With `Globals.FastStartUp` the size step is skipped.
+
 This is why `House.FindHouseAt(point)` (added for the house-lockdown feature) reliably finds
 a house's own region regardless of what static region (town, wilderness, dungeon) happens to
 surround it - a house's `MultiRegion` is a `DynamicRegion`, so it's always checked ahead of
