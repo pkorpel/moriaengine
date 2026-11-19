@@ -26,7 +26,7 @@ internal static class Parser {
 	internal static CompiledTriggerGroupCandidate? DiscoverCandidate(
 		Compilation compilation,
 		TypeDeclarationSyntax declaration,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics) {
 		if (declaration is not ClassDeclarationSyntax) {
 			return null;
@@ -41,7 +41,7 @@ internal static class Parser {
 			return null;
 		}
 
-		if (!IsAssignableTo(typeSymbol, requiredSymbols.CanonicalTypes.CompiledTriggerGroupType)) {
+		if (!IsAssignableTo(typeSymbol, symbols.CanonicalTypes.CompiledTriggerGroupType)) {
 			return null;
 		}
 

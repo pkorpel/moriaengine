@@ -6,6 +6,14 @@ using Microsoft.CodeAnalysis;
 namespace SteamEngine.Generators.CompiledTriggerGroups;
 
 internal static class Analyzer {
+	internal static readonly DiagnosticDescriptor DuplicateTypeNameDescriptor = new(
+		"SEGEN405",
+		"Compiled trigger group type name is not unique",
+		"Compiled trigger group type name '{0}' conflicts between '{1}' and '{2}'; names must be distinct for code generation",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+
 	internal static readonly DiagnosticDescriptor DuplicateTriggerNameDescriptor = new(
 		"SEGEN402",
 		"Duplicate trigger method name",
@@ -17,14 +25,21 @@ internal static class Analyzer {
 	internal static IReadOnlyList<CompiledTriggerGroupModel> BuildModels(
 		IReadOnlyCollection<CompiledTriggerGroupCandidate> candidates,
 		ICollection<Diagnostic> diagnostics,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
-		var orderedCandidates = candidates
-			.OrderBy(c => c.TypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
-			.ToList();
+		RequiredSymbols symbols) {
+		var conflictingTypeNames = DuplicateNameValidator.Validate(
+			candidates.Select(candidate => (
+				candidate.TypeSymbol.Name,
+				(ISymbol) candidate.TypeSymbol)),
+			DuplicateTypeNameDescriptor,
+			diagnostics);
 
 		var models = new List<CompiledTriggerGroupModel>();
-		foreach (var candidate in orderedCandidates) {
-			if (!TryBuildModel(candidate, requiredSymbols.CanonicalTypes.ScriptArgsType, diagnostics, out var model)) {
+		foreach (var candidate in candidates) {
+			if (conflictingTypeNames.Contains(candidate.TypeSymbol.Name)) {
+				continue;
+			}
+
+			if (!TryBuildModel(candidate, symbols.CanonicalTypes.ScriptArgsType, diagnostics, out var model)) {
 				continue;
 			}
 
@@ -40,10 +55,7 @@ internal static class Analyzer {
 		ICollection<Diagnostic> diagnostics,
 		out CompiledTriggerGroupModel model) {
 		model = null!;
-		var orderedMethods = candidate.TriggerMethods
-			.OrderBy(m => m.Name.Substring(3), StringComparer.OrdinalIgnoreCase)
-			.ThenBy(m => m.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
-			.ToList();
+		var orderedMethods = candidate.TriggerMethods.ToList();
 
 		var duplicateTriggerNames = new HashSet<string>(
 			orderedMethods

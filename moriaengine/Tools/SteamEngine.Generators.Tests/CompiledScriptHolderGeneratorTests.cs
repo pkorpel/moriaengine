@@ -133,7 +133,7 @@ public static class CommandScriptsB {
 		var run = RunGenerator(nameof(DuplicateFunctionNames_ReportsDiagnostic), source);
 		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN102");
 		Assert.Contains("dupe", error.GetMessage(), System.StringComparison.OrdinalIgnoreCase);
-		Assert.Single(run.GeneratedSources);
+		Assert.Empty(run.GeneratedSources);
 	}
 
 	[Fact]
