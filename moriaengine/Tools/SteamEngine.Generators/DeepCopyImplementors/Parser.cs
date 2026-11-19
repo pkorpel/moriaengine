@@ -36,28 +36,32 @@ internal static class Parser {
 			return null;
 		}
 
-		var diagnosticsBeforeResolve = diagnostics.Count;
-
 		// look for the [DeepCopyImplementation] method / constructor
-		var initializerMethod = AttributedMemberResolver.FindMethodOrCtorWithAttribute(
+		var foundInitializerMethod = AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
 			symbol,
 			symbols.Attributes.DeepCopyImplementationAttribute,
 			diagnostics,
-			includeInheritedTypes: false);
-		if (initializerMethod is null && diagnostics.Count == diagnosticsBeforeResolve) {
+			includeInheritedTypes: false,
+			out var initializerMethod);
+		if (!foundInitializerMethod) {
+			return null;
+		}
+		if (initializerMethod is null) {
 			diagnostics.Add(Diagnostic.Create(
 				MissingDeepCopyImplementationDescriptor,
 				symbol.Locations.FirstOrDefault(),
 				symbol.ToDisplayString()));
 		}
 
-		var copyableMembers = AttributedMemberResolver.CollectFieldsAndProperties(
+		var foundCopyableMembers = AttributedMemberResolver.TryCollectFieldsAndProperties(
 			symbol,
 			symbols.Attributes.CopyableDataAttribute,
 			diagnostics,
 			symbol,
-			includeInheritedTypes: false);
-		if (initializerMethod is null || copyableMembers is null) {
+			includeInheritedTypes: false,
+			out var copyableMembers,
+			includePrivateOrProtected: false);
+		if (!foundCopyableMembers) {
 			return null;
 		}
 
