@@ -10,16 +10,16 @@ internal static class Parser {
 	internal static ScriptHolderCandidate? DiscoverCandidate(
 		Compilation compilation,
 		MethodDeclarationSyntax methodDeclaration,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics) {
 		var semanticModel = compilation.GetSemanticModel(methodDeclaration.SyntaxTree);
 		if (semanticModel.GetDeclaredSymbol(methodDeclaration) is not IMethodSymbol methodSymbol) {
 			return null;
 		}
 
-		var canonicalAttribute = AttributeUsageValidator.FindCanonicalAttribute(
+		var canonicalAttribute = AttributeUsageValidator.FindAttributeOnSymbol(
 			methodSymbol,
-			requiredSymbols.Attributes.SteamFunctionAttribute,
+			symbols.Attributes.SteamFunctionAttribute,
 			diagnostics);
 		if (canonicalAttribute is null) {
 			return null;

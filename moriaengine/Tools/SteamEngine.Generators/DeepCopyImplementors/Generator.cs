@@ -25,19 +25,19 @@ public sealed class DeepCopyImplementorsGenerator : IIncrementalGenerator {
 		Compilation compilation,
 		IReadOnlyCollection<TypeDeclarationSyntax> declarations) {
 		var diagnostics = new List<Diagnostic>();
-		var requiredSymbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
+		var symbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
 
-		if (requiredSymbols is not null) {
+		if (symbols is not null) {
 			var candidates = new List<DeepCopyCandidate>();
 			foreach (var declaration in declarations) {
-				var candidate = Parser.DiscoverCandidate(compilation, declaration, requiredSymbols, diagnostics);
+				var candidate = Parser.DiscoverCandidate(compilation, declaration, symbols, diagnostics);
 				if (candidate is null) {
 					continue;
 				}
 				candidates.Add(candidate);
 			}
 
-			var models = Analyzer.BuildModels(candidates, diagnostics, requiredSymbols);
+			var models = Analyzer.BuildModels(candidates, diagnostics, symbols);
 			foreach (var model in models) {
 				if (!Renderer.TryRender(model, out var source)) {
 					continue;

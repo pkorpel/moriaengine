@@ -168,7 +168,7 @@ namespace ScriptSandbox.B {
 """;
 
 		var run = RunGenerator(source);
-		Assert.Equal(2, run.Diagnostics.Count(d => d.Id == "SEGEN405"));
+		Assert.Single(run.Diagnostics, d => d.Id == "SEGEN405");
 		Assert.Empty(run.GeneratedSources);
 	}
 

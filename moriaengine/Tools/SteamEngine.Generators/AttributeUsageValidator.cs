@@ -14,20 +14,24 @@ internal static class AttributeUsageValidator {
 		DiagnosticSeverity.Warning,
 		true);
 
-	internal static string StripAttributeSuffix(string name) {
+
+	internal static string GetAttributeDisplayString(INamedTypeSymbol attribute) => StripAttributeSuffix(attribute.Name);
+
+	internal static string StripAttributeSuffix(string name)
+	{
 		return name.EndsWith("Attribute", StringComparison.Ordinal)
 			? name.Substring(0, name.Length - "Attribute".Length)
 			: name;
 	}
 
-	internal static bool HasCanonicalAttribute(
+	internal static bool HasAttribute(
 		ISymbol symbol,
 		INamedTypeSymbol? canonicalAttribute,
 		ICollection<Diagnostic> diagnostics) {
-		return FindCanonicalAttribute(symbol, canonicalAttribute, diagnostics) is not null;
+		return FindAttributeOnSymbol(symbol, canonicalAttribute, diagnostics) is not null;
 	}
 
-	internal static AttributeData? FindCanonicalAttribute(
+	internal static AttributeData? FindAttributeOnSymbol(
 		ISymbol symbol,
 		INamedTypeSymbol? canonicalAttribute,
 		ICollection<Diagnostic> diagnostics) {
@@ -35,7 +39,7 @@ internal static class AttributeUsageValidator {
 			return null;
 		}
 
-		var expectedSimpleName = StripAttributeSuffix(canonicalAttribute.Name);
+		var expectedSimpleName = GetAttributeDisplayString(canonicalAttribute);
 		var expectedCanonicalTypeName = canonicalAttribute.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 		AttributeData? foundCanonical = null;
 		var canonicalDisplayName = canonicalAttribute.ToDisplayString();
@@ -46,7 +50,7 @@ internal static class AttributeUsageValidator {
 				continue;
 			}
 
-			var simpleName = StripAttributeSuffix(attributeClass.Name);
+			var simpleName = GetAttributeDisplayString(attributeClass);
 			if (!string.Equals(simpleName, expectedSimpleName, StringComparison.Ordinal)) {
 				continue;
 			}

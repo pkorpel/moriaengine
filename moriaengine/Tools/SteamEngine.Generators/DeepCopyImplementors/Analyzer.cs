@@ -49,26 +49,23 @@ internal static class Analyzer {
 	internal static IReadOnlyList<DeepCopyModel> BuildModels(
 		IReadOnlyCollection<DeepCopyCandidate> candidates,
 		ICollection<Diagnostic> diagnostics,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
+		RequiredSymbols symbols) {
 		var models = new List<DeepCopyModel>();
-		var orderedCandidates = candidates
-			.OrderBy(static c => c.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
-			.ToList();
 		var conflictingTypeNames = DuplicateNameValidator.Validate(
-			orderedCandidates.Select(candidate => (
+			candidates.Select(candidate => (
 				Name: candidate.Symbol.Name,
 				Symbol: (ISymbol) candidate.Symbol)),
 			DuplicateGeneratedImplementorNameDescriptor,
 			diagnostics);
 
-		foreach (var candidate in orderedCandidates) {
+		foreach (var candidate in candidates) {
 			if (conflictingTypeNames.Contains(candidate.Symbol.Name)) {
 				continue;
 			}
 
 			if (!TryBuildModel(
 				candidate.Symbol,
-				requiredSymbols,
+				symbols,
 				diagnostics,
 				out var model)) {
 				continue;
@@ -81,21 +78,24 @@ internal static class Analyzer {
 
 	private static bool TryBuildModel(
 		INamedTypeSymbol typeSymbol,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		out DeepCopyModel model) {
 		model = null!;
 
-		var hasErrors = false;
-		if (!TryResolveInitializer(typeSymbol, requiredSymbols.Attributes.DeepCopyImplementationAttribute, diagnostics, out var initializer)) {
-			hasErrors = true;
-		}
+		var hasInitializer = TryResolveInitializer(
+			typeSymbol,
+			symbols.Attributes.DeepCopyImplementationAttribute,
+			diagnostics,
+			out var initializer);
+		var problemWithCopyableMembers = TryResolveCopyableMembers(
+			typeSymbol,
+			symbols.Attributes.CopyableDataAttribute,
+			symbols.CanonicalTypes,
+			diagnostics,
+			out var copyableMembers);
 
-		if (!TryResolveCopyableMembers(typeSymbol, requiredSymbols.Attributes.CopyableDataAttribute, requiredSymbols.CanonicalTypes, diagnostics, out var copyableMembers)) {
-			hasErrors = true;
-		}
-
-		if (hasErrors) {
+		if (!hasInitializer || !problemWithCopyableMembers) {
 			return false;
 		}
 
@@ -118,12 +118,11 @@ internal static class Analyzer {
 		initializer = null!;
 
 		var diagnosticsBeforeResolve = diagnostics.Count;
-		var methodSymbol = SingleAttributedMethodResolver.Resolve(
-			typeSymbol.GetMembers(),
+		var methodSymbol = AttributedMemberResolver.ResolveMethod(
+			typeSymbol,
 			deepCopyImplementationAttribute,
 			diagnostics,
-			typeSymbol,
-			"DeepCopyImplementation");
+			includeInheritedTypes: false);
 
 		if (methodSymbol is null && diagnostics.Count == diagnosticsBeforeResolve) {
 			diagnostics.Add(Diagnostic.Create(
@@ -183,19 +182,19 @@ internal static class Analyzer {
 		CanonicalTypeSymbols knownTypes,
 		ICollection<Diagnostic> diagnostics,
 		out IReadOnlyList<DeepCopyMemberModel> members) {
-		var result = global::SteamEngine.Generators.AttributedFieldPropertyCollector.Collect(
-			typeSymbol.GetMembers(),
+		var result = AttributedMemberResolver.CollectFieldsAndProperties(
+			typeSymbol,
 			copyableDataAttribute,
 			diagnostics,
 			typeSymbol,
-			UnsupportedCopyableMemberDescriptor);
+			UnsupportedCopyableMemberDescriptor,
+			includeInheritedTypes: false);
 
 		members = result.Items
 			.Select(member => new DeepCopyMemberModel(
 				member.Name,
 				member.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 				GetMemberValueKind(member.Type, knownTypes, diagnostics, member.Location)))
-			.OrderBy(static member => member.MemberName, StringComparer.Ordinal)
 			.ToList();
 		return !result.HasInvalidMembers;
 	}

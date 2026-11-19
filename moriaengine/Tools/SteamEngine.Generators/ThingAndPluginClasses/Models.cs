@@ -14,19 +14,29 @@ internal enum TemplateFamily {
 }
 
 internal sealed class TemplateCandidate {
-	internal TemplateCandidate(INamedTypeSymbol symbol, TemplateKind kind, TemplateFamily family, bool? copyAllowed, Compilation compilation) {
+	internal TemplateCandidate(
+		INamedTypeSymbol symbol,
+		TemplateKind kind,
+		TemplateFamily family,
+		bool? copyAllowed,
+		IReadOnlyList<DefFieldSpec> defFields,
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions) {
 		Symbol = symbol;
 		Kind = kind;
 		Family = family;
 		CopyAllowed = copyAllowed;
-		Compilation = compilation;
+		DefFields = defFields;
+		InstanceFieldDefaultExpressions = instanceFieldDefaultExpressions;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
 	internal TemplateKind Kind { get; }
 	internal TemplateFamily Family { get; }
 	internal bool? CopyAllowed { get; }
-	internal Compilation Compilation { get; }
+	internal IReadOnlyList<DefFieldSpec> DefFields { get; }
+	// Parser-captured source initializer expressions keyed by declared symbol.
+	// Analyzer uses these verbatim strings when emitting default member values.
+	internal IReadOnlyDictionary<ISymbol, string> InstanceFieldDefaultExpressions { get; }
 }
 
 internal sealed class TemplatePair {
