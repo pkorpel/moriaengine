@@ -8,7 +8,7 @@ internal static class Parser {
 	internal static DeepCopyCandidate? DiscoverCandidate(
 		Compilation compilation,
 		TypeDeclarationSyntax declaration,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics) {
 		var semanticModel = compilation.GetSemanticModel(declaration.SyntaxTree);
 		if (semanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol) {
@@ -18,9 +18,9 @@ internal static class Parser {
 			return null;
 		}
 
-		var hasCanonicalAttribute = AttributeUsageValidator.HasCanonicalAttribute(
+		var hasCanonicalAttribute = AttributeUsageValidator.HasAttribute(
 			symbol,
-			requiredSymbols.Attributes.DeepCopyableClassAttribute,
+			symbols.Attributes.DeepCopyableClassAttribute,
 			diagnostics);
 
 		if (!hasCanonicalAttribute) {

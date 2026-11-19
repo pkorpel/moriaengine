@@ -34,7 +34,7 @@ internal static class Analyzer {
 	internal static IReadOnlyList<ScriptHolderModel> BuildModels(
 		IReadOnlyCollection<ScriptHolderCandidate> candidates,
 		ICollection<Diagnostic> diagnostics,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
+		RequiredSymbols symbols) {
 		var valid = new List<(ScriptHolderCandidate Candidate, string FunctionName)>();
 		foreach (var candidate in candidates) {
 			if (IsPublicStatic(candidate.MethodSymbol)) {
@@ -48,11 +48,8 @@ internal static class Analyzer {
 				candidate.MethodSymbol.ToDisplayString()));
 		}
 
-		var ordered = valid.OrderBy(c => c.FunctionName, StringComparer.OrdinalIgnoreCase)
-			.ThenBy(c => c.Candidate.MethodSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
-			.ToList();
 		var conflictingFunctionNames = DuplicateNameValidator.Validate(
-			ordered.Select(candidate => (
+			valid.Select(candidate => (
 				Name: candidate.FunctionName,
 				Symbol: (ISymbol) candidate.Candidate.MethodSymbol)),
 			DuplicateSteamFunctionNameDescriptor,
@@ -60,18 +57,16 @@ internal static class Analyzer {
 
 		var emittedFunctions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		var models = new List<ScriptHolderModel>();
-		foreach (var candidate in ordered) {
-			if (!emittedFunctions.Add(candidate.FunctionName)) {
+		foreach (var candidate in valid) {
+			if (conflictingFunctionNames.Contains(candidate.FunctionName)
+				|| !emittedFunctions.Add(candidate.FunctionName)) {
 				continue;
 			}
 
-			models.Add(BuildModel(candidate.Candidate, candidate.FunctionName, requiredSymbols.CanonicalTypes.ScriptArgsType));
+			models.Add(BuildModel(candidate.Candidate, candidate.FunctionName, symbols.CanonicalTypes.ScriptArgsType));
 		}
 
-		return models
-			.OrderBy(m => m.FunctionName, StringComparer.OrdinalIgnoreCase)
-			.ThenBy(m => m.GeneratedTypeName, StringComparer.Ordinal)
-			.ToList();
+		return models;
 	}
 
 	private static bool IsPublicStatic(IMethodSymbol methodSymbol) {

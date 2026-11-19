@@ -30,19 +30,19 @@ public sealed partial class ThingAndPluginClassesGenerator : IIncrementalGenerat
 		IReadOnlyCollection<ClassDeclarationSyntax> classDeclarations) {
 		// Build all template pairs first, then emit in a single deterministic pass.
 		var diagnostics = new List<Diagnostic>();
-		var requiredSymbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
+		var symbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
 
-		if (requiredSymbols is not null) {
+		if (symbols is not null) {
 			var candidates = new List<TemplateCandidate>();
 			foreach (var declaration in classDeclarations) {
-				var candidate = Parser.DiscoverCandidate(compilation, declaration, requiredSymbols, diagnostics);
+				var candidate = Parser.DiscoverCandidate(compilation, declaration, symbols, diagnostics);
 				if (candidate is null) {
 					continue;
 				}
 				candidates.Add(candidate);
 			}
 
-			var pairs = Analyzer.BuildTemplatePairs(candidates, diagnostics, requiredSymbols);
+			var pairs = Analyzer.BuildTemplatePairs(candidates, diagnostics, symbols);
 			foreach (var pair in pairs) {
 				if (!Renderer.TryRenderPair(pair, out var source)) {
 					continue;
