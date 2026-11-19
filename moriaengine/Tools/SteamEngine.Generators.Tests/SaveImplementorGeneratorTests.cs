@@ -70,7 +70,7 @@ public sealed class ArenaState {
 """;
 
 		var run = RunGenerator(nameof(ValidSaveableClass_ReportsNoErrorsAndGeneratesImplementor), source);
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 		var generated = string.Join("\n\n", run.GeneratedSources);
 		Assert.Contains("GeneratedSaveImplementor_ArenaState", generated);
 		Assert.Contains("global::SteamEngine.Persistence.ObjectSaver.Load(propsLine_1.Value, this.DelayedLoad_Payload", generated);
@@ -136,7 +136,7 @@ public sealed class ArenaState : ArenaBase {
 """;
 
 		var run = RunGenerator(nameof(LoadSectionFactory_GeneratesLoadSectionFactoryInvocation), source);
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 		var generated = string.Join("\n\n", run.GeneratedSources);
 		Assert.Contains("global::ScriptSandbox.ArenaState loadedObject = (global::ScriptSandbox.ArenaState) global::ScriptSandbox.ArenaBase.Load(input);", generated);
 		Assert.DoesNotContain("TryPopPropsLine(\"Counter\")", generated);
@@ -186,8 +186,36 @@ public sealed class ArenaState {
 """;
 
 		var run = RunGenerator(nameof(SaveableDataPrivateField_ReportsDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN307");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN905");
 		Assert.Contains("counter", diagnostic.GetMessage());
+	}
+
+	[Fact]
+	public void NoSaveableDataField_Supported() {
+		const string source = """
+using SteamEngine;
+using SteamEngine.Persistence;
+
+namespace ScriptSandbox;
+
+[SaveableClass]
+public sealed class ArenaState {
+
+	[LoadingInitializer]
+	public ArenaState() {
+	}
+
+	[Save]
+	public void Save(SaveStream output) {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(NoSaveableDataField_Supported), source);
+		Assert.Empty(run.Diagnostics);
+		var generated = string.Join(Environment.NewLine, run.GeneratedSources);
+		Assert.Contains("ArenaState()", generated);
+		Assert.Contains(".Save(writer)", generated);
 	}
 
 	[Fact]

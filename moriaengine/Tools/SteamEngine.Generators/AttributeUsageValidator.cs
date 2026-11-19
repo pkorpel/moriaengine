@@ -31,6 +31,10 @@ internal static class AttributeUsageValidator {
 		return FindAttributeOnSymbol(symbol, canonicalAttribute, diagnostics) is not null;
 	}
 
+	/// <summary>
+	/// Finds the attribute on the given symbol that matches the canonical attribute, if it exists.
+	/// Reports diagnostics for any shadowed attributes.
+	/// </summary>
 	internal static AttributeData? FindAttributeOnSymbol(
 		ISymbol symbol,
 		INamedTypeSymbol? canonicalAttribute,

@@ -4,11 +4,18 @@ using Microsoft.CodeAnalysis;
 namespace SteamEngine.Generators.DeepCopyImplementors;
 
 internal sealed class DeepCopyCandidate {
-	internal DeepCopyCandidate(INamedTypeSymbol symbol) {
+	internal DeepCopyCandidate(
+		INamedTypeSymbol symbol,
+		IMethodSymbol? initializerMethod,
+		IReadOnlyList<AttributedMember> copyableMembers) {
 		Symbol = symbol;
+		InitializerMethod = initializerMethod;
+		CopyableMembers = copyableMembers;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
+	internal IMethodSymbol? InitializerMethod { get; }
+	internal IReadOnlyList<AttributedMember> CopyableMembers { get; }
 }
 
 internal sealed class DeepCopyModel {
