@@ -11,7 +11,8 @@ methods, so plugin trigger dispatch is deterministic and validated during compil
 ### Input types
 
 - non-abstract classes assignable to `SteamEngine.Plugin`
-- public instance methods whose name starts with `On_` (case-insensitive)
+- non-static instance methods whose name starts with `On_` (case-insensitive)
+  - inherited `private` methods are excluded
 
 ### Generated output
 
@@ -24,7 +25,7 @@ For each input type, the generator emits one generated partial class part on the
 ## Authoring rules
 
 - Plugin classes with `On_*` methods must be declared `partial`.
-- If a plugin class is nested, each containing type must also be `partial`.
+- Nested plugin classes are ignored (warning).
 - Trigger names are the method name without the `On_` prefix.
 - Trigger names must be unique per plugin type (case-insensitive).
 - Invocation parameter mapping follows the legacy plugin trigger behavior:
@@ -35,7 +36,7 @@ For each input type, the generator emits one generated partial class part on the
 ## Diagnostics
 
 - `SEGEN406`: plugin class is not declared `partial`.
-- `SEGEN407`: a containing type of a nested plugin class is not declared `partial`.
+- `SEGEN906`: nested target type is ignored.
 - `SEGEN408`: duplicate trigger names on one plugin class.
 
 Shared generator diagnostics can also appear (`SEGEN900+`) when canonical engine
@@ -44,7 +45,8 @@ types are unavailable in the compilation.
 ## Troubleshooting
 
 - If plugin dispatch is missing, ensure the class is non-abstract, inherits `Plugin`,
-  and is declared `partial`.
-- If a trigger method is ignored, confirm it is public instance and starts with `On_`.
+  is not nested, and is declared `partial`.
+- If a trigger method is ignored, confirm it is non-static, starts with `On_`, and is
+  not an inherited `private` method.
 - If generation fails with `SEGEN408`, rename colliding `On_*` methods so trigger
   names are unique.
