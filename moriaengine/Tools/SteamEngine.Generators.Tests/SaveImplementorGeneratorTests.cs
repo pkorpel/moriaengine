@@ -43,8 +43,14 @@ using SteamEngine.Persistence;
 
 namespace ScriptSandbox;
 
+public class ArenaStateBase {
+	[LoadingFinalizer]
+	public void FinishLoadingFromBase() {
+	}
+}
+
 [SaveableClass]
-public sealed class ArenaState {
+public sealed class ArenaState : ArenaStateBase {
 	[SaveableData]
 	public int Counter;
 
@@ -59,10 +65,6 @@ public sealed class ArenaState {
 	public void LoadLine(string filename, int line, string name, string value) {
 	}
 
-	[LoadingFinalizer]
-	public void LoadingFinished() {
-	}
-
 	[Save]
 	public void Save(SaveStream output) {
 	}
@@ -75,7 +77,7 @@ public sealed class ArenaState {
 		Assert.Contains("GeneratedSaveImplementor_ArenaState", generated);
 		Assert.Contains("global::SteamEngine.Persistence.ObjectSaver.Load(propsLine_1.Value, this.DelayedLoad_Payload", generated);
 		Assert.Contains("this.LoadSectionLines(input, loadedObject);", generated);
-		Assert.Contains("loadedObject.LoadingFinished();", generated);
+		Assert.Contains("loadedObject.FinishLoadingFromBase();", generated);
 		Assert.Contains("castObjToSave.Save(writer);", generated);
 	}
 
