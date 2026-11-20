@@ -24,6 +24,9 @@ internal static class Parser {
 		if (canonicalAttribute is null) {
 			return null;
 		}
+		if (NestedTypeValidator.TryReportNestedType(methodSymbol.ContainingType, diagnostics)) {
+			return null;
+		}
 
 		var candidate = new ScriptHolderCandidate(
 			methodSymbol,

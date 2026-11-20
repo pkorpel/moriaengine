@@ -1,18 +1,11 @@
 using System.Collections.Immutable;
+using SteamEngine.Generators;
 
 namespace SteamEngine.Generators.PluginTriggerDispatch;
 
 internal enum PluginTriggerDiagnosticKind {
 	TypeMustBePartial,
-	ContainingTypeMustBePartial,
-	DuplicateTriggerName
-}
-
-internal enum PluginInvocationParameterConversion {
-	None,
-	Cast,
-	Convert,
-	EnumConvertThenCast
+	NestedTypeNotSupported
 }
 
 internal readonly record struct SourceLocationData(
@@ -28,35 +21,21 @@ internal readonly record struct PluginTriggerDiagnosticData(
 	string Argument0,
 	string Argument1);
 
-internal readonly record struct PluginInvocationParameterData(
-	bool UsesScriptArgsInput,
-	PluginInvocationParameterConversion Conversion,
-	string TypeName);
-
 internal sealed record PluginTriggerMethodData(
 	string TriggerName,
 	string MethodName,
 	bool ReturnsVoid,
 	SourceLocationData Location,
-	ImmutableArray<PluginInvocationParameterData> Parameters);
-
-internal sealed record ContainingTypeData(
-	string Accessibility,
-	bool IsStatic,
-	bool IsAbstract,
-	bool IsSealed,
-	string TypeName);
+	EquatableArray<DispatchParameterModel> Parameters);
 
 internal sealed record PluginTriggerCandidate(
 	string TypeIdentity,
 	string NamespaceName,
-	ImmutableArray<ContainingTypeData> ContainingTypes,
-	string TypeAccessibility,
 	string TypeName,
 	string FullyQualifiedTypeName,
 	SourceLocationData TypeLocation,
-	ImmutableArray<PluginTriggerMethodData> TriggerMethods);
+	EquatableArray<PluginTriggerMethodData> TriggerMethods);
 
 internal sealed record PluginTriggerParseResult(
 	PluginTriggerCandidate? Candidate,
-	ImmutableArray<PluginTriggerDiagnosticData> Diagnostics);
+	EquatableArray<PluginTriggerDiagnosticData> Diagnostics);
