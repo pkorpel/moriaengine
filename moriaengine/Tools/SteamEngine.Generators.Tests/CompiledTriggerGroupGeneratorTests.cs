@@ -39,9 +39,10 @@ public partial class ArenaTriggerGroup : BaseTriggerGroup {
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
 		var generated = Assert.Single(run.GeneratedSources);
 		Assert.Contains("partial class ArenaTriggerGroup", generated);
-		Assert.Contains("global::System.Object.ReferenceEquals(tk, global::SteamEngine.TriggerKey.Acquire(\"DClick\"))", generated);
+		Assert.Contains("switch (tk.LowercaseName)", generated);
+		Assert.Contains("case \"dclick\":", generated);
 		Assert.Contains("this.On_DClick(self, global::System.Convert.ToInt32(sa.Argv[0]));", generated);
-		Assert.Contains("global::System.Object.ReferenceEquals(tk, global::SteamEngine.TriggerKey.Acquire(\"Login\"))", generated);
+		Assert.Contains("case \"login\":", generated);
 		Assert.Contains("return this.on_Login(self, sa);", generated);
 		Assert.DoesNotContain("InternalFirstGetDefname", generated);
 	}
@@ -105,7 +106,7 @@ public class ArenaTriggerGroup : CompiledTriggerGroup {
 	}
 
 	[Fact]
-	public void NestedCompiledTriggerGroup_WithPartialContainingType_GeneratesNestedPartial() {
+	public void NestedCompiledTriggerGroup_WithPartialContainingType_ReportsDiagnostic() {
 		const string source = """
 using SteamEngine.CompiledScripts;
 
@@ -120,11 +121,8 @@ public static partial class Outer {
 """;
 
 		var run = RunGenerator(source);
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
-		var generated = Assert.Single(run.GeneratedSources);
-		Assert.Contains("public static partial class Outer", generated);
-		Assert.Contains("public partial class NestedTriggerGroup", generated);
-		Assert.Contains("this.on_DClick(self);", generated);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN906" && d.Severity == DiagnosticSeverity.Warning);
+		Assert.Empty(run.GeneratedSources);
 	}
 
 	[Fact]
@@ -143,7 +141,7 @@ public static class Outer {
 """;
 
 		var run = RunGenerator(source);
-		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN404");
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN906" && d.Severity == DiagnosticSeverity.Warning);
 		Assert.Empty(run.GeneratedSources);
 	}
 
