@@ -15,14 +15,6 @@ internal static class Parser {
 		DiagnosticSeverity.Error,
 		true);
 
-	internal static readonly DiagnosticDescriptor ContainingTypeMustBePartialDescriptor = new(
-		"SEGEN404",
-		"Containing type must be partial",
-		"Containing type '{0}' must be declared partial because it contains compiled trigger group '{1}'",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
 	internal static CompiledTriggerGroupCandidate? DiscoverCandidate(
 		Compilation compilation,
 		TypeDeclarationSyntax declaration,
@@ -41,7 +33,7 @@ internal static class Parser {
 			return null;
 		}
 
-		if (!IsAssignableTo(typeSymbol, symbols.CanonicalTypes.CompiledTriggerGroupType)) {
+		if (!NestedTypeValidator.IsAssignableTo(typeSymbol, symbols.CanonicalTypes.CompiledTriggerGroupType, includeSelf: false)) {
 			return null;
 		}
 
@@ -56,34 +48,12 @@ internal static class Parser {
 			return null;
 		}
 
-		for (var containing = typeSymbol.ContainingType; containing is not null; containing = containing.ContainingType) {
-			if (containing.DeclaringSyntaxReferences
-				.Select(reference => reference.GetSyntax())
-				.OfType<TypeDeclarationSyntax>()
-				.All(syntax => syntax.Modifiers.Any(modifier => modifier.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PartialKeyword)))) {
-				continue;
-			}
-
-			diagnostics.Add(Diagnostic.Create(
-				ContainingTypeMustBePartialDescriptor,
-				containing.Locations.FirstOrDefault(),
-				containing.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-				typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
+		if (NestedTypeValidator.TryReportNestedType(typeSymbol, diagnostics)) {
 			return null;
 		}
 
 		var triggerMethods = GetTriggerMethods(typeSymbol);
 		return new CompiledTriggerGroupCandidate(typeSymbol, triggerMethods);
-	}
-
-	private static bool IsAssignableTo(INamedTypeSymbol source, INamedTypeSymbol targetBaseType) {
-		for (var current = source.BaseType; current is not null; current = current.BaseType) {
-			if (SymbolEqualityComparer.Default.Equals(current, targetBaseType)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	private static IReadOnlyList<IMethodSymbol> GetTriggerMethods(INamedTypeSymbol typeSymbol) {

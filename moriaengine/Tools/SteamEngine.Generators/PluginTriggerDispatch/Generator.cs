@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -20,12 +21,12 @@ public sealed class PluginTriggerDispatchGenerator : IIncrementalGenerator {
 	}
 
 	private static void Execute(SourceProductionContext context, ImmutableArray<PluginTriggerParseResult> parseResults) {
-		var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
-		var candidates = ImmutableArray.CreateBuilder<PluginTriggerCandidate>();
+		var diagnostics = new List<Diagnostic>();
+		var candidates = new List<PluginTriggerCandidate>();
 
 		foreach (var result in parseResults) {
 			foreach (var diagnosticData in result.Diagnostics) {
-				diagnostics.Add(Diagnostics.Create(diagnosticData));
+				diagnostics.Add(Analyzer.CreateDiagnostic(diagnosticData));
 			}
 
 			if (result.Candidate is not null) {
@@ -33,12 +34,9 @@ public sealed class PluginTriggerDispatchGenerator : IIncrementalGenerator {
 			}
 		}
 
-		var analysis = Analyzer.Analyze(candidates.ToImmutable());
-		foreach (var diagnosticData in analysis.Diagnostics) {
-			diagnostics.Add(Diagnostics.Create(diagnosticData));
-		}
+		var models = Analyzer.Analyze(candidates, diagnostics);
 
-		foreach (var model in analysis.Models) {
+		foreach (var model in models) {
 			if (!Renderer.TryRender(model, out var source)) {
 				continue;
 			}

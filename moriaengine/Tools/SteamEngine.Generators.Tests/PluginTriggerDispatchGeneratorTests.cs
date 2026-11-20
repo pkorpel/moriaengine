@@ -78,7 +78,7 @@ public class ArenaPlugin : Plugin {
 	}
 
 	[Fact]
-	public void NestedPlugin_WithNonPartialContainingType_ReportsDiagnostic() {
+	public void NestedPlugin_ReportsDiagnostic() {
 		const string source = """
 using SteamEngine;
 
@@ -93,7 +93,7 @@ public static class Outer {
 """;
 
 		var run = RunGenerator(source);
-		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN407");
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN906" && d.Severity == DiagnosticSeverity.Warning);
 		Assert.Empty(run.GeneratedSources);
 	}
 
@@ -116,6 +116,37 @@ public partial class ArenaPlugin : Plugin {
 		var run = RunGenerator(source);
 		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN408");
 		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void NonPublicMethods_AreDiscoveredExceptPrivateBase() {
+		const string source = """
+using SteamEngine;
+
+namespace ScriptSandbox;
+
+public abstract class BasePlugin : Plugin {
+	private void On_HiddenBase() {
+	}
+
+	protected void On_BaseVisible() {
+	}
+}
+
+public partial class ArenaPlugin : BasePlugin {
+	private void On_LocalPrivate() {
+	}
+}
+""";
+
+		var run = RunGenerator(source);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		var generated = Assert.Single(run.GeneratedSources);
+		Assert.Contains("case \"basevisible\":", generated);
+		Assert.Contains("this.On_BaseVisible();", generated);
+		Assert.Contains("case \"localprivate\":", generated);
+		Assert.Contains("this.On_LocalPrivate();", generated);
+		Assert.DoesNotContain("hiddenbase", generated, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static GeneratorRunSnapshot RunGenerator(string source) {
