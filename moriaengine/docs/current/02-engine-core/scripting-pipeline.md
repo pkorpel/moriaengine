@@ -74,10 +74,9 @@ until #1382.)
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 
-A second, unrelated generation pass currently produces two files directly under the
+A second, unrelated generation pass currently produces one file directly under the
 `moriaengine/Generated/` folder:
 
-- `PluginTriggerGroups.Generated.cs` - same idea for plugin trigger groups.
 - `ViewableClasses.Generated.cs` - reflection metadata backing the `.info` dialog's property
   discovery for every `[ViewableClass]` type (see
   [viewable-classes-and-info-dialog.md](viewable-classes-and-info-dialog.md)).
@@ -105,6 +104,10 @@ Save implementors for `[SaveableClass]` types are now generated at scripts compi
 Compiled trigger groups are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/CompiledTriggerGroups/Generator.cs`. See
 `docs/current/02-engine-core/code generators/compiled-trigger-group-generator.md`.
+
+Plugin trigger dispatch is now generated at scripts compile time by
+`Tools/SteamEngine.Generators/PluginTriggerDispatch/Generator.cs`. See
+`docs/current/02-engine-core/code generators/plugin-trigger-dispatch-generator.md`.
 
 ### One boot does both
 

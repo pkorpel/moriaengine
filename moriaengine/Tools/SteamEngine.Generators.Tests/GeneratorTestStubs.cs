@@ -20,9 +20,11 @@ namespace SteamEngine {
 	public sealed class TriggerKey : IAbstractKey {
 		private TriggerKey(string name) {
 			Name = name;
+			LowercaseName = name.ToLowerInvariant();
 		}
 
 		public string Name { get; }
+		public string LowercaseName { get; }
 		public int Uid => 0;
 
 		public static TriggerKey Acquire(string name) {

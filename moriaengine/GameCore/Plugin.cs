@@ -59,6 +59,10 @@ namespace SteamEngine {
 			}
 		}
 
+		public virtual object Run(TriggerKey tk, ScriptArgs sa) {
+			return null;
+		}
+
 		/// <summary>#1493 - whether a dupe of its holder takes a copy of it. A copy gets no timers (#1485, as Sphere's dupe
 		/// copies no TIMER), so a plugin running on its own timer would sit on the copy and never end: such a plugin stays
 		/// the original's (scripts' TimerPlugin says so while its timer runs). Something else on the copy that refers to it
@@ -79,10 +83,7 @@ namespace SteamEngine {
 					scriptedRetVal = scriptedTriggers.Run(this, tk, sa);
 				}
 
-				PluginDef.PluginTriggerGroup compiledTriggers = this.def.compiledTriggers;
-				if (compiledTriggers != null) {
-					compiledRetVal = compiledTriggers.Run(this, tk, sa);
-				}
+				compiledRetVal = this.Run(tk, sa);
 			}
 		}
 
@@ -96,15 +97,12 @@ namespace SteamEngine {
 				if (scriptedTriggers != null) {
 					scriptedRetVal = scriptedTriggers.TryRun(this, tk, sa);
 				}
-				PluginDef.PluginTriggerGroup compiledTriggers = this.def.compiledTriggers;
-				if (compiledTriggers != null) {
-					try {
-						compiledRetVal = compiledTriggers.Run(this, tk, sa);
-					} catch (FatalException) {
-						throw;
-					} catch (Exception e) {
-						Logger.WriteError(e);
-					}
+				try {
+					compiledRetVal = this.Run(tk, sa);
+				} catch (FatalException) {
+					throw;
+				} catch (Exception e) {
+					Logger.WriteError(e);
 				}
 			}
 		}
