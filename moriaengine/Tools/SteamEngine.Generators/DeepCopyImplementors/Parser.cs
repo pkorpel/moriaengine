@@ -35,9 +35,6 @@ internal static class Parser {
 		if (!hasCanonicalAttribute) {
 			return null;
 		}
-		if (NestedTypeValidator.TryReportNestedType(symbol, diagnostics)) {
-			return null;
-		}
 
 		// look for the [DeepCopyImplementation] method / constructor
 		var foundInitializerMethod = AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(

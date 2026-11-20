@@ -27,9 +27,6 @@ internal static class Parser {
 		if (!hasCanonicalAttribute) {
 			return null;
 		}
-		if (NestedTypeValidator.TryReportNestedType(symbol, diagnostics)) {
-			return null;
-		}
 
 		bool ResolveMethod(INamedTypeSymbol expectedAttribute, out IMethodSymbol? method, bool includeInheritedTypes = true) {
 			return AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
