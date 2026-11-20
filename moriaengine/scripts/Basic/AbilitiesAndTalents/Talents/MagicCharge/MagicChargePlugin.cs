@@ -29,7 +29,7 @@ namespace SteamEngine.CompiledScripts {
 	/// GetSpellPowerAgainstChar/AgainstNonChar). Do NOT confuse with the unrelated, already-
 	/// working ColoredStaff.On_DClick mana-storage feature - left untouched.
 	/// <para>Managed entirely from C# (AddCharge/Get below), never created from an LScript
-	/// header - but Plugin.TryRun/Run dereference this.def.scriptedTriggers/compiledTriggers
+	/// header - but Plugin.TryRun/Run dereference this.def and run trigger plumbing
 	/// unconditionally (no null check), so a bare `new MagicChargePlugin()` with a null Def
 	/// crashes the moment AddPlugin's own assign-trigger dispatch runs. Needs a real PluginDef
 	/// instance even with no LScript header behind it - same "construct directly + Register(),
@@ -61,7 +61,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class MagicChargePlugin : Plugin {
+	public partial class MagicChargePlugin : Plugin {
 		private static readonly PluginKey key = PluginKey.Acquire("_magicCharge_");
 		private static readonly TimerKey tickTimerKey = TimerKey.Acquire("_magicChargeDecayTick_");
 

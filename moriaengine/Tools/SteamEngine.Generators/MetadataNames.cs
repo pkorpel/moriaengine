@@ -10,6 +10,7 @@ internal static class MetadataNames {
 		internal const string AbstractAccount = "SteamEngine.AbstractAccount";
 		internal const string ScriptHolder = "SteamEngine.ScriptHolder";
 		internal const string ScriptArgs = "SteamEngine.ScriptArgs";
+		internal const string Plugin = "SteamEngine.Plugin";
 		internal const string CompiledScriptHolder = "SteamEngine.CompiledScripts.CompiledScriptHolder";
 		internal const string CompiledTriggerGroup = "SteamEngine.CompiledScripts.CompiledTriggerGroup";
 		internal const string DeepCopyFactory = "SteamEngine.DeepCopyFactory";

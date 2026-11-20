@@ -23,6 +23,9 @@ internal static class Parser {
 		if (classification is null) {
 			return null;
 		}
+		if (NestedTypeValidator.TryReportNestedType(symbol, diagnostics)) {
+			return null;
+		}
 
 		// Def candidates carry parsed def fields. Thing loading is resolved from the
 		// canonical Thing base here because a def-only pair has no instance syntax.

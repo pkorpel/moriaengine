@@ -324,7 +324,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Counts the test trigger; may remove itself or another plugin when it hears it. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class LoopTestPlugin : Plugin {
+	public partial class LoopTestPlugin : Plugin {
 		internal int heard;
 		internal bool removeSelf;
 		internal Plugin removeOther;

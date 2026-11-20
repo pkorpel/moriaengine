@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	[PluginTemplate]
-	partial class WeaponSkillTargetTrackerPlugin : TimerPlugin {
+	public partial class WeaponSkillTargetTrackerPlugin : TimerPlugin {
 		HashSet<Character> attackers = new HashSet<Character>();
 
 		private static PluginKey weaponSkillTargetPK = PluginKey.Acquire("_weaponSkillTarget_");

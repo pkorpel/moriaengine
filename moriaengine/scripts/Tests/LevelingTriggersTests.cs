@@ -131,7 +131,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Records @killCredit. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class KillCreditProbePlugin : Plugin {
+	public partial class KillCreditProbePlugin : Plugin {
 		internal int heard;
 		internal Character victim;
 		internal int share;
