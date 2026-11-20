@@ -123,7 +123,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Counts @stepTaken and keeps its `running`. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class StepTakenProbePlugin : Plugin {
+	public partial class StepTakenProbePlugin : Plugin {
 		internal int heard;
 		internal bool running;
 

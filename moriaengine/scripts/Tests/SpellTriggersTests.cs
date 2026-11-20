@@ -156,7 +156,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Counts @spellPower on characters and @spellSuccess. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class SpellTriggersProbePlugin : Plugin {
+	public partial class SpellTriggersProbePlugin : Plugin {
 		internal int powers, successes;
 		internal bool fromScroll;
 

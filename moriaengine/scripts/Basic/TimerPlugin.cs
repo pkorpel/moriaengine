@@ -38,7 +38,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class TimerPlugin : Plugin {
+	public partial class TimerPlugin : Plugin {
 		[DeepCopyImplementation]
 		public TimerPlugin(TimerPlugin copyFrom)
 			:
