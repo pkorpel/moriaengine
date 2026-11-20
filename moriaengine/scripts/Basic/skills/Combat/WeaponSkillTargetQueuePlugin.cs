@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	[PluginTemplate]
-	partial class WeaponSkillTargetQueuePlugin : TimerPlugin {
+	public partial class WeaponSkillTargetQueuePlugin : TimerPlugin {
 		LinkedList<Character> targetQueue = new LinkedList<Character>();
 
 		private new Character Cont {

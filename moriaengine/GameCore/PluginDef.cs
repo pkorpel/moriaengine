@@ -26,30 +26,12 @@ namespace SteamEngine {
 		private static Dictionary<Type, Type> pluginDefTypesByPluginType = new Dictionary<Type, Type>();
 		private static Dictionary<Type, Type> pluginTypesByPluginDefType = new Dictionary<Type, Type>();
 
-		private static Dictionary<Type, PluginTriggerGroup> triggerGroupsByType = new Dictionary<Type, PluginTriggerGroup>();
-
 
 		protected PluginDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
-			{
-				this.TryActivateCompiledTriggers();
-			}
-		}
-
-		private void TryActivateCompiledTriggers() {
-			PluginTriggerGroup ptg;
-			if (triggerGroupsByType.TryGetValue(this.GetType(), out ptg)) {
-				this.compiledTriggers = ptg;
-			}
 		}
 
 		internal TriggerGroup scriptedTriggers;
-		internal PluginTriggerGroup compiledTriggers;
-
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
-		public abstract class PluginTriggerGroup {
-			public abstract object Run(Plugin self, TriggerKey tk, ScriptArgs sa);
-		}
 
 		protected abstract Plugin CreateImpl();
 
@@ -61,10 +43,6 @@ namespace SteamEngine {
 
 		public new static PluginDef GetByDefname(string defname) {
 			return AbstractScript.GetByDefname(defname) as PluginDef;
-		}
-
-		public static void RegisterPluginTG(Type defType, PluginTriggerGroup tg) {
-			triggerGroupsByType[defType] = tg;
 		}
 
 		//this should be typically called by the Bootstrap methods of scripted PluginDef
@@ -103,16 +81,9 @@ namespace SteamEngine {
 			pluginTypesByPluginDefType.Clear();//we can assume that inside core there are no non-abstract plugindefs
 			//pluginDefTypesByName.Clear();
 			//pluginDefCtors.Clear();
-			triggerGroupsByType.Clear();
 		}
 
 		internal static void Init() {
-			foreach (AbstractScript script in AllScripts) {
-				PluginDef pd = script as PluginDef;
-				if (pd != null) {
-					pd.TryActivateCompiledTriggers();
-				}
-			}
 		}
 	}
 }

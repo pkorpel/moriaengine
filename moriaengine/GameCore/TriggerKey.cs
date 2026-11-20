@@ -27,8 +27,17 @@ namespace SteamEngine {
 	/// that from then on for calling that trigger.
 	/// </summary>
 	public sealed class TriggerKey : AbstractKey<TriggerKey> {
+		private readonly string lowercaseName;
+
 		private TriggerKey(string name, int uid)
 			: base(name, uid) {
+			this.lowercaseName = name.ToLowerInvariant();
+		}
+
+		public string LowercaseName {
+			get {
+				return this.lowercaseName;
+			}
 		}
 
 		public static TriggerKey Acquire(string name) {
