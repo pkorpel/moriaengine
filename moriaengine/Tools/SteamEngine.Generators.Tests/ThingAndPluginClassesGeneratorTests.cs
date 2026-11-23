@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -70,12 +69,6 @@ public enum EnergyMode {
 public sealed class ComplexPayload {
 }
 """;
-
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-		internal IReadOnlyList<Diagnostic> DriverDiagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
 
 	[Fact]
 	public void FullThingPair_GeneratesThingSpecificFeatures() {
@@ -684,28 +677,7 @@ public partial class sharedbeaconDef : MagicThingDef {
 			CSharpSyntaxTree.ParseText(SharedStubs)
 		};
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(true),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		var generator = new ThingAndPluginClassesGenerator();
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList(),
-			DriverDiagnostics = run.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
+		return GeneratorTestRunner.Run(new ThingAndPluginClassesGenerator(), syntaxTrees, GetMetadataReferences(true), scenarioName);
 	}
 
 	private static GeneratorRunSnapshot RunGeneratorInternal(
@@ -720,41 +692,8 @@ public partial class sharedbeaconDef : MagicThingDef {
 		}
 		syntaxTrees.AddRange(sources.Select(s => CSharpSyntaxTree.ParseText(s)));
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(includeGeneratorAbstractionsReference),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		var generator = new ThingAndPluginClassesGenerator();
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList(),
-			DriverDiagnostics = run.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-		var scenarioDir = Path.Combine(root, scenarioName);
-		Directory.CreateDirectory(scenarioDir);
-		for (var i = 0; i < sources.Length; i++) {
-			var hintName = sources[i].HintName.Replace('/', '_').Replace('\\', '_');
-			var fileName = string.IsNullOrWhiteSpace(hintName) ? $"generated-{i}.g.cs" : hintName;
-			File.WriteAllText(Path.Combine(scenarioDir, fileName), sources[i].SourceText.ToString());
-		}
+		return GeneratorTestRunner.Run(new ThingAndPluginClassesGenerator(), syntaxTrees,
+			GetMetadataReferences(includeGeneratorAbstractionsReference), scenarioName);
 	}
 
 	private static IEnumerable<MetadataReference> GetMetadataReferences(bool includeGeneratorAbstractionsReference) {

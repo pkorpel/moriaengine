@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SteamEngine.Generators.SaveImplementors;
@@ -29,11 +26,6 @@ namespace SteamEngine.Common {
 	}
 }
 """;
-
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
 
 	[Fact]
 	public void ValidSaveableClass_ReportsNoErrorsAndGeneratesImplementor() {
@@ -267,64 +259,7 @@ namespace SecondNamespace {
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
 		}
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new SaveImplementorsGenerator());
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-
-		Directory.CreateDirectory(root);
-		var safeName = scenarioName.Replace(Path.DirectorySeparatorChar, '_').Replace(Path.AltDirectorySeparatorChar, '_');
-		for (var i = 0; i < sources.Length; i++) {
-			var path = Path.Combine(root, safeName + "." + i.ToString() + ".g.cs");
-			File.WriteAllText(path, sources[i].SourceText.ToString());
-		}
-	}
-
-	private static IReadOnlyList<MetadataReference> GetMetadataReferences() {
-		var refs = new List<MetadataReference>();
-		var runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
-		var needed = new[] {
-			"System.Private.CoreLib.dll",
-			"System.Runtime.dll",
-			"netstandard.dll",
-			"System.Collections.dll",
-			"System.Linq.dll",
-			"System.Console.dll",
-			"System.Text.RegularExpressions.dll"
-		};
-		foreach (var file in needed) {
-			var full = Path.Combine(runtimeDir, file);
-			if (File.Exists(full)) {
-				refs.Add(MetadataReference.CreateFromFile(full));
-			}
-		}
-		refs.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
-		refs.Add(MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location));
-		refs.Add(MetadataReference.CreateFromFile(typeof(System.Diagnostics.Debug).Assembly.Location));
-		refs.Add(MetadataReference.CreateFromFile(typeof(SteamEngine.Persistence.SaveableClassAttribute).Assembly.Location));
-		return refs;
+		return GeneratorTestRunner.Run(new SaveImplementorsGenerator(), syntaxTrees,
+			GeneratorTestRunner.GetRuntimeReferences(), scenarioName, flatDump: true);
 	}
 }
