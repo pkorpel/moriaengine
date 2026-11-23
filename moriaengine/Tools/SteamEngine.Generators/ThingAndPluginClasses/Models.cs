@@ -13,6 +13,7 @@ internal enum TemplateFamily {
 	Plugin
 }
 
+// Parsed instance or definition declaration awaiting pairing and validation.
 internal sealed class TemplateCandidate {
 	internal TemplateCandidate(
 		INamedTypeSymbol symbol,
@@ -44,6 +45,7 @@ internal sealed class TemplateCandidate {
 	internal IMethodSymbol? LoadingFinalizerMethod { get; }
 }
 
+// Rendering data for a validated instance/definition pair, including inferred counterparts.
 internal sealed class TemplatePair {
 	internal TemplatePair(
 		string instanceName,
@@ -89,6 +91,7 @@ internal sealed class TemplatePair {
 	internal IReadOnlyList<InstanceFieldSpec> CopyMembers { get; }
 }
 
+// Describes how a template instance is created during loading.
 internal sealed class TemplateLoadFactory {
 	internal TemplateLoadFactory(
 		TemplateLoadFactoryKind kind,

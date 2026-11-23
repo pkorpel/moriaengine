@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.CompiledTriggerGroups;
 
+// Validates global group names and trigger names within each group.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor DuplicateTypeNameDescriptor = new(
 		"SEGEN405",
@@ -22,95 +23,40 @@ internal static class Analyzer {
 		DiagnosticSeverity.Warning,
 		true);
 
+	internal static readonly DiagnosticDescriptor TypeMustBePartialDescriptor = new(
+		"SEGEN403",
+		"Compiled trigger group must be partial",
+		"Compiled trigger group '{0}' must be declared partial for source-generated Run dispatch",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+
 	internal static IReadOnlyList<CompiledTriggerGroupModel> BuildModels(
 		IReadOnlyCollection<CompiledTriggerGroupCandidate> candidates,
-		ICollection<Diagnostic> diagnostics,
-		RequiredSymbols symbols) {
-		var conflictingTypeNames = DuplicateNameValidator.Validate(
-			candidates.Select(candidate => (
-				candidate.TypeSymbol.Name,
-				(ISymbol) candidate.TypeSymbol)),
-			DuplicateTypeNameDescriptor,
-			diagnostics);
+		ICollection<GeneratorDiagnosticData> diagnostics) {
+		var conflictingNames = DuplicateNameValidator.Validate(candidates, candidate => candidate.Model.TypeName, (name, first, candidate) =>
+			diagnostics.Add(GeneratorDiagnosticData.Create(DuplicateTypeNameDescriptor, candidate.Location,
+				name, first.FullyQualifiedTypeName, candidate.FullyQualifiedTypeName)));
 
 		var models = new List<CompiledTriggerGroupModel>();
 		foreach (var candidate in candidates) {
-			if (conflictingTypeNames.Contains(candidate.TypeSymbol.Name)) {
+			var model = candidate.Model;
+			if (conflictingNames.Contains(model.TypeName)) {
 				continue;
 			}
-
-			if (!TryBuildModel(candidate, symbols.CanonicalTypes.ScriptArgsType, diagnostics, out var model)) {
-				continue;
+			var duplicates = new HashSet<string>(
+				model.TriggerMethods.GroupBy(method => method.TriggerName, StringComparer.OrdinalIgnoreCase)
+					.Where(group => group.Count() > 1).Select(group => group.Key),
+				StringComparer.OrdinalIgnoreCase);
+			foreach (var duplicate in duplicates) {
+				diagnostics.Add(GeneratorDiagnosticData.Create(DuplicateTriggerNameDescriptor, candidate.Location,
+					duplicate, candidate.FullyQualifiedTypeName));
 			}
-
-			models.Add(model);
+			if (duplicates.Count == 0) {
+				models.Add(model);
+			}
 		}
-
 		return models;
 	}
 
-	private static bool TryBuildModel(
-		CompiledTriggerGroupCandidate candidate,
-		INamedTypeSymbol scriptArgsType,
-		ICollection<Diagnostic> diagnostics,
-		out CompiledTriggerGroupModel model) {
-		model = null!;
-		var orderedMethods = candidate.TriggerMethods.ToList();
-
-		var duplicateTriggerNames = new HashSet<string>(
-			orderedMethods
-				.GroupBy(method => method.Name.Substring(3), StringComparer.OrdinalIgnoreCase)
-				.Where(group => group.Count() > 1)
-				.Select(group => group.Key),
-			StringComparer.OrdinalIgnoreCase);
-
-		foreach (var duplicateTriggerName in duplicateTriggerNames) {
-			diagnostics.Add(Diagnostic.Create(
-				DuplicateTriggerNameDescriptor,
-				candidate.TypeSymbol.Locations.FirstOrDefault(),
-				duplicateTriggerName,
-				candidate.TypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
-		}
-
-		if (duplicateTriggerNames.Count > 0) {
-			return false;
-		}
-
-		var methods = orderedMethods.Select(method => BuildMethodModel(method, scriptArgsType)).ToList();
-		var namespaceName = candidate.TypeSymbol.ContainingNamespace.IsGlobalNamespace
-			? string.Empty
-			: candidate.TypeSymbol.ContainingNamespace.ToDisplayString();
-		model = new CompiledTriggerGroupModel(
-			namespaceName,
-			candidate.TypeSymbol.Name,
-			methods);
-		return true;
-	}
-
-	private static CompiledTriggerMethodModel BuildMethodModel(IMethodSymbol method, INamedTypeSymbol scriptArgsType) {
-		var parameters = new List<DispatchParameterModel>();
-		for (var i = 0; i < method.Parameters.Length; i++) {
-			if (i == 0) {
-				parameters.Add(DispatchModelBuilder.BuildInvocationParameter(method.Parameters[i].Type));
-				continue;
-			}
-
-			// Semantic rule only: preserve legacy behavior where a 2-parameter trigger method
-			// can use ScriptArgs as the second parameter instead of argv[0].
-			if (i == 1
-				&& method.Parameters.Length == 2
-				&& DispatchModelBuilder.IsScriptArgsAssignable(method.Parameters[i].Type, scriptArgsType)) {
-				parameters.Add(DispatchModelBuilder.BuildScriptArgsParameter(method.Parameters[i].Type, scriptArgsType));
-				continue;
-			}
-
-			parameters.Add(DispatchModelBuilder.BuildInvocationParameter(method.Parameters[i].Type));
-		}
-
-		return new CompiledTriggerMethodModel(
-			method.Name.Substring(3),
-			method.Name,
-			method.ReturnsVoid,
-			parameters);
-	}
 }

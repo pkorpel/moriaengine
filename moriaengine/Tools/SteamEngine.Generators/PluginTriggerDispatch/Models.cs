@@ -1,41 +1,23 @@
-using System.Collections.Immutable;
-using SteamEngine.Generators;
-
 namespace SteamEngine.Generators.PluginTriggerDispatch;
 
-internal enum PluginTriggerDiagnosticKind {
-	TypeMustBePartial,
-	NestedTypeNotSupported
-}
-
-internal readonly record struct SourceLocationData(
-	string FilePath,
-	int StartLine,
-	int StartCharacter,
-	int EndLine,
-	int EndCharacter);
-
-internal readonly record struct PluginTriggerDiagnosticData(
-	PluginTriggerDiagnosticKind Kind,
-	SourceLocationData Location,
-	string Argument0,
-	string Argument1);
-
-internal sealed record PluginTriggerMethodData(
-	string TriggerName,
-	string MethodName,
-	bool ReturnsVoid,
-	SourceLocationData Location,
-	EquatableArray<DispatchParameterModel> Parameters);
-
-internal sealed record PluginTriggerCandidate(
-	string TypeIdentity,
+// Rendering data for one plugin; emitted only after its trigger names are validated.
+internal sealed record PluginTriggerModel(
 	string NamespaceName,
 	string TypeName,
 	string FullyQualifiedTypeName,
-	SourceLocationData TypeLocation,
-	EquatableArray<PluginTriggerMethodData> TriggerMethods);
+	EquatableArray<DispatchMethodModel> TriggerMethods);
 
+// Parsed plugin and its diagnostic location, awaiting trigger-name validation.
+internal sealed record PluginTriggerCandidate(
+	PluginTriggerModel Model,
+	SourceLocationData TypeLocation);
+
+// Parser output for one plugin: a candidate or diagnostics.
 internal sealed record PluginTriggerParseResult(
 	PluginTriggerCandidate? Candidate,
-	EquatableArray<PluginTriggerDiagnosticData> Diagnostics);
+	EquatableArray<GeneratorDiagnosticData> Diagnostics);
+
+// Analyzer output for one plugin: an optional accepted model and diagnostics.
+internal sealed record PluginTriggerOutput(
+	PluginTriggerModel? Model,
+	EquatableArray<GeneratorDiagnosticData> Diagnostics);

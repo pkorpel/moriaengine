@@ -50,15 +50,6 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		[NoShow]//dont show this :)
 		public static SettingsCategories instance = new SettingsCategories();
 
-		//Setting categories: - Database Settings
-		[InfoField("Database Settings")]
-		public DbConfig DbConfig {
-			get {
-				return DbManager.Config;
-			}
-		}
-
-		//Setting categories: - Combat Settings
 		[InfoField("Combat Settings")]
 		public CombatSettings CombatSettings {
 			get {

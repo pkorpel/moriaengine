@@ -1,47 +1,23 @@
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-
 namespace SteamEngine.Generators.CompiledTriggerGroups;
 
-internal sealed class CompiledTriggerGroupCandidate {
-	internal CompiledTriggerGroupCandidate(INamedTypeSymbol typeSymbol, IReadOnlyList<IMethodSymbol> triggerMethods) {
-		TypeSymbol = typeSymbol;
-		TriggerMethods = triggerMethods;
-	}
+// Parser output for one declaration: a candidate or a diagnostic.
+internal sealed record CompiledTriggerGroupParseResult(
+	CompiledTriggerGroupCandidate? Candidate,
+	GeneratorDiagnosticData? Diagnostic);
 
-	internal INamedTypeSymbol TypeSymbol { get; }
-	internal IReadOnlyList<IMethodSymbol> TriggerMethods { get; }
-}
+// Analyzer output: accepted models and diagnostics from all declarations.
+internal sealed record CompiledTriggerGroupOutput(
+	EquatableArray<CompiledTriggerGroupModel> Models,
+	EquatableArray<GeneratorDiagnosticData> Diagnostics);
 
-internal sealed class CompiledTriggerGroupModel {
-	internal CompiledTriggerGroupModel(
-		string namespaceName,
-		string typeName,
-		IReadOnlyList<CompiledTriggerMethodModel> triggerMethods) {
-		NamespaceName = namespaceName;
-		TypeName = typeName;
-		TriggerMethods = triggerMethods;
-	}
+// Rendering data for one trigger group; emitted only after name validation.
+internal sealed record CompiledTriggerGroupModel(
+	string NamespaceName,
+	string TypeName,
+	EquatableArray<DispatchMethodModel> TriggerMethods);
 
-	internal string NamespaceName { get; }
-	internal string TypeName { get; }
-	internal IReadOnlyList<CompiledTriggerMethodModel> TriggerMethods { get; }
-}
-
-internal sealed class CompiledTriggerMethodModel {
-	internal CompiledTriggerMethodModel(
-		string triggerName,
-		string methodName,
-		bool returnsVoid,
-		IReadOnlyList<DispatchParameterModel> parameters) {
-		TriggerName = triggerName;
-		MethodName = methodName;
-		ReturnsVoid = returnsVoid;
-		Parameters = parameters;
-	}
-
-	internal string TriggerName { get; }
-	internal string MethodName { get; }
-	internal bool ReturnsVoid { get; }
-	internal IReadOnlyList<DispatchParameterModel> Parameters { get; }
-}
+// Parsed group with the type name and location needed for validation diagnostics.
+internal sealed record CompiledTriggerGroupCandidate(
+	CompiledTriggerGroupModel Model,
+	string FullyQualifiedTypeName,
+	SourceLocationData Location);

@@ -8,14 +8,14 @@ namespace SteamEngine.Generators;
 internal readonly struct EquatableArray<T> : IEquatable<EquatableArray<T>>, IEnumerable<T> {
 	private readonly ImmutableArray<T> values;
 
-	internal EquatableArray(ImmutableArray<T> values) {
+	private EquatableArray(ImmutableArray<T> values) {
 		this.values = values;
 	}
 
 	internal static EquatableArray<T> Empty => new(ImmutableArray<T>.Empty);
 
-	internal static EquatableArray<T> From(ImmutableArray<T> values) {
-		return new EquatableArray<T>(values);
+	internal static EquatableArray<T> From(IEnumerable<T> values) {
+		return new EquatableArray<T>(ImmutableArray.CreateRange(values));
 	}
 
 	internal int Length => values.Length;

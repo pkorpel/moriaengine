@@ -8,22 +8,22 @@ using SaveImplementorRenderer = SteamEngine.Generators.SaveImplementors.Renderer
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
+// Renders template partial classes and their persistence and deep-copy implementors.
 internal static class Renderer {
 	internal static string GetHintName(TemplatePair pair) {
-		var family = SanitizeHintPathSegment(pair.Family.ToString());
-		var instance = SanitizeHintPathSegment(pair.InstanceName);
+		var family = pair.Family.ToString();
+		var instance = IdentifierSanitizer.EncodeHintName(pair.InstanceName);
 		return $"ThingAndPluginClasses/{family}/{instance}.TemplatePairing.g.cs";
 	}
 
-	internal static bool TryRenderPair(TemplatePair pair, out string source) {
+	internal static string RenderPair(TemplatePair pair) {
 		var builder = new StringBuilder();
 		AppendFileHeader(builder, pair.NamespaceName);
 		RenderDefPartial(builder, pair);
 		builder.AppendLine();
 		RenderInstancePartial(builder, pair);
 		builder.AppendLine("}");
-		source = builder.ToString();
-		return true;
+		return builder.ToString();
 	}
 
 	private static void AppendFileHeader(StringBuilder builder, string nameSpace) {
@@ -105,10 +105,7 @@ internal static class Renderer {
 		builder.AppendLine("\t}");
 	}
 
-	internal static bool TryRenderSaveImplementor(TemplatePair pair, out string hintName, out string source) {
-		hintName = string.Empty;
-		source = string.Empty;
-
+	internal static (string HintName, string Source) RenderSaveImplementor(TemplatePair pair) {
 		// The template generator owns save wiring for template-derived types and feeds
 		// the SaveImplementors renderer directly instead of relying on cross-generator
 		// attribute discovery. Load-factory semantics are pre-resolved in Analyzer.
@@ -132,8 +129,7 @@ internal static class Renderer {
 			loadingFinalizerMethodName: pair.LoadingFinalizerMethodName,
 			saveMethodName: "Save",
 			saveableMembers: []); // generated type already saves/loads its own properties/fields
-		hintName = SaveImplementorRenderer.GetHintName(model);
-		return SaveImplementorRenderer.TryRender(model, out source);
+		return (SaveImplementorRenderer.GetHintName(model), SaveImplementorRenderer.Render(model));
 	}
 
 	internal static bool TryRenderDeepCopyImplementor(TemplatePair pair, out string hintName, out string source) {
@@ -158,7 +154,8 @@ internal static class Renderer {
 			initializer,
 			members);
 		hintName = DeepCopyImplementorRenderer.GetHintName(model);
-		return DeepCopyImplementorRenderer.TryRender(model, out source);
+		source = DeepCopyImplementorRenderer.Render(model);
+		return true;
 	}
 
 	private static void AppendPrimaryConstructor(StringBuilder builder, TemplatePair pair) {
@@ -272,15 +269,4 @@ internal static class Renderer {
 		return char.ToUpperInvariant(name[0]) + name.Substring(1);
 	}
 
-	private static string SanitizeHintPathSegment(string value) {
-		if (string.IsNullOrEmpty(value)) {
-			return "_";
-		}
-
-		var builder = new StringBuilder(value.Length);
-		foreach (var ch in value) {
-			builder.Append(char.IsLetterOrDigit(ch) || ch == '_' || ch == '-' ? ch : '_');
-		}
-		return builder.ToString();
-	}
 }

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using SteamEngine.Common;
-using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -44,23 +43,21 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	//[HasSavedMembers]
-	public static partial class StaticMemberSaver {
-		public partial class E_StaticMemberSaver_Global : CompiledTriggerGroup {
-			public void On_BeforeSave(Globals ignored) {
-				SaveMembers();
-			}
-
-			public void On_AfterSave(Globals instance) {
-				instance.RemoveTag(tkSavedStaticMembersTable);
-			}
+	public partial class E_StaticMemberSaver_Global : CompiledTriggerGroup {
+		public void On_BeforeSave() {
+			StaticMemberSaver.SaveMembers();
 		}
 
-		//[SavedMember]
-		//private static string testField = "teeeeeeeeeeeeeeststriiiiing";
+		public void On_AfterSave(Globals instance) {
+			instance.RemoveTag(StaticMemberSaver.tkSavedStaticMembersTable);
+		}
+	}
+
+	public static class StaticMemberSaver {
 
 		private static List<MemberInfo> registeredMembers = new List<MemberInfo>();
-		private static TagKey tkSavedStaticMembersTable = TagKey.Acquire("SavedStaticMembersTable");
+
+		internal static TagKey tkSavedStaticMembersTable = TagKey.Acquire("SavedStaticMembersTable");
 
 		private static void LoadMembers() {
 			Hashtable table = Globals.Instance.GetTag(tkSavedStaticMembersTable) as Hashtable;
@@ -124,7 +121,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static void SaveMembers() {
+		internal static void SaveMembers() {
 			Hashtable table = new Hashtable();
 			foreach (MemberInfo mi in registeredMembers) {
 				object obj;

@@ -11,6 +11,7 @@ internal sealed class CanonicalTypeSymbols {
 	internal INamedTypeSymbol AbstractAccountType { get; set; } = null!;
 	internal INamedTypeSymbol ScriptHolderType { get; set; } = null!;
 	internal INamedTypeSymbol ScriptArgsType { get; set; } = null!;
+	internal INamedTypeSymbol PluginType { get; set; } = null!;
 	internal INamedTypeSymbol CompiledScriptHolderType { get; set; } = null!;
 	internal INamedTypeSymbol CompiledTriggerGroupType { get; set; } = null!;
 	internal INamedTypeSymbol DeepCopyFactoryType { get; set; } = null!;

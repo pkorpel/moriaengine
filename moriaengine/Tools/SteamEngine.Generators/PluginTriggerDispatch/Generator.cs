@@ -1,50 +1,30 @@
-using System.Collections.Immutable;
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.PluginTriggerDispatch;
 
+// Generates trigger dispatch overrides for concrete plugin subclasses.
 [Generator]
 public sealed class PluginTriggerDispatchGenerator : IIncrementalGenerator {
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
-		var parseResults = context.SyntaxProvider
+		var typeValidator = new RequiredTypeValidator();
+		typeValidator.RegisterRequiredTypeCheck(context);
+		var output = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (node, _) => node is ClassDeclarationSyntax,
-				static (ctx, _) => Parser.ParseCandidate(ctx))
+				(ctx, _) => Parser.Parse(ctx, typeValidator.Resolve(ctx.SemanticModel.Compilation).Symbols))
 			.Where(static result => result is not null)
-			.Select(static (result, _) => result!);
+			.Select(static (result, _) => Analyzer.Analyze(result!));
 
-		context.RegisterSourceOutput(
-			parseResults.Collect(),
-			static (spc, results) => Execute(spc, results));
-	}
-
-	private static void Execute(SourceProductionContext context, ImmutableArray<PluginTriggerParseResult> parseResults) {
-		var diagnostics = new List<Diagnostic>();
-		var candidates = new List<PluginTriggerCandidate>();
-
-		foreach (var result in parseResults) {
-			foreach (var diagnosticData in result.Diagnostics) {
-				diagnostics.Add(Analyzer.CreateDiagnostic(diagnosticData));
+		context.RegisterSourceOutput(output, static (spc, result) => {
+			if (result.Model is { } model) {
+				spc.AddSource(Renderer.GetHintName(model), Renderer.Render(model));
 			}
-
-			if (result.Candidate is not null) {
-				candidates.Add(result.Candidate);
+		});
+		context.RegisterSourceOutput(output.Combine(context.CompilationProvider), static (spc, data) => {
+			foreach (var diagnostic in data.Left.Diagnostics) {
+				spc.ReportDiagnostic(diagnostic.ToDiagnostic(data.Right));
 			}
-		}
-
-		var models = Analyzer.Analyze(candidates, diagnostics);
-
-		foreach (var model in models) {
-			if (!Renderer.TryRender(model, out var source)) {
-				continue;
-			}
-			context.AddSource(Renderer.GetHintName(model), source);
-		}
-
-		foreach (var diagnostic in diagnostics) {
-			context.ReportDiagnostic(diagnostic);
-		}
+		});
 	}
 }

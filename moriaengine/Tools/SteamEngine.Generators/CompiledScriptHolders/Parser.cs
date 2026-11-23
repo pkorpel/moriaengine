@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -6,82 +7,82 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
+// Parses attributed methods into function candidates and declaration diagnostics.
 internal static class Parser {
-	internal static ScriptHolderCandidate? DiscoverCandidate(
-		Compilation compilation,
-		MethodDeclarationSyntax methodDeclaration,
-		RequiredSymbols symbols,
-		ICollection<Diagnostic> diagnostics) {
-		var semanticModel = compilation.GetSemanticModel(methodDeclaration.SyntaxTree);
-		if (semanticModel.GetDeclaredSymbol(methodDeclaration) is not IMethodSymbol methodSymbol) {
+	internal static ScriptHolderParseResult? Parse(GeneratorSyntaxContext context, RequiredSymbols? symbols) {
+		if (symbols is null) {
 			return null;
 		}
-
-		var canonicalAttribute = AttributeUsageValidator.FindAttributeOnSymbol(
-			methodSymbol,
-			symbols.Attributes.SteamFunctionAttribute,
-			diagnostics);
-		if (canonicalAttribute is null) {
+		if (context.SemanticModel.GetDeclaredSymbol(context.Node) is not IMethodSymbol methodSymbol) {
 			return null;
 		}
+		var compilation = context.SemanticModel.Compilation;
+		var attributeType = symbols.Attributes.SteamFunctionAttribute;
+		var scriptArgsType = symbols.CanonicalTypes.ScriptArgsType;
 
-		var candidate = new ScriptHolderCandidate(
-			methodSymbol,
-			GetFunctionName(methodSymbol, canonicalAttribute, diagnostics),
-			GetDescription(methodSymbol));
-		return candidate;
+		var diagnostics = new List<GeneratorDiagnosticData>();
+		var expectedSimpleName = AttributeUsageValidator.GetAttributeDisplayString(attributeType);
+		var canonicalAttribute = AttributeUsageValidator.FindAttributeOnSymbol(methodSymbol, attributeType, attribute => {
+			diagnostics.Add(GeneratorDiagnosticData.Create(AttributeUsageValidator.AttributeShadowingDescriptor,
+				SourceLocationData.From(compilation, attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation() ?? methodSymbol.Locations.FirstOrDefault()),
+				expectedSimpleName, attribute.AttributeClass!.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				attributeType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
+		});
+
+		ScriptHolderCandidate? candidate = null;
+		if (canonicalAttribute is not null) {
+			var name = GetFunctionName(compilation, methodSymbol, canonicalAttribute, diagnostics);
+			var location = SourceLocationData.From(compilation, methodSymbol.Locations.FirstOrDefault());
+			if (!methodSymbol.IsStatic || methodSymbol.DeclaredAccessibility != Accessibility.Public) {
+				diagnostics.Add(GeneratorDiagnosticData.Create(Analyzer.SteamFunctionMustBePublicStaticDescriptor, location, methodSymbol.ToDisplayString()));
+			} else if (name is not null) {
+				candidate = new ScriptHolderCandidate(
+					methodSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), location,
+					Analyzer.BuildModel(methodSymbol, name, GetDescription(methodSymbol), scriptArgsType));
+			}
+		}
+		return candidate is null && diagnostics.Count == 0 ? null
+			: new ScriptHolderParseResult(SourceLocationData.GetTreeIndex(compilation, context.Node.SyntaxTree), context.Node.SpanStart,
+				candidate, EquatableArray<GeneratorDiagnosticData>.From(diagnostics));
 	}
 
-	private static string GetFunctionName(IMethodSymbol methodSymbol, AttributeData canonicalAttribute, ICollection<Diagnostic> diagnostics) {
-		if (canonicalAttribute.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attributeSyntax) {
-			return methodSymbol.Name;
-		}
-
-		if (attributeSyntax.ArgumentList is null) {
-			return methodSymbol.Name;
-		}
-
-		foreach (var argument in attributeSyntax.ArgumentList.Arguments) {
-			if (argument.NameEquals is null) {
-				if (TryReadStringLiteral(argument.Expression, out var positionalName)) {
-					return positionalName;
+	private static string? GetFunctionName(Compilation compilation, IMethodSymbol methodSymbol, AttributeData canonicalAttribute, ICollection<GeneratorDiagnosticData> diagnostics) {
+		var name = methodSymbol.Name;
+		var location = methodSymbol.Locations.FirstOrDefault();
+		if (canonicalAttribute.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax { ArgumentList: not null } attributeSyntax) {
+			foreach (var argument in attributeSyntax.ArgumentList.Arguments) {
+				if (argument.NameEquals is not null && argument.NameEquals.Name.Identifier.ValueText != "NewFunctionName") {
+					continue;
 				}
-
-				ReportInvalidNameLiteral(argument.Expression);
-				continue;
+				if (argument.Expression is not LiteralExpressionSyntax literal || !literal.IsKind(SyntaxKind.StringLiteralExpression)) {
+					diagnostics.Add(GeneratorDiagnosticData.Create(Analyzer.InvalidSteamFunctionNameArgumentDescriptor,
+						SourceLocationData.From(compilation, argument.Expression.GetLocation()), argument.Expression.ToString()));
+					return null;
+				}
+				name = literal.Token.ValueText;
+				location = argument.Expression.GetLocation();
+				break;
 			}
-
-			if (argument.NameEquals.Name.Identifier.ValueText != "NewFunctionName") {
-				continue;
-			}
-
-			if (TryReadStringLiteral(argument.Expression, out var namedName)) {
-				return namedName;
-			}
-
-			ReportInvalidNameLiteral(argument.Expression);
 		}
-
-		return methodSymbol.Name;
-
-		void ReportInvalidNameLiteral(ExpressionSyntax expression) {
-			diagnostics.Add(Diagnostic.Create(
-				Analyzer.InvalidSteamFunctionNameArgumentDescriptor,
-				expression.GetLocation(),
-				expression.ToString()));
+		if (!IsValidFunctionName(name)) {
+			diagnostics.Add(GeneratorDiagnosticData.Create(Analyzer.InvalidSteamFunctionNameDescriptor,
+				SourceLocationData.From(compilation, location), name));
+			return null;
 		}
+		return name;
 	}
 
-	private static bool TryReadStringLiteral(ExpressionSyntax expression, out string value) {
-		if (expression is LiteralExpressionSyntax literal
-			&& literal.IsKind(SyntaxKind.StringLiteralExpression)
-			&& !string.IsNullOrWhiteSpace(literal.Token.ValueText)) {
-			value = literal.Token.ValueText;
-			return true;
+	private static bool IsValidFunctionName(string name) {
+		// Match LScript's ASCII symbol characters, with no leading digit.
+		for (var i = 0; i < name.Length; i++) {
+			var ch = name[i];
+			if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || ch == '_'
+				|| (i > 0 && ch >= '0' && ch <= '9')) {
+				continue;
+			}
+			return false;
 		}
-
-		value = string.Empty;
-		return false;
+		return name.Length > 0;
 	}
 
 	private static string? GetDescription(IMethodSymbol methodSymbol) {

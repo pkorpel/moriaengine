@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -12,26 +10,30 @@ namespace SteamEngine.Generators.ThingAndPluginClasses;
 [Microsoft.CodeAnalysis.Generator]
 public sealed partial class ThingAndPluginClassesGenerator : IIncrementalGenerator {
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
+		var typeValidator = new RequiredTypeValidator();
 		// Only inspect classes that already have attributes; template participation is
 		// attribute-driven and this keeps syntax filtering cheap during design-time builds.
 		var classes = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (node, _) => node is ClassDeclarationSyntax cds && cds.AttributeLists.Count > 0,
 				static (ctx, _) => (ClassDeclarationSyntax) ctx.Node)
+			// Gather declarations to pair templates and check names across all pairs.
 			.Collect();
 
 		context.RegisterSourceOutput(
 			context.CompilationProvider.Combine(classes),
-			static (spc, data) => Execute(spc, data.Left, data.Right));
+			(spc, data) => Execute(spc, data.Left, data.Right, typeValidator));
 	}
 
 	private static void Execute(
 		SourceProductionContext context,
 		Compilation compilation,
-		IReadOnlyCollection<ClassDeclarationSyntax> classDeclarations) {
+		IReadOnlyCollection<ClassDeclarationSyntax> classDeclarations,
+		RequiredTypeValidator typeValidator) {
 		// Build all template pairs first, then emit in a single deterministic pass.
-		var diagnostics = new List<Diagnostic>();
-		var symbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
+		var resolution = typeValidator.Resolve(compilation);
+		var diagnostics = new List<Diagnostic>(resolution.Diagnostics);
+		var symbols = resolution.Symbols;
 
 		if (symbols is not null) {
 			var candidates = new List<TemplateCandidate>();
@@ -45,14 +47,10 @@ public sealed partial class ThingAndPluginClassesGenerator : IIncrementalGenerat
 
 			var pairs = Analyzer.BuildTemplatePairs(candidates, diagnostics, symbols);
 			foreach (var pair in pairs) {
-				if (!Renderer.TryRenderPair(pair, out var source)) {
-					continue;
-				}
-				context.AddSource(Renderer.GetHintName(pair), source);
+				context.AddSource(Renderer.GetHintName(pair), Renderer.RenderPair(pair));
 
-				if (Renderer.TryRenderSaveImplementor(pair, out var saveHintName, out var saveSource)) {
-					context.AddSource(saveHintName, saveSource);
-				}
+				var (saveHintName, saveSource) = Renderer.RenderSaveImplementor(pair);
+				context.AddSource(saveHintName, saveSource);
 				if (Renderer.TryRenderDeepCopyImplementor(pair, out var deepCopyHintName, out var deepCopySource)) {
 					context.AddSource(deepCopyHintName, deepCopySource);
 				}

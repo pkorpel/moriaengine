@@ -42,9 +42,28 @@ internal static class AttributeUsageValidator {
 		if (canonicalAttribute is null) {
 			return null;
 		}
-
 		var expectedSimpleName = GetAttributeDisplayString(canonicalAttribute);
 		var expectedCanonicalTypeName = canonicalAttribute.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+		return FindAttributeOnSymbol(symbol, canonicalAttribute, attribute => {
+			var location = attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation()
+				?? symbol.Locations.FirstOrDefault();
+			diagnostics.Add(Diagnostic.Create(
+				AttributeShadowingDescriptor,
+				location,
+				expectedSimpleName,
+				attribute.AttributeClass!.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				expectedCanonicalTypeName));
+		});
+	}
+
+	internal static AttributeData? FindAttributeOnSymbol(
+		ISymbol symbol,
+		INamedTypeSymbol? canonicalAttribute,
+		Action<AttributeData> reportShadowed) {
+		if (canonicalAttribute is null) {
+			return null;
+		}
+		var expectedSimpleName = GetAttributeDisplayString(canonicalAttribute);
 		AttributeData? foundCanonical = null;
 		var canonicalDisplayName = canonicalAttribute.ToDisplayString();
 
@@ -65,14 +84,7 @@ internal static class AttributeUsageValidator {
 				continue;
 			}
 
-			var location = attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation()
-				?? symbol.Locations.FirstOrDefault();
-			diagnostics.Add(Diagnostic.Create(
-				AttributeShadowingDescriptor,
-				location,
-				expectedSimpleName,
-				attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-				expectedCanonicalTypeName));
+			reportShadowed(attribute);
 		}
 
 		return foundCanonical;
