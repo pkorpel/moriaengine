@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,11 +10,6 @@ namespace SteamEngine.Generators.Tests;
 
 public sealed class DeepCopyImplementorGeneratorTests {
 	private const string SharedStubs = "";
-
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
 
 	[Fact]
 	public void ValidDeepCopyableClass_ReportsNoErrors() {
@@ -259,41 +252,7 @@ namespace SecondNamespace {
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
 		}
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new DeepCopyImplementorsGenerator());
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-
-		var scenarioDir = Path.Combine(root, scenarioName);
-		Directory.CreateDirectory(scenarioDir);
-		for (var i = 0; i < sources.Length; i++) {
-			var hintName = sources[i].HintName.Replace('/', '_').Replace('\\', '_');
-			var fileName = string.IsNullOrWhiteSpace(hintName) ? $"generated-{i}.g.cs" : hintName;
-			File.WriteAllText(Path.Combine(scenarioDir, fileName), sources[i].SourceText.ToString());
-		}
+		return GeneratorTestRunner.Run(new DeepCopyImplementorsGenerator(), syntaxTrees, GetMetadataReferences(), scenarioName);
 	}
 
 	private static IEnumerable<MetadataReference> GetMetadataReferences() {
