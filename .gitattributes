@@ -1,0 +1,10 @@
+* text=auto
+
+# Serialized/application and binary formats.
+*.sav binary
+*.mul binary
+*.mul.* binary
+*.staidx binary
+*.staidx.* binary
+*.statics binary
+*.statics.* binary
