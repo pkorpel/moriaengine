@@ -88,7 +88,7 @@ in that holder's own tag table, which is why it persists across saves for free).
 
 **ViewableClass** - the `[ViewableClass]` attribute marking a class for reflection-based
 property discovery by the generic `.info` GM dialog. See
-[ViewableClasses & the `.info` dialog](../02-engine-core/viewable-classes-and-info-dialog.md).
+[The `.info` and `.settings` dialogs](../03-admin-tooling/info-and-settings-dialogs.md).
 
 **CompiledGumpDef** - the base class for a hand-written (as opposed to raw-LScript
 `[dialog ...]`) dialog. See [Dialog framework](../03-admin-tooling/dialogs-framework.md).

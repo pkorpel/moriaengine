@@ -19,5 +19,12 @@ internal sealed class GeneratorAttributeSymbols {
 	internal INamedTypeSymbol LoadSectionAttribute { get; set; } = null!;
 	internal INamedTypeSymbol LoadLineAttribute { get; set; } = null!;
 	internal INamedTypeSymbol SaveAttribute { get; set; } = null!;
+	internal INamedTypeSymbol ViewableClassAttribute { get; set; } = null!;
+	internal INamedTypeSymbol NoShowAttribute { get; set; } = null!;
+	internal INamedTypeSymbol InfoFieldAttribute { get; set; } = null!;
+	internal INamedTypeSymbol ButtonAttribute { get; set; } = null!;
+	internal INamedTypeSymbol ViewDescriptorAttribute { get; set; } = null!;
+	internal INamedTypeSymbol GetMethodAttribute { get; set; } = null!;
+	internal INamedTypeSymbol SetMethodAttribute { get; set; } = null!;
 
 }

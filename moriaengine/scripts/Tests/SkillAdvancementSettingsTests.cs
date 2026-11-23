@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// Server-side helpers for SkillAdvancementSettings write-through tests (#330). Drives the
 	/// settings properties directly (not through a real .settings gump round-trip - the generic
-	/// ViewableClassGenerator-based editing mechanism these properties rely on is independently
+	/// generated-DataView editing mechanism these properties rely on is independently
 	/// verified by every other existing settings category already in production, and no protocol
 	/// test anywhere in this codebase currently drives a real settings-dialog edit end to end;
 	/// building that from scratch was judged not worth it for this one new category - what's

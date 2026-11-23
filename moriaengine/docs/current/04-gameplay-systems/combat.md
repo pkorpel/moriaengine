@@ -4,7 +4,7 @@ Melee/ranged combat lives in `scripts/Basic/skills/Combat/`. The core pieces are
 `WeaponSkillDef` (the skill-sequence state machine driving an attack), `CombatCalculator`
 (armor/weapon stat aggregation), `DamageManager` (the actual damage pipeline and triggers),
 and `CombatSettings` (the GM-tunable `.settings` category, "Combat" - see
-[settings-dialog.md](../03-admin-tooling/settings-dialog.md)).
+[the `.settings` dialog](../03-admin-tooling/info-and-settings-dialogs.md)).
 
 ## The attack loop: `WeaponSkillDef`
 
@@ -262,5 +262,5 @@ multipliers referenced above (`weapAttack`, `weapAttackPvP`, `armorClassP`/`armo
 `swingDamagePvP`/`swingDamageM`, `attackStrModifier`, bare-hands fallback stats, and the mass
 per-weapon-model settings for WeaponType/Speed/Range/Material/etc - these back the
 `.settings` dialog's per-item-model editing grids, not simple scalar fields). See
-[settings-dialog.md](../03-admin-tooling/settings-dialog.md) for how a new field like this
+[the `.settings` dialog](../03-admin-tooling/info-and-settings-dialogs.md) for how a new field like this
 gets added/exposed.

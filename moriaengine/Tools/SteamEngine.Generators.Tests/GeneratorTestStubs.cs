@@ -119,6 +119,8 @@ namespace SteamEngine.Persistence {
 	public static class ObjectSaver {
 		public static object OptimizedLoad_String(string value) => value;
 		public static object OptimizedLoad_SimpleType(string value, System.Type type) => value;
+		public static string Save(object value) => value?.ToString() ?? "";
+		public static object Load(string value) => value;
 		public static void Load(string value, LoadObjectParam callback, string filename, int line, object param) { }
 	}
 

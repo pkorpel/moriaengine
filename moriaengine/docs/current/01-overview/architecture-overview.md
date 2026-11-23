@@ -64,7 +64,7 @@ ATTR = attr_static|attr_magic
 
 Two script-file extensions are used for different *kinds* of content, while template class
 shape is authored in attributed C# and compiled by the
-[ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md):
+[scripting generators](../02-engine-core/code%20generators/scripting-generators.md):
 
 - **`.def`** - *definitions*: the actual `[ItemDef ...]`/`[CharacterDef ...]`/etc blocks
   that create real, loadable content (an item type, an NPC type, a house type...).
@@ -92,12 +92,10 @@ order:
    changed reuses the last build without running `dotnet` at all ("Reused compiled C#
    scripts"; see [scripting-pipeline.md](../02-engine-core/scripting-pipeline.md#reusing-the-last-build)).
 2. Registers the resulting assembly's classes (`ClassManager.InitClasses`).
-3. Runs the **central** code generator (`GeneratedCodeUtil.WriteOutAndCompile`), which
-   writes a handful of files directly into the repo-root `Generated/` folder - one per
-   registered generator (compiled `SteamFunction`/command dispatch tables, trigger-group
-   tables, save/deep-copy implementors, and the reflection metadata backing the generic
-   `.info` dialog). These are logged individually ("Generating compiled ScriptHolders",
-   "Generating compiled Triggergroups", etc).
+3. Runs any registered runtime generators (`GeneratedCodeUtil.WriteOutAndCompile`), which
+   write files into the `Generated/` folder. The built-in generators now use Roslyn.
+   The `.info` DataViews are instead emitted by a Roslyn source generator during step 1
+   and compiled into the Scripts assembly.
 4. Compiles *that* generated code and loads it too.
 
 Neither kind of generated file is checked into source control and regeneration is handled

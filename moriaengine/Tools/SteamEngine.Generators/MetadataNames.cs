@@ -8,6 +8,7 @@ internal static class MetadataNames {
 		internal const string Globals = "SteamEngine.Globals";
 		internal const string IAbstractKey = "SteamEngine.IAbstractKey";
 		internal const string AbstractAccount = "SteamEngine.AbstractAccount";
+		internal const string ViewableClassDataView = "SteamEngine.CompiledScripts.Dialogs.ViewableClassDataView";
 		internal const string ScriptHolder = "SteamEngine.ScriptHolder";
 		internal const string ScriptArgs = "SteamEngine.ScriptArgs";
 		internal const string Plugin = "SteamEngine.Plugin";
@@ -43,5 +44,12 @@ internal static class MetadataNames {
 		internal const string LoadSection = "SteamEngine.Persistence.LoadSectionAttribute";
 		internal const string LoadLine = "SteamEngine.Persistence.LoadLineAttribute";
 		internal const string Save = "SteamEngine.Persistence.SaveAttribute";
+		internal const string ViewableClass = "SteamEngine.CompiledScripts.Dialogs.ViewableClassAttribute";
+		internal const string NoShow = "SteamEngine.CompiledScripts.Dialogs.NoShowAttribute";
+		internal const string InfoField = "SteamEngine.CompiledScripts.Dialogs.InfoFieldAttribute";
+		internal const string Button = "SteamEngine.CompiledScripts.Dialogs.ButtonAttribute";
+		internal const string ViewDescriptor = "SteamEngine.CompiledScripts.Dialogs.ViewDescriptorAttribute";
+		internal const string GetMethod = "SteamEngine.CompiledScripts.Dialogs.GetMethodAttribute";
+		internal const string SetMethod = "SteamEngine.CompiledScripts.Dialogs.SetMethodAttribute";
 	}
 }
