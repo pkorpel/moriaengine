@@ -117,7 +117,7 @@ separate, not-yet-designed feature.
 ## Title ladders
 
 Per-profession title ladders (#165) are profession-owned data and behavior, not a Races
-concern - see [Professions](professions.md#title-ladders-165177).
+concern - see [Professions](professions.md#title-ladders-165177844).
 
 ## A real engine bug found while building this (#166)
 

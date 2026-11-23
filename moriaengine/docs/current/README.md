@@ -13,17 +13,28 @@ code as it stands today and is expected to be kept that way - see the workflow r
 repo-root `CLAUDE.md` ("every code change that touches a documented system must update the
 relevant page here in the same change").
 
-## How to use this
+## Start with your task
 
-Each page is written at a "middle ground" depth: enough to explain how a system actually
-works and *why* it's built the way it is (including real bugs found, alternatives rejected,
-and open gaps), without reproducing exact method signatures the code itself already states
-better. File:line references point at the real, current location of the thing being
-described - if a reference goes stale, that's a documentation bug, fix it.
+| Task | Read in order |
+|---|---|
+| Understand world ownership/startup/shutdown | [Architecture](01-overview/architecture-overview.md) → [Runtime lifecycle](02-engine-core/runtime-lifecycle.md) |
+| Add a content type or field | [Thing model](02-engine-core/thing-model.md) → [Scripting](02-engine-core/scripting-pipeline.md) → [Persistence](02-engine-core/persistence-and-saving.md) |
+| Add optional behaviour | [Trigger architecture](02-engine-core/trigger-system-architecture.md) → [Plugins](02-engine-core/plugins.md) → relevant catalog |
+| Block or replace an action | [Deny chains](02-engine-core/triggers-and-deny-chains.md) → action's source method |
+| Schedule/save state | [Tags and timers](02-engine-core/tags-and-timers.md) → [Persistence](02-engine-core/persistence-and-saving.md) |
+| Investigate latency | [Performance](02-engine-core/performance.md) → dated [research](08-history/research/README.md) |
 
-A lot of the "why" content here was mined from the session history in the repo-root
-`CLAUDE.md` - hard-won design reasoning that would otherwise eventually rotate out of a
-file whose job is session continuity, not permanent reference.
+## Keeping these docs useful
+
+Lead with the current contract: purpose, ownership, flow, extension points and failures.
+Keep each rule in one canonical guide and link to it from related pages. Use source links
+and symbol names rather than relying on line numbers that drift. Update affected docs in
+the same change as code.
+
+Keep dated benchmarks and migration reports under history. Preserve durable rationale in
+the [decision log](08-history/design-decisions-log.md), without repeating session chronology
+in every guide. Legacy and new triggers have separate catalogs with shared dispatch rules.
+The generator subfolder remains a separate reference set.
 
 ## Table of contents
 
@@ -36,39 +47,24 @@ file whose job is session continuity, not permanent reference.
   these docs (ItemDef, TagHolder, FieldValue, DupeItem, plevel, cliloc, etc).
 
 ### 2. Engine core (GameCore)
-- [The Thing model](02-engine-core/thing-model.md) - `Thing`/`AbstractItem`/`AbstractCharacter`,
-  UIDs, the Item/Character class-per-template split, and def-vs-instance data ownership.
-- [Scripting & code generation pipeline](02-engine-core/scripting-pipeline.md) - how
-  attributed script C# and definition files feed runtime/build-time generators, the two
-  kinds of `*.Generated.cs` files, and the regeneration workflow.
-- [ThingAndPluginClasses `Generator`](02-engine-core/code%20generators/thing-and-plugin-classes-generator.md) -
-  build-time Roslyn generator for Thing/Plugin def+instance partial classes and legacy parity notes.
-- [LScript](02-engine-core/lscript.md) - the embedded scripting language used by `.scp`/`.def`
-  content and raw-LScript dialogs: triggers, the `{a,b}` random-range operator, known parser
-  quirks.
-- [Persistence & saving](02-engine-core/persistence-and-saving.md) - how a def's values come
-  from scripts and a save (`FieldValue`'s default and current value), typed fields vs tags,
-  and the generic save/load pipeline.
-- [Tags & timers](02-engine-core/tags-and-timers.md) - `TagKey`/`TagHolder`, `Timer`/
-  `BoundTimer`, why timers are "just tags" and what that buys you for persistence.
-- [Triggers & deny chains](02-engine-core/triggers-and-deny-chains.md) - the
-  `TryCancellableTrigger`/`On_Deny*`/`args.Result` pattern used everywhere an action can be
-  blocked (pickup, drop, trade, equip), and why reach is checked after it.
-- [Plugins](02-engine-core/plugins.md) - objects attached to a thing that hear its triggers,
-  keep data and a timer, and save with it: how to declare, install and use one.
-- [ViewableClasses & the `.info` dialog](02-engine-core/viewable-classes-and-info-dialog.md) -
-  reflection-based property discovery, `[ViewDescriptor]`/`[Button]` injection, and when to
-  use that instead of a dedicated dialog.
-- [Regions](02-engine-core/regions.md) - `Region`/`StaticRegion`/`DynamicRegion`/
-  `FlaggedRegion`, how dynamic regions (houses, ships) take priority over static ones.
-- [Networking & the protocol layer](02-engine-core/networking-protocol.md) - packet
-  read/write, `GameState`, login → character list → enter world, the target-cursor flow.
-- [Performance review](02-engine-core/performance-review.md) - #1161: how EreborNext and Sphere 0.56b handle load,
-  measurements of ours with a populated world and 50 simulated players, ranked problems and fixes, the stress-test setup.
-- [Performance report after the plan](02-engine-core/performance-report-2026-11.md) - #1176: the same measurements
-  after every step of the review's plan, each number beside its "before", where the time goes now, what to do next.
-- [Multithreading with STM](02-engine-core/multithreading-and-stm.md) - #1165: the Shielded library and newer options,
-  measured costs, whether optimistic multithreading would help this server (no), what to do instead if cores are needed.
+
+- [Runtime lifecycle](02-engine-core/runtime-lifecycle.md) — ownership, boot, recompile and shutdown.
+- [Thing model](02-engine-core/thing-model.md) — identity, definitions, instances, placement and deletion.
+- [Scripting pipeline](02-engine-core/scripting-pipeline.md) — compilation, loading and generated outputs.
+- [Generator reference](02-engine-core/code%20generators/generator-architecture-guidance.md) — separate generator documentation.
+- [LScript](02-engine-core/lscript.md) — invocation context, language constraints and commands.
+- [Persistence](02-engine-core/persistence-and-saving.md) — saved state, overrides, load completion and failures.
+- [NPC definition loading](02-engine-core/npc-definition-loading.md) — typed ranges/lists and load order.
+- [Tags and timers](02-engine-core/tags-and-timers.md) — keys, scheduling and timer ownership.
+- [Trigger architecture](02-engine-core/trigger-system-architecture.md) — dispatch, ordering and arguments.
+- [Legacy trigger catalog](02-engine-core/trigger-catalog.md) — inherited event families.
+- [New trigger catalog](02-engine-core/new-trigger-catalog.md) — moriaengine extension events.
+- [Deny chains](02-engine-core/triggers-and-deny-chains.md) — cancellation and permission results.
+- [Plugins](02-engine-core/plugins.md) — attaching, dispatching, removing and saving behaviour.
+- [Viewable classes and `.info`](02-engine-core/viewable-classes-and-info-dialog.md) — inspection metadata and descriptors.
+- [Regions](02-engine-core/regions.md) — hierarchy, placement, flags and movement.
+- [Networking](02-engine-core/networking-protocol.md) — sessions, targeting and packets.
+- [Performance](02-engine-core/performance.md) — current constraints and measurement guidance.
 
 ### 3. Admin & GM tooling
 - [The `.settings` dialog framework](03-admin-tooling/settings-dialog.md) -
@@ -147,3 +143,5 @@ file whose job is session continuity, not permanent reference.
   way" reasoning distilled from session history, organized by system.
 - [Known gaps & tech debt](08-history/known-gaps-and-tech-debt.md) - what's deliberately
   incomplete, deferred, or flagged as needing a future decision.
+
+- [Research snapshots](08-history/research/README.md) — dated performance reports and concurrency analysis.

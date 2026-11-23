@@ -44,7 +44,8 @@ over the wire. Used throughout `DenyResult`/system-message code
 (`DenyResult_ClilocSysMessage`, `GetNameCliloc`, etc).
 
 **UID** - the unique integer identifier every `Thing` gets on creation
-(`Thing.Uid`/`Thing.UidGetItem`/`Thing.UidGetThing`), stable across saves/reloads.
+(`Thing.Uid`/`Thing.UidGetItem`/`Thing.UidGetThing`), preserved across saves/reloads while that object exists. Deleted UIDs can be reused; they
+are not permanent identities for unrelated future objects.
 
 **Region / MultiRegion / FlaggedRegion** - `Region` is the base concept (an area with
 some associated behavior); `StaticRegion` is baked into the map at boot;
@@ -83,7 +84,7 @@ runtime wiring. See
 [ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md).
 
 **BoundTimer** - a `Timer` subclass that lives attached to a specific `TagHolder` (stored
-in that holder's own tag table, which is why it persists across saves for free). See
+in that holder's tag table; persistence also requires supported timer serialization). See
 [Tags & timers](../02-engine-core/tags-and-timers.md).
 
 **ViewableClass** - the `[ViewableClass]` attribute marking a class for reflection-based

@@ -41,7 +41,7 @@ For each input type, the generator emits one generated partial class part on the
 ## Authoring rules
 
 - Trigger-group classes must be declared `partial`.
-- Nested trigger-group classes are ignored (warning).
+- If a trigger-group class is nested, each containing type must also be declared `partial`.
 - Trigger methods are discovered by name prefix `on_`.
 - Trigger names are the method name without `on_`.
 - Trigger names must be unique per trigger-group type (case-insensitive).
@@ -54,12 +54,12 @@ For each input type, the generator emits one generated partial class part on the
 
 - `SEGEN402`: duplicate trigger method names on one trigger-group class.
 - `SEGEN403`: trigger-group class is not declared `partial`.
-- `SEGEN906`: nested target type is ignored.
+- `SEGEN404`: a containing type of a nested trigger-group class is not declared `partial`.
 
 Shared generator diagnostics can also appear (`SEGEN900+`) when required canonical types are missing.
 
 ## Troubleshooting
 
-- If trigger dispatch is missing, check that the class is not abstract/sealed, inherits from `CompiledTriggerGroup`, and is not nested.
+- If trigger dispatch is missing, check that the class is not abstract/sealed and inherits from `CompiledTriggerGroup`.
 - If a trigger method is ignored, confirm it is public instance and starts with `on_`.
 - If generation fails with `SEGEN402`, rename colliding `on_` methods so trigger names are unique.

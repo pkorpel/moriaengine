@@ -138,7 +138,7 @@ no benefit, or create a mirror value that could drift out of sync with the real 
 this engine already derives correctly and cheaply, the flag is a liability, not free
 compatibility - `attr_norepair` (no repair system exists to attach to) is the same
 pattern from a different angle. See
-[Doors](../04-gameplay-systems/doors.md#attr_opened---investigated-closed-not-planned-225).
+[Doors](../04-gameplay-systems/doors.md).
 
 ## Localization: direct `Language`-keyed lookup, not `ResourceManager`+`CultureInfo`
 

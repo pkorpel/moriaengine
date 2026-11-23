@@ -1,121 +1,73 @@
-# Triggers & deny chains
+# Triggers and deny chains
 
-Most actions a character takes on a thing - picking it up, dropping it, equipping it,
-starting a trade - first ask whether it's allowed, through a chain of deny triggers. Each
-step of the chain is the same two-layer dispatch:
+An action gate has two independent outputs: `TriggerResult` controls dispatch, while
+`DenyResult` states whether the action is allowed and can carry a message. They are not
+interchangeable. Read [trigger architecture](trigger-system-architecture.md) for handler order.
 
-1. **`TryCancellableTrigger`** runs the thing's trigger groups and plugins, in the order
-   given in [plugins.md](plugins.md#how-triggers-reach-a-plugin) (registered groups, the
-   thing's `EVENTS`, its plugins, its def's `on=@x` lines and `TEVENTS`, an item's `TYPE`).
-   Returning `1` (`TriggerResult.Cancel`) ends the chain.
-2. **A virtual `On_XxxYyy` C# method** on the thing's class, the compiled override point for
-   the same event.
+## Cancellation versus permission
 
-The steps share one `args` object carrying a `DenyResult` (`args.Result`, allowed to begin
-with). A step denies by setting `args.Result`, and usually cancels as well; the caller reads
-`args.Result` at the end.
+Pickup is a useful concrete example. `CanPickup` runs the deny chain, then calls `CanReach`
+only when dispatch did not cancel and `args.Result` allows the action.
 
-A character's `@denyMove` (#1386, `Character.CheckCanMove`) is a plain cancellable trigger, not
-such a chain: it has no `DenyResult`, whatever returns Cancel holds the character still and
-sends its own message, if any (see [movement-and-collision.md](../04-gameplay-systems/movement-and-collision.md)).
+| Trigger result | Permission result | Pickup behaviour |
+|---|---|---|
+| Continue | Allow | Run the default reach check. |
+| Continue | Deny | Return the denial. |
+| Cancel | Allow | Return allow without the default reach check. |
+| Cancel | Deny | Return the denial without the default reach check. |
 
-`@denyDeath` (#1463, args: the killer) is another: it is raised at the very top of `Character.CauseDeath`, only for a
-living character, and the first handler to return Cancel keeps the character alive. Nothing in `CauseDeath` happens
-then, and `@death` isn't raised; what a caller did before calling it (a blow's damage number, a blast on others) still
-happened. It is Sphere's `@death` RETURN 1; our `@death` itself stays where it was, partway through the death and not
-cancellable, so its handlers keep their order.
-- The character keeps the hits it had before the lethal change: the `Hits` setter asks for the death instead of writing
-  0, so a handler needn't restore them. A handler must not hurt or kill its own holder, which would come back here.
-- The killer argument is `Globals.SrcCharacter` for a death through the `Hits` setter (every blow, spell, poison and
-  bleed): on a timer that is whoever last sent a packet, or null (#1464). Some callers set `Hits = 0` and then call
-  `CauseDeath` again with the right killer, so a handler can be asked twice for one death: it must answer the same.
+Thus returning cancel alone can bypass a default check without denying pickup.
+`DenyResult.Allow` is read-only. To deny, assign a denial object to the payload's `Result`,
+for example `args.Result = DenyResultMessages.Deny_YouCannotPickThatUp`, and choose the
+trigger return according to the enclosing gate's contract.
 
-## DenyResult
+Do not generalise this table to every `deny*` event. New `@denyMove` has no `DenyResult`:
+cancel directly prevents movement. [The new catalog](new-trigger-catalog.md) specifies such cases.
 
-`DenyResult` (`GameCore/DenyResult.cs`) is an abstract base with an `Allow` bool and a
-`SendDenyMessage` method; concrete subclasses decide *how* to tell the player why something
-failed:
+## Participants and order
 
-- `DenyResult_StringSysMessage` - a plain system-message string.
-- `DenyResult_ClilocSysMessage` - a client-side cliloc ID (the client renders the text itself,
-  can be localized without the server knowing the wording).
-- `DenyResult_Allow` / `DenyResult_NoMessage` - allowed, or denied silently.
+Interactive item operations commonly consult the actor, manipulated item and source or
+destination. Each participant may have plugins, scripted handlers and virtual hooks.
 
-`DenyResultMessages` (same file) is a static table of commonly-reused instances -
-`Deny_ThatIsTooFarAway`, `Deny_ContainerClosed`, `Deny_ThatDoesNotBelongToYou`,
-`Deny_YouCannotPickThatUp`, `Deny_ThatIsLocked`, and others. Some of these pre-date this
-session with real callers already (`Deny_ContainerClosed` in `GameCore/
-OpenedContainers.cs`, `Deny_ThatDoesNotBelongToYou` in `scripts/Basic/CharClasses/
-Character.cs`) - but `Deny_YouCannotPickThatUp` had an enum entry and a wire-protocol mapping
-table row (`GameCore/Networking/IncomingPackets.cs`) yet nothing ever actually *returned* it
-anywhere, and `Deny_ThatIsLocked`'s own enum entry (`GameCore/Enums.cs`) was commented out
-entirely. The item ATTR flag work (#217-#225) gave both their first real callers
-(`Item.On_DenyPickup`, `scripts/Basic/ItemClasses/Item.cs`) rather than inventing new
-messages - worth checking this table for an existing fit before adding a new `DenyResult`
-instance.
+| Operation | Main permission participants |
+|---|---|
+| Pickup | Picker, item, source holder/region. |
+| Drop on ground | Actor, item, destination region. |
+| Put in container | Actor, incoming item, destination container. |
+| Equip | Actor, target character, equipment item. |
+| Double click | Actor-side gate where applicable, target-side gate. |
 
-## Two worked examples
+The source holder/region stages of pickup do not propagate cancellation in exactly the same
+way as the picker and item stages; some hooks only mutate the permission result. Follow
+`Trigger_DenyPickupItem` and the source-specific method rather than assuming a uniform loop.
 
-**Pickup** (`AbstractCharacter.CanPickup` -> `Trigger_DenyPickupItem`,
-`GameCore/ThingManipulationTriggers.cs:1055,1065`), in order: the picking character
-(`@denyPickupItem`, `On_DenyPickupItem`), the item (`@denyPickup`, `Item.On_DenyPickup`: a
-house lock, `Flag_NonMovable`, the `attr_` flags), then where the item is: its container
-(`@denyPickupItemFrom`, `Item.On_DenyPickupItemFrom`: `attr_secure`'s access, a trade box's
-owner, corpse looting rules, a container locked against the taker), the character holding
-it (`@denyPickupItemFrom`, `On_DenyPickupItemFrom`), or, on the ground, its region.
+See [legacy trigger names](trigger-catalog.md) for each family. Placement notifications such
+as `@itemEnter` describe transitions; they are not substitutes for permission checks.
 
-**Ground placement** (`AbstractCharacter.TryPutItemOnGround`,
-`ThingManipulationTriggers.cs:1287`): the dropping character, the item
-(`Item.On_DenyPutOnGround`, where `attr_nodroptrade` denies), then the region
-(`Region.Trigger_DenyPutItemOn`); the default reach check there is `CanReachCoordinates`.
+## Interactive versus direct placement
 
-## Permission first, then reach
+An interactive request performs checks before transfer. Low-level placement methods also
+serve loading and trusted server operations and do not necessarily invoke those checks.
+Secure-trade completion directly inserts accepted items rather than replaying the ordinary
+interactive put-in-container gate. Put essential invariants at the appropriate operation
+boundary, not only in a UI-facing deny handler.
 
-```csharp
-public DenyResult CanPickup(AbstractItem item) {
-	TriggerResult triggerResult;
-	DenyResult denyResult = this.Trigger_DenyPickupItem(item, out triggerResult);
-	//default implementation, can be skipped by returning true (cancelling)
-	if (triggerResult != TriggerResult.Cancel && (denyResult.Allow)) {
-		return this.CanReach(item);
-	}
-	return denyResult;
-}
-```
+When a hook returns, participants may have been deleted or moved. Preserve existing
+post-hook validity checks. A successful permission result does not prove transfer happened.
 
-The deny chain decides whether this character may take this item at all: the rules of
-ownership, locks, flags and scripts. `CanReach` (`GameCore/CanSeeImplementation.cs`) then
-decides whether they can from where they are: whether they can see it, distance, line of
-sight, and, for an item in a container, that they have that container open (`OpenedContainers.HasContainerOpenFromAt`), as
-a client can only take from a container it has opened.
+## Writing a gate handler
 
-The reach check is the default, which the chain can replace, as the original comment says:
-a step that cancels while leaving `args.Result` allowed lets the action through without
-`CanReach`, and without the later steps of the chain (a `@denyPickupItem` that cancels skips
-the item's locks and the container's rules too). The steps whose cancel counts are the
-character's `@denyPickupItem`/`On_DenyPickupItem`, the item's `@denyPickup`/`On_DenyPickup`
-and the container's or holder's `@denyPickupItemFrom` trigger; `On_DenyPickupItemFrom` and
-the region's step can only deny, through `args.Result`. A step that denies is answered with
-its own message, wherever the character stands.
+1. Identify the exact operation and receiver.
+2. Check the raising method's payload and interpretation of cancel.
+3. Set a suitable denial result when the API uses one; return the intended dispatch result.
+4. Avoid relying on ambient sender state when the caller supplies an actor explicitly.
+5. Verify allowed, denied and handled paths, including reach checks and participant deletion.
 
-A test of a deny rule therefore checks both sides from the same spot: the action refused for
-the character the rule refuses, and allowed for one it allows. The allowed case proves the
-character is in reach with the container open, so the refusal is the rule's.
+For item-use replacement, cancel often means “handled”, not “forbidden”. Avoid copying a
+handler from a differently shaped event solely because its name also starts with `deny`.
 
-## The one documented exception: SecureTrade bypasses the chain entirely
+## Sources
 
-`SecureTrade.AddItem` (`scripts/Basic/Trading/SecureTrade.cs`) calls `who.PutItemInItem(
-box, 0, 0, false)` directly - "no permission/reach checks - we've already established who is a
-legitimate trade party". This is deliberate (the trade rules - reach, alive, online - are
-checked when the trade starts, see [Trading & secure trade](../04-gameplay-systems/trading-secure-trade.md)),
-but it means nothing routed through the normal `On_DenyPutOnGround`/`On_DenyPickup` chain ever
-runs for an item entering a trade. When `attr_nodroptrade` (#223) needed to block this specific
-path, it needed an *explicit* check inside `AddItem`, which returns a deny result so the caller
-bounces the item back - relying on the deny-trigger chain alone would have silently done
-nothing here. (Taking items OUT of a trade box does go through the chain:
-`Item.On_DenyPickupItemFrom` lets only the box's owner do it, #810.)
-
-## Related
-- [Known gotchas](../07-testing/known-gotchas.md) - testing a refusal next to an allowed case.
-- [Item ATTR flags](../04-gameplay-systems/item-attr-flags.md) - the system that gave several
-  of these `DenyResultMessages` entries their first real callers.
+[ThingManipulationTriggers](../../../GameCore/ThingManipulationTriggers.cs),
+[DenyResult](../../../GameCore/DenyResult.cs),
+[secure trade guide](../04-gameplay-systems/trading-secure-trade.md).

@@ -1,133 +1,58 @@
 # LScript
 
-LScript is the Sphere-derived scripting language embedded in this engine. It lives inside
-trigger bodies in `.scp`/`.def` content files and inside raw-LScript dialog definitions
-(`[dialog ...]` sections) - anywhere game content needs to run logic without being compiled
-C#. Source text is parsed into an AST of `OpNode` subclasses (`GameCore/LScript/OpNode*.cs`)
-and that AST is run once per trigger invocation; `LScriptMain.GetNewSnippetRunner` is the
-entry point used both by real content loading and by this engine's own test harness when it
-needs to execute a raw snippet directly.
+LScript is the embedded Sphere-derived language used in `.scp`/`.def` trigger bodies and
+raw dialog definitions. Source is parsed into an `OpNode` tree reused across invocations;
+`LScriptMain.GetNewSnippetRunner` creates a runner for an arbitrary snippet.
 
-## The `{a,b}` random-range operator only ever produces integers
+## Execution context
 
-`{a,b}` is LScript's inline random-range syntax. Its actual roll happens in
-`OpNode_Final_RandomExpression_Simple_Variable.Run` (`GameCore/LScript/
-OpNode_Final_RandomExpression.cs:71-74`):
+The receiver (`self`), trigger arguments and ambient sender are different concepts.
+`ScriptArgs` belongs to an invocation. A separately invoked `[function]` does not inherit
+the caller's gump-response `argtxt`/`argnum` collections. Read those collections in the response
+handler or pass the needed values explicitly.
 
-```csharp
-int lVal = Convert.ToInt32(this.leftNode.Run(vars), CultureInfo.InvariantCulture);
-int rVal = Convert.ToInt32(this.rightNode.Run(vars), CultureInfo.InvariantCulture);
-```
+Use [trigger architecture](trigger-system-architecture.md) for handler argument mapping.
+Do not assume a timer has a player sender: timer dispatch clears `Globals.Src`.
 
-Both operands are coerced through `Convert.ToInt32` before the roll, unconditionally - there
-is no code path in which this operator can return a genuinely fractional value, regardless
-of what type the operands are. This was verified directly (not assumed) by running `{1,2}`
-2000 times via `LScriptMain.GetNewSnippetRunner` with the compiled AST reused across calls
-(mirroring how a real trigger's AST is reused across a gem's lifetime) and observing a clean
-50/50 split between exactly `1` and `2` - confirming the mechanism is unbiased on a
-two-outcome range, but also confirming it can never produce `1.5`. Any feature that needs a
-real decimal random range (e.g. the spawn-timer decimal-minutes feature, #210) has to roll
-in C# directly and cannot reuse this operator.
+## Language constraints
 
-**Separate the elements with commas when one is an identifier (#763).** Whitespace works as a
-separator only between numbers: `{097f 1 099e 1}` is fine. `{ colors_white 9 color_gray_lt 1 }`
-does not parse, because `name value` is LScript's whitespace assignment (`WhiteSpaceAssigner`
-in `LScript_strict.grammar`). The parser reads `colors_white = 9, color_gray_lt, 1` as one
-element, and the rule needs at least two. Write `{ colors_white, 9, color_gray_lt, 1 }`. See
-`Tests/RandomExpressionParseTests.cs`.
+| Construct | Rule |
+|---|---|
+| `{a,b}` | Integer random range. Both operands are converted through `Convert.ToInt32`; it cannot return fractional values. |
+| Random lists with identifiers | Separate elements with commas: `{ colors_white, 9, color_gray_lt, 1 }`. Whitespace can be parsed as assignment. |
+| `<...>` evaluation | Wraps a dotted expression chain, not general arithmetic. Write `100+arg.i*2`, not `<100+arg.i*2>`. |
+| `for (arg.i, 0, obj.Count)` | Dotted expressions are supported as bounds. |
+| Local/argument name `info` | Conflicts with the grammar; choose another name. The reported parse error can occur later than the cause. |
 
-## Parser quirks found while building content this session
+For fractional random timing, calculate in C# rather than relying on `{a,b}`.
 
-- **The local variable/argument name `info` is reserved/conflicting in LScript's grammar.**
-  `arg info = SpawnInfo(...)` produces confusing, cascading parse errors that appear to point
-  at unrelated code much further down (often a `for`/`endfor` block several lines later) -
-  the real problem is the variable name itself. Renaming to anything else (`spawnData`,
-  `result`) fixes it instantly with no other change. Avoid `info` as an LScript arg/local
-  name.
+## Commands use two parsers
 
-- **A separately-invoked `[function]` does NOT inherit the calling trigger's `argtxt`/
-  `argnum`.** Each function call gets its own fresh `ScriptArgs` (`ArgTxtHolder`/
-  `ArgNumHolder` are populated per-invocation, not inherited by callees). Factoring a
-  gump-response-reading loop out into a shared `[function]` silently reads back zero entries
-  every time - no exception, no error, just empty data - because `argtxt[id]`/`argnum[id]`
-  inside the function resolve against the function's own empty context, not the caller's
-  real gump response. The fix is to inline the loop directly into each response handler
-  rather than factoring it into a shared function.
+`Commands.InvokeCommand` selects a parser using the caller's `MaxPlevel` and
+`Globals.PlevelForLscriptCommands` (`plevelForLscriptCommands`, default 2).
 
-- **The `<...>` eval-bracket syntax can only wrap a `DottedExpressionChain`** (a
-  property/method-access chain like `a.b.c()`), not general arithmetic. `<100+arg.i*2>` is a
-  parse error; the fully bare form `100+arg.i*2` (no brackets at all - `arg.i` resolves fine
-  un-bracketed in an arithmetic position) is correct.
+| Caller | Parsing behaviour |
+|---|---|
+| Below the threshold | `SimpleCommandParser`: everything after the command name is one string; quotes remain literal. |
+| At/above the threshold | Full LScript: evaluates the command against `self`, resolves members and can split/evaluate arguments. |
 
-- **`for (name, start, end)` loop bounds DO accept full dotted expressions** as a bound
-  (e.g. `for (arg.i, 0, someObject.SomeProperty)`) - this part works fine on its own; it's
-  easy to mistakenly blame this syntax for a parse error that's actually caused by something
-  else nearby (see the `info` variable-name issue above - that one has been mistaken for a
-  loop-bounds problem before).
+A command name colliding with a property or method on `self` can resolve as a member read
+instead of invoking the command, even while the log reports success. Choose unambiguous
+`[SteamFunction]` names. `ChooseRace`, rather than `Race`, avoids the `Player.Race` collision.
 
-## `[SteamFunction]` dispatch and the two command parsers
+## Diagnostic command arguments
 
-A chat command (`.something`) is dispatched by `Commands.InvokeCommand`
-(`GameCore/Commands.cs:168-225`), which picks between two completely different parsers based
-on the connecting account's privilege level, compared against `Globals.
-PlevelForLscriptCommands` (ini key `plevelForLscriptCommands`, default `2`,
-`GameCore/Globals.cs:546`):
+A command may receive multiple argument slots, one combined string, or a boxed numeric
+primitive. Do not cast every argument to `string` or assume spaces were split.
 
-- **`commandSrc.MaxPlevel < PlevelForLscriptCommands`** → `SimpleCommandParser.
-  TryRunSnippet` (`GameCore/Commands.cs:243` onward). Its regex is
-  `(?<name>\w+)(\s+(?<arg>.+))?` (`GameCore/Commands.cs:244`) - everything after the command
-  name becomes **one single argument string**, with no splitting on spaces at all, and
-  quotes are not stripped (a quoted argument arrives containing the literal quote
-  characters).
-- **`commandSrc.MaxPlevel >= PlevelForLscriptCommands`** → the full LScript parser
-  (`LScriptMain.GetNewSnippetRunner`, cached per `(self type, code)` pair in
-  `gmCommandsCache`). This genuinely splits multiple space-separated arguments, but it does
-  so by compiling and running the WHOLE command line as an LScript snippet against `self` -
-  meaning full LScript member-resolution (property/method lookup on `self`) is in play, not
-  just argument parsing.
+Existing diagnostic commands often use one comma-joined token, such as
+`.TestTeleportTo 1234,5678,20`, and parse its components explicitly. Quoting word-like values
+is useful on the elevated LScript path to prevent defname resolution, but the simple parser
+retains those quotes. Test with the privilege level that will actually call the command.
 
-### The real collision this causes (#166)
+## Sources
 
-If a command's registered name collides with an existing property or method name on the
-type it runs against, the full-LScript path resolves the bare word as a **property read on
-`self`** instead of invoking the command at all - via LScript's general member-resolution
-path (`GameCore/LScript/OpNode_Lazy_Expression.cs`), not the command dispatcher. There is no
-exception: the snippet "runs" successfully (it evaluates to the property's value), the
-command log shows `'account' commands 'Race'. OK`, and nothing the command was supposed to
-do ever happens. `InvokeCommand` does have a trivial-result check (`GameCore/Commands.cs:
-195`, rejecting `OpNode_Constant`/`OpNode_This`/`OpNode_Object` results as "the command does
-nothing") but a property read doesn't match any of those node types, so it slips through
-clean.
-
-This was found for real: a new `[SteamFunction("Race")]` command silently never ran once
-`Player` gained its own `Race` property, with zero indication anything was wrong beyond the
-command visibly doing nothing. It was root-caused only after a literal first-line
-`Console.WriteLine` inside the command method proved the method body was never entered at
-all. The fix applied was renaming the command (`"Race"` → `"ChooseRace"`), not a root-cause
-engine fix - the underlying shadowing behavior is still live for the next person who picks a
-colliding name. **When adding a new `[SteamFunction]`, pick a name that cannot collide with
-any existing property or method on the type(s) it will be invoked against** (usually
-`Character`/`Player`, since most commands run with `self` bound to the calling character).
-
-## The practical consequence for parsing multiple values in test/diagnostic commands
-
-Because of the split above, a command reading more than one value from its arguments has to
-tolerate **three different shapes** depending on who's calling it and how many values there
-are:
-
-1. A real split-args array (elevated account, genuinely multiple space-separated tokens).
-2. A single un-split combined string (either account tier, when there's effectively one
-   token - or any account under the Simple parser regardless of spaces).
-3. A boxed primitive (elevated account, a literally single numeric argument, which the
-   LScript parser evaluates to a boxed `int`/`double` rather than a string).
-
-The practical workarounds used throughout this codebase's own `Test*` diagnostic commands:
-- **Comma-join multiple values into one token with no spaces** (e.g. `.TestTeleportTo
-  1234,5678,20`) - sidesteps the whole ambiguity, since there's nothing for either parser to
-  split on either way.
-- **Quote word-like arguments, but only for elevated accounts.** The Simple parser doesn't
-  strip quotes, so quoting there corrupts a literal value by leaving the quote characters in
-  it; quoting is only correct on the LScript-parsed path, and only needed there to stop a
-  bareword from being resolved against a live registered object (any word matching a real
-  `AbstractScript` defname - an item, a skill, etc. - gets silently resolved into that live
-  object's own string form instead of staying literal text).
+[Commands](../../../GameCore/Commands.cs),
+[LScript implementation](../../../GameCore/LScript),
+[RandomExpressionParseTests](../../../Tests/RandomExpressionParseTests.cs),
+[testing gotchas](../07-testing/known-gotchas.md).

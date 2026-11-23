@@ -1,199 +1,127 @@
-# Persistence & saving
+# Persistence and saving
+
+The in-memory world is saved as textual sections in `.sav` files. `WorldSaver` coordinates
+saving/loading; `ObjectSaver` delegates categories to registered implementations. UIDs and
+named definitions reconnect the object graph. Persistence is opt-in, not a dump of all fields.
 
 ## Def values: scripts give the default, a save keeps live changes
 
-A def (an `ItemDef`, `NPCDef`, `SkillDef`, a plugin def...) gets its values from two places,
-and they mean different things:
+Scripts establish def defaults before world loading. Saved def sections apply live overrides,
+such as GM edits. `FieldValue` keeps default and current values separately.
 
-- **Script files** (`.def`, `.scp`) say what a def is. They are read at every boot, and again
-  at a script reload, so editing them changes the game.
-- **A save** (`globals.sav`'s def sections) holds only what was changed while the server ran,
-  typically a GM editing a def through `.info`. It is loaded after the scripts.
+| Operation | Effect |
+|---|---|
+| Script load | Establishes the default and current value unless overridden live. |
+| Set `CurrentValue` | Changes the live value, not the script default. |
+| Load saved override | Restores the live value over the script default. |
+| Reload scripts after a live edit | Updates the script default while preserving the live override. |
 
-So a def's value at runtime is the script's value unless someone changed it live, and a
-live change survives a restart without blocking later script edits to other values.
+`ShouldBeSaved()` compares current with default; resetting to the default needs no override.
+Script values can be resolved lazily so references to later definitions can work.
 
-### `FieldValue`
+Custom parsing must establish defaults rather than accidentally create live edits.
+`AbstractDef.SetTag` uses `FieldValue.SetFromCode` during script loading. Unlike
+`SetFromScripts`, it refuses a value already changed live, without updating that default.
+Preserve this distinction when extending custom loaders.
 
-Each def value is a `FieldValue` (`GameCore/FieldValue.cs`), holding a `DefaultValue` and
-a `CurrentValue`:
+## Typed fields and custom syntax
 
-| Where the value comes from | Call | Default | Current | Saved? |
-|---|---|---|---|---|
-| a script line `name = value` | `SetFromScripts` | the script's value | the same, unless changed live | no |
-| a live change (GM, code at runtime) | `CurrentValue` setter | unchanged | the new value | if it differs from the default |
-| a save, after the scripts | `CurrentValue` setter (`LoadField_Delayed`) | the script's value | the saved value | again at the next save, while it differs |
-| a script reload after a live change | `SetFromScripts` | the new script value | kept (the live change wins) | while it differs |
+Use `[DefField]` / `InitTypedField` for class-owned typed configuration, and tags for optional
+extensions. Typed enum loading normalises `|` and `+` separators for `Enum.Parse`; conversion
+also supports numeric values. Avoid duplicating these rules in each def.
 
-(A value a def class parses itself and stores with `SetTag` while loading, below, is an
-exception: `SetFromCode` refuses a field already changed live, so on a reload after a live
-change that line is skipped with a warning and its default isn't updated.)
+Numeric tags can change boxed numeric type after textual round trips: `1.0` may save as `1`.
+Use `ConvertTools` conversions instead of assuming a boxed `double` or `int`. Leading-zero
+numeric text follows Sphere hexadecimal conventions; saved enums retain type information.
 
-`ShouldBeSaved()` (`FieldValue.cs:359`) is "current differs from default", so a field never
-changed live, or changed back, isn't written. A script value is first stored as text and
-resolved on first use (`ResolveTemporaryState`), so a value can name a def defined later.
-
-### Typed fields and tags
-
-A def has two kinds of values:
-
-- **Typed fields**: declared directly in C# with `[DefField]` (or with `InitTypedField` in a
-  hand-written def's constructor, as `ActivableAbilityDef`'s `pluginDef` and `pluginKey`).
-  The field has a C# type, and both script text and saved text are converted to it
-  (`ConvertTools.ConvertTo`). A `double` field is a `double` whatever the text looks like.
-  This is the normal place for a def's own properties (see
-  [ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)).
-- **Tags**: `tag.name = value` lines, and `GetTag`/`SetTag` in code. A tag has no type: the
-  value is whatever the parser makes of the text. A number is an `int` when it looks like
-  one and a `double` otherwise (`ConvertTools.TryParseAnyNumber`), and a saved `double` of
-  `1.0` is written as `1` (text starting with `0`, such as `010`, is read as Sphere hex). So code reading a numeric tag must not test for one exact type:
-  `ConvertTools.ToDouble(tag)` / `ToInt32(tag)` take any number. (Enums are saved with their
-  type's name, #407, so they come back as the enum.)
-
-A value the code itself defines and reads (aggro mode, move rate, a realm) belongs in a typed
-field, not a tag. `NPCDef`'s single values (aggro mode, realm, the taught skill, move rate,
-spell cast range, boss, dragon brain, no-animate, hypnotizable, silence resist, monster types,
-magic horse, serpent form) are typed def fields since #1375, and its {min, max}
-ranges (`int[]` fields, about 108: stats, experience, every monster ability's numbers) since
-#1377. `NPCDef.LoadScriptLine` only turns a range's script form (`min max`, or one value for
-both) into the comma list FieldValue reads an array from, and maps the keywords that differ
-from their field (`str` to `strRange`, `experience` to `experienceWorth`...); a value of another
-shape is warned about and left unset. The dragon, boss, Halda Molle and HCN tomb abilities read
-their numbers by field name through `NPCDef.AbilityTuning`; the rest read the properties. Its add-up lists are array
-fields since #1405, one element per script line: `spellList` (addspell), `summonList`, `battleSummonList`, `lootList`,
-`equipList` with `equipColorList`/`equipNameList` by index, `resourceList` and `foodTypeList` (the last line),
-`skillRangeList`/`resistRangeList` ("Name min max" each) and the raw `can` text. `NPCDef.LoadScriptLine` gathers a keyword's
-lines and gives the field the whole list each time, so the order is the script's; the old properties (`Spells`, `Loot`,
-`StartingEquipment`, `SkillValueRanges`...) read the fields and build their objects once for the array they came from, so a
-GM's change shows. A list field naming defs must not be named as its keyword: a line named as a field loads at once in
-`AbstractDef.LoadScriptLines`, before the other scripts, and the rest wait until all are loaded (an `addspell` line needs
-its spell loaded). `Tests/Protocol/Data/NpcDefLists.txt` holds what every NPCDef's lists read as, and
-`NpcDefFieldsTests.TheListsReadAsTheyDid` compares with it. A list line holding a quote, `<` or `>` is warned about and
-left out (FieldValue would run it through LScript once, fixing a per-spawn expression). Array fields can't be edited from
-the def info dialog (no simple text loader for arrays, as #1377's ranges).
-
-### Code that sets a def value while scripts load
-
-Some def classes parse a script keyword themselves (`NPCDef.LoadScriptLine`'s `"can"`,
-`"experience"`, `"str"`). Such a value is the script's, so it must become the default, not a
-live change. For tags this is `AbstractDef.SetTag` checking `isLoadingFromScript` (set
-around `LoadScriptLines` and `LoadPostponedScriptLines`) and using `FieldValue.SetFromCode`,
-which sets default and current together. Without it every such value was written into each
-save and read back from there as an untyped number (#168).
-
-### Pipe-separated enums
-
-A script line for a typed enum field, such as Sphere's `ATTR = attr_static|attr_magic`, is
-parsed by `FieldValue.ResolveStringWithoutLScript` (`FieldValue.cs:236-243`): `|` and `+`
-become `,`, a `TypeName.` prefix is dropped, and `Enum.Parse` reads it; a number is tried
-after that. `ConvertTools.ConvertTo` (`Common/ConvertTools.cs:132-148`) does the reverse
-order for other values (saved ones, code): a number first, then the names.
+Custom range/list loaders should normalise input into typed fields. Definition references
+that require other sections must remain in the postponed phase. See
+[NPC definition loading](npc-definition-loading.md) for the keyword/backing-field distinction.
 
 ## Generic instance Save/Load
 
-For `Item`/`Character`-family classes, instance fields marked with
-`[SaveableData, CopyableData]` are persisted through generated save/load/deep-copy code,
-with no per-field hand-written persistence code (via the template generator).
+| State | Mechanism |
+|---|---|
+| Thing/Plugin template members | `[SaveableData]`; `[CopyableData]` independently controls copying. |
+| Hand-written objects | `[SaveableClass]`, a supported load path, and `[SaveableData]` members and/or `[Save]` method. |
+| Selected static members | `[HasSavedMembers]` type and `[SavedMember]` members, stored through globals by `StaticMemberSaver`. |
+| Attached tags/timers/plugins | Saved holder references; referenced objects need their own save/load support. |
 
-For hand-written classes that don't use this template pipeline - settings categories
-(`SettingsMetaCategory` subclasses, see
-[../03-admin-tooling/settings-dialog.md](../03-admin-tooling/settings-dialog.md)) and
-`BoundTimer` subclasses (see [tags-and-timers.md](tags-and-timers.md)) are the two recurring
-examples - the same save/load machinery is opted into explicitly via `[SaveableClass]` on the
-class, `[SavedMember]` on fields that should persist, and a `[LoadingInitializer]`
-constructor the loader calls to reconstruct an instance before populating its saved fields.
+`[LoadingInitializer]` marks a parameterless construction path; `[LoadSection]` supports
+section-based construction. `[LoadLine]` handles custom lines and `[LoadingFinalizer]`
+post-load fixups. `[SavedMember]` is not the ordinary instance-field attribute.
+
+The [save generator reference](code%20generators/save-implementor-generator.md) defines valid
+combinations. Being saveable does not itself make an object a root: it must be reachable
+through saved state or an explicit coordinator.
 
 ## Defs made in code, and what a save refers to by name
 
-A saved plugin writes its def as a name (`def=#p_paralyze`), and so does a saved role. Loading resolves the name with
-`AbstractScript.GetByDefname`, so the def has to be registered **before** `WorldSaver.Load` runs. Otherwise
-`Plugin.LoadingFinished` logs `No PluginDef reference loaded ... Deleting.` and the plugin is dropped together with its
-effect.
-
-Defs from `.def`/`.scp` files are registered by `ScriptLoader.Load`, before the world loads. A def made in code must
-exist by then too. The engine's pattern is a static field of the def's own class:
+A saved plugin names its def, for example `def=#p_paralyze`. That def must be registered
+before `WorldSaver.Load()`. Missing definitions can cause effects to be rejected on load.
+Use a script section or a registered static instance on the def's own class:
 
 ```csharp
-public partial class CraftingProcessPluginDef {
-	public static CraftingProcessPluginDef instance = (CraftingProcessPluginDef)
-		new CraftingProcessPluginDef("p_craftingProcess", "C# scripts", -1).Register();
-}
+public static CraftingProcessPluginDef instance = (CraftingProcessPluginDef)
+    new CraftingProcessPluginDef("p_craftingProcess", "C# scripts", -1).Register();
 ```
 
-The def class has a `Bootstrap()`, which `ClassManager.InitClasses` calls right after the scripts compile, before
-anything loads. A template-generated plugin def gets one with `RegisterPluginDef`; a hand-written plugin def writes the same
-(`TimerPluginDef`, `MagicChargePluginDef`); any other def class with such a field has an empty one, "to ensure calling the
-static initialiser" (`PartyDef`, `GuildDef`). The original code assumed a class's static field initializers had run by
-that call; .NET 8 (checked with a small program) runs them only when a field is first read, unless the class has a static
-constructor of its own. #1163 found 11 code-made defs missing when a save loaded (combat queue and tracker, paralyze,
-discordance, warcry, magic charge, ignition, poisoned item, crafting, snooping, party): some on their def classes, missing
-for that reason, some on plugin classes, which nothing reads early on any runtime. #1163 ran every such class's static
-initializer before the load; since #1369 every one is on its def class and `InitClasses` runs the def class's static
-constructor before its `Bootstrap()`.
+`ClassManager.InitClasses` runs the def class's static constructor before its `Bootstrap()`.
+Template-generated plugin defs receive bootstrap wiring; hand-written defs need their
+appropriate registration path. An unrelated class's lazy static field is not a reliable
+way to register a saved def before load.
 
-A def made this way exists before its compiled `On_x` triggers are attached: those are registered when the Generated
-assembly loads, after the scripts', and attached by `PluginDef.Init()` after the world has loaded, as in the original
-engine. So a plugin's compiled trigger doesn't run during the load or `@afterLoad`.
+`CheckCodeMadeDefs` diagnoses misplaced/unregistered definitions after loading. Checking
+late avoids accidentally initialising a missing def early and hiding the bug. Compiled
+plugin handlers attach later through `PluginDef.Init()`; definition existence does not imply
+those handlers are available during loading.
 
-The engine's other pattern, for a class that makes several defs, is a static constructor of its own plus an empty
-`Bootstrap()` "to ensure calling the static initialiser" (`StatModSpellsUtils`, five stat spell plugin defs).
+## Save and load pipeline
 
-A def made in code anywhere else, such as a plugin class's static field, exists only once that field is first read.
-`ClassManager.CheckCodeMadeDefs`, run after the world loads (reading a field makes its def, so earlier it would hide one
-made too late), looks at the static fields of def and plugin classes (not of other classes) and logs an ERROR for such a
-def, for a plugin def whose class has no `Bootstrap()` (a role def's class needs one
-too, which the engine can't check: roles live in the scripts), and for one not registered under its name. `BootLogTests` fails on any ERROR
-and saves a world holding one of every plugin made this way, checking they all come back. Add a new one there.
+Globals and registered coordinator categories are saved. The Thing coordinator begins with
+top-level Things, traverses contained objects and suppresses duplicates. `[EOF]` terminates
+files; missing completion markers fail loading.
 
-## When the world is saved
+Loading restores objects/UIDs and queues unresolved references. `ObjectSaver.LoadingFinished()`
+and `Timer.LoadingFinished()` complete deferred work. `WorldSaver.TryLoad` raises `@afterLoad`
+before those calls: that hook is not proof the whole graph is ready.
 
-- **Automatically**, every `autosaveMinutes` (60 by default), set in the `[files]` section of `steamengine.ini`. 0 turns
-  the autosave off. The timer lives in `scripts/Basic/PeriodicSave.scp`, and a GM's `.nextsave` says when the next save is
-  due. An older `steamengine.ini` without the line gets the default; the line only appears when the file is written anew.
-- **On demand**, with a GM's `.save`.
-- **On a deliberate shutdown** (#1173): an admin's `.exit` (plevel 5), the remote console's `exit`, and a line typed at
-  GameCore's own console all save first (`MainClass.SaveAndExit`). A save that fails or throws only logs a WARNING, and
-  the server goes down anyway: the user chose that over refusing to exit.
-- **Never** on `.exitnosave` (plevel 5; console: `exitnosave`). It logs a WARNING that the world wasn't saved. A crash, a
-  killed process, and the `exit` typed while scripts are waiting for a successful recompile don't save either. A killed
-  process includes `scripts/run-local.sh stop` and `docker stop` (SIGTERM): nothing handles that signal, so they don't save.
+Failed attempts clear partial world state before backup retries. Missing files can produce
+an empty world; other failures are bounded by the load attempt limit. See [runtime lifecycle](runtime-lifecycle.md).
 
-Both commands need plevel 5, the console's too (a console login needs only 4, so a plevel 4 console account can't shut
-down any more). The check runs inside `Globals.Exit`/`ExitNoSave` (`Commands.AuthorizeAnywhereThrow`), not only on the
-typed word: #406 checks only a command's first word, so `.show exitnosave` or `.serv.exit` used to reach them unchecked.
+## Save requests and completion
 
-The run level drops from Running while the shutdown still holds `globalLock`, so a `.save` or an autosave queued behind it
-can't save a world `Main.Exit` is already taking apart.
+| Request | Behaviour |
+|---|---|
+| Autosave | `[files] autosaveMinutes`, default 60; 0 or blank disables. `.nextsave` reports timing. |
+| `.save` / `Globals.Save` / `TrySave` | Synchronous through writing completion. |
+| Deliberate shutdown/recompile | Synchronous save before teardown. |
+| `.exitnosave`, crash, SIGTERM | No new save guaranteed. |
 
-A save that fails leaves a half-written folder. A boot tries the newest folders first and gives up after three
-(`WorldSaver.Load`), so a few failed saves in a row could keep the server from starting. `E_BackupsManager_Global` renames
-the folder of a failed save to `<time>.failed`. That name isn't read as a backup, and the folder stays for an admin to look
-at. Only the folder made for that very save is renamed; when the save failed before making one, nothing is.
+All saves format pooled UTF-8 buffers while the world is held. Autosave's
+`Globals.SaveInBackground` writes those buffers on a worker; it does not serialize live
+mutable objects there. `@afterSave(path, success)` runs after writing under the global lock.
+The next save/recompile/shutdown first calls `FinishPendingWrite`.
 
-Until #1173 a GM's `.exit` in the game did nothing ("This code line does nothing"). A command typed in the game resolves on
-the character typing it, and only the console's commands resolve on `Globals`, so `exit` read as a bare word. `.save` worked
-because it has its own `[SteamFunction]`; `.exit` and `.exitnosave` have one now too (`scripts/Basic/administration/Commands.cs`).
+Logs and `WorldSaver.LastTimings` distinguish pause, total, format and write times. A short
+pause does not mean the disk write has finished. Loading reserves buffer capacity from file
+sizes to reduce allocation on the next save.
 
-A save whose folder can't be made fails the usual way: `@afterSave` still runs with success false, so the autosave timer
-is set again for the next try. A GM's `.save` says when it failed. `autosaveMinutes =` with no number reads as 0, no autosave.
+## Streams and failures
 
-Every save logs where its time went (#1203), one line, `Save timings: pause=... total=... format=... write=...`, then each
-file as `name open format write ms size`. The same numbers are in `WorldSaver.LastTimings` (`SaveTimings`).
+`@beforeSave` / `@beforeLoad` select paths; `@openSaveStream` / `@openLoadStream` can provide
+streams. `E_BackupsManager_Global` handles timestamped backups and retention. Failed save
+folders receive a `.failed` suffix and are excluded from selection. Without a script-supplied
+writer, the fallback uses a temporary file renamed on completion.
 
-Since #1209 a save formats each file into memory (`SaveBuffer`, pooled 1 MB chunks, UTF-8 already) while the world is held,
-then writes the bytes. Since #1360 a load fills that pool up front, to the size of the files it read plus an eighth
-(`SaveBuffer.Reserve`), so the first save after a restart doesn't allocate its buffers while the world waits:
-- **`Globals.Save` / `TrySave`** (`.save`, the shutdown save, the save before a recompile, tests) write before they return,
-  as before.
-- **`Globals.SaveInBackground`** (the autosave, `scripts/Basic/PeriodicSave.scp`) returns after the formatting: the world
-  is held only for that (`pause`), and a worker thread writes the files meanwhile. `@afterSave` runs once they are
-  written, under `globalLock`, with whether they were. The next save, a recompile and the shutdown wait for that write
-  first (`WorldSaver.FinishPendingWrite`).
-- **Writing**: to what `@openSaveStream` handed. `scripts/Basic/BackupsManager.cs`'s `NormalFileManager` opens each `.sav`
-  straight in the save's folder with big buffers (`SaveStream.CreateFileWriter`: a plain `StreamWriter(File.Create)` buffered
-  1K chars and 4 KB, so a 94 MB save was tens of thousands of write calls, half its pause). With no script answering, the
-  engine writes `name.sav.tmp` and renames it only once it's whole.
-- **A failed write fails the save** (#1205): a write, flush or close that throws makes `@afterSave` get false, so
-  BackupsManager sets the folder aside as `.failed` and no backup is pruned. Before, a failed final flush only warned and
-  the truncated file counted.
-- `WorldSaver.TestWriteFailureFile` (tests only) makes one file's write fail.
+Write, flush or close failure fails the save. `@afterSave` receives false, successful-backup
+pruning must not run, and autosave is re-armed. Custom streams do not gain a multi-file atomic
+transaction merely by participating in this pipeline.
+
+## Sources
+
+[WorldSaver](../../../GameCore/Persistence/WorldSaver.cs),
+[ObjectSaver](../../../GameCore/Persistence/ObjectSaver.cs),
+[FieldValue](../../../GameCore/FieldValue.cs), [AbstractDef](../../../GameCore/AbstractDef.cs),
+[StaticMemberSaver](../../../scripts/Utils/Persistence/StaticMemberSaver.cs),
+[BackupsManager](../../../scripts/Basic/BackupsManager.cs).

@@ -1,8 +1,7 @@
 # Repo structure
 
-A directory-by-directory tour, from the engine root (`moriaengine/moriaengine/` in a full
-checkout - the outer `moriaengine/` wrapper is just the session's checkout folder and has
-no code of its own, only session-continuity files like the repo-root `CLAUDE.md`).
+Paths below are relative to the tracked `moriaengine/` directory at the repository root.
+The checkout directory itself can have any name.
 
 ## `GameCore/` - the engine
 
@@ -44,9 +43,8 @@ layer both `GameCore` and `AuxiliaryServer` build on.
 
 ## `scripts/` - game content and gameplay logic
 
-Compiled by GameCore from source on every boot (see
-[Architecture overview](architecture-overview.md#boot-sequence)), not a separately-shipped
-assembly. Subfolders:
+GameCore compiles or reuses a validated compiled assembly at boot (see
+[Runtime lifecycle](../02-engine-core/runtime-lifecycle.md)). Subfolders:
 
 - `scripts/Basic/` - the real, live gameplay systems: `ItemClasses/`, `CharClasses/`,
   `AI/`, `Regions/`, `skills/`, `Trading/`, `Economy/`, `Leveling/`, `Professions/`,
