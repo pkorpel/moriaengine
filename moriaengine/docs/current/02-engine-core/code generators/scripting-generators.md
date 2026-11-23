@@ -180,7 +180,8 @@ This example is intended for character-context calls, not a console call with an
 of receiver.
 
 The registered name comes from `[SteamFunction("name")]`, or the method name when no explicit
-name is supplied. XML documentation becomes the function's description.
+name is supplied. It must start with an ASCII letter or underscore and contain only ASCII
+letters, digits and underscores. XML documentation becomes the function's description.
 
 **Keep in mind:** methods must be `public static`, and function names are globally unique,
 case-insensitively. The first parameter receives `self`; subsequent parameters normally come

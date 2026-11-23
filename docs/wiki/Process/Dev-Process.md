@@ -33,7 +33,7 @@ Install once per clone: `pre-commit install`.
 |---|---|
 | pre-commit | merge conflicts, YAML/JSON syntax, files > 1 MB, private keys, gitleaks, no commit on `main` |
 | commit-msg | `scripts/commit-msg-check.sh`: no `Co-Authored-By`/session trailers, subject ≤ 72 |
-| pre-push | `scripts/test-fast.sh`: build + fast test tier (~30 s) |
+| pre-push | `scripts/test-fast.sh`: build + generator tests + fast test tier (~30 s) |
 
 ## CI (`.github/workflows/dotnet.yml`)
 
@@ -51,8 +51,11 @@ Install once per clone: `pre-commit install`.
 
 | Tier | Where | Run | Time |
 |---|---|---|---|
-| Fast | `moriaengine/Tests/*.cs`, `Tests/Fixtures/` | `scripts/test-fast.sh [filter]` | seconds |
+| Fast | `moriaengine/Tests/*.cs`, `Tests/Fixtures/`, `Tools/SteamEngine.Generators.Tests/` | `scripts/test-fast.sh [filter]` | seconds |
 | Full-boot | `moriaengine/Tests/Protocol/*` (+ server-side helpers in `moriaengine/scripts/Tests/`) | `scripts/test-full.sh [filter]` | ~10 min all |
+
+The optional `test-fast.sh` filter applies to the engine fast tier; generator tests always run in full.
+CI currently runs the engine fast tier but not the generator test project.
 
 The full-boot fixture (`GameServerPairFixture`) starts real AuxiliaryServer +
 GameCore processes on fixed ports 2593/2595. `scripts/test-full.sh` holds a

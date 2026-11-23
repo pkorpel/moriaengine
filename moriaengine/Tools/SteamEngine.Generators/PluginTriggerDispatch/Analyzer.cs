@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 
 namespace SteamEngine.Generators.PluginTriggerDispatch;
 
+// Rejects duplicate trigger names within a plugin before rendering its dispatch.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor TypeMustBePartialDescriptor = new(
 		"SEGEN406",
@@ -24,65 +23,30 @@ internal static class Analyzer {
 		DiagnosticSeverity.Error,
 		true);
 
-	internal static ImmutableArray<PluginTriggerCandidate> Analyze(
-		IReadOnlyCollection<PluginTriggerCandidate> candidates,
-		ICollection<Diagnostic> diagnostics) {
-		var models = ImmutableArray.CreateBuilder<PluginTriggerCandidate>();
-
-		foreach (var candidate in candidates) {
-			if (!TryValidate(candidate, diagnostics)) {
-				continue;
-			}
-
-			models.Add(candidate);
+	internal static PluginTriggerOutput Analyze(PluginTriggerParseResult result) {
+		var candidate = result.Candidate;
+		if (candidate is null) {
+			return new PluginTriggerOutput(null, result.Diagnostics);
 		}
-
-		return models.ToImmutable();
-	}
-
-	private static bool TryValidate(
-		PluginTriggerCandidate candidate,
-		ICollection<Diagnostic> diagnostics) {
-		var duplicateTriggerNames = new HashSet<string>(
-			candidate.TriggerMethods
+		var model = candidate.Model;
+		var duplicateTriggerNames = model.TriggerMethods
 				.GroupBy(method => method.TriggerName, StringComparer.OrdinalIgnoreCase)
 				.Where(group => group.Count() > 1)
-				.Select(group => group.Key),
-			StringComparer.OrdinalIgnoreCase);
+				.Select(group => group.Key)
+				.ToArray();
 
+		if (duplicateTriggerNames.Length == 0) {
+			return new PluginTriggerOutput(model, result.Diagnostics);
+		}
+		var diagnostics = new List<GeneratorDiagnosticData>(result.Diagnostics);
 		foreach (var duplicateTriggerName in duplicateTriggerNames) {
-			diagnostics.Add(Diagnostic.Create(
+			diagnostics.Add(GeneratorDiagnosticData.Create(
 				DuplicateTriggerNameDescriptor,
-				ToLocation(candidate.TypeLocation),
+				candidate.TypeLocation,
 				duplicateTriggerName,
-				candidate.FullyQualifiedTypeName));
+				model.FullyQualifiedTypeName));
 		}
-
-		return duplicateTriggerNames.Count == 0;
-	}
-
-	internal static Diagnostic CreateDiagnostic(PluginTriggerDiagnosticData diagnosticData) {
-		var location = ToLocation(diagnosticData.Location);
-		if (diagnosticData.Kind == PluginTriggerDiagnosticKind.TypeMustBePartial) {
-			return Diagnostic.Create(
-				TypeMustBePartialDescriptor,
-				location,
-				diagnosticData.Argument0);
-		}
-
-		if (diagnosticData.Kind == PluginTriggerDiagnosticKind.NestedTypeNotSupported) {
-			return Diagnostic.Create(
-				NestedTypeValidator.NestedTypeNotSupportedDescriptor,
-				location,
-				diagnosticData.Argument0);
-		}
-
-		throw new InvalidOperationException("Unknown plugin trigger diagnostic kind.");
-	}
-
-	private static Location ToLocation(SourceLocationData location) {
-		var start = new LinePosition(location.StartLine, location.StartCharacter);
-		var end = new LinePosition(location.EndLine, location.EndCharacter);
-		return Location.Create(location.FilePath, new TextSpan(0, 0), new LinePositionSpan(start, end));
+		return new PluginTriggerOutput(null,
+			EquatableArray<GeneratorDiagnosticData>.From(diagnostics));
 	}
 }

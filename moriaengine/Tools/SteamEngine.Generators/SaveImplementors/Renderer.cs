@@ -3,10 +3,11 @@ using System.Text;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Renders persistence implementors from validated models.
 internal static class Renderer {
 	internal static string GetHintName(SaveImplementorModel model) => "SaveImplementors/" + model.GeneratedTypeName + ".g.cs";
 
-	internal static bool TryRender(SaveImplementorModel model, out string source) {
+	internal static string Render(SaveImplementorModel model) {
 		var builder = new StringBuilder();
 		builder.AppendLine("using System;");
 		builder.AppendLine("using SteamEngine.Persistence;");
@@ -20,8 +21,7 @@ internal static class Renderer {
 		AppendSave(builder, model);
 		builder.AppendLine("\t}");
 		builder.AppendLine("}");
-		source = builder.ToString();
-		return true;
+		return builder.ToString();
 	}
 
 	private static void AppendConstructor(StringBuilder builder, SaveImplementorModel model) {

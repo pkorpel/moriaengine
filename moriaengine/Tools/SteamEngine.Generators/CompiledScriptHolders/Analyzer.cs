@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -6,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
+// Builds invocation models and rejects functions with conflicting names.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor SteamFunctionMustBePublicStaticDescriptor = new(
 		"SEGEN101",
@@ -31,50 +31,34 @@ internal static class Analyzer {
 		DiagnosticSeverity.Error,
 		true);
 
+	internal static readonly DiagnosticDescriptor InvalidSteamFunctionNameDescriptor = new(
+		"SEGEN104",
+		"Invalid SteamFunction name",
+		"Steam function name '{0}' must start with an ASCII letter or underscore and contain only ASCII letters, digits, or underscores",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+
 	internal static IReadOnlyList<ScriptHolderModel> BuildModels(
 		IReadOnlyCollection<ScriptHolderCandidate> candidates,
-		ICollection<Diagnostic> diagnostics,
-		RequiredSymbols symbols) {
-		var valid = new List<(ScriptHolderCandidate Candidate, string FunctionName)>();
-		foreach (var candidate in candidates) {
-			if (IsPublicStatic(candidate.MethodSymbol)) {
-				valid.Add((candidate, candidate.FunctionName));
-				continue;
-			}
+		ICollection<GeneratorDiagnosticData> diagnostics) {
+		var conflictingFunctionNames = DuplicateNameValidator.Validate(candidates, candidate => candidate.Model.FunctionName, (name, first, candidate) =>
+			diagnostics.Add(GeneratorDiagnosticData.Create(DuplicateSteamFunctionNameDescriptor, candidate.Location,
+				name, first.DisplayName, candidate.DisplayName)));
 
-			diagnostics.Add(Diagnostic.Create(
-				SteamFunctionMustBePublicStaticDescriptor,
-				candidate.MethodSymbol.Locations.FirstOrDefault(),
-				candidate.MethodSymbol.ToDisplayString()));
-		}
-
-		var conflictingFunctionNames = DuplicateNameValidator.Validate(
-			valid.Select(candidate => (
-				Name: candidate.FunctionName,
-				Symbol: (ISymbol) candidate.Candidate.MethodSymbol)),
-			DuplicateSteamFunctionNameDescriptor,
-			diagnostics);
-
-		var emittedFunctions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		var models = new List<ScriptHolderModel>();
-		foreach (var candidate in valid) {
-			if (conflictingFunctionNames.Contains(candidate.FunctionName)
-				|| !emittedFunctions.Add(candidate.FunctionName)) {
+		foreach (var candidate in candidates) {
+			if (conflictingFunctionNames.Contains(candidate.Model.FunctionName)) {
 				continue;
 			}
 
-			models.Add(BuildModel(candidate.Candidate, candidate.FunctionName, symbols.CanonicalTypes.ScriptArgsType));
+			models.Add(candidate.Model);
 		}
 
 		return models;
 	}
 
-	private static bool IsPublicStatic(IMethodSymbol methodSymbol) {
-		return methodSymbol.IsStatic && methodSymbol.DeclaredAccessibility == Accessibility.Public;
-	}
-
-	private static ScriptHolderModel BuildModel(ScriptHolderCandidate candidate, string functionName, INamedTypeSymbol scriptArgsType) {
-		var method = candidate.MethodSymbol;
+	internal static ScriptHolderModel BuildModel(IMethodSymbol method, string functionName, string? description, INamedTypeSymbol scriptArgsType) {
 		var invocationParameters = new List<InvocationParameterModel>();
 		var parameters = method.Parameters;
 
@@ -87,7 +71,7 @@ internal static class Analyzer {
 
 			if (i == 1
 				&& parameters.Length == 2
-				&& IsScriptArgsAssignable(parameters[i].Type, scriptArgsType)) {
+				&& DispatchModelBuilder.IsScriptArgsAssignable(parameters[i].Type, scriptArgsType)) {
 				var scriptArgs = SymbolEqualityComparer.Default.Equals(parameters[i].Type, scriptArgsType)
 					? "sa"
 					: "(" + parameters[i].Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + ") sa";
@@ -102,29 +86,19 @@ internal static class Analyzer {
 		return new ScriptHolderModel(
 			CreateGeneratedTypeName(functionName),
 			functionName,
-			candidate.Description,
+			description,
 			method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 			method.Name,
 			method.ReturnsVoid,
 			parameters.Length > 0,
-			invocationParameters);
-	}
-
-	private static bool IsScriptArgsAssignable(ITypeSymbol parameterType, INamedTypeSymbol scriptArgsType) {
-		var current = parameterType;
-		while (current is not null) {
-			if (SymbolEqualityComparer.Default.Equals(current, scriptArgsType)) {
-				return true;
-			}
-			current = (current as INamedTypeSymbol)?.BaseType;
-		}
-		return false;
+			EquatableArray<InvocationParameterModel>.From(invocationParameters));
 	}
 
 	private static string CastParameter(ITypeSymbol parameterType, string inputExpression) {
-		if (IsNumericOrDateTime(parameterType)) {
+		if (DispatchModelBuilder.IsNumericOrDateTime(parameterType)) {
 			if (parameterType.TypeKind == TypeKind.Enum) {
 				var enumType = (INamedTypeSymbol) parameterType;
+				// Script functions convert through the enum's underlying type, not always Int32.
 				var underlying = enumType.EnumUnderlyingType ?? enumType;
 				return "(" + parameterType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + ")"
 					+ ConvertExpression(underlying, inputExpression);
@@ -138,28 +112,6 @@ internal static class Analyzer {
 		}
 
 		return inputExpression;
-	}
-
-	private static bool IsNumericOrDateTime(ITypeSymbol typeSymbol) {
-		if (typeSymbol.TypeKind == TypeKind.Enum) {
-			return true;
-		}
-
-		return typeSymbol.SpecialType switch {
-			SpecialType.System_Boolean => true,
-			SpecialType.System_Byte => true,
-			SpecialType.System_SByte => true,
-			SpecialType.System_Int16 => true,
-			SpecialType.System_UInt16 => true,
-			SpecialType.System_Int32 => true,
-			SpecialType.System_UInt32 => true,
-			SpecialType.System_Int64 => true,
-			SpecialType.System_UInt64 => true,
-			SpecialType.System_Single => true,
-			SpecialType.System_Double => true,
-			SpecialType.System_Decimal => true,
-			_ => string.Equals(typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), "global::System.DateTime", StringComparison.Ordinal)
-		};
 	}
 
 	private static string ConvertExpression(ITypeSymbol typeSymbol, string inputExpression) {

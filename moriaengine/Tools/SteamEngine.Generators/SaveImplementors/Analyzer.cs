@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Validates persistence configuration and builds save implementor models.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor InvalidSaveImplementorMemberDescriptor = new(
 		"SEGEN303",

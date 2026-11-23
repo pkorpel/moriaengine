@@ -1,9 +1,9 @@
 #!/bin/sh
-# Build the solution (Debug, and Release to check it compiles) and run the fast test tier (no server processes).
-# Same steps as CI's build-and-unit-test job; the pre-push hook runs it.
+# Build the solution (Debug, and Release to check it compiles) and run generator and fast-tier tests.
+# No server processes are needed for the tests; the pre-push hook runs this script.
 #
-#   scripts/test-fast.sh                # build + fast tier
-#   scripts/test-fast.sh <filter>       # extra dotnet test --filter, ANDed with the tier filter
+#   scripts/test-fast.sh                # build + generator tests + fast tier
+#   scripts/test-fast.sh <filter>       # extra filter for fast-tier tests; generator tests still all run
 set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -29,4 +29,5 @@ filter="FullyQualifiedName!~SteamEngine.Tests.Protocol&FullyQualifiedName!~Steam
 [ $# -ge 1 ] && filter="$filter&($1)"
 cd "$root"
 lean_build_shutdown_compiler   # #1212 - the builds are done, the tests compile nothing
+dotnet test moriaengine/Tools/SteamEngine.Generators.Tests/SteamEngine.Generators.Tests.csproj --no-build -c Debug
 exec dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "$filter"

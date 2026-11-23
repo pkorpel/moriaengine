@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
+// Pairs instance and definition templates, validates them, and builds render models.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor UnsupportedTemplateMemberDescriptor = new(
 		"SEGEN001",
@@ -51,7 +52,7 @@ internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor DuplicateTemplateNameDescriptor = new(
 		"SEGEN010",
 		"Duplicate template name",
-		"Template name '{0}' for family '{1}' is declared by both '{2}' and '{3}' (names must be globally unique, case-insensitive)",
+		"Template name '{0}' is declared by both '{1}' and '{2}' (names must be globally unique, case-insensitive)",
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
@@ -111,7 +112,7 @@ internal static class Analyzer {
 
 		foreach (var pairEntry in symbolPairs) {
 			var pair = pairEntry.Value;
-			var nameKey = pair.Family + "|" + pair.InstanceName;
+			var nameKey = pair.InstanceName;
 			if (!seenByName.TryGetValue(nameKey, out var existing)) {
 				seenByName[nameKey] = (pairEntry.Key, pair);
 				continue;
@@ -124,7 +125,6 @@ internal static class Analyzer {
 				DuplicateTemplateNameDescriptor,
 				GetTemplatePairLocation(pair),
 				pair.InstanceName,
-				pair.Family.ToString(),
 				GetTemplatePairDisplay(existing.Pair),
 				GetTemplatePairDisplay(pair)));
 		}
@@ -228,6 +228,7 @@ internal static class Analyzer {
 			defBaseName = pair.DefSymbol?.BaseType?.Name ?? instanceBaseName + "Def";
 			return true;
 		}
+		// A definition-only template can still supply the missing instance's base name.
 		if (TryGetInstanceBaseNameFromDef(pair.DefSymbol, out instanceBaseName)) {
 			defBaseName = pair.DefSymbol?.BaseType?.Name ?? instanceBaseName + "Def";
 			return true;
@@ -636,6 +637,7 @@ internal static class Analyzer {
 			canonical.ToDisplayString());
 	}
 
+	// Accumulates the declarations and metadata for a possibly incomplete pair.
 	private sealed class TemplatePairSymbols {
 		internal TemplatePairSymbols(string instanceName, string defName, TemplateFamily family, string namespaceName) {
 			InstanceName = instanceName;

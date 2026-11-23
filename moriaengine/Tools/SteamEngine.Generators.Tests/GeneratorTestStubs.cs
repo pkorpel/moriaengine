@@ -13,6 +13,9 @@ namespace SteamEngine {
 		public static void RegisterThingDef(System.Type defType, System.Type instanceType) { }
 	}
 	public class AbstractScript { }
+	public class Plugin {
+		public virtual object Run(TriggerKey tk, ScriptArgs sa) => null;
+	}
 	public class Globals { }
 	public class AbstractAccount { }
 	public interface IAbstractKey { }
