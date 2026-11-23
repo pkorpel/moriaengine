@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Parsed type and attributed symbols awaiting persistence validation.
 internal sealed class SaveImplementorCandidate {
 	internal SaveImplementorCandidate(
 		INamedTypeSymbol symbol,
@@ -30,6 +31,7 @@ internal sealed class SaveImplementorCandidate {
 	internal IReadOnlyList<AttributedMember> SaveableMembers { get; }
 }
 
+// Validated type and member data used to render a save implementor.
 internal sealed class SaveImplementorModel {
 	internal SaveImplementorModel(
 		string generatedTypeName,
@@ -60,6 +62,7 @@ internal sealed class SaveImplementorModel {
 	internal IReadOnlyList<SaveableMemberModel> SaveableMembers { get; }
 }
 
+// Describes the constructor or static method used to create an object while loading.
 internal sealed class SaveFactoryMethod {
 	internal SaveFactoryMethod(
 		SaveFactoryKind kind,

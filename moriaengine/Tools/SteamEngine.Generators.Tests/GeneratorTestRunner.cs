@@ -11,6 +11,7 @@ internal sealed class GeneratorRunSnapshot {
 	internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
 	internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
 	internal IReadOnlyList<Diagnostic> DriverDiagnostics { get; init; } = Array.Empty<Diagnostic>();
+	internal required Compilation OutputCompilation { get; init; }
 }
 
 internal static class GeneratorTestRunner {
@@ -27,7 +28,7 @@ internal static class GeneratorTestRunner {
 			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
+		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out _);
 		var run = driver.GetRunResult();
 		var single = run.Results.Single();
 		if (single.Exception is not null) {
@@ -59,7 +60,8 @@ internal static class GeneratorTestRunner {
 		return new GeneratorRunSnapshot {
 			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
 			Diagnostics = single.Diagnostics.ToList(),
-			DriverDiagnostics = run.Diagnostics.ToList()
+			DriverDiagnostics = run.Diagnostics.ToList(),
+			OutputCompilation = outputCompilation
 		};
 	}
 

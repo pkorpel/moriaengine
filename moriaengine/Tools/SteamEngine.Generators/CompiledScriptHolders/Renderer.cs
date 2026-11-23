@@ -3,10 +3,11 @@ using System.Text;
 
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
+// Renders a compiled holder that invokes the modeled script function.
 internal static class Renderer {
 	internal static string GetHintName(ScriptHolderModel model) => "CompiledScriptHolders/" + model.GeneratedTypeName + ".g.cs";
 
-	internal static bool TryRender(ScriptHolderModel model, out string source) {
+	internal static string Render(ScriptHolderModel model) {
 		var builder = new StringBuilder();
 		builder.AppendLine("namespace SteamEngine.CompiledScripts {");
 		builder.AppendLine($"\tpublic sealed class {model.GeneratedTypeName} : CompiledScriptHolder {{");
@@ -32,8 +33,7 @@ internal static class Renderer {
 		builder.AppendLine("\t\t}");
 		builder.AppendLine("\t}");
 		builder.AppendLine("}");
-		source = builder.ToString();
-		return true;
+		return builder.ToString();
 	}
 
 	private static string ToCSharpStringLiteral(string? value) {

@@ -2,10 +2,11 @@ using System.Text;
 
 namespace SteamEngine.Generators.DeepCopyImplementors;
 
+// Renders deep-copy implementors from validated models.
 internal static class Renderer {
 	internal static string GetHintName(DeepCopyModel model) => "DeepCopyImplementors/" + model.GeneratedTypeName + ".g.cs";
 
-	internal static bool TryRender(DeepCopyModel model, out string source) {
+	internal static string Render(DeepCopyModel model) {
 		var builder = new StringBuilder();
 		builder.AppendLine("namespace SteamEngine.CompiledScripts {");
 		builder.AppendLine($"\tpublic sealed class {model.GeneratedTypeName} : global::SteamEngine.IDeepCopyImplementor {{");
@@ -16,8 +17,7 @@ internal static class Renderer {
 		builder.AppendLine("\t}");
 		builder.AppendLine("}");
 
-		source = builder.ToString();
-		return true;
+		return builder.ToString();
 	}
 
 	private static void AppendHandledTypeProperty(StringBuilder builder, DeepCopyModel model) {

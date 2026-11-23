@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Discovers saveable types and their attributed loading, saving, and data members.
 internal static class Parser {
 	internal static SaveImplementorCandidate? DiscoverCandidate(
 		Compilation compilation,

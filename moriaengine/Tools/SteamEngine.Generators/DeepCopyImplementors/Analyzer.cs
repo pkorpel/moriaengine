@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.DeepCopyImplementors;
 
+// Validates candidates and builds deep-copy implementor models.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor InvalidDeepCopyImplementationDescriptor = new(
 		"SEGEN203",

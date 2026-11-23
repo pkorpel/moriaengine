@@ -15,6 +15,8 @@ using SteamEngine.CompiledScripts;
 
 namespace ScriptSandbox;
 
+public enum Choice : long { None }
+
 public abstract class BaseTriggerGroup : CompiledTriggerGroup {
 	public object on_Login(object self, ScriptArgs args) {
 		return null;
@@ -22,7 +24,10 @@ public abstract class BaseTriggerGroup : CompiledTriggerGroup {
 }
 
 public partial class ArenaTriggerGroup : BaseTriggerGroup {
-	public void On_DClick(object self, int value) {
+	public void On_DClick(object self, int value, bool enabled) {
+	}
+
+	public void On_Choose(object self, Choice choice) {
 	}
 }
 """;
@@ -33,10 +38,12 @@ public partial class ArenaTriggerGroup : BaseTriggerGroup {
 		Assert.Contains("partial class ArenaTriggerGroup", generated);
 		Assert.Contains("switch (tk.LowercaseName)", generated);
 		Assert.Contains("case \"dclick\":", generated);
-		Assert.Contains("this.On_DClick(self, global::System.Convert.ToInt32(sa.Argv[0]));", generated);
+		Assert.Contains("this.On_DClick(self, global::System.Convert.ToInt32(sa.Argv[0]), global::System.Convert.ToBoolean(sa.Argv[1]));", generated);
+		Assert.Contains("this.On_Choose(self, (global::ScriptSandbox.Choice)global::System.Convert.ToInt32(sa.Argv[0]));", generated);
 		Assert.Contains("case \"login\":", generated);
 		Assert.Contains("return this.on_Login(self, sa);", generated);
 		Assert.DoesNotContain("InternalFirstGetDefname", generated);
+		Assert.DoesNotContain(run.OutputCompilation.GetDiagnostics(), d => d.Severity == DiagnosticSeverity.Error);
 	}
 
 	[Fact]
@@ -159,6 +166,30 @@ namespace ScriptSandbox.B {
 
 		var run = RunGenerator(source);
 		Assert.Single(run.Diagnostics, d => d.Id == "SEGEN405");
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void PartialDeclarations_IncludeMethodsFromEveryPart() {
+		const string source = """
+using SteamEngine.CompiledScripts;
+public partial class ArenaTriggerGroup : CompiledTriggerGroup { }
+public partial class ArenaTriggerGroup {
+	public void on_Click(object self) { }
+}
+""";
+		var run = RunGenerator(source);
+		var generated = Assert.Single(run.GeneratedSources);
+		Assert.Contains("this.on_Click(self);", generated);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+	}
+
+	[Fact]
+	public void MissingRequiredTypes_ReportDiagnosticsWithoutGenerating() {
+		var run = GeneratorTestRunner.Run(new CompiledTriggerGroupsGenerator(),
+			new[] { CSharpSyntaxTree.ParseText("public class Unrelated { }") },
+			GeneratorTestRunner.GetRuntimeReferences());
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN901");
 		Assert.Empty(run.GeneratedSources);
 	}
 

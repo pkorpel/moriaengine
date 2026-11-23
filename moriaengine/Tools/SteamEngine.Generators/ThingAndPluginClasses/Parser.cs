@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
+// Discovers template declarations and their fields and persistence metadata.
 internal static class Parser {
 	internal static TemplateCandidate? DiscoverCandidate(
 		Compilation compilation,

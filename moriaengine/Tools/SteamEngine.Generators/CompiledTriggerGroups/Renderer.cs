@@ -1,62 +1,9 @@
-using System.Linq;
-using System.Text;
-
 namespace SteamEngine.Generators.CompiledTriggerGroups;
 
+// Renders the partial trigger-group class and its Run dispatch override.
 internal static class Renderer {
 	internal static string GetHintName(CompiledTriggerGroupModel model) => "CompiledTriggerGroups/" + model.TypeName + ".g.cs";
 
-	internal static bool TryRender(CompiledTriggerGroupModel model, out string source) {
-		var builder = new StringBuilder();
-		var indentLevel = 0;
-		if (model.NamespaceName.Length > 0) {
-			builder.AppendLine($"namespace {model.NamespaceName} {{");
-			indentLevel++;
-		}
-
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel)}partial class {model.TypeName} {{");
-		builder.AppendLine();
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 1)}public override object Run(object self, global::SteamEngine.TriggerKey tk, global::SteamEngine.ScriptArgs sa) {{");
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 2)}switch (tk.LowercaseName) {{");
-
-		if (model.TriggerMethods.Count > 0) {
-			foreach (var method in model.TriggerMethods) {
-				builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 3)}case {DispatchRendererHelpers.ToCSharpStringLiteral(method.TriggerName.ToLowerInvariant())}:");
-				var args = string.Join(", ", method.Parameters.Select((parameter, index) => RenderArgumentExpression(parameter, index)));
-				var invocation = "this." + method.MethodName + "(" + args + ")";
-				if (method.ReturnsVoid) {
-					builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 4)}{invocation};");
-					builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 4)}return null;");
-				} else {
-					builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 4)}return {invocation};");
-				}
-			}
-		}
-
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 3)}default:");
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 4)}return null;");
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 2)}}}");
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel + 1)}}}");
-		builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel)}}}");
-		if (model.NamespaceName.Length > 0) {
-			indentLevel--;
-			builder.AppendLine($"{DispatchRendererHelpers.Indent(indentLevel)}}}");
-		}
-
-		source = builder.ToString();
-		return true;
-	}
-
-	private static string RenderArgumentExpression(DispatchParameterModel parameter, int parameterIndex) {
-		string inputExpression;
-		if (parameterIndex == 0) {
-			inputExpression = "self";
-		} else if (parameter.UsesScriptArgsInput) {
-			inputExpression = "sa";
-		} else {
-			inputExpression = "sa.Argv[" + (parameterIndex - 1) + "]";
-		}
-
-		return DispatchRendererHelpers.ApplyConversion(parameter, inputExpression);
-	}
+	internal static string Render(CompiledTriggerGroupModel model) =>
+		DispatchRenderer.Render(model.NamespaceName, model.TypeName, model.TriggerMethods, hasSelf: true);
 }

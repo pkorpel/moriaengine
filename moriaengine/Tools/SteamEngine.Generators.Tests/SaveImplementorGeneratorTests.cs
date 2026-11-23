@@ -74,6 +74,24 @@ public sealed class ArenaState : ArenaStateBase {
 	}
 
 	[Fact]
+	public void DistinctUnicodeTypeNames_GenerateDistinctImplementors() {
+		const string source = """
+using SteamEngine.Persistence;
+[SaveableClass]
+public sealed class State\u0301 {
+	[LoadingInitializer] public State\u0301() { }
+}
+[SaveableClass]
+public sealed class State_ {
+	[LoadingInitializer] public State_() { }
+}
+""";
+		var run = RunGenerator(nameof(DistinctUnicodeTypeNames_GenerateDistinctImplementors), source);
+		Assert.Equal(2, run.GeneratedSources.Count);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+	}
+
+	[Fact]
 	public void LoadSectionWithLoadingInitializer_ReportsDiagnostic() {
 		const string source = """
 using SteamEngine;

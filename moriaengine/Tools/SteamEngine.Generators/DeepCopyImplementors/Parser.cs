@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.DeepCopyImplementors;
 
+// Discovers attributed deep-copyable types, initializers, and members.
 internal static class Parser {
 	internal static readonly DiagnosticDescriptor MissingDeepCopyImplementationDescriptor = new(
 		"SEGEN205",

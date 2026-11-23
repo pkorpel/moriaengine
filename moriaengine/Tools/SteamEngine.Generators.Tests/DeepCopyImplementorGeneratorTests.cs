@@ -43,6 +43,24 @@ public sealed class SpellState {
 
 
 	[Fact]
+	public void DistinctUnicodeTypeNames_GenerateDistinctImplementors() {
+		const string source = """
+using SteamEngine;
+[DeepCopyableClass]
+public sealed class State\u0301 {
+	[DeepCopyImplementation] public State\u0301(State\u0301 source) { }
+}
+[DeepCopyableClass]
+public sealed class State_ {
+	[DeepCopyImplementation] public State_(State_ source) { }
+}
+""";
+		var run = RunGenerator(nameof(DistinctUnicodeTypeNames_GenerateDistinctImplementors), source);
+		Assert.Equal(2, run.GeneratedSources.Count);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+	}
+
+	[Fact]
 	public void ValidDeepCopyableClass_NoData() {
 		const string source = """
 using SteamEngine;

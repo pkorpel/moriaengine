@@ -617,6 +617,24 @@ public partial class TypeConflictBeaconDef : MagicThingDef {
 	}
 
 	[Fact]
+	public void SameTemplateNameInDifferentFamilies_ReportsConflict() {
+		const string source = """
+namespace A {
+	[ThingTemplate]
+	public partial class Shared : MagicThing { }
+}
+namespace B {
+	[PluginTemplate]
+	public partial class shared : EffectPlugin { }
+}
+""";
+		var run = RunGenerator(nameof(SameTemplateNameInDifferentFamilies_ReportsConflict), source);
+		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN010");
+		Assert.Contains("Shared", error.GetMessage(), StringComparison.OrdinalIgnoreCase);
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
 	public void DuplicateTemplateNamesAcrossNamespaces_ReportConflict() {
 		const string sourceA = """
 namespace A;
