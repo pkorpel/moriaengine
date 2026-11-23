@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewableClasses.Generated.cs" />
     <ProjectReference Include="..\Common\SteamEngine.Common.csproj" />
     <ProjectReference Include="..\Communication\SteamEngine.Communication.csproj" />
     <ProjectReference Include="..\GameCore\SteamEngine.GameCore.csproj" />

@@ -97,7 +97,7 @@ with no per-field hand-written persistence code (via the template generator).
 
 For hand-written classes that don't use this template pipeline - settings categories
 (`SettingsMetaCategory` subclasses, see
-[../03-admin-tooling/settings-dialog.md](../03-admin-tooling/settings-dialog.md)) and
+[../03-admin-tooling/info-and-settings-dialogs.md](../03-admin-tooling/info-and-settings-dialogs.md)) and
 `BoundTimer` subclasses (see [tags-and-timers.md](tags-and-timers.md)) are the two recurring
 examples - the same save/load machinery is opted into explicitly via `[SaveableClass]` on the
 class, `[SavedMember]` on fields that should persist, and a `[LoadingInitializer]`

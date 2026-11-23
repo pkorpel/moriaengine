@@ -130,7 +130,7 @@ retroactively.
 ## `DecaySettings` - three independent rates
 
 `scripts/Basic/ItemClasses/DecaySettings.cs`, a `.settings`-dialog category ("Item
-Decay" - see [The `.settings` dialog framework](../03-admin-tooling/settings-dialog.md)):
+Decay" - see [The `.info` and `.settings` dialogs](../03-admin-tooling/info-and-settings-dialogs.md)):
 
 ```csharp
 [SaveableData] public double playerCorpseDecayMinutes = 10;

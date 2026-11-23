@@ -46,7 +46,7 @@ typed property wrapper (see
 `[SaveableData]` / `[CopyableData]` members, generated code provides save/load/deep-copy
 plumbing on the thing/plugin class.
 
-See [ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)
+See [Scripting generators](code%20generators/scripting-generators.md)
 for the exact generated members and constraints.
 
 ### A def value and a thing's own value
@@ -74,15 +74,12 @@ until #1382.)
 
 ## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
 
-A second, unrelated generation pass currently produces one file directly under the
-`moriaengine/Generated/` folder:
-
-- `ViewableClasses.Generated.cs` - reflection metadata backing the `.info` dialog's property
-  discovery for every `[ViewableClass]` type (see
-  [viewable-classes-and-info-dialog.md](viewable-classes-and-info-dialog.md)).
+A second, unrelated runtime generation mechanism can produce files directly under
+`moriaengine/Generated/`. The built-in generators, including the `.info` DataViews,
+have all moved to Roslyn; the runtime infrastructure and Generated project remain.
 
 This is driven by `GameCore/CompiledScripts/GeneratedCodeUtil.cs`'s `WriteOutAndCompile`,
-which runs a loop of registered `ISteamCSCodeGenerator` instances (one per file above).
+which runs a loop of registered `ISteamCSCodeGenerator` instances.
 Each generator's `WriteSources()` emits CodeDom-built C# from whatever it has already
 collected via reflection; `ClassManager` (`GameCore/CompiledScripts/ClassManager.cs`) is what
 actually does that reflection - after the scripts assembly is compiled, it walks
@@ -90,24 +87,28 @@ actually does that reflection - after the scripts assembly is compiled, it walks
 
 `[SteamFunction]` dispatch is now generated at scripts compile time by the Roslyn source
 generator `Tools/SteamEngine.Generators/CompiledScriptHolders/Generator.cs` (see
-`docs/current/02-engine-core/code generators/compiled-script-holder-generator.md`), not by the
+`docs/current/02-engine-core/code generators/scripting-generators.md`), not by the
 CodeDom `Generated/*.Generated.cs` pass.
 
 Deep-copy implementors are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/DeepCopyImplementors/Generator.cs`. See
-`docs/current/02-engine-core/code generators/deep-copy-implementor-generator.md`.
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
 
 Save implementors for `[SaveableClass]` types are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/SaveImplementors/Generator.cs`. See
-`docs/current/02-engine-core/code generators/save-implementor-generator.md`.
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
 
 Compiled trigger groups are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/CompiledTriggerGroups/Generator.cs`. See
-`docs/current/02-engine-core/code generators/compiled-trigger-group-generator.md`.
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
 
 Plugin trigger dispatch is now generated at scripts compile time by
 `Tools/SteamEngine.Generators/PluginTriggerDispatch/Generator.cs`. See
-`docs/current/02-engine-core/code generators/plugin-trigger-dispatch-generator.md`.
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
+
+The `.info` DataViews are emitted at scripts compile time by
+`Tools/SteamEngine.Generators/ViewableClasses/Generator.cs`; see
+[The `.info` and `.settings` dialogs](../03-admin-tooling/info-and-settings-dialogs.md).
 
 ### One boot does both
 
@@ -115,13 +116,10 @@ A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
 
 1. the scripts project is compiled and loaded (including build-time template generation);
 2. `ClassManager` reflects over it, feeding each generator;
-3. `GeneratedCodeUtil.WriteOutAndCompile` writes the two central `Generated/*.Generated.cs` files and
+3. `GeneratedCodeUtil.WriteOutAndCompile` runs any registered runtime generators and
    compiles the Generated project against the scripts assembly just loaded, then loads it.
 
-So a new `[SteamFunction]`, `[ViewableClass]` member, or template field/attribute change is
-picked up by the next boot, once. Checked 2026-11-10: with all central generated
-`Generated/*.Generated.cs` files deleted, one boot came up, passed `BootLogTests` and wrote
-them again.
+So a new `[ViewableClass]` member is picked up by the next Scripts compilation.
 
 ## Reusing the last build
 

@@ -575,7 +575,7 @@ public partial class FakeTemplateBeacon : MagicThing {
 	public void MissingTemplateAttributeDeclaration_ReportsDiagnostic() {
 		var run = RunGeneratorWithoutGeneratorAbstractions(
 			nameof(MissingTemplateAttributeDeclaration_ReportsDiagnostic));
-		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
+		Assert.Equal(23, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
 		Assert.Empty(run.GeneratedSources);
 	}
 

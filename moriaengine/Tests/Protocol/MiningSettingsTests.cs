@@ -6,7 +6,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// GM-tunable Mining settings (#337) - confirms the write-through mechanism itself for a
 	/// representative sample across all 4 sub-systems (#333-336), not the generic
-	/// ViewableClassGenerator-based dialog editing plumbing underneath (already proven by
+	/// generated-DataView dialog editing plumbing underneath (already proven by
 	/// every other existing settings category, same scope decision as #330).
 	/// </summary>
 	[Collection(MiningSettingsCollection.Name)]

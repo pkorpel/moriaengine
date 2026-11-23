@@ -6,7 +6,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// GM-tunable skill-advancement-rate settings (#330) - confirms the write-through mechanism
 	/// itself (a settings-category edit actually changes the live data other code reads), not
-	/// the generic ViewableClassGenerator-based dialog editing plumbing underneath it (already
+	/// the generic generated-DataView dialog editing plumbing underneath it (already
 	/// proven by every other existing settings category in production, and independently
 	/// verified by reading the generator's own codegen directly before relying on it - see
 	/// SkillAdvancementSettings.cs's own doc comment).
