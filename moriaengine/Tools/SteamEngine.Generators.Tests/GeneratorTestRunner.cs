@@ -20,12 +20,13 @@ internal static class GeneratorTestRunner {
 		IEnumerable<SyntaxTree> syntaxTrees,
 		IEnumerable<MetadataReference> references,
 		string? scenarioName = null,
-		bool flatDump = false) {
+		bool flatDump = false,
+		bool allowUnsafe = false) {
 		var compilation = CSharpCompilation.Create(
 			"GeneratorTestAssembly",
 			syntaxTrees,
 			references,
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: allowUnsafe));
 
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out _);

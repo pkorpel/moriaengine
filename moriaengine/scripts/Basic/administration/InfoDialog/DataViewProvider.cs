@@ -26,7 +26,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	public static class DataViewProvider {
 		public static Hashtable dataViewsForTypes = new Hashtable();
 
-		public static SortedList<Type, IDataView> dataViewsForbaseClasses = new SortedList<Type, IDataView>(TypeHierarchyComparer.instance);
+		public static List<IDataView> dataViewsForbaseClasses = new List<IDataView>();
 
 		/// <summary>Will find dataview for given type.</summary>
 		public static IDataView FindDataViewByType(Type handledType) {
@@ -34,13 +34,19 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			if (view != null) {
 				return view;
 			}
-			foreach (KeyValuePair<Type, IDataView> pair in dataViewsForbaseClasses) {
-				if (pair.Key.IsAssignableFrom(handledType)) {
-					dataViewsForTypes[handledType] = pair.Value;
-					return pair.Value;
+			// Several base views can match, e.g. one for IList and one for a list class
+			// implementing it; the most derived handled type wins.
+			IDataView best = null;
+			foreach (IDataView candidate in dataViewsForbaseClasses) {
+				if (candidate.HandledType.IsAssignableFrom(handledType)
+						&& (best == null || best.HandledType.IsAssignableFrom(candidate.HandledType))) {
+					best = candidate;
 				}
 			}
-			return null;
+			if (best != null) {
+				dataViewsForTypes[handledType] = best;
+			}
+			return best;
 		}
 
 		/// <summary>Register a new hook to ClassManager - it will send the examined Types here and we will care for next.</summary>
@@ -61,7 +67,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					IDataView idv = (IDataView) ci.Invoke(new object[0] { });
 
 					if (idv.HandleSubclasses) {
-						dataViewsForbaseClasses.Add(idv.HandledType, idv);
+						dataViewsForbaseClasses.Add(idv);
 					} else {
 						dataViewsForTypes.Add(idv.HandledType, idv);
 					}

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Globalization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -35,12 +36,37 @@ internal readonly record struct SourceLocationData(
 internal sealed record GeneratorDiagnosticData(
 	DiagnosticDescriptor Descriptor,
 	SourceLocationData Location,
-	EquatableArray<string> Arguments) {
+	EquatableArray<string> Arguments,
+	string? FormattedMessage = null) {
 	internal static GeneratorDiagnosticData Create(DiagnosticDescriptor descriptor, SourceLocationData location, params string[] arguments) {
 		return new GeneratorDiagnosticData(descriptor, location, EquatableArray<string>.From(arguments));
 	}
 
+	internal static GeneratorDiagnosticData FromDiagnostic(Compilation compilation, Diagnostic diagnostic) {
+		return new GeneratorDiagnosticData(
+			diagnostic.Descriptor,
+			SourceLocationData.From(compilation, diagnostic.Location),
+			EquatableArray<string>.Empty,
+			diagnostic.GetMessage(CultureInfo.InvariantCulture));
+	}
+
 	internal Diagnostic ToDiagnostic(Compilation compilation) {
-		return Diagnostic.Create(Descriptor, Location.ToLocation(compilation), Arguments.Select(argument => (object) argument).ToArray());
+		var location = Location.ToLocation(compilation);
+		if (FormattedMessage is null) {
+			return Diagnostic.Create(Descriptor, location, Arguments.Select(argument => (object) argument).ToArray());
+		}
+
+		var messageFormat = FormattedMessage.Replace("{", "{{").Replace("}", "}}");
+		var descriptor = new DiagnosticDescriptor(
+			Descriptor.Id,
+			Descriptor.Title.ToString(CultureInfo.InvariantCulture),
+			messageFormat,
+			Descriptor.Category,
+			Descriptor.DefaultSeverity,
+			Descriptor.IsEnabledByDefault,
+			Descriptor.Description.ToString(CultureInfo.InvariantCulture),
+			Descriptor.HelpLinkUri,
+			Descriptor.CustomTags.ToArray());
+		return Diagnostic.Create(descriptor, location);
 	}
 }

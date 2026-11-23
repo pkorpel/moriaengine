@@ -6,7 +6,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// GM-tunable Lumberjacking settings (#425) - confirms the write-through mechanism itself
 	/// for a representative sample across the sub-systems (#422/#431/#424), not the generic
-	/// ViewableClassGenerator-based dialog editing plumbing underneath (already proven by every
+	/// generated-DataView dialog editing plumbing underneath (already proven by every
 	/// other existing settings category, same scope decision as MiningSettingsTests/#337).
 	/// </summary>
 	[Collection(LumberjackingSettingsCollection.Name)]

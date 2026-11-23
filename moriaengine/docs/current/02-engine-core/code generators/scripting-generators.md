@@ -6,7 +6,7 @@ the class or method and mark what the engine should expose; the project generate
 supporting code during compilation.
 
 You do not run a generator manually or edit its output. Add your code to the scripts project
-and use the normal build/startup workflow. This guide covers the six build-time generators
+and use the normal build/startup workflow. This guide covers the build-time generators
 from a script author's perspective.
 
 ## Choose by what you are building
@@ -19,6 +19,7 @@ from a script author's perspective.
 | Handle events in a shared C# trigger group | Compiled TriggerGroup | `partial` class deriving from `CompiledTriggerGroup`, public `On_*` methods |
 | Save a separate data object with the world | Save Implementor | `[SaveableClass]`, `[SaveableData]`, loading constructor |
 | Copy a separate data object through the engine's copy system | DeepCopy Implementor | `[DeepCopyableClass]`, `[CopyableData]`, copy initializer |
+| Show and edit an object's fields in `.info` | Viewable classes | `[ViewableClass]`, `[ViewDescriptor]`, `[NoShow]`, `[Button]`; see [The `.info` and `.settings` dialogs](../../03-admin-tooling/info-and-settings-dialogs.md) |
 
 The examples below belong in the scripts project. They assume this file header; omit imports
 that your particular example does not use:

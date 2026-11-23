@@ -73,6 +73,13 @@ internal sealed class RequiredTypeValidator {
 		var loadSectionAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.LoadSection, ref allPresent);
 		var loadLineAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.LoadLine, ref allPresent);
 		var saveAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.Save, ref allPresent);
+		var viewableClassAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.ViewableClass, ref allPresent);
+		var noShowAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.NoShow, ref allPresent);
+		var infoFieldAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.InfoField, ref allPresent);
+		var buttonAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.Button, ref allPresent);
+		var viewDescriptorAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.ViewDescriptor, ref allPresent);
+		var getMethodAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.GetMethod, ref allPresent);
+		var setMethodAttribute = ResolveAttribute(compilation, diagnostics, MetadataNames.AttributeTypes.SetMethod, ref allPresent);
 
 		var thingType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.Thing, ref allPresent);
 		var abstractScriptType = ResolveCanonicalType(compilation, diagnostics, MetadataNames.EngineTypes.AbstractScript, ref allPresent);
@@ -142,10 +149,18 @@ internal sealed class RequiredTypeValidator {
 			LoadingFinalizerAttribute = loadingFinalizerAttribute!,
 			LoadSectionAttribute = loadSectionAttribute!,
 			LoadLineAttribute = loadLineAttribute!,
-			SaveAttribute = saveAttribute!
+			SaveAttribute = saveAttribute!,
+			ViewableClassAttribute = viewableClassAttribute!,
+			NoShowAttribute = noShowAttribute!,
+			InfoFieldAttribute = infoFieldAttribute!,
+			ButtonAttribute = buttonAttribute!,
+			ViewDescriptorAttribute = viewDescriptorAttribute!,
+			GetMethodAttribute = getMethodAttribute!,
+			SetMethodAttribute = setMethodAttribute!
 		};
 
-		return new RequiredSymbols(canonicalTypes, attributes);
+		var viewableClassDataViewType = compilation.GetTypeByMetadataName(MetadataNames.EngineTypes.ViewableClassDataView);
+		return new RequiredSymbols(canonicalTypes, attributes, viewableClassDataViewType);
 	}
 
 	private static INamedTypeSymbol? ResolveAttribute(

@@ -204,7 +204,7 @@ namespace Shadow {
 		var run = RunGeneratorWithoutSharedStubs(
 			nameof(MissingSteamFunctionAttributeDeclaration_ReportsDiagnostic),
 			string.Empty);
-		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
+		Assert.Equal(23, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
 		Assert.Contains(run.Diagnostics, d => d.GetMessage().Contains("SteamEngine.CompiledScripts.SteamFunctionAttribute", StringComparison.Ordinal));
 		Assert.Equal(22, run.Diagnostics.Count(d => d.Id == "SEGEN901"));
 		Assert.Empty(run.GeneratedSources);
