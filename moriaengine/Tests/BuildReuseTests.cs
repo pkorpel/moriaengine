@@ -6,8 +6,8 @@ using Xunit;
 
 namespace SteamEngine.Tests {
 	/// <summary>
-	/// #1358 - a boot reuses the last build of a script project when nothing it depends on changed: generated sources are
-	/// written only when their text changes, a fingerprint covers the project's inputs, a stamp ties it to the output file.
+	/// #1358 - a boot reuses the last build of the scripts project when nothing it depends on changed: a fingerprint
+	/// covers the project's inputs, a stamp ties it to the output file.
 	/// </summary>
 	public sealed class BuildReuseTests : IDisposable {
 		private readonly string dir = Path.Combine(Path.GetTempPath(), "moria-buildreuse-" + Guid.NewGuid().ToString("N"));
@@ -25,21 +25,6 @@ namespace SteamEngine.Tests {
 			Directory.CreateDirectory(Path.GetDirectoryName(path));
 			File.WriteAllText(path, text);
 			return path;
-		}
-
-		[Fact]
-		public void AGeneratedSourceIsWrittenOnlyWhenItsTextChanges() {
-			string path = Path.Combine(this.dir, "A.Generated.cs");
-			Assert.True(MsBuildLauncher.WriteSourceIfChanged(path, "class A {}\r\n"));
-			DateTime old = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-			File.SetLastWriteTimeUtc(path, old);
-
-			Assert.False(MsBuildLauncher.WriteSourceIfChanged(path, "class A {}\r\n"));
-			Assert.Equal(old, File.GetLastWriteTimeUtc(path));
-
-			Assert.True(MsBuildLauncher.WriteSourceIfChanged(path, "class A { int x; }\r\n"));
-			Assert.NotEqual(old, File.GetLastWriteTimeUtc(path));
-			Assert.Equal("class A { int x; }\r\n", File.ReadAllText(path));
 		}
 
 		[Fact]

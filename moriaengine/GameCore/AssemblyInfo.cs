@@ -46,3 +46,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 [assembly: InternalsVisibleTo("SteamEngine.Tests")]
+[assembly: InternalsVisibleTo("SteamEngine.Generators.Tests")]
