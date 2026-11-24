@@ -243,7 +243,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// whole folder" mistake flagged elsewhere this session) and mistook the unrelated,
 		/// fully-commented-out legacy OldInfo in Commands.cs for the only candidate, nearly
 		/// shipping a duplicate SteamFunction named "Info" that collided with the real one at
-		/// the generated-code level (CS0101 in Generated/CompiledScriptHolders.Generated.cs).
+		/// generated-source level (CS0101 from colliding generated script-holder names).
 		/// No production code needed to change at all: D_Info's generated data view
 		/// already includes every public property on a [ViewableClass]-marked type with no
 		/// per-property opt-in needed - Player already carries

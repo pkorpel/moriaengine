@@ -110,6 +110,19 @@ For each generator change:
 
 For refactors, generator tests are mandatory to verify behavior parity while reducing duplication.
 
+Each generator has two test classes in `Tools/SteamEngine.Generators.Tests/`:
+
+- `<Generator>GeneratorTests`: unit tests on stub engine types (`GeneratorTestStubs`), covering
+  every diagnostic and the generated text. Missing-required-type diagnostics need stubs.
+- `<Generator>GeneratorRuntimeTests`: compiles sandbox source against the real GameCore and
+  Scripts assemblies through `EngineRuntimeHarness`, loads the result and calls the generated
+  code through the engine's own types (`CompiledTriggerGroup.Run`, `Plugin.Run`,
+  `CompiledScriptHolder.Run`, `DeepCopyFactory.GetCopy`, `ISaveImplementor` save and
+  `LoadSection`, `IDataView`, def fields and `PluginDef.Create`). The Thing test constructs a real
+  `Item` subclass, so its class fixture points `Globals` at a temp directory and registers the
+  engine's simple savers; it checks the generated `LoadLine` directly, because loading a whole
+  Thing is world-load machinery.
+
 ## Implementation style notes
 
 - Prefer simple helper signatures over callback stacks.
