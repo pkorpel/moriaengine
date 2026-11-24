@@ -340,9 +340,15 @@ lookup and virtual calls.
 A member error leaves the rest of the view generated, so a successful build is not proof
 that every declaration made it in - fix all diagnostics.
 
-Tests: `Tools/SteamEngine.Generators.Tests/ViewableClassGeneratorTests.cs` covers every
-diagnostic and feature; the `.info` protocol tests in `Tests/` are an extra regression
-layer.
+Tests, in `Tools/SteamEngine.Generators.Tests/`:
+
+- `ViewableClassGeneratorTests.cs`: unit tests on stub engine types, covering every
+  diagnostic and the generated text.
+- `ViewableClassGeneratorRuntimeTests.cs`: compiles against the real GameCore and Scripts
+  (via the shared `EngineRuntimeHarness`), then drives the generated views through the real
+  `IDataView`/`IDataFieldView` (fields, edits, buttons, descriptors, labels).
+
+The `.info` protocol tests in `Tests/` are an extra regression layer.
 
 ## Related
 

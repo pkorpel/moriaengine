@@ -3,9 +3,8 @@ using System.Threading;
 using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
-	/// <summary>#1358 - a boot with no script change reuses the last build of both script assemblies (scripts and Generated)
-	/// instead of running dotnet build, and the reused assemblies work: a script command answers and a world save, which
-	/// goes through the Generated save implementors, completes.</summary>
+	/// <summary>#1358 - a boot with no script change reuses the last scripts assembly instead of running dotnet build,
+	/// and the reused assembly works: a script command answers and a world save completes.</summary>
 	[Collection(BuildReuseCollection.Name)]
 	public class BuildReuseBootTests {
 		private const string Account = "buildreuse";
@@ -13,15 +12,14 @@ namespace SteamEngine.Tests.Protocol {
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 
 		[Fact]
-		public void ASecondBootReusesBothScriptAssemblies() {
+		public void ASecondBootReusesScriptsAssembly() {
 			using (var first = new GameServerPairFixture()) {
-				// the first boot builds or reuses, whichever the last run left; it leaves both stamps for the second
+				// The first boot builds or reuses the scripts assembly for the next boot.
 				Assert.Contains("C# scripts", first.GameOutputSnapshot(), StringComparison.Ordinal);
 			}
 			using (var second = GameServerPairFixture.BootPreservingSaves()) {
 				string output = second.GameOutputSnapshot();
 				Assert.True(output.Contains("Reused compiled C# scripts, no source changed.", StringComparison.Ordinal), output);
-				Assert.True(output.Contains("Reused compiled Generated C# scripts, no generated code changed.", StringComparison.Ordinal), output);
 				Assert.DoesNotContain("Done compiling", output, StringComparison.Ordinal);
 
 				using (var client = Connect(second, "Build Reuser")) {
