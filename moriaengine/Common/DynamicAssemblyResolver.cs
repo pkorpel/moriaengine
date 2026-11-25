@@ -22,9 +22,9 @@ using System.Reflection;
 namespace SteamEngine.Common {
 
 	/// <summary>
-	/// The script-compilation pipeline (CompilerInvoker/GeneratedCodeUtil) loads freshly-compiled
-	/// assemblies from a different directory than the running process's own (scripts/Generated get
-	/// built to their own bin/ folders, not GameCore's). On .NET Framework, Assembly.LoadFile's
+	/// The script-compilation pipeline (CompilerInvoker) loads the freshly-compiled scripts
+	/// assembly from a different directory than the running process's own (scripts get built to
+	/// their own bin/ folder, not GameCore's). On .NET Framework, Assembly.LoadFile's
 	/// "LoadFrom context" would transparently fall back to an already-loaded assembly of the same
 	/// simple name elsewhere in the AppDomain. .NET Core's AssemblyLoadContext model doesn't do this
 	/// automatically - each Assembly.LoadFile call gets its own isolated context that only probes its

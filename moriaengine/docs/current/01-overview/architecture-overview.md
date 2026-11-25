@@ -92,18 +92,11 @@ order:
    changed reuses the last build without running `dotnet` at all ("Reused compiled C#
    scripts"; see [scripting-pipeline.md](../02-engine-core/scripting-pipeline.md#reusing-the-last-build)).
 2. Registers the resulting assembly's classes (`ClassManager.InitClasses`).
-3. Runs any registered runtime generators (`GeneratedCodeUtil.WriteOutAndCompile`), which
-   write files into the `Generated/` folder. The built-in generators now use Roslyn.
-   The `.info` DataViews are instead emitted by a Roslyn source generator during step 1
-   and compiled into the Scripts assembly.
-4. Compiles *that* generated code and loads it too.
 
-Neither kind of generated file is checked into source control and regeneration is handled
-by running GameCore when source inputs change. `build.ps1` automates this
-(`Invoke-ScriptGeneration`); see
-[Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md) for the
-full mechanics and the manual regeneration steps when `pwsh` isn't available.
+All generated code comes from Roslyn source generators that run inside step 1's compile
+(and inside any plain `dotnet build`); none of it is written to disk or checked in. See
+[Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md).
 
-Once script compilation and code generation succeed, GameCore loads the actual game world
+Once script compilation succeeds, GameCore loads the actual game world
 (regions, accounts, saved items/characters from the most recent `saves/<date>/<time>/`
 snapshot) and starts listening for connections.

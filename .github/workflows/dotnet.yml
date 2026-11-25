@@ -53,9 +53,8 @@ jobs:
 
       # Single source of truth for "how to build this solution" - the same
       # script contributors run locally on Windows/macOS/Linux. It handles
-      # restore, the 7 standalone-buildable projects, generating
-      # scripts/Generated from .ct templates (GameCore's own boot sequence),
-      # and the final full-solution build.
+      # restore, the solution build (source generators included) and the
+      # first boot that writes the default steamengine.ini.
       - name: Build
         shell: pwsh
         run: ./build.ps1 -Configuration Debug

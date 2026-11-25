@@ -322,7 +322,6 @@ namespace SteamEngine {
 			LocManager.ForgetInstancesOfType(typeof(ScriptedLocStringCollection));
 			//CompilerInvoker.UnLoadScripts();//bye-bye to all stored assemblies and such that are not core-related
 			ClassManager.ForgetScripts();//bye-bye to all storec types
-			GeneratedCodeUtil.ForgetScripts();//bye-bye to scripted code generators
 											  //TriggerGroup.UnloadAll();//bye-bye to all triggergroups and their triggers
 			ScriptHolder.ForgetAllFunctions();//bye-bye to all scripted functions
 			ThingDef.ForgetAll();//clear thingdef constructors etc.

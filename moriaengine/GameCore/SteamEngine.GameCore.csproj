@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.CodeDom" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="LScript\generate.bat" />
     <None Remove="LScript\LScript_strict.grammar" />
   </ItemGroup>

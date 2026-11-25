@@ -34,15 +34,14 @@ namespace SteamEngine.Common {
 	/// single invocation only evaluates properties, it does not actually run the Build target (confirmed - the
 	/// combined form exits 0 and happily reports a TargetPath whose file was never written). So: a real build
 	/// first, then a second (cheap, already-up-to-date) invocation to read back the resolved output path without
-	/// needing to know or hardcode each project's AssemblyName pattern (the scripts/Generated projects derive
-	/// theirs from $(ScriptsAssemblyNumber), which varies per compile).
+	/// needing to know or hardcode each project's AssemblyName pattern (the scripts project derives
+	/// its from $(ScriptsAssemblyNumber), which varies per compile).
 	/// </remarks>
 	public static class MsBuildLauncher {
 		/// <param name="inputsFingerprint">#1358: when given, and the project's stamp says its last build had these inputs
 		/// and its output is still the file it wrote, that output is returned without running dotnet at all.</param>
-		/// <param name="buildProjectReferences">false = -p:BuildProjectReferences=false, the referenced projects' outputs are taken as they are.</param>
 		public static string Compile(string seRootPath, BuildType build, string projectRelativePath, int? scriptAssemblyNumber = null,
-				string inputsFingerprint = null, bool buildProjectReferences = true) {
+				string inputsFingerprint = null) {
 			var projectPath = Path.GetFullPath(Path.Combine(seRootPath, projectRelativePath));
 			string stampPath = StampPath(projectPath, build, scriptAssemblyNumber);
 			LastCompileReused = false;
@@ -60,9 +59,6 @@ namespace SteamEngine.Common {
 			commonArgs.Append(" --nologo -v quiet");
 			if (scriptAssemblyNumber.HasValue) {
 				commonArgs.Append(" -p:ScriptsAssemblyNumber=").Append(scriptAssemblyNumber.Value);
-			}
-			if (!buildProjectReferences) {
-				commonArgs.Append(" -p:BuildProjectReferences=false");
 			}
 
 			RunDotnet("build " + commonArgs, projectPath);
@@ -139,19 +135,6 @@ namespace SteamEngine.Common {
 				file.Length.ToString(CultureInfo.InvariantCulture),
 				file.LastWriteTimeUtc.Ticks.ToString(CultureInfo.InvariantCulture)
 			});
-		}
-
-		private static readonly Encoding sourceEncoding = new UTF8Encoding(false, true); // as StreamWriter's default: no BOM, throws on bad text
-
-		/// <summary>Writes a generated source file only if its text differs from what's there (#1358). Rewriting the same
-		/// text gave it a new write time, and MSBuild then recompiled the whole project on every boot.</summary>
-		/// <returns>True if the file was written.</returns>
-		public static bool WriteSourceIfChanged(string path, string text) {
-			if (File.Exists(path) && File.ReadAllText(path, sourceEncoding) == text) {
-				return false;
-			}
-			File.WriteAllText(path, text, sourceEncoding);
-			return true;
 		}
 
 		private static string RunDotnet(string arguments, string projectPath) {
