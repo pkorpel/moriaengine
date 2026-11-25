@@ -1,6 +1,6 @@
 #!/bin/sh
-# Make a worktree next to this checkout from origin/main, without the dormant 800 MB
-# of Cruncher/ and OldUpdater/ (sparse checkout; uo-files/ stays, the build needs it).
+# Make a worktree from origin/main without archive/ or the old Cruncher/ and
+# OldUpdater/ paths (sparse checkout; uo-files/ stays, the build needs it).
 #
 #   scripts/worktree-add.sh <n>-<slug>       # → ../moria-<n>, new branch <n>-<slug>
 #   scripts/worktree-add.sh --verify <n>     # → ../moria-verify-<n>, detached at origin/main
@@ -21,6 +21,7 @@ fi
 
 git -C "$root" fetch -q origin
 git -C "$root" worktree add --no-checkout "$@" "$wt" origin/main
-git -C "$wt" sparse-checkout set --no-cone '/*' '!/Cruncher/' '!/OldUpdater/'
+git -C "$wt" sparse-checkout set --no-cone \
+  '/*' '!/archive/' '!/Cruncher/' '!/OldUpdater/'
 git -C "$wt" checkout -q
 echo "$wt"
