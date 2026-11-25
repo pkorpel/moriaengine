@@ -303,6 +303,6 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 
 ## Related
 
-- [scripting-pipeline.md](scripting-pipeline.md): generation pipeline and `Generated/`.
+- [scripting-pipeline.md](scripting-pipeline.md): script compilation and code generation.
 - [triggers-and-deny-chains.md](triggers-and-deny-chains.md): trigger dispatch.
 - [persistence-and-saving.md](persistence-and-saving.md): def values and saves.

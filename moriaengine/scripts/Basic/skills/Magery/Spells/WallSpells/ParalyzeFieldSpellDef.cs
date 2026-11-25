@@ -30,8 +30,8 @@ namespace SteamEngine.CompiledScripts {
 	/// WallSpellDef only produces a passive blocking wall with zero paralyze behavior. This class
 	/// adds the missing per-tile mechanism via WallSpellDef's own OnWallItemCreated extension
 	/// point: each created field tile gets a recurring BoundTimer (plain hand-written class, same
-	/// pattern as SpellEffectItem's own SpellEffectTimer - avoids needing a new Plugin subclass
-	/// and its generated code-behind) that periodically scans for characters standing on it and
+	/// pattern as SpellEffectItem's own SpellEffectTimer - avoids adding a separate plugin/template
+	/// type) that periodically scans for characters standing on it and
 	/// reuses the already-working ParalyzeEffectPluginDef.Paralyze (from Circle V's shipped
 	/// Paralyze spell) to paralyze them.</summary>
 	[ViewableClass]

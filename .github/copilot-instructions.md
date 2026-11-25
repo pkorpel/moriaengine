@@ -7,14 +7,13 @@
   - `GameCore/`: gameplay, world simulation, scripting, server logic
   - `AuxiliaryServer/`: login server and remote-console support
   - `Common/`, `Communication/`, `ThirdParty/`: shared infrastructure and dependencies
-  - `Generated/` and `scripts/Generated/`: generated source output, created during the build
   - `Tests/`: xUnit suite; includes the fast unit tier and the slower full-boot protocol tests
   - `RemoteConsole/`: Windows GUI remote-console client
 - The canonical solution file is `moriaengine/SteamEngine.sln`.
 
 ## Build, test, and validation
 
-Use the repo’s build script as the source of truth for local builds. The script is cross-platform and handles the one-time script-generation step.
+Use the repo’s build script as the source of truth for local builds. The script is cross-platform and handles the first boot that writes the default `steamengine.ini`.
 
 ```bash
 cd moriaengine
@@ -67,19 +66,19 @@ The engine is a multi-process UO shard server:
 - `GameCore` does the actual shard simulation: NPCs, world state, combat, skills, scripting, persistence.
 - `AuxiliaryServer` handles login and remote console plumbing for the GameCore process.
 - `RemoteConsole` is a WinForms client used to connect to the server; it is optional and Windows-only at runtime.
-- `scripts/` contains the game’s scripting and generated outputs. The generated code comes from `.ct` templates and `[SteamFunction]`-annotated methods; it is not meant to be edited by hand.
+- `scripts/` contains the game’s C# scripts. Roslyn source generators in `Tools/SteamEngine.Generators/` add generated code (templates, `[SteamFunction]` dispatch, save/copy implementors, `.info` views) at compile time; none of it is written to disk.
 - `uo-files/` contains checked-in Ultima Online assets used by the server at runtime (`map0.mul`, `tiledata.mul`, etc.). These aren’t build artifacts; they are required for a real boot.
 
 The build script is intentionally opinionated and is part of the architecture:
 
 - it restores and builds the solution
-- it regenerates `scripts/Generated` when templates or script sources changed
+- it runs GameCore once to write the default `steamengine.ini` when there is none
 - it patches `steamengine.ini` to point `mulPath` at `../uo-files` on fresh clones
 - it can run the server locally with `./build.ps1 -Run Both`
 
 ## Key repo conventions and gotchas
 
-- `scripts/Generated` and other generated files are runtime output, not hand-maintained sources. If you change a `.ct` template or update a script with `[SteamFunction]`, rebuild so the generator refreshes the generated code.
+- Generated code is compiler output, not source. To change it, change the generator in `Tools/SteamEngine.Generators/` or the attributed script, then rebuild.
 - `steamengine.ini` and `steamaux.ini` are local runtime config files, not intended to be committed. The build script auto-adjusts the default mul path to the repo’s checked-in `uo-files/` folder.
 - The repo intentionally keeps a local “first-boot” flow: `GameCore` writes default config and exits once, then you adjust settings and start again.
 - `scripts/run-local.sh` is the local shard runner. It starts `AuxiliaryServer` on port `2593` and `GameCore` on port `2595`; the full-boot tests use the same ports and expect them to be free.
