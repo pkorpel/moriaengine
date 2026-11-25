@@ -7,7 +7,7 @@ Last reviewed: 2026-11-18
 - `main` is the only long-lived branch. It takes changes only through pull requests.
 - Issue branches: `<n>-<slug>` (e.g. `12-poison-tick-damage`), made from
   `origin/main` in their own worktree `../moria-<n>` by `scripts/worktree-add.sh`
-  (sparse: no `Cruncher/`, `OldUpdater/`, ~230 MB instead of ~660 MB).
+  (sparse: `archive/` is excluded; `uo-files/` stays for the build).
 - PRs are squash-merged; the remote branch is deleted after merge.
 
 ## The merge gate

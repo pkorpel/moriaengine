@@ -12,11 +12,13 @@ Current focus: taking the engine from "boots cleanly" to a basic playable shard 
 |---|---|
 | [`moriaengine/`](moriaengine/) | **The server itself.** GameCore (gameplay) + AuxiliaryServer (login/remote-console) + the LScript scripting engine and all shard content. This is the actively developed part - see [`moriaengine/README.txt`](moriaengine/README.txt) for how to build and run it. |
 | [`uo-files/`](uo-files/) | Real Ultima Online client data (`map0.mul`, `statics0.mul`, `tiledata.mul`, `sound.mul`, `multi.mul/idx`, `Bodyconv.def`) that GameCore reads at runtime (`mulPath` in `steamengine.ini`). Not something you build - just data the server needs to fully boot. |
-| [`MoriaUpdater/`](MoriaUpdater/) | Python client auto-updater/patcher: distributes updated game files to players as binary diffs instead of full re-downloads, packaged into a Windows `.exe` via py2exe. |
-| [`OldUpdater/`](OldUpdater/) | The predecessor to `MoriaUpdater/` - same purpose (Python-based binary-diff auto-updater), superseded by it. |
-| [`Cruncher/`](Cruncher/) | A standalone C#/.NET Framework WPF desktop tool (circa 2011) for offline analysis of UO save files and server connection logs. |
+| [`archive/`](archive/) | Legacy code, documentation and images kept for reference, not needed by the active build. |
+| [`archive/code/ProcessRestarter/`](archive/code/ProcessRestarter/) | An unused process-restart tool, removed from `SteamEngine.sln`. |
+| [`archive/code/MoriaUpdater/`](archive/code/MoriaUpdater/) | Python client auto-updater/patcher: distributes updated game files to players as binary diffs instead of full re-downloads, packaged into a Windows `.exe` via py2exe. |
+| [`archive/code/OldUpdater/`](archive/code/OldUpdater/) | The predecessor to `MoriaUpdater/` - same purpose (Python-based binary-diff auto-updater), superseded by it. |
+| [`archive/code/Cruncher/`](archive/code/Cruncher/) | A standalone C#/.NET Framework WPF desktop tool (circa 2011) for offline analysis of UO save files and server connection logs. |
 
-**`MoriaUpdater/`, `OldUpdater/`, and `Cruncher/` are dormant** - no real changes since this repo's initial import, not covered by CI, and not part of the ongoing net8 port/shard-recovery effort. They're kept here for reference (and because `MoriaUpdater`/`OldUpdater` are what players actually used to patch their clients), but if you're here to work on the server, [`moriaengine/`](moriaengine/) is almost certainly what you want.
+**`MoriaUpdater/`, `OldUpdater/`, and `Cruncher/` are dormant** - no real changes since this repo's initial import, not covered by CI, and not part of the ongoing net8 port/shard-recovery effort. They're archived for reference (and because `MoriaUpdater`/`OldUpdater` are what players actually used to patch their clients), but if you're here to work on the server, [`moriaengine/`](moriaengine/) is almost certainly what you want.
 
 ## Getting started
 

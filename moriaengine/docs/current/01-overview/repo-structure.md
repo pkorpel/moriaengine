@@ -21,7 +21,7 @@ subfolders:
   [Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md).
 - `Tools/SteamEngine.Generators/` - Roslyn source generators, including Thing/Plugin class
   template generation. See
-  [ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md).
+  [Scripting generators](../02-engine-core/code%20generators/scripting-generators.md).
 - `GameCore/LScript/` - the embedded scripting language's parser/interpreter. See
   [LScript](../02-engine-core/lscript.md).
 - `GameCore/Persistence/` - the generic save/load machinery. See
@@ -44,9 +44,8 @@ layer both `GameCore` and `AuxiliaryServer` build on.
 
 ## `scripts/` - game content and gameplay logic
 
-Compiled by GameCore from source on every boot (see
-[Architecture overview](architecture-overview.md#boot-sequence)), not a separately-shipped
-assembly. Subfolders:
+GameCore builds the C# scripts when needed or reuses the last build at boot (see
+[Architecture overview](architecture-overview.md#boot-sequence)). Subfolders:
 
 - `scripts/Basic/` - the real, live gameplay systems: `ItemClasses/`, `CharClasses/`,
   `AI/`, `Regions/`, `skills/`, `Trading/`, `Economy/`, `Leveling/`, `Professions/`,
@@ -89,17 +88,16 @@ Per-language localization override data, organized by source assembly
 `English/`). See [Localization](../05-localization.md) for which of these folders is
 actually read by running code (it's not all of them, and not obviously).
 
-## `AuxiliaryServer/`, `ProcessRestarter/`, `SphereShardConverter/`, `RemoteConsole/`
+## `AuxiliaryServer/`, `SphereShardConverter/`, `RemoteConsole/`
 
 Separate executables/tools, each covered on its own page:
 [AuxiliaryServer](../06-tooling/auxiliary-server.md),
 [SphereShardConverter](../06-tooling/sphere-shard-converter.md),
-[RemoteConsole](../06-tooling/remote-console.md). `ProcessRestarter` is a small watchdog
-utility without its own doc page yet.
+[RemoteConsole](../06-tooling/remote-console.md).
 
 ## `ThirdParty/`
 
-Vendored third-party dependencies.
+Vendored client encryption (Twofish and UO login encryption) and the Grammatica parser runtime, both used by GameCore.
 
 ## `saves/`
 
@@ -109,11 +107,9 @@ Treated as scratch/gitignored-in-spirit in practice even though a baseline snaps
 falls back to. See [Test infrastructure](../07-testing/test-infrastructure.md) for why
 stale directories here are a recurring source of confusing test failures.
 
-## `docs/` vs `docs/current/`
+## Documentation
 
-`docs/` itself (this file's great-grandparent directory) is the **original SteamEngine
-project's own legacy material** - LScript language notes, CVS history, old Erebor planning
-pages, trigger lists - kept for historical reference, not maintained, not guaranteed
-accurate against the current code. `docs/current/` (where this page lives) is the
-documentation set you're reading now - see the repo-root `AGENTS.md` for the rule
-that keeps it in sync with ongoing code changes.
+`moriaengine/docs/current/` (where this page lives) documents the current systems.
+`moriaengine/docs/wip/` holds drafts. Historical SteamEngine material is in the repo-root
+`archive/docs/`; it is not maintained against the current code. See `AGENTS.md` for the rule
+that keeps current documentation in sync with code changes.

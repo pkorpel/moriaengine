@@ -74,6 +74,43 @@ head 14%, neck 6%, back 18%, chest 18%, arms 14%, hands 7%, legs 17%, feet 6%. S
 chest layer alone counts 36%. A shield (`LayerNames.Hand2`) adds its armor scaled by the
 wearer's `Parry` instead. Mind defense from armor counts on players only.
 
+Body-part weights and the layers that cover each part (`GetBodyPartsOfLayer` and
+`bodyPartCoverage`):
+
+| Body part | Weight | Covering layers |
+|---|---|---|
+| head | 14% | Helmet |
+| neck | 6% | Collar |
+| back | 18% | Cape, Robe, Chest, HalfApron, Shirt, Tunic |
+| chest | 18% | Cape, Robe, Chest, HalfApron, Shirt, Tunic |
+| arms | 14% | Shirt, Tunic, Arms |
+| hands | 7% | Gloves |
+| legs | 17% | Pants, Skirt, Shoes, Leggins |
+| feet | 6% | Pants, Skirt, Shoes, Leggins |
+
+So a piece can count on several parts, and a weaker piece loses a part to a stronger one: a
+tunic with AC 25 and arms with AC 30 give `25 * (0.18 + 0.18) + 30 * 0.14 = 13.2`, not
+`25 * (0.18 + 0.18 + 0.14) + 30 * 0.14`. This is the scheme described on the SphereServer
+forums. The weights come from Sphere's race body part table (#860).
+
+The SphereServer forums give different weights for Sphere 55i. The two tables probably come from
+different Sphere versions; which version the code's table comes from is unknown. The 55i weights,
+and the layers it mapped onto each part:
+
+| Body part | Weight | Covering layers |
+|---|---|---|
+| head | 10% | Helm |
+| neck | 5% | Collar |
+| back | 10% | Shirt, Chest, Tunic, Cape, Robe |
+| trunk | 30% | Shirt, Chest, Tunic, Robe |
+| arms | 10% | Arms, Cape, Robe |
+| hands | 10% | Gloves |
+| legs | 20% | Pants, Skirt, HalfApron, Robe, Legs |
+| feet | 5% | Shoes, Legs |
+
+There a robe alone covered back, trunk, arms and legs, so a robe with AC 25 gave
+`25 * (0.1 + 0.3 + 0.1 + 0.2) = 17.5`.
+
 `CalculateCombatWeaponValues` (line 368) resolves the equipped weapon (hand1, falling back
 to hand2) into a `CombatWeaponValues` struct - range, strike-start/stop range, piercing,
 projectile type/anim, and the swing `delay` (see [Swing formulas](#swing-formulas-860)). For

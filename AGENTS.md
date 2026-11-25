@@ -9,12 +9,14 @@ whatever tool you use.
 
 ## Repository shape
 
-- Active work is in `moriaengine/`. `Cruncher/`, `MoriaUpdater/` and `OldUpdater/` are dormant.
+- Active work is in `moriaengine/`. The dormant `ProcessRestarter/`, `Cruncher/`,
+  `MoriaUpdater/` and `OldUpdater/` projects are in `archive/code/`.
 - `moriaengine/GameCore/` holds gameplay, world simulation, scripting and persistence.
   `AuxiliaryServer/` is the login server and remote console. `Common/`, `Communication/` and
   `ThirdParty/` are shared infrastructure.
-- `moriaengine/scripts/` holds game scripts in C# and LScript (`.def`/`.scp`). Every server boot compiles
-  them from disk. `scripts/converted/` is **generated** by `SphereShardConverter` from the Erebor archive.
+- `moriaengine/scripts/` holds game scripts in C# and LScript (`.def`/`.scp`). At boot, GameCore builds
+  the C# scripts when needed or reuses the last build. `scripts/converted/` is **generated** by
+  `SphereShardConverter` from the Erebor archive.
 - `moriaengine/Tools/SteamEngine.Generators*` holds the Roslyn source generators. They add the generated
   code (templates, `[SteamFunction]` dispatch, save/copy implementors, `.info` views, trigger dispatch) at
   compile time, and none of it is written to disk. To change generated code, change the generator or the
@@ -23,11 +25,11 @@ whatever tool you use.
 - `moriaengine/Tests/` is xUnit: the fast unit tier, plus `Tests/Protocol/`, which boots real servers.
   `moriaengine/scripts/Tests/` holds the server-side test commands.
 - `uo-files/` holds the UO client files the server needs at runtime. They are checked in, not build output.
-- `moriaengine/bin/` holds 19 tracked legacy tools and libraries, not build output (whatever
-  `.gitignore`'s `[Bb]in/` suggests). Never delete it.
+- `moriaengine/bin/` holds the checked-in Grammatica parser generator used by
+  `GameCore/LScript/generate.bat`; it is not build output. See `moriaengine/bin/README.md`.
 - Docs: `moriaengine/docs/current/` is the reference for how each system works and why.
+  `moriaengine/docs/wip/` holds drafts; `archive/docs/` holds legacy material.
   `docs/wiki/` covers process and runbooks. `docs/history/` holds the old CLAUDE.md work log, read-only.
-  The older `moriaengine/docs/*` files are legacy and not reliable.
 
 ## Build, test, run
 
