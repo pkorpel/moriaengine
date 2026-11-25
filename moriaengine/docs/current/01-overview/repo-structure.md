@@ -2,7 +2,7 @@
 
 A directory-by-directory tour, from the engine root (`moriaengine/moriaengine/` in a full
 checkout - the outer `moriaengine/` wrapper is just the session's checkout folder and has
-no code of its own, only session-continuity files like the repo-root `CLAUDE.md`).
+no code of its own, only repo-wide files like `AGENTS.md`, `CLAUDE.md`, `.claude/` and `docs/`).
 
 ## `GameCore/` - the engine
 
@@ -115,5 +115,5 @@ stale directories here are a recurring source of confusing test failures.
 project's own legacy material** - LScript language notes, CVS history, old Erebor planning
 pages, trigger lists - kept for historical reference, not maintained, not guaranteed
 accurate against the current code. `docs/current/` (where this page lives) is the
-documentation set you're reading now - see the repo-root `CLAUDE.md` for the workflow rule
+documentation set you're reading now - see the repo-root `AGENTS.md` for the rule
 that keeps it in sync with ongoing code changes.

@@ -203,7 +203,7 @@ nested `SpellsSettings` page (`MagerySettings.spells`) covers damage-spell `Effe
 **Combat-system initiative, Mage/spellcasting (#483)**: a much larger follow-up than the
 content gaps below - full spell-by-spell analysis against the real Erebor source/wiki,
 covering fixes, missing spells (Invisibility/Reveal/Mana Drain/8 summon-shaped spells), and
-a generic summon-pet infrastructure. See #483 and CLAUDE.md's own tracking entry for the
+a generic summon-pet infrastructure. See #483 and `docs/history/claude-md-log.md`'s tracking entry for the
 full phase breakdown - this page will get further updates as each phase ships.
 
 Two real, already-fixed content bugs (both closed under #159, found while authoring

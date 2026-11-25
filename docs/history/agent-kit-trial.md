@@ -1,3 +1,6 @@
+> **Archived 2026-11-18 (#1559).** The agent kit this page evaluated (`/task-*` commands, role agents, status
+> labels) was dropped; the current process is in `docs/wiki/Process/Tasks.md` and `Dev-Process.md`.
+
 # Agent Kit Trial — running log
 
 Back-filled 2026-10-17: the install (phase 2, commits `348a1c7`..`618ba12`) ran without

@@ -203,6 +203,19 @@ Only point this at the real `scripts/converted` intentionally, once a diff again
 scratch output has already been reviewed - see #544 for the trial-run/diff/report
 workflow this safety rail exists for.
 
+## Where a correction goes
+
+Every fix to converted content lives in the converter or in the archive fork, never in `scripts/converted/`, because
+each run rewrites its output files whole (`ConvertedFile.Flush`, see above).
+
+- A correction for a single item def: the defname-keyed tables in `ConvertedItemDef.cs` (`toolTypeOverrides`,
+  `layerOverrides`, case-insensitive), applied in the third stage. Each table only takes entries backed by real
+  data (comments there).
+- A rule for every item of a TYPE: `HandleType` (`ConvertedItemDef.cs`).
+- A chardef field: a `LineImplTask` for a top-level line, or a case in `ProcessCreateTriggerLine` for a line inside
+  `ON=@Create` (see "Chardef field mapping" above).
+- Data the archive lacks or gets wrong: a change in the fork `pkorpel/erebor-sphere-archive`, through its own PR.
+
 ## Nothing defined twice (#937)
 
 A boot logs no error at all, and `BootLogTests` keeps it so, for a new world and a saved one. The engine treats a

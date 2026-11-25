@@ -232,6 +232,11 @@ if (!futureCont.HasPlugin(regenerationsPluginKey)) {
 `RegenerationPlugin.On_Timer` does at full stats, and `TryInstallPlugin` puts it back when a
 stat drops. `Character.On_Death` deletes it.
 
+Deleting a holder's plugins (`PluginHolder.DeletePlugins`) works in rounds (#1479): each round takes the plugins on
+the holder at that moment and deletes each one still there under its current key. So an `@unAssign` may remove,
+move, re-add or add other plugins while this runs. A plugin another one's `@unAssign` already took away is left to
+it. After 100 rounds that still find plugins, it logs an error and stops.
+
 ## Saving
 
 A holder saves its plugins with itself (`PluginHolder.Save`, `Plugin.Save`): a line on the

@@ -1,10 +1,10 @@
 # Telegram session
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-11-18
 
 A Telegram bot used for two things:
 
-1. **Notifications** from `/task-run` and friends:
+1. **Notifications** from long-running sessions:
    `scripts/telegram-session.sh notify "#<n> …"`.
 2. **A remote Claude Code session** in tmux (`moria-tg`) that takes orders from
    Telegram through the official Telegram channel plugin.

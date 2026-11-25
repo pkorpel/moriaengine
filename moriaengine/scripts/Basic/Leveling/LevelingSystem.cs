@@ -265,7 +265,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Spends `pointsToSpend` unspent ability points (#129) into `ability`, via the
 		/// existing (previously unused) Character.ModifyAbilityPoints mechanism. Does NOT
 		/// validate against any profession-specific ability allowlist - that depends on the
-		/// Abilities/talent-tree redesign the user explicitly deferred (see CLAUDE.md's
+		/// Abilities/talent-tree redesign the user explicitly deferred (see docs/history/claude-md-log.md's
 		/// Professions section); this just spends the pool, same way the engine already lets any
 		/// ability points be granted today.</summary>
 		public static bool TrySpendAbilityPoints(Player player, AbilityDef ability, int pointsToSpend) {

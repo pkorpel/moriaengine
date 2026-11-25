@@ -24,7 +24,7 @@ namespace SteamEngine.CompiledScripts {
 	/// rather than scattering fields across CombatSettings/CombatSettings.Ranges/elsewhere).
 	/// Range fields are pass-through properties wrapping the EXISTING CombatSettings.Ranges.
 	/// bow/crossbow/heavyCrossbow fields, not new storage - avoids duplicating data and avoids
-	/// the Generated-code field-removal landmine (see CLAUDE.md) by not touching RangesSettings
+	/// the Generated-code field-removal landmine (see docs/history/claude-md-log.md) by not touching RangesSettings
 	/// at all. Damage/speed are deliberately settings-only, NOT written into the 21 bow/
 	/// crossbow .def content entries - the user is planning a full content rework later using
 	/// newer Erebor def items, so editing that content now would just be thrown away.</summary>
