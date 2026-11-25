@@ -38,10 +38,10 @@ buried in a log whose job was session continuity, not permanent reference.
 - [The Thing model](02-engine-core/thing-model.md) - `Thing`/`AbstractItem`/`AbstractCharacter`,
   UIDs, the Item/Character class-per-template split, and def-vs-instance data ownership.
 - [Scripting & code generation pipeline](02-engine-core/scripting-pipeline.md) - how
-  attributed script C# and definition files feed runtime/build-time generators, the two
-  kinds of `*.Generated.cs` files, and the regeneration workflow.
-- [ThingAndPluginClasses `Generator`](02-engine-core/code%20generators/thing-and-plugin-classes-generator.md) -
-  build-time Roslyn generator for Thing/Plugin def+instance partial classes and legacy parity notes.
+  attributed script C# and definition files feed the compile-time Roslyn generators (nothing is
+  generated at runtime or written to disk).
+- [Scripting generators](02-engine-core/code%20generators/scripting-generators.md) - every
+  Roslyn generator, with examples.
 - [LScript](02-engine-core/lscript.md) - the embedded scripting language used by `.scp`/`.def`
   content and raw-LScript dialogs: triggers, the `{a,b}` random-range operator, known parser
   quirks.

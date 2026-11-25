@@ -19,7 +19,7 @@ whatever tool you use.
   code (templates, `[SteamFunction]` dispatch, save/copy implementors, `.info` views, trigger dispatch) at
   compile time, and none of it is written to disk. To change generated code, change the generator or the
   attributed source; see `moriaengine/docs/current/02-engine-core/scripting-pipeline.md` and
-  `code generators/scripting-generators.md`.
+  `moriaengine/docs/current/02-engine-core/code generators/scripting-generators.md`.
 - `moriaengine/Tests/` is xUnit: the fast unit tier, plus `Tests/Protocol/`, which boots real servers.
   `moriaengine/scripts/Tests/` holds the server-side test commands.
 - `uo-files/` holds the UO client files the server needs at runtime. They are checked in, not build output.
@@ -33,7 +33,7 @@ whatever tool you use.
 
 ```bash
 cd moriaengine && pwsh ./build.ps1 [-Configuration Release] [-Run Both]   # source of truth for builds
-scripts/test-fast.sh [filter]     # build + fast tier: the CI gate and the pre-push hook
+scripts/test-fast.sh [filter]     # build + generator tests + fast tier: the pre-push hook (CI runs the fast tier)
 scripts/test-fast.sh "FullyQualifiedName~SomeTest"   # one fast-tier test (the filter is ANDed with the tier)
 scripts/test-full.sh [filter]     # fast tier + each Tests/Protocol class in its own run (~3 h for all)
 scripts/run-local.sh start|status|logs|stop    # local shard on ports 2593 (aux) / 2595 (game)

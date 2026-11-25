@@ -26,7 +26,7 @@ files, and typed def fields over tags.
 | Plugin details (declaring, saving, deleting) | `02-engine-core/plugins.md`. It and `triggers-and-deny-chains.md` are disputed (PR #1532, #1558): where they disagree with the two pages above, those win |
 | Timers, tags, lock order | `02-engine-core/tags-and-timers.md` |
 | Saving, loading, code-made defs | `02-engine-core/persistence-and-saving.md` |
-| Generated code (Roslyn generators, compile time) | `02-engine-core/scripting-pipeline.md`, `code generators/scripting-generators.md` |
+| Generated code (Roslyn generators, compile time) | `02-engine-core/scripting-pipeline.md`, `02-engine-core/code generators/scripting-generators.md` |
 | `.info`/`.settings` dialogs, settings categories | `03-admin-tooling/info-and-settings-dialogs.md` |
 | Commands, permissions, LScript | `03-admin-tooling/gm-commands.md`, `02-engine-core/lscript.md` |
 | Regions, sectors, map | `02-engine-core/regions.md`, `04-gameplay-systems/movement-and-collision.md` |
