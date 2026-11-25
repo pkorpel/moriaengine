@@ -16,7 +16,6 @@
 */
 
 using System;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -163,13 +162,13 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = swingArgs.attacker.On_BeforeSwing(swingArgs);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = swingArgs.defender.TryCancellableTrigger(beforeGetSwingTK, swingArgs);
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = swingArgs.defender.On_BeforeGetSwing(swingArgs);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					}
 				}
 			}
@@ -184,12 +183,12 @@ namespace SteamEngine.CompiledScripts {
 			damageArgs.attacker.TryTrigger(causeDamageTK, damageArgs);
 			try {
 				damageArgs.attacker.On_CauseDamage(damageArgs);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 			damageArgs.defender.TryTrigger(damageTK, damageArgs);
 			try {
 				damageArgs.defender.On_Damage(damageArgs);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		static TriggerKey afterSwingTK = TriggerKey.Acquire("afterSwing");
@@ -201,14 +200,14 @@ namespace SteamEngine.CompiledScripts {
 
 			try {
 				swingArgs.attacker.On_AfterSwing(swingArgs);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 			if (!swingArgs.defender.IsDeleted) {
 				swingArgs.defender.TryTrigger(afterGetSwingTK, swingArgs);
 
 				try {
 					swingArgs.defender.On_AfterGetSwing(swingArgs);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 		}
 	}

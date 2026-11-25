@@ -20,13 +20,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using EQATEC.Profiler;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using SteamEngine.LScript;
 
 namespace SteamEngine {
-	public enum FieldValueType : byte {
+	enum FieldValueType : byte {
 		Model, Typed, Typeless, ThingDefType
 	}
 
@@ -37,24 +36,19 @@ namespace SteamEngine {
 	}
 
 	public sealed class FieldValue : IUnloadable {
-		private static readonly ShieldedDictNc<Type, IFieldValueParser> parsers = new ShieldedDictNc<Type, IFieldValueParser>();
+		private static Dictionary<Type, IFieldValueParser> parsers = new Dictionary<Type, IFieldValueParser>();
 
-		private readonly string name;
-		private readonly FieldValueType fvType;
-		private readonly Type type;
+		private string name;
+		private FieldValueType fvType;
+		private Type type;
+		private bool isChangedManually;
+		private bool isSetFromScripts;
+		private bool unloaded;
 
-		private readonly Shielded<State> shieldedState = new Shielded<State>();
+		private FieldValueImpl currentValue;
+		private FieldValueImpl defaultValue;
 
-		private struct State {
-			internal bool isChangedManually;
-			internal bool isSetFromScripts;
-			internal bool unloaded;
-
-			internal FieldValueImpl currentImpl;
-			internal FieldValueImpl defaultImpl;
-		}
-
-		public FieldValue(string name, FieldValueType fvType, Type type, string filename, int line, string value) {
+		internal FieldValue(string name, FieldValueType fvType, Type type, string filename, int line, string value) {
 			this.name = name;
 			this.fvType = fvType;
 			this.type = type;
@@ -62,7 +56,7 @@ namespace SteamEngine {
 			this.SetFromScripts(filename, line, value);
 		}
 
-		public FieldValue(string name, FieldValueType fvType, Type type, object value) {
+		internal FieldValue(string name, FieldValueType fvType, Type type, object value) {
 			this.name = name;
 			this.fvType = fvType;
 			this.type = type;
@@ -75,7 +69,6 @@ namespace SteamEngine {
 		}
 
 		public static void RegisterParser(IFieldValueParser parser) {
-			Shield.AssertInTransaction();
 			Type t = parser.HandledType;
 			foreach (Type knownType in parsers.Keys) {
 				if (t.IsAssignableFrom(knownType) || knownType.IsAssignableFrom(t)) {
@@ -94,77 +87,90 @@ namespace SteamEngine {
 		}
 
 		internal static void ForgetScripts() {
-			Shield.AssertInTransaction();
 			parsers.Clear();
 		}
 
 		public void Unload() {
-			Shield.AssertInTransaction();
-			if (this.shieldedState.Value.isChangedManually) {
-				this.shieldedState.Modify((ref State s) => s.unloaded = true);
+			if (this.isChangedManually) {
+				this.unloaded = true;
 			}
 		}
 
-		public bool IsUnloaded => this.shieldedState.Value.unloaded;
+		public bool IsUnloaded {
+			get { return this.unloaded; }
+		}
 
 		private void ThrowIfUnloaded() {
-			if (this.shieldedState.Value.unloaded) {
+			if (this.unloaded) {
 				throw new UnloadedException("The " + Tools.TypeToString(this.GetType()) + " '" + LogStr.Ident(this.name) + "' is unloaded.");
 			}
 		}
 
-		public string Name => this.name;
+		public string Name {
+			get {
+				return this.name;
+			}
+		}
 
 		internal void ResolveTemporaryState() {
-			Shield.AssertInTransaction();
-			var tempVi = this.shieldedState.Value.defaultImpl as TemporaryValueImpl;
-			if (tempVi == null)
-				return;
-			try {
-				string value = tempVi.valueString;
-				object retVal = null;
-				if (value != null) {
-					if (value.Length > 0) {
-						if ((this.fvType == FieldValueType.Typed) && (this.type.IsArray)) {
+			if (this.defaultValue is TemporaryValueImpl) {
+				FieldValueImpl wasCurrent = this.currentValue;
+				FieldValueImpl wasDefault = this.defaultValue;
+				bool success = false;
+				try {
+					//first, resolve the default value using lscript
+					TemporaryValueImpl tempVI = (TemporaryValueImpl) this.defaultValue;
 
-							if (this.type.GetArrayRank() > 1) {
-								throw new SEException("Can't use a multirank array in a FieldValue");
+					try {
+						string value = tempVI.valueString;
+						object retVal = null;
+						if (value != null) {
+							if (value.Length > 0) {
+								if ((this.fvType == FieldValueType.Typed) && (this.type.IsArray)) {
+
+									if (this.type.GetArrayRank() > 1) {
+										throw new SEException("Can't use a multirank array in a FieldValue");
+									}
+									string[] sourceArray = Utility.SplitSphereString(value, false); //
+									Type elemType = this.type.GetElementType();
+									int n = sourceArray.Length;
+									Array resultArray = Array.CreateInstance(elemType, n);
+
+									for (int i = 0; i < n; i++) {
+										resultArray.SetValue(ConvertTools.ConvertTo(elemType, this.ResolveSingleValue(tempVI, sourceArray[i], null)),
+											i);
+									}
+
+									retVal = resultArray;
+								} else {
+									retVal = this.ResolveSingleValue(tempVI, value, retVal);
+								}
+							} else {
+								retVal = "";
 							}
-							string[] sourceArray = Utility.SplitSphereString(value, false); //
-							Type elemType = this.type.GetElementType();
-							int n = sourceArray.Length;
-							Array resultArray = Array.CreateInstance(elemType, n);
-
-							for (int i = 0; i < n; i++) {
-								resultArray.SetValue(ConvertTools.ConvertTo(elemType, this.ResolveSingleValue(tempVi, sourceArray[i], null)), i);
-							}
-
-							retVal = resultArray;
-						} else {
-							retVal = this.ResolveSingleValue(tempVi, value, retVal);
 						}
-					} else {
-						retVal = "";
+
+						this.defaultValue = this.GetFittingValueImpl();
+						this.defaultValue.Value = retVal;
+					} catch (SEException sex) {
+						sex.TryAddFileLineInfo(tempVI.filename, tempVI.line);
+						throw;
+					} catch (Exception e) {
+						throw new SEException(tempVI.filename, tempVI.line, e);
+					}
+
+
+					if (!this.isChangedManually) {//we were already resynced...the loaded value should not change
+						this.currentValue = this.defaultValue.Clone();
+					}
+
+					success = true;
+				} finally {
+					if (!success) {
+						this.currentValue = wasCurrent;
+						this.defaultValue = wasDefault;
 					}
 				}
-
-				var valueDefaultValue = this.GetFittingValueImpl();
-				this.shieldedState.Modify((ref State s) => s.defaultImpl = valueDefaultValue);
-				valueDefaultValue.Value = retVal;
-			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
-				throw;
-			} catch (SEException sex) {
-				sex.TryAddFileLineInfo(tempVi.filename, tempVi.line);
-				throw;
-			} catch (Exception e) {
-				throw new SEException(tempVi.filename, tempVi.line, e);
-			}
-
-			if (!this.shieldedState.Value.isChangedManually) {
-				//we were already resynced...the loaded value should not change
-				this.shieldedState.Modify((ref State s) => s.currentImpl = s.defaultImpl.Clone());
 			}
 		}
 
@@ -332,46 +338,35 @@ namespace SteamEngine {
 		}
 
 		private void SetFromCode(object value) {
-			Shield.AssertInTransaction();
+			Sanity.IfTrueThrow((this.isChangedManually || this.unloaded), "SetFromCode after change/unload? This should never happen.");
 
-			var state = this.shieldedState.Value;
-			Sanity.IfTrueThrow(state.isChangedManually || state.unloaded, "SetFromCode after change/unload? This should never happen.");
-
-			this.shieldedState.Modify((ref State s) => {
-				s.defaultImpl = this.GetFittingValueImpl();
-				s.defaultImpl.Value = value;
-				s.currentImpl = s.defaultImpl.Clone();
-				s.unloaded = false;
-			});
+			this.defaultValue = this.GetFittingValueImpl();
+			this.defaultValue.Value = value;
+			this.currentValue = this.defaultValue.Clone();
+			this.unloaded = false;
 		}
 
 		public void SetFromScripts(string filename, int line, string value) {
-			Shield.AssertInTransaction();
-			this.shieldedState.Modify((ref State s) => {
-				if (s.isChangedManually) {
-					s.defaultImpl = new TemporaryValueImpl(filename, line, this, value);
-				} else {
-					s.currentImpl = new TemporaryValueImpl(filename, line, this, value);
-					s.defaultImpl = new TemporaryValueImpl(filename, line, this, value);
-				}
+			if (this.isChangedManually) {
+				this.defaultValue = new TemporaryValueImpl(filename, line, this, value);
+			} else {
+				this.currentValue = new TemporaryValueImpl(filename, line, this, value);
+				this.defaultValue = new TemporaryValueImpl(filename, line, this, value);
+			}
 
-				s.isSetFromScripts = true;
-				s.unloaded = false;
-			});
+			this.isSetFromScripts = true;
+			this.unloaded = false;
 		}
 
 		internal bool ShouldBeSaved() {
-			Shield.AssertInTransaction();
-			var state = this.shieldedState.Value;
-			if (state.unloaded) {
+			if (this.unloaded) {
 				return false;
 			}
-			if (state.isChangedManually) {
-				//it was loaded/changed , so it should be also saved :)
+			if (this.isChangedManually) {//it was loaded/changed , so it should be also saved :)
 				return !CurrentAndDefaultEquals(this.CurrentValue, this.DefaultValue);
 			}
-			if ((state.currentImpl is TemporaryValueImpl) && (state.defaultImpl is TemporaryValueImpl)) {
-				return false; //unresolved, no need of touching
+			if ((this.currentValue is TemporaryValueImpl) && (this.defaultValue is TemporaryValueImpl)) {
+				return false;//unresolved, no need of touching
 			}
 			return !CurrentAndDefaultEquals(this.CurrentValue, this.DefaultValue);
 		}
@@ -399,12 +394,10 @@ namespace SteamEngine {
 		/// <summary>If true, it has not been set from scripts nor from saves nor manually</summary>
 		public bool IsDefaultCodedValue {
 			get {
-				Shield.AssertInTransaction();
-				var state = this.shieldedState.Value;
-				if (state.isSetFromScripts || state.isChangedManually) {
+				if (this.isSetFromScripts || this.isChangedManually) {
 					return false;
 				}
-				if ((state.currentImpl is TemporaryValueImpl) && (state.defaultImpl is TemporaryValueImpl)) {
+				if ((this.currentValue is TemporaryValueImpl) && (this.defaultValue is TemporaryValueImpl)) {
 					return false; //unresolved, no need of touching
 				}
 				return true;
@@ -414,25 +407,24 @@ namespace SteamEngine {
 		public object CurrentValue {
 			get {
 				this.ThrowIfUnloaded();
-				this.ResolveTemporaryState();
-				return this.shieldedState.Value.currentImpl.Value;
+				return this.currentValue.Value;
 			}
 			set {
-				this.ResolveTemporaryState();
-				this.shieldedState.Modify((ref State s) => {
-					s.currentImpl.Value = value;
-					s.unloaded = false;
-					s.isChangedManually = true;
-				});
+				this.currentValue.Value = value;
+				this.unloaded = false;
+				this.isChangedManually = true;
 			}
 		}
 
 		public object DefaultValue {
 			get {
 				this.ThrowIfUnloaded();
-				this.ResolveTemporaryState();
-				return this.shieldedState.Value.defaultImpl.Value;
+				return this.defaultValue.Value;
 			}
+			//set {
+			//	defaultValue.Value = value;
+			//	changedValue = true;
+			//}
 		}
 
 		[SkipInstrumentation]
@@ -442,10 +434,10 @@ namespace SteamEngine {
 		}
 
 		private class TemporaryValueImpl : FieldValueImpl {
-			internal readonly string filename;
-			internal readonly int line;
-			internal readonly string valueString;
-			private readonly FieldValue holder;
+			internal string filename;
+			internal int line;
+			internal string valueString;
+			FieldValue holder;
 
 			internal TemporaryValueImpl(string filename, int line, FieldValue holder, string value) {
 				this.filename = filename;
@@ -455,41 +447,41 @@ namespace SteamEngine {
 			}
 
 			internal override FieldValueImpl Clone() {
-				throw new InvalidOperationException("Should never be called.");
+				throw new SEException("this is not supposed to be cloned");
 			}
 
 			internal override object Value {
 				get {
-					throw new InvalidOperationException("Should never be called.");
+					this.holder.ResolveTemporaryState();
+					if (this.holder.currentValue == this) {
+						return this.holder.CurrentValue;
+					}
+					return this.holder.DefaultValue;
 				}
 				set {
-					throw new InvalidOperationException("Should never be called.");
+					if (this.holder.currentValue == this) {
+						this.holder.ResolveTemporaryState();
+						this.holder.CurrentValue = value;
+						return;
+					}
+					throw new SEException("Invalid TemporaryValueImpl instance, it's holder is not holding it, or something is setting defaultvalue. This should not happen.");
 				}
 			}
 		}
 
 		private sealed class ModelValueImpl : FieldValueImpl {
-
-			private readonly Shielded<State> shieldedState;
-
-			private struct State {
-				internal ThingDef thingDef;
-				internal int model;
-			}
+			ThingDef thingDef;
+			int model;
 
 			//resolving constructor
 			[SkipInstrumentation]
 			internal ModelValueImpl() {
-				this.shieldedState = new Shielded<State>();
 			}
 
 			[SkipInstrumentation]
 			private ModelValueImpl(ModelValueImpl copyFrom) {
-				var copyFromState = copyFrom.shieldedState.Value;
-				this.shieldedState = new Shielded<State>(new State {
-					thingDef = copyFromState.thingDef,
-					model = copyFrom.shieldedState.Value.model,
-				});
+				this.thingDef = copyFrom.thingDef;
+				this.model = copyFrom.model;
 			}
 
 			[SkipInstrumentation]
@@ -498,48 +490,43 @@ namespace SteamEngine {
 			}
 
 			internal override object Value {
-				get {
-					Shield.AssertInTransaction();
-					var state = this.shieldedState.Value;
-					if (state.thingDef == null) {
-						return state.model;
+				get
+				{
+					if (this.thingDef == null) {
+						return this.model;
 					}
-					return state.thingDef.Model;
+					return this.thingDef.Model;
 				}
 				set {
-					Shield.AssertInTransaction();
-					this.shieldedState.Modify((ref State s) => {
-						s.thingDef = value as ThingDef;
-						if (s.thingDef == null) {
-							s.model = ConvertTools.ToInt32(value);
-						} else {
-							var holderState = s.thingDef.model.shieldedState.Value;
-							if ((holderState.currentImpl == this) || (holderState.defaultImpl == this)) {
-								ThingDef d = s.thingDef;
-								s.thingDef = null;
-								throw new ScriptException(LogStr.Ident(d) + " specifies its own defname as its model, could lead to infinite loop...!");
-							}
+					this.thingDef = value as ThingDef;
+					if (this.thingDef == null) {
+						this.model = ConvertTools.ToInt32(value);
+					} else {
+						if ((this.thingDef.model.currentValue == this) || (this.thingDef.model.defaultValue == this)) {
+							ThingDef d = this.thingDef;
+							this.thingDef = null;
+							throw new ScriptException(LogStr.Ident(d) + " specifies its own defname as its model, could lead to infinite loop...!");
 						}
-					});
+					}
 				}
 			}
+
 		}
 
 		private class TypedValueImpl : FieldValueImpl {
-			protected readonly Type type;
-			private readonly Shielded<object> val;
+			protected Type type;
+			object val;
 
 			//resolving constructor
 			[SkipInstrumentation]
 			internal TypedValueImpl(Type type) {
 				this.type = type;
-				this.val = new Shielded<object>();
 			}
 
 			[SkipInstrumentation]
 			protected TypedValueImpl(TypedValueImpl copyFrom) {
 				this.type = copyFrom.type;
-				this.val = new Shielded<object>(initial: copyFrom.val.Value);
+				this.val = copyFrom.val;
 			}
 
 			[SkipInstrumentation]
@@ -548,48 +535,11 @@ namespace SteamEngine {
 			}
 
 			private static object GetInternStringIfPossible(object obj) {
-				string asString = obj as string;
+				string asString = obj as String;
 				if (asString != null) {
-					return string.Intern(asString);
+					return String.Intern(asString);
 				}
 				return obj;
-			}
-
-			internal override object Value {
-				get {
-					return this.val.Value;
-				}
-				set {
-					Shield.AssertInTransaction();
-					if (value != null) {
-						Type sourceType = value.GetType();
-						if ((sourceType != this.type) && (this.type.IsArray)) {
-							Array sourceArray;
-							Type elemType = this.type.GetElementType();
-							if (sourceType.IsArray) {//we must change the element type
-								if (sourceType.GetArrayRank() > 1) {
-									throw new SEException("Can't use a multirank array in a FieldValue");
-								}
-								sourceArray = (Array) value;
-							} else if (value is string) {
-								sourceArray = Utility.SplitSphereString((string) value, false); //
-							} else {
-								sourceArray = new[] { value }; //just wrap it in a 1-element array, gets converted in the next step
-							}
-
-							int n = sourceArray.Length;
-							var resultArray = Array.CreateInstance(elemType, n);
-							for (int i = 0; i < n; i++) {
-								resultArray.SetValue(
-									ConvertSingleValue(elemType, sourceArray.GetValue(i)), i);
-							}
-
-							this.val.Value = ConvertTools.ConvertTo(this.type, resultArray); //this should actually do nothing, just for check
-							return;
-						}
-					}
-					this.val.Value = ConvertSingleValue(this.type, value);
-				}
 			}
 
 			private static object ConvertSingleValue(Type type, object value) {
@@ -604,20 +554,56 @@ namespace SteamEngine {
 				}
 				return GetInternStringIfPossible(ConvertTools.ConvertTo(type, value)); //ConvertTo will throw exception if impossible
 			}
+
+			internal override object Value {
+				get {
+					return this.val;
+				}
+				set {
+					if (value != null) {
+						Type sourceType = value.GetType();
+						if ((sourceType != this.type) && (this.type.IsArray)) {
+							Array sourceArray;
+							Array resultArray;
+							Type elemType = this.type.GetElementType();
+							if (sourceType.IsArray) {//we must change the element type
+								if (sourceType.GetArrayRank() > 1) {
+									throw new SEException("Can't use a multirank array in a FieldValue");
+								}
+								sourceArray = (Array) value;
+							} else if (value is string) {
+								sourceArray = Utility.SplitSphereString((string) value, false); //
+							} else {
+								sourceArray = new[] { value }; //just wrap it in a 1-element array, gets converted in the next step
+							}
+
+							int n = sourceArray.Length;
+							resultArray = Array.CreateInstance(elemType, n);
+							for (int i = 0; i < n; i++) {
+								resultArray.SetValue(
+									ConvertSingleValue(elemType, sourceArray.GetValue(i)), i);
+							}
+
+							this.val = ConvertTools.ConvertTo(this.type, resultArray); //this should actually do nothing, just for check
+							return;
+						}
+					}
+					this.val = ConvertSingleValue(this.type, value);
+				}
+			}
 		}
 
 		private sealed class TypelessValueImpl : FieldValueImpl {
-			private readonly Shielded<object> obj;
+			object obj;
 
 			//resolving constructor
 			[SkipInstrumentation]
 			internal TypelessValueImpl() {
-				this.obj = new Shielded<object>();
 			}
 
 			[SkipInstrumentation]
 			private TypelessValueImpl(TypelessValueImpl copyFrom) {
-				this.obj = new Shielded<object>(initial: copyFrom.obj.Value);
+				this.obj = copyFrom.obj;
 			}
 
 			[SkipInstrumentation]
@@ -627,15 +613,14 @@ namespace SteamEngine {
 
 			internal override object Value {
 				get {
-					return this.obj.Value;
+					return this.obj;
 				}
 				set {
-					Shield.AssertInTransaction();
 					string asString = value as string;
 					if (asString != null) {
-						this.obj.Value = string.Intern(asString);
+						this.obj = string.Intern(asString);
 					} else {
-						this.obj.Value = value;
+						this.obj = value;
 					}
 				}
 			}

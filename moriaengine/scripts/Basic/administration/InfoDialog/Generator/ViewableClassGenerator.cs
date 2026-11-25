@@ -19,7 +19,6 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
@@ -57,8 +56,6 @@ namespace SteamEngine.CompiledScripts {
 							generatedClasses[viewableClass] = gi; //store the generated instance for this type
 						} catch (FatalException) {
 							throw;
-						} catch (TransException) {
-							throw;
 						} catch (Exception e) {
 							Logger.WriteError(viewableClass.Assembly.GetName().Name, viewableClass.Name, e);
 							return null;
@@ -79,8 +76,6 @@ namespace SteamEngine.CompiledScripts {
 								ns.Types.Add(ctd);
 							}
 						} catch (FatalException) {
-							throw;
-						} catch (TransException) {
 							throw;
 						} catch (Exception e) {
 							Logger.WriteError(oneGI.type.Assembly.GetName().Name, oneGI.type.Name, e);

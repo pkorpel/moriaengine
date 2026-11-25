@@ -20,13 +20,12 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using SharpSvn;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
 #if MSWIN
-using Microsoft.Win32;  //for RegistryKey
+using Microsoft.Win32;	//for RegistryKey
 #endif
 
 namespace SteamEngine {
@@ -862,7 +861,7 @@ namespace SteamEngine {
 			//    scanner.ScanAssembly(asm);
 			//    scanner.WriteToFile("bin\\" + asm.GetName().Name + ".xml");
 
-			//} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			//} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 			if (ndocExe.Length != 0) {
 				Console.WriteLine("Invoking NDOC, documentation will be generated to docs/sourceDoc");
@@ -883,7 +882,7 @@ namespace SteamEngine {
 					ndocProcess.Exited += ndocExited;
 					ndocProcess.EnableRaisingEvents = true;
 					ndocProcess.Start();
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 		}
 #endif

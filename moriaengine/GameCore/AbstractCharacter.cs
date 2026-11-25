@@ -19,7 +19,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
@@ -150,7 +149,8 @@ namespace SteamEngine {
 		//}
 
 		public GameState GameState {
-			get {
+			get
+			{
 				if (this.account != null) {
 					return this.account.GameState;
 				}
@@ -159,7 +159,8 @@ namespace SteamEngine {
 		}
 
 		public bool IsOnline {
-			get {
+			get
+			{
 				if (this.account != null) {
 					return this.account.IsOnline;
 				}
@@ -368,7 +369,7 @@ namespace SteamEngine {
 				} else if (!this.Flag_Disconnected) {
 					this.GameState.Conn.Close("LogoutFully called.");
 					this.SetFlag_Disconnected(true);
-				}   //else already logged out fully, do nothing
+				}	//else already logged out fully, do nothing
 			} else {
 				throw new InvalidOperationException("LogoutFully can only be called on player characters");
 			}
@@ -387,7 +388,7 @@ namespace SteamEngine {
 					this.SetFlag_Disconnected(true);
 				} else if (!this.Flag_Disconnected) {
 					this.GameState.Conn.Close("Disconnect called.");
-				}   //else already logged out fully, do nothing
+				}	//else already logged out fully, do nothing
 			} else {
 				this.SetFlag_Disconnected(true);
 			}
@@ -429,7 +430,7 @@ namespace SteamEngine {
 				//@login did not return 1
 				try {
 					result = this.On_LogIn();
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 			return result;
 		}
@@ -441,7 +442,7 @@ namespace SteamEngine {
 			this.TryTrigger(TriggerKey.logout, null);
 			try {
 				this.On_LogOut();
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
@@ -495,7 +496,7 @@ namespace SteamEngine {
 			if (this.IsPlayer) {
 				if (this.GameState == null) {
 					this.directionAndFlags |= DirectionAndFlag.DirFlagDisconnected;
-				} else {    //there shouldn't actually be anyone connected when this happens, but we check just in case.
+				} else {	//there shouldn't actually be anyone connected when this happens, but we check just in case.
 					this.directionAndFlags &= ~DirectionAndFlag.DirFlagDisconnected;
 				}
 			}
@@ -586,8 +587,8 @@ namespace SteamEngine {
 		}
 
 		public void AnnounceBug() {
-			this.ClilocSysMessage(501634, 0x21);    //Error!  This is a bug, please report it!
-													//0x21 = red, hopefully
+			this.ClilocSysMessage(501634, 0x21);	//Error!  This is a bug, please report it!
+			//0x21 = red, hopefully
 		}
 
 		public void SysMessage(string arg) {
@@ -772,7 +773,7 @@ namespace SteamEngine {
 			}
 			try {
 				return this.On_Step(dir, running);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); return TriggerResult.Cancel; }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); return TriggerResult.Cancel; }
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
@@ -797,7 +798,7 @@ namespace SteamEngine {
 			this.TryTrigger(TriggerKey.newPosition, new ScriptArgs(oldP));
 			try {
 				this.On_NewPosition(oldP);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 			foreach (AbstractItem itm in this.GetMap().GetItemsInRange(this.X, this.Y, 0)) {
 				if (this.IsStandingOn(itm)) {
@@ -877,7 +878,7 @@ namespace SteamEngine {
 
 				try {
 					result = clickingChar.On_CharClick(this);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 			return result;
 		}
@@ -956,7 +957,7 @@ namespace SteamEngine {
 			if (SpeechResult.ActedUponExclusively != result) {
 				try {
 					result = this.On_Hear(sa);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 
 			return result;
@@ -975,7 +976,7 @@ namespace SteamEngine {
 				if (TriggerResult.Cancel != this.TryCancellableTrigger(TriggerKey.say, sa)) {
 					try {
 						return this.On_Say(speech, type, keywords);
-					} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				}
 			}
 			return TriggerResult.Continue;
@@ -1267,7 +1268,8 @@ namespace SteamEngine {
 
 		#region Equipped stuff
 		public int VisibleCount {
-			get {
+			get
+			{
 				if (this.visibleLayers == null) {
 					return 0;
 				}
@@ -1276,7 +1278,8 @@ namespace SteamEngine {
 		}
 
 		public IEnumerable<Thing> VisibleEquip {
-			get {
+			get
+			{
 				if (this.visibleLayers == null) {
 					return EmptyReadOnlyGenericCollection<Thing>.instance;
 				}
@@ -1345,7 +1348,8 @@ namespace SteamEngine {
 								return true;
 							}
 							this.next = null;
-						} else {
+						} else
+						{
 							if (this.next != null) {
 								this.current = this.next;
 								this.next = (AbstractItem) this.current.nextInList;
@@ -1378,7 +1382,8 @@ namespace SteamEngine {
 								return true;
 							}
 							this.next = null;
-						} else {
+						} else
+						{
 							if (this.next != null) {
 								this.current = this.next;
 								this.next = (AbstractItem) this.current.nextInList;

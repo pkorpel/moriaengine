@@ -26,7 +26,8 @@ namespace SteamEngine {
 	public class SEException : Exception {
 		private LogStr niceMessage;
 
-		public SEException() {
+		public SEException()
+		{
 			this.niceMessage = LogStr.Raw(this.Message);
 		}
 
@@ -37,29 +38,17 @@ namespace SteamEngine {
 
 		public SEException(string s, Exception e)
 			: base(s, e) {
-			if (e is Shielded.TransException) {
-				throw new Exception("Let's not translate TransException to SEException, as that breaks the transaction retrying.");
-			}
 			this.niceMessage = (LogStr) s;
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public SEException(LogStr s, Exception e)
 			: base(s.RawString, e) {
-
-			if (e is Shielded.TransException) {
-				throw new Exception("Let's not translate TransException to SEException, as that breaks the transaction retrying.");
-			}
-
 			this.niceMessage = s;
 		}
 
 		public SEException(string filename, int line, Exception e)
 			: this(LogStr.FileLine(filename, line), e) {
-
-			if (e is Shielded.TransException) {
-				throw new Exception("Let's not translate TransException to SEException, as that breaks the transaction retrying.");
-			}
 		}
 
 		public SEException(string filename, int line, LogStr ls)
@@ -102,7 +91,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class ScriptException : SEException {
-		public ScriptException() {
+		public ScriptException()
+		{
 		}
 		public ScriptException(string s)
 			: base(s) {
@@ -120,7 +110,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class CallFuncException : SEException {
-		public CallFuncException() {
+		public CallFuncException()
+		{
 		}
 		public CallFuncException(string s)
 			: base(s) {
@@ -138,7 +129,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class TagMathException : SEException {
-		public TagMathException() {
+		public TagMathException()
+		{
 		}
 		public TagMathException(string s)
 			: base(s) {
@@ -156,7 +148,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class UnloadedException : SEException {
-		public UnloadedException() {
+		public UnloadedException()
+		{
 		}
 		public UnloadedException(string s)
 			: base(s) {
@@ -174,7 +167,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class DeletedException : SEException {
-		public DeletedException() {
+		public DeletedException()
+		{
 		}
 		public DeletedException(string s)
 			: base(s) {
@@ -192,7 +186,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class ServerException : SEException {
-		public ServerException() {
+		public ServerException()
+		{
 		}
 		public ServerException(string s)
 			: base(s) {
@@ -210,7 +205,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class UnrecognizedValueException : SEException {
-		public UnrecognizedValueException() {
+		public UnrecognizedValueException()
+		{
 		}
 		public UnrecognizedValueException(string s)
 			: base(s) {
@@ -228,7 +224,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class InsufficientDataException : SEException {
-		public InsufficientDataException() {
+		public InsufficientDataException()
+		{
 		}
 		public InsufficientDataException(string s)
 			: base(s) {
@@ -246,7 +243,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class UnsaveableTypeException : SEException {
-		public UnsaveableTypeException() {
+		public UnsaveableTypeException()
+		{
 		}
 		public UnsaveableTypeException(string s)
 			: base(s) {
@@ -264,7 +262,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class NonExistingObjectException : SEException {
-		public NonExistingObjectException() {
+		public NonExistingObjectException()
+		{
 		}
 		public NonExistingObjectException(string s)
 			: base(s) {
@@ -282,7 +281,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class OverrideNotAllowedException : SEException {
-		public OverrideNotAllowedException() {
+		public OverrideNotAllowedException()
+		{
 		}
 		public OverrideNotAllowedException(string s)
 			: base(s) {
@@ -300,7 +300,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class SanityCheckException : SEException {
-		public SanityCheckException() {
+		public SanityCheckException()
+		{
 		}
 		public SanityCheckException(string s)
 			: base(s) {
@@ -347,7 +348,8 @@ namespace SteamEngine {
 	*/
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class FatalException : SEException {
-		public FatalException() {
+		public FatalException()
+		{
 		}
 		public FatalException(string s)
 			: base(s) {
@@ -369,7 +371,8 @@ namespace SteamEngine {
 	*/
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class SEBugException : FatalException {
-		public SEBugException() {
+		public SEBugException()
+		{
 		}
 		public SEBugException(string s)
 			: base(s) {
@@ -394,7 +397,8 @@ namespace SteamEngine {
 		private string msg;
 		private string title;
 
-		public ShowMessageAndExitException() {
+		public ShowMessageAndExitException()
+		{
 		}
 		public ShowMessageAndExitException(string s, string t)
 			: base(s) {
@@ -422,7 +426,8 @@ namespace SteamEngine {
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class InvalidFilenameException : SEException {
-		public InvalidFilenameException() {
+		public InvalidFilenameException()
+		{
 		}
 		public InvalidFilenameException(string s)
 			: base(s) {

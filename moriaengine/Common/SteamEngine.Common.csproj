@@ -100,10 +100,6 @@
       <HintPath>..\packages\SharpSvn.1.8-x64.1.8015.3829.125\lib\net40\SharpSvn.UI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shielded, Version=4.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shielded.4.4.2\lib\net40\Shielded.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>

@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Networking;
@@ -84,7 +83,7 @@ namespace SteamEngine.CompiledScripts {
 			return GetByDefIndex(key);
 		}
 
-		public static IEnumerable<SpellDef> AllSpellDefs {
+		public static ICollection<SpellDef> AllSpellDefs {
 			get {
 				return AllIndexedDefs;
 			}
@@ -645,19 +644,19 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = caster.On_CauseSpellEffect(target, spellEffectArgs);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = target.TryCancellableTrigger(tkSpellEffect, spellEffectArgs.scriptArgs);
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = target.On_SpellEffect(spellEffectArgs);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 						if (result != TriggerResult.Cancel) {
 							result = this.TryCancellableTrigger(target, tkEffectChar, spellEffectArgs.scriptArgs);
 							if (result != TriggerResult.Cancel) {
 								try {
 									this.On_EffectChar(target, spellEffectArgs);
-								} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+								} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 							}
 						}
 					}
@@ -674,19 +673,19 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = caster.On_CauseSpellEffect(target, spellEffectArgs);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = target.TryCancellableTrigger(tkSpellEffect, spellEffectArgs.scriptArgs);
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = target.On_SpellEffect(spellEffectArgs);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 						if (result != TriggerResult.Cancel) {
 							result = this.TryCancellableTrigger(target, tkEffectItem, spellEffectArgs.scriptArgs);
 							if (result != TriggerResult.Cancel) {
 								try {
 									this.On_EffectItem(target, spellEffectArgs);
-								} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+								} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 							}
 						}
 					}
@@ -704,13 +703,13 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = caster.On_CauseSpellEffect(target, spellEffectArgs);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = this.TryCancellableTrigger(target, tkEffectGround, spellEffectArgs.scriptArgs);
 					if (result != TriggerResult.Cancel) {
 						try {
 							this.On_EffectGround(target, spellEffectArgs);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					}
 				}
 			}

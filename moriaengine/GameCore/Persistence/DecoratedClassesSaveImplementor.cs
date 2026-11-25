@@ -20,7 +20,6 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 
@@ -211,8 +210,6 @@ namespace SteamEngine.Persistence {
 					this.LoadLineImpl(loadedObject, ps.Filename, p.Line, p.Name.ToLowerInvariant(), p.Value);
 				} catch (FatalException) {
 					throw;
-				} catch (TransException) {
-					throw;
 				} catch (Exception ex) {
 					Logger.WriteWarning(ps.Filename, p.Line, ex);
 				}
@@ -262,8 +259,6 @@ namespace SteamEngine.Persistence {
 							CodeTypeDeclaration ctd = gi.GetGeneratedType();
 							ns.Types.Add(ctd);
 						} catch (FatalException) {
-							throw;
-						} catch (TransException) {
 							throw;
 						} catch (Exception e) {
 							Logger.WriteError(decoratedClass.Assembly.GetName().Name, decoratedClass.Name, e);

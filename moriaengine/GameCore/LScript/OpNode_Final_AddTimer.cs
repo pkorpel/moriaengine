@@ -21,7 +21,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using PerCederberg.Grammatica.Parser;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Timers;
 
@@ -418,8 +417,6 @@ namespace SteamEngine.LScript {
 				throw;
 			} catch (FatalException) {
 				throw;
-			} catch (TransException) {
-				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while adding FunctionTimer",
 					this.line, this.column, this.filename, this.ParentScriptHolder.GetDecoratedName(), e);
@@ -444,8 +441,6 @@ namespace SteamEngine.LScript {
 			} catch (InterpreterException) {
 				throw;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while adding FunctionTimer",

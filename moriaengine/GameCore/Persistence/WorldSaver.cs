@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Networking;
 using SteamEngine.Timers;
@@ -39,7 +38,7 @@ namespace SteamEngine.Persistence {
 				//-1 because we will save new files now.
 				if (!TrySave()) {
 					PacketSequences.BroadCast("Saving failed!");//we do not throw an exception to kill the server, 
-																//the admin should do that, after he tries to fix the problem somehow...
+					//the admin should do that, after he tries to fix the problem somehow...
 					return false;
 				}
 				PacketSequences.BroadCast("Saving finished.");
@@ -176,6 +175,8 @@ namespace SteamEngine.Persistence {
 				Logger.WriteWarning("No proper save files or backups found; Starting with a blank worldfile, no accounts, etc. The first account to log in will be set as admin.");
 				MainClass.ClearWorld();
 				TriggerGroup.ReAddGlobals();
+			} catch (FatalException) {
+				throw;
 			} catch (Exception e) {
 				Logger.WriteCritical(e);
 				Logger.WriteCritical("Loading failed.");
@@ -214,31 +215,18 @@ namespace SteamEngine.Persistence {
 					}
 				}
 				if (type == "globals") {
-					Shield.InTransaction(() =>
-						Globals.LoadGlobals(section));
+					Globals.LoadGlobals(section);
 					continue;
 				}
-
-				var loaded = false;
-				Shield.InTransaction(() => {
-					if (ObjectSaver.IsKnownSectionName(type)) {
-						ObjectSaver.LoadSection(section);
-						loaded = true;
-					}
-				});
-
-				if (!loaded) {
-					Shield.InTransaction(() => {
-						if (AbstractDef.ExistsDefType(type)) {
-							AbstractDef.LoadSectionFromSaves(section);
-							loaded = true;
-						}
-					});
+				if (ObjectSaver.IsKnownSectionName(type)) {
+					ObjectSaver.LoadSection(section);
+					continue;
 				}
-
-				if (!loaded) {
-					Logger.WriteError(section.Filename, section.HeaderLine, "Unknown section " + LogStr.Ident(section));
+				if (AbstractDef.ExistsDefType(type)) {
+					AbstractDef.LoadSectionFromSaves(section);
+					continue;
 				}
+				Logger.WriteError(section.Filename, section.HeaderLine, "Unknown section " + LogStr.Ident(section));
 			}
 			if (!EOFMarked) {
 				throw new SEException("EOF Marker not reached!");

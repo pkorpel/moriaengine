@@ -272,8 +272,6 @@
 //                        }
 //                    } catch (FatalException) {
 //                        throw;
-//                    } catch (TransException) {
-//                        throw;
 //                    } catch (Exception e) {//kill!
 //                        throw new FatalException("Error while importing. Unable to revert changes, exiting.", e);
 //                    }

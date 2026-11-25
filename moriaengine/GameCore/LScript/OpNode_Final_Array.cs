@@ -124,8 +124,6 @@
 //                throw;
 //            } catch (FatalException) {
 //                throw;
-//            } catch (TransException) {
-//                throw;
 //            } catch (Exception e) {
 //                throw new InterpreterException("Exception while creating array",
 //                    this.line, this.column, this.filename, ParentScriptHolder.GetDecoratedName(), e);

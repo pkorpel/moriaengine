@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
@@ -360,7 +359,7 @@ namespace SteamEngine {
 			this.TryTrigger(TriggerKey.containerOpen, sa);
 			try {
 				this.On_ContainerOpen(viewer, viewerState, viewerConn);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]

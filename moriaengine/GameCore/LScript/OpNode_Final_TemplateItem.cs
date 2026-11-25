@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using PerCederberg.Grammatica.Parser;
-using Shielded;
 
 namespace SteamEngine.LScript {
 	[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores"), SuppressMessage("Microsoft.Naming", "CA1706:ShortAcronymsShouldBeUppercase")]
@@ -71,8 +70,6 @@ namespace SteamEngine.LScript {
 				throw ie;
 			} catch (FatalException) {
 				throw;
-			} catch (TransException) {
-				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while evaluating (TEMPLATE)ITEM expression",
 					this.line, this.column, this.filename, this.ParentScriptHolder.GetDecoratedName(), e);
@@ -96,8 +93,6 @@ namespace SteamEngine.LScript {
 				ie.AddTrace(this);
 				throw ie;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while evaluating (TEMPLATE)ITEM expression",

@@ -17,7 +17,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
@@ -83,7 +82,7 @@ namespace SteamEngine {
 			this.TryTrigger(TriggerKey.dupe, new ScriptArgs(original));
 			try {
 				this.On_Dupe(original);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		internal override bool IsLimbo {
@@ -185,13 +184,13 @@ namespace SteamEngine {
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 			try {
 				this.On_LeaveItem(args);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 			cont.TryTrigger(TriggerKey.itemLeave, args);
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 			try {
 				cont.On_ItemLeave(args);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 
 			cont.ItemMakeLimbo(this);
@@ -217,26 +216,26 @@ namespace SteamEngine {
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					this.On_Unequip(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				cont.TryTrigger(TriggerKey.itemUnEquip, args);
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					cont.On_ItemUnequip(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 			} else {
 				this.TryTrigger(TriggerKey.leaveChar, args);
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					this.On_LeaveChar(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				cont.TryTrigger(TriggerKey.itemLeave, args);
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					cont.On_ItemLeave(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 			}
 
@@ -269,7 +268,7 @@ namespace SteamEngine {
 				this.ReturnOnGroundIfNeeded(point);
 				try {
 					this.On_LeaveRegion(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnOnGroundIfNeeded(point);
 				Region.Trigger_ItemLeave(args);
 
@@ -309,13 +308,13 @@ namespace SteamEngine {
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 			try {
 				this.On_EnterItem(args);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 			cont.TryTrigger(TriggerKey.itemEnter, args);
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 			try {
 				cont.On_ItemEnter(args);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			this.ReturnIntoItemIfNeeded(cont, x, y);
 		}
 
@@ -383,7 +382,7 @@ namespace SteamEngine {
 				if (result != TriggerResult.Cancel && waitingStack.Cont == this) {
 					try {
 						result = toStack.On_StackOnItem(args);
-					} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					toStack.ReturnIntoItemIfNeeded(this, toStackX, toStackY);
 					if (result != TriggerResult.Cancel && waitingStack.Cont == this) {
 						result = waitingStack.TryCancellableTrigger(TriggerKey.itemStackOn, args);
@@ -391,7 +390,7 @@ namespace SteamEngine {
 						if (result != TriggerResult.Cancel && waitingStack.Cont == this) {
 							try {
 								result = waitingStack.On_ItemStackOn(args);
-							} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+							} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 							if (result != TriggerResult.Cancel && waitingStack.Cont == this) {
 								toStack.InternalDelete();
 								waitingStack.Amount = tmpAmount;
@@ -428,7 +427,7 @@ namespace SteamEngine {
 				if (result != TriggerResult.Cancel && waitingStack.Cont == null) {
 					try {
 						result = toStack.On_StackOnItem(args);
-					} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					toStack.ReturnOnGroundIfNeeded(toStackPoint);
 					if (result != TriggerResult.Cancel && waitingStack.Cont == null) {
 						result = waitingStack.TryCancellableTrigger(TriggerKey.itemStackOn, args);
@@ -436,7 +435,7 @@ namespace SteamEngine {
 						if (result != TriggerResult.Cancel && waitingStack.Cont == null) {
 							try {
 								result = waitingStack.On_ItemStackOn(args);
-							} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+							} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 							if (result != TriggerResult.Cancel && waitingStack.Cont == null) {
 								toStack.InternalDelete();
 								waitingStack.Amount = tmpAmount;
@@ -468,26 +467,26 @@ namespace SteamEngine {
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					this.On_Equip(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				cont.TryTrigger(TriggerKey.itemEquip, args);
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					cont.On_ItemEquip(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 			} else {
 				this.TryTrigger(TriggerKey.enterChar, args);
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					this.On_EnterChar(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				cont.TryTrigger(TriggerKey.itemEnter, args);
 				this.ReturnIntoCharIfNeeded(cont, layer);
 				try {
 					cont.On_ItemEnter(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				this.ReturnIntoCharIfNeeded(cont, layer);
 			}
 
@@ -514,7 +513,7 @@ namespace SteamEngine {
 			this.ReturnOnGroundIfNeeded(point);
 			try {
 				this.On_EnterRegion(args);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			this.ReturnOnGroundIfNeeded(point);
 			Region.Trigger_ItemEnter(args);
 		}
@@ -771,7 +770,7 @@ namespace SteamEngine {
 
 			try {
 				this.On_SplitFromStack(stack);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		public virtual void On_SplitFromStack(AbstractItem leftOverStack) {
@@ -1054,13 +1053,13 @@ namespace SteamEngine {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = this.On_DenyPickupItem(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = item.TryCancellableTrigger(TriggerKey.denyPickup, args);
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = item.On_DenyPickup(args);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 						if (result != TriggerResult.Cancel) {
 							Thing c = item.Cont;
@@ -1071,7 +1070,7 @@ namespace SteamEngine {
 									if (result != TriggerResult.Cancel) {
 										try {
 											contItem.On_DenyPickupItemFrom(args);
-										} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+										} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 									}
 								} else {
 									AbstractCharacter contChar = (AbstractCharacter) c;
@@ -1079,7 +1078,7 @@ namespace SteamEngine {
 									if (result != TriggerResult.Cancel) {
 										try {
 											contChar.On_DenyPickupItemFrom(args);
-										} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+										} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 									}
 								}
 							} else {
@@ -1114,19 +1113,19 @@ namespace SteamEngine {
 				if (result != TriggerResult.Cancel) {
 					try {
 						result = this.On_DenyPutItemInItem(args);
-					} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					if (result != TriggerResult.Cancel) {
 						result = item.TryCancellableTrigger(TriggerKey.denyPutInItem, args);
 						if (result != TriggerResult.Cancel) {
 							try {
 								result = item.On_DenyPutInItem(args);
-							} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+							} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 							if (result != TriggerResult.Cancel) {
 								result = targetCont.TryCancellableTrigger(TriggerKey.denyPutItemIn, args);
 								if (result != TriggerResult.Cancel) {
 									try {
 										result = targetCont.On_DenyPutItemIn(args);
-									} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+									} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 								}
 							}
 						}
@@ -1254,13 +1253,13 @@ namespace SteamEngine {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = item.On_PutOnItem(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = target.TryCancellableTrigger(TriggerKey.putItemOn, args);
 					if (result != TriggerResult.Cancel) {
 						try {
 							target.On_PutItemOn(args);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					}
 				}
 			}
@@ -1284,13 +1283,13 @@ namespace SteamEngine {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = this.On_DenyPutItemOnGround(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = item.TryCancellableTrigger(TriggerKey.denyPutOnGround, args);
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = item.On_DenyPutOnGround(args);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 						if (result != TriggerResult.Cancel) {
 							Region region = Map.GetMap(m).GetRegionFor(x, y);
@@ -1337,19 +1336,19 @@ namespace SteamEngine {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = this.On_PutItemOnChar(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = item.TryCancellableTrigger(TriggerKey.putOnChar, args);
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = item.On_PutOnChar(args);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 						if (result != TriggerResult.Cancel) {
 							result = target.TryCancellableTrigger(TriggerKey.putItemOn, args);
 							if (result != TriggerResult.Cancel) {
 								try {
 									result = target.On_PutItemOn(args);
-								} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+								} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 							}
 						}
 					}
@@ -1413,19 +1412,19 @@ namespace SteamEngine {
 					if (result != TriggerResult.Cancel) {
 						try {
 							result = this.On_DenyEquipOnChar(args);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 						if (result != TriggerResult.Cancel) {
 							result = target.TryCancellableTrigger(TriggerKey.denyEquip, args);
 							if (result != TriggerResult.Cancel) {
 								try {
 									result = target.On_DenyEquip(args);
-								} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+								} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 								if (result != TriggerResult.Cancel) {
 									result = item.TryCancellableTrigger(TriggerKey.denyEquip, args);
 									if (result != TriggerResult.Cancel) {
 										try {
 											item.On_DenyEquip(args);
-										} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+										} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 									}
 								}
 							}

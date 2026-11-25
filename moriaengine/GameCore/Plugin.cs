@@ -17,7 +17,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 
@@ -89,8 +88,6 @@ namespace SteamEngine {
 					try {
 						compiledRetVal = compiledTriggers.Run(this, tk, sa);
 					} catch (FatalException) {
-						throw;
-					} catch (TransException) {
 						throw;
 					} catch (Exception e) {
 						Logger.WriteError(e);

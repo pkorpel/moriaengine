@@ -16,10 +16,9 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.LScript;
 
@@ -78,8 +77,7 @@ namespace SteamEngine {
 		private ConstantValue implementation;
 		private bool unloaded;
 
-		private static readonly ShieldedDictNc<string, Constant> allConstantsByName =
-			new ShieldedDictNc<string, Constant>(comparer: StringComparer.OrdinalIgnoreCase);
+		private static ConcurrentDictionary<string, Constant> allConstantsByName = new ConcurrentDictionary<string, Constant>(StringComparer.OrdinalIgnoreCase);
 
 		//		internal Constant(string filename, int line, string name, object value) : this(name, value) {
 		//			this.filename = filename;
@@ -132,16 +130,12 @@ namespace SteamEngine {
 		}
 
 		public static Constant Set(string name, object newValue) {
-			Shield.AssertInTransaction();
-			Constant constant;
-			if (!allConstantsByName.TryGetValue(name, out constant)) {
-				constant = new Constant(name, newValue);
-				allConstantsByName.Add(name, constant);
-			} else {
-				constant.Set(newValue);
-			}
-
-			return constant;
+			return allConstantsByName.AddOrUpdate(name,
+				n => new Constant(n, newValue),
+				(n, existing) => {
+					existing.Set(newValue);
+					return existing;
+				});
 		}
 
 		public static Constant GetByName(string name) {
@@ -155,8 +149,6 @@ namespace SteamEngine {
 		}
 
 		internal static Constant[] Load(PropsSection input) {
-			Shield.AssertInTransaction();
-
 			List<Constant> list = new List<Constant>();
 			string line;
 			int linenum = input.HeaderLine;
@@ -183,19 +175,17 @@ namespace SteamEngine {
 					value = Utility.Uncomment(line.Substring(delimiterAt + 1, line.Length - (delimiterAt + 1)));
 				}
 
-				Constant d = null;
+				Constant d;
 				try {
-					if (!allConstantsByName.TryGetValue(name, out d)) {
-						d = new Constant(name, null);
-						allConstantsByName.Add(name, d);
-					} else {
-						if (d.unloaded) {
-							d.unloaded = false;
-						} else {
-							throw new SEException(input.Filename, linenum,
-								"Constant " + LogStr.Ident(name) + " defined multiple times. Ignoring");
-						}
-					}
+					d = allConstantsByName.AddOrUpdate(name,
+						n => new Constant(n, null),
+						(n, prev) => {
+							if (prev.unloaded) {
+								prev.unloaded = false;
+								return prev;
+							}
+							throw new SEException(input.Filename, linenum, "Constant " + LogStr.Ident(name) + " defined multiple times. Ignoring");
+						});
 				} catch (SEException e) {
 					Logger.WriteError(e);
 					continue;
@@ -229,20 +219,19 @@ namespace SteamEngine {
 
 		/// <summary>This method is called on startup when the resolveEverythingAtStart in steamengine.ini is set to True</summary>
 		public static void ResolveAll() {
-			var allConstans = Shield.InTransaction(allConstantsByName.Values.ToList);
-			var count = allConstans.Count;
+			int count = allConstantsByName.Count;
 			Logger.WriteDebug("Resolving " + count + " constants");
 			DateTime before = DateTime.Now;
 			int a = 0;
 			int countPerCent = count / 200;
-			foreach (var constant in allConstans) {
+			foreach (Constant c in allConstantsByName.Values) {
 				if ((a % countPerCent) == 0) {
 					Logger.SetTitle("Resolving Constants: " + ((a * 100) / count) + " %");
 				}
-				if (!constant.unloaded) {//those should have already stated what's the problem :)
-					TemporaryValue tv = constant.implementation as TemporaryValue;
+				if (!c.unloaded) {//those should have already stated what's the problem :)
+					TemporaryValue tv = c.implementation as TemporaryValue;
 					if (tv != null) {
-						constant.ResolveValueFromScript(tv.str);
+						c.ResolveValueFromScript(tv.str);
 					}
 				}
 				a++;
@@ -290,7 +279,6 @@ namespace SteamEngine {
 		}
 
 		internal static void ForgetAll() {
-			Shield.AssertInTransaction();
 			allConstantsByName.Clear();
 		}
 

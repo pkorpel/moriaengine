@@ -22,7 +22,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
@@ -403,8 +402,6 @@ namespace SteamEngine {
 				try {
 					this.LoadLine(ps.Filename, p.Line, p.Name.ToLowerInvariant(), p.Value);
 				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
 					throw;
 				} catch (Exception ex) {
 					Logger.WriteWarning(ps.Filename, p.Line, ex);

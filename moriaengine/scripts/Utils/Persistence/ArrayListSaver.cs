@@ -17,7 +17,6 @@
 
 using System;
 using System.Collections;
-using Shielded;
 using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
@@ -59,8 +58,6 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return list;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (SEException sex) {
 				sex.TryAddFileLineInfo(input.Filename, currentLineNumber);

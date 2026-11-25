@@ -17,7 +17,6 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 using System;
 using System.Collections.Generic;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
@@ -89,7 +88,7 @@ namespace SteamEngine.CompiledScripts {
 			this.def.TryTrigger(this, RoleDef.tkCreate, null);
 			try {
 				this.On_Create();
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		internal void Trigger_Destroy() {
@@ -98,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 			this.def.TryTrigger(this, RoleDef.tkDestroy, null);
 			try {
 				this.On_Destroy();
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		internal DenyResult Trigger_DenyAddMember(Character chr) {
@@ -106,7 +105,7 @@ namespace SteamEngine.CompiledScripts {
 			if (TriggerResult.Cancel != this.def.TryCancellableTrigger(this, RoleDef.tkDenyAddMember, args)) {
 				try {
 					this.On_DenyAddMember(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 			return args.Result;
 		}
@@ -115,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 			this.def.TryTrigger(this, RoleDef.tkMemberAdded, new ScriptArgs(newMember, membership));
 			try {
 				this.On_MemberAdded(newMember, membership);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		internal DenyResult Trigger_DenyRemoveMember(Character chr, IRoleMembership membership) {
@@ -123,7 +122,7 @@ namespace SteamEngine.CompiledScripts {
 			if (TriggerResult.Cancel != this.def.TryCancellableTrigger(this, RoleDef.tkDenyRemoveMember, args)) {
 				try {
 					this.On_DenyRemoveMember(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 			return args.Result;
 		}
@@ -132,7 +131,7 @@ namespace SteamEngine.CompiledScripts {
 			this.def.TryTrigger(this, RoleDef.tkMemberRemoved, new ScriptArgs(chr, membership, beingDestroyed));
 			try {
 				this.On_MemberRemoved(chr, membership, beingDestroyed);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		/// <summary>Trigger called when the new role is created</summary>
@@ -265,8 +264,6 @@ namespace SteamEngine.CompiledScripts {
 						role.LoadLine(input.Filename, p.Line, p.Name.ToLowerInvariant(), p.Value);
 					} catch (FatalException) {
 						throw;
-					} catch (TransException) {
-						throw;
 					} catch (Exception ex) {
 						Logger.WriteWarning(input.Filename, p.Line, ex);
 					}
@@ -274,8 +271,6 @@ namespace SteamEngine.CompiledScripts {
 
 				return role;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (SEException sex) {
 				sex.TryAddFileLineInfo(input.Filename, currentLineNumber);

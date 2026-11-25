@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.Communication {
@@ -104,8 +103,6 @@ namespace SteamEngine.Communication {
 					state.On_PacketBeingHandled(packet);
 					packet.Handle(conn, state);
 				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
 					throw;
 				} catch (Exception e) {
 					Logger.WriteCritical("Exception while handling packet " + packet, e);

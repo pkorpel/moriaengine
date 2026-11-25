@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
@@ -57,7 +56,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Return enumerable containing all abilities (copying the values from the main dictionary)</summary>
 		//public static Dictionary<string,AbilityDef>.ValueCollection AllAbilities {
-		public static IEnumerable<AbilityDef> AllAbilities {
+		public static ICollection<AbilityDef> AllAbilities {
 			get {
 				return AllIndexedDefs;
 			}
@@ -217,13 +216,13 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = chr.On_ActivateAbility(this, ab);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = this.TryCancellableTrigger(chr, tkActivate, null);
 					if (result != TriggerResult.Cancel) {
 						try {
 							this.On_Activate(chr, ab);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					}
 				}
 			}
@@ -251,13 +250,13 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				try {
 					result = chr.On_DenyActivateAbility(denyArgs);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
 					result = this.TryCancellableTrigger(chr, tkDenyActivate, denyArgs);
 					if (result != TriggerResult.Cancel) {
 						try {
 							this.On_DenyActivate(denyArgs);
-						} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					}
 				}
 			}
@@ -304,7 +303,7 @@ namespace SteamEngine.CompiledScripts {
 			this.TryTrigger(chr, tkAssign, sa);
 			try {
 				this.On_Assign(chr, ab);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		/// <summary>This method implements the assigning of the first point to the Ability</summary>
@@ -317,7 +316,7 @@ namespace SteamEngine.CompiledScripts {
 			this.TryTrigger(chr, tkUnAssign, sa);
 			try {
 				this.On_UnAssign(chr, ab);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		/// <summary>This method implements the assigning of the first point to the Ability</summary>
@@ -330,12 +329,12 @@ namespace SteamEngine.CompiledScripts {
 			chr.TryTrigger(tkAbilityValueChanged, sa);
 			try {
 				chr.On_AbilityValueChanged(this, ab, previousValue);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 			this.TryTrigger(chr, tkValueChanged, sa);
 			try {
 				this.On_ValueChanged(chr, ab, previousValue);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 
 			int newValue = ab.ModifiedPoints;
 			if (previousValue == 0) {

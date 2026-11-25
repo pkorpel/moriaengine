@@ -16,11 +16,11 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Regions;
 
@@ -62,8 +62,8 @@ namespace SteamEngine {
 		//private static AbstractItemDef[] itemModelDefs = new AbstractItemDef[MaxItemModels];
 		//private static AbstractCharacterDef[] charModelDefs = new AbstractCharacterDef[MaxCharModels];
 
-		private static ShieldedDictNc<int, AbstractItemDef> itemModelDefs = new ShieldedDictNc<int, AbstractItemDef>();
-		private static ShieldedDictNc<int, AbstractCharacterDef> charModelDefs = new ShieldedDictNc<int, AbstractCharacterDef>();
+		private static ConcurrentDictionary<int, AbstractItemDef> itemModelDefs = new ConcurrentDictionary<int, AbstractItemDef>();
+		private static ConcurrentDictionary<int, AbstractCharacterDef> charModelDefs = new ConcurrentDictionary<int, AbstractCharacterDef>();
 		private static int highestItemModel;
 		private static int highestCharModel;
 
@@ -154,7 +154,8 @@ namespace SteamEngine {
 		}
 
 		public virtual int Height {
-			get {
+			get
+			{
 				if (this.height.IsDefaultCodedValue) {
 					return Map.PersonHeight;
 				}
@@ -165,7 +166,8 @@ namespace SteamEngine {
 			}
 		}
 
-		public override string ToString() {
+		public override string ToString()
+		{
 			if (this.model.CurrentValue == null) {
 				return this.Name + ": " + this.Defname + "//" + this.Altdefname + " (null model!)";
 			}
@@ -260,7 +262,7 @@ namespace SteamEngine {
 			createdThing.TryTrigger(TriggerKey.create, null);
 			try {
 				createdThing.On_Create();
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
@@ -273,39 +275,51 @@ namespace SteamEngine {
 
 		#region TriggerGroupHolder helper methods
 		internal void Trigger(Thing self, TriggerKey td, ScriptArgs sa) {
-			Shield.AssertInTransaction();
-			foreach (var tg in this.GetAllTriggerGroups()) {
-				tg.Run(self, td, sa);
+			if (this.firstTGListNode != null) {
+				PluginHolder.TGListNode curNode = this.firstTGListNode;
+				do {
+					curNode.storedTG.Run(self, td, sa);
+					curNode = curNode.nextNode;
+				} while (curNode != null);
 			}
 		}
 
 		internal void TryTrigger(Thing self, TriggerKey td, ScriptArgs sa) {
-			Shield.AssertInTransaction();
-			foreach (var tg in this.GetAllTriggerGroups()) {
-				tg.TryRun(self, td, sa);
+			if (this.firstTGListNode != null) {
+				PluginHolder.TGListNode curNode = this.firstTGListNode;
+				do {
+					curNode.storedTG.TryRun(self, td, sa);
+					curNode = curNode.nextNode;
+				} while (curNode != null);
 			}
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal TriggerResult CancellableTrigger(Thing self, TriggerKey td, ScriptArgs sa) {
-			Shield.AssertInTransaction();
-			foreach (var tg in this.GetAllTriggerGroups()) {
-				var retVal = tg.Run(self, td, sa);
-				if (TagMath.Is1(retVal)) {
-					return TriggerResult.Cancel;
-				}
+			if (this.firstTGListNode != null) {
+				PluginHolder.TGListNode curNode = this.firstTGListNode;
+				do {
+					object retVal = curNode.storedTG.Run(self, td, sa);
+					if (TagMath.Is1(retVal)) {
+						return TriggerResult.Cancel;
+					}
+					curNode = curNode.nextNode;
+				} while (curNode != null);
 			}
 			return TriggerResult.Continue;
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal TriggerResult TryCancellableTrigger(Thing self, TriggerKey td, ScriptArgs sa) {
-			Shield.AssertInTransaction();
-			foreach (var tg in this.GetAllTriggerGroups()) {
-				var retVal = tg.TryRun(self, td, sa);
-				if (TagMath.Is1(retVal)) {
-					return TriggerResult.Cancel;
-				}
+			if (this.firstTGListNode != null) {
+				PluginHolder.TGListNode curNode = this.firstTGListNode;
+				do {
+					object retVal = curNode.storedTG.TryRun(self, td, sa);
+					if (TagMath.Is1(retVal)) {
+						return TriggerResult.Cancel;
+					}
+					curNode = curNode.nextNode;
+				} while (curNode != null);
 			}
 			return TriggerResult.Continue;
 		}
@@ -455,44 +469,35 @@ namespace SteamEngine {
 			Logger.WriteDebug("Highest itemdef model #: " + highestItemModel + " (0x" + highestItemModel.ToString("x", CultureInfo.InvariantCulture) + ")");
 			Logger.WriteDebug("Highest chardef model #: " + highestCharModel + " (0x" + highestCharModel.ToString("x", CultureInfo.InvariantCulture) + ")");
 
-			var allScripts = AllScripts;
-			int count = allScripts.Count;
-
+			int count = AllScriptsByDefname.Count;
 			using (StopWatch.StartAndDisplay("Resolving dupelists and multidata...")) {
 				int a = 0;
 				int countPerCent = count / 200;
-				foreach (var td in allScripts) {
+				foreach (AbstractScript td in AllScripts) {
 					if ((a % countPerCent) == 0) {
 						Logger.SetTitle("Resolving dupelists and multidata: " + ((a * 100) / count) + " %");
 					}
-					var idef = td as AbstractItemDef;
+					AbstractItemDef idef = td as AbstractItemDef;
 					if (idef != null) {
 						try {
-							Shield.InTransaction(() => {
-								var dupeItem = idef.DupeItem;
-								if (dupeItem != null) {
-									dupeItem.AddToDupeList(idef);
-								}
-							});
+							AbstractItemDef dupeItem = idef.DupeItem;
+							if (dupeItem != null) {
+								dupeItem.AddToDupeList(idef);
+							}
 						} catch (FatalException) {
-							throw;
-						} catch (TransException) {
 							throw;
 						} catch (Exception e) {
 							Logger.WriteWarning(e);
 						}
 
 						try {
-							Shield.InTransaction(() => {
-								idef.multiData = MultiData.GetByModel(idef.Model);
-							});
+							idef.multiData = MultiData.GetByModel(idef.Model);
 						} catch (FatalException) {
-							throw;
-						} catch (TransException) {
 							throw;
 						} catch (Exception e) {
 							Logger.WriteWarning(e);
 						}
+
 					}
 					a++;
 				}
@@ -503,7 +508,7 @@ namespace SteamEngine {
 		internal new static void ForgetAll() {
 			thingDefTypesByThingType.Clear();//we can assume that inside core there are no non-abstract thingdefs
 			thingTypesByThingDefType.Clear();//we can assume that inside core there are no non-abstract thingdefs
-											 //thingDefTypesByName.Clear();
+			//thingDefTypesByName.Clear();
 			thingDefCtors.Clear();
 
 			itemModelDefs.Clear();

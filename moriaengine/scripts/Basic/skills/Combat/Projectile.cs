@@ -16,7 +16,6 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using System;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
@@ -48,7 +47,7 @@ namespace SteamEngine.CompiledScripts {
 			this.TryTrigger(coupledWithWeaponTK, new ScriptArgs(self, weapon));
 			try {
 				this.On_CoupledWithWeapon(self, weapon);
-			} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		//called when this is found at the given char and is going to be used with the given weapon as projectile

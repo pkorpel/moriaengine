@@ -21,10 +21,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using SteamEngine.Persistence;
@@ -32,30 +30,35 @@ using SteamEngine.Persistence;
 namespace SteamEngine {
 	public abstract class AbstractDef : AbstractScript, ITagHolder {
 		static int uids;
-		private readonly int uid;
+		private int uid;
 
-		//keys are both strings and tagkeys
-		private readonly ShieldedDictNc<object, FieldValue> fieldValues =
-			new ShieldedDictNc<object, FieldValue>(comparer: new GenericComparerDecorator(StringComparer.OrdinalIgnoreCase));
-
+		private readonly Hashtable fieldValues = new Hashtable(StringComparer.OrdinalIgnoreCase); //not dictionary because keys are both strings and tagkeys
 		private readonly string filename;
 		private readonly int headerLine;
-		private readonly Shielded<string> shieldedAltDefname = new Shielded<string>();
+		private string altdefname;
 		private bool alreadySaved;
 
 		#region Accessors
-		public string Filename => this.filename;
+		public string Filename {
+			get {
+				return this.filename;
+			}
+		}
 
-		public int HeaderLine => this.headerLine;
+		public int HeaderLine {
+			get {
+				return this.headerLine;
+			}
+		}
 
 		public override string ToString() {
 			//zobrazovat budeme radsi napred defname a pak udaj o typu (v dialozich se to totiz casto nevejde)
-			if (string.IsNullOrEmpty(this.Altdefname) || string.IsNullOrEmpty(this.Defname)) {
+			if (string.IsNullOrEmpty(this.altdefname) || string.IsNullOrEmpty(this.Defname)) {
 				return string.Concat("[", this.PrettyDefname, " : ", Tools.TypeToString(this.GetType()), "]");
 				//return string.Concat("[", Tools.TypeToString(this.GetType()), " ", this.PrettyDefname, "]");
 			}
-			return string.Concat("[", this.Defname, "/", this.Altdefname, " : ", Tools.TypeToString(this.GetType()), "]");
-			//return string.Concat("[", Tools.TypeToString(this.GetType()), " ", this.Defname, "/", this.shieldedAltDefname, "]");
+			return string.Concat("[", this.Defname, "/", this.altdefname, " : ", Tools.TypeToString(this.GetType()), "]");
+			//return string.Concat("[", Tools.TypeToString(this.GetType()), " ", this.Defname, "/", this.altdefname, "]");
 		}
 
 		public string Filepos {
@@ -66,12 +69,11 @@ namespace SteamEngine {
 
 		public string Altdefname {
 			get {
-				return this.shieldedAltDefname.Value;
+				return this.altdefname;
 			}
 			protected set {
-				Shield.AssertInTransaction();
 				this.Unregister();
-				this.shieldedAltDefname.Value = value;
+				this.altdefname = value;
 				this.Register();
 			}
 		}
@@ -80,9 +82,8 @@ namespace SteamEngine {
 			get {
 				//from the two available defnames (like c_0x190 and c_man) it returns the more understandable (c_man)
 				if (this.Defname.IndexOf("_0x") > 0) {
-					var alt = this.Altdefname;
-					if (alt != null) {
-						return alt;
+					if (this.altdefname != null) {
+						return this.altdefname;
 					}
 				}
 				return this.Defname;
@@ -104,7 +105,6 @@ namespace SteamEngine {
 
 		#region Loading from saves
 		internal static void LoadSectionFromSaves(PropsSection input) {
-			Shield.AssertInTransaction();
 			//todo: a way to load new defs (or just regions)
 
 			string typeName = input.HeaderType;
@@ -133,13 +133,12 @@ namespace SteamEngine {
 
 		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "filename"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		private void LoadField_Delayed(object resolvedObject, string filename, int line, object args) {
-			Shield.AssertInTransaction();
 			string fieldName = (string) args;
-			FieldValue fv;
+			FieldValue fv = (FieldValue) this.fieldValues[fieldName];
 
-			if (!this.fieldValues.TryGetValue(fieldName, out fv)) {//that means it's not in scripts
+			if (fv == null) {//that means it's not in scripts
 				Match m = TagHolder.tagRE.Match(fieldName);
-				if (m.Success) {    //If the name begins with 'tag.'
+				if (m.Success) {	//If the name begins with 'tag.'
 					string tagName = m.Groups["name"].Value;
 					TagKey tk = TagKey.Acquire(tagName);
 					tagName = "tag." + tagName;
@@ -157,8 +156,6 @@ namespace SteamEngine {
 					fv.CurrentValue = resolvedObject;
 				} catch (FatalException) {
 					throw;
-				} catch (TransException) {
-					throw;
 				} catch (Exception e) {
 					Logger.WriteWarning(filename, line, e);
 				}
@@ -168,13 +165,11 @@ namespace SteamEngine {
 
 		#region FieldValue methods
 		protected FieldValue InitTypedField(string name, object value, Type type) {
-			Shield.AssertInTransaction();
 			if (typeof(ThingDef).IsAssignableFrom(type)) {
 				return this.InitThingDefField(name, value, type);
 			}
-
-			FieldValue fieldValue;
-			if (!this.fieldValues.TryGetValue(name, out fieldValue)) {
+			FieldValue fieldValue = (FieldValue) this.fieldValues[name];
+			if (fieldValue == null) {
 				fieldValue = new FieldValue(name, FieldValueType.Typed, type, value);
 				this.fieldValues[name] = fieldValue;
 			} else {
@@ -184,9 +179,8 @@ namespace SteamEngine {
 		}
 
 		protected FieldValue InitThingDefField(string name, object value, Type type) {
-			Shield.AssertInTransaction();
-			FieldValue fieldValue;
-			if (!this.fieldValues.TryGetValue(name, out fieldValue)) {
+			FieldValue fieldValue = (FieldValue) this.fieldValues[name];
+			if (fieldValue == null) {
 				fieldValue = new FieldValue(name, FieldValueType.ThingDefType, type, value);
 				this.fieldValues[name] = fieldValue;
 			} else {
@@ -196,9 +190,8 @@ namespace SteamEngine {
 		}
 
 		protected FieldValue InitModelField(string name, object value) {
-			Shield.AssertInTransaction();
-			FieldValue fieldValue;
-			if (!this.fieldValues.TryGetValue(name, out fieldValue)) {
+			FieldValue fieldValue = (FieldValue) this.fieldValues[name];
+			if (fieldValue == null) {
 				fieldValue = new FieldValue(name, FieldValueType.Model, null, value);
 				this.fieldValues[name] = fieldValue;
 			} else {
@@ -208,9 +201,8 @@ namespace SteamEngine {
 		}
 
 		protected FieldValue InitTypelessField(string name, object value) {
-			Shield.AssertInTransaction();
-			FieldValue fieldValue;
-			if (!this.fieldValues.TryGetValue(name, out fieldValue)) {
+			FieldValue fieldValue = (FieldValue) this.fieldValues[name];
+			if (fieldValue == null) {
 				fieldValue = new FieldValue(name, FieldValueType.Typeless, null, value);
 				this.fieldValues[name] = fieldValue;
 			} else {
@@ -228,21 +220,20 @@ namespace SteamEngine {
 		//}
 
 		protected virtual void SetCurrentFieldValue(string name, object value) {
-			Shield.AssertInTransaction();
 			((FieldValue) this.fieldValues[name]).CurrentValue = value;
 		}
 
 		protected object GetDefaultFieldValue(string name) {
-			FieldValue fv;
-			if (this.fieldValues.TryGetValue(name, out fv)) {
+			FieldValue fv = (FieldValue) this.fieldValues[name];
+			if (fv != null) {
 				return fv.DefaultValue;
 			}
 			return null;
 		}
 
 		protected object GetCurrentFieldValue(string name) {
-			FieldValue fv;
-			if (this.fieldValues.TryGetValue(name, out fv)) {
+			FieldValue fv = (FieldValue) this.fieldValues[name];
+			if (fv != null) {
 				return fv.CurrentValue;
 			}
 			return null;
@@ -254,18 +245,16 @@ namespace SteamEngine {
 			Logger.WriteDebug("Saving defs.");
 			output.WriteComment("Defs");
 
-			var all = AllScripts;
-
-			foreach (AbstractScript script in all) {
+			foreach (AbstractScript script in AllScripts) {
 				AbstractDef def = script as AbstractDef;
 				if (def != null) {
 					def.alreadySaved = false;
 				}
 			}
-			int count = all.Count;
+			int count = AllScripts.Count;
 			int a = 0;
 			int countPerCent = count / 200;
-			foreach (AbstractScript script in all) {
+			foreach (AbstractScript script in AllScripts) {
 				AbstractDef def = script as AbstractDef;
 				if (def != null) {
 					if ((a % countPerCent) == 0) {
@@ -285,15 +274,13 @@ namespace SteamEngine {
 
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void Save(SaveStream output) {
-			Shield.AssertInTransaction();
-
 			bool headerWritten = false;
-			foreach (var entry in this.fieldValues) {
-				if (entry.Key is TagKey) { //so that tags dont get written twice
+			foreach (DictionaryEntry entry in this.fieldValues) {
+				if (entry.Key is TagKey) {//so that tags dont get written twice
 					continue;
 				}
 				try {
-					var fv = entry.Value;
+					FieldValue fv = (FieldValue) entry.Value;
 					if (fv.ShouldBeSaved()) {
 						if (!headerWritten) {
 							output.WriteLine();
@@ -303,8 +290,6 @@ namespace SteamEngine {
 						output.WriteValue(fv.Name, fv.CurrentValue);
 					}
 				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
 					throw;
 				} catch (Exception e) {
 					Logger.WriteWarning(e);//this should not actually happen, I hope :)
@@ -317,20 +302,18 @@ namespace SteamEngine {
 		#endregion Saving
 
 		#region Loading from scripts
-		private static readonly Type[] constructorParamTypes = { typeof(string), typeof(string), typeof(int) };
+		private static readonly Type[] ConstructorParamTypes = { typeof(string), typeof(string), typeof(int) };
 
-		private static readonly ShieldedDictNc<string, ConstructorInfo> constructorsByTypeName =
-			new ShieldedDictNc<string, ConstructorInfo>(comparer: StringComparer.OrdinalIgnoreCase);
+		private static Dictionary<string, ConstructorInfo> constructorsByTypeName = new Dictionary<string, ConstructorInfo>(StringComparer.OrdinalIgnoreCase);
 
 		public delegate void DefnameParser(PropsSection section, out string defname, out string altdefname);
 
-		private static readonly ShieldedDictNc<Type, DefnameParser> registeredDefnameParsersByType = new ShieldedDictNc<Type, DefnameParser>();
-		private static readonly ShieldedDictNc<Type, DefnameParser> inferredDefnameParsersByType = new ShieldedDictNc<Type, DefnameParser>();
+		private static Dictionary<Type, DefnameParser> defnameParsersByType_Registered = new Dictionary<Type, DefnameParser>();
+		private static Dictionary<Type, DefnameParser> defnameParsersByType_Inferred = new Dictionary<Type, DefnameParser>();
 
-		private readonly ShieldedSeqNc<PropsLine> postponedLines = new ShieldedSeqNc<PropsLine>();
+		private List<PropsLine> postponedLines;
 
 		public static Type GetDefTypeByName(string name) {
-			Shield.AssertInTransaction();
 			ConstructorInfo ctor;
 			if (constructorsByTypeName.TryGetValue(name, out ctor)) {
 				return ctor.DeclaringType;
@@ -339,31 +322,29 @@ namespace SteamEngine {
 		}
 
 		public static void RegisterDefnameParser<T>(DefnameParser parserMethod) where T : AbstractDef {
-			Shield.AssertInTransaction();
-			registeredDefnameParsersByType.Add(typeof(T), parserMethod); //throws in case of duplicity
-			inferredDefnameParsersByType.Clear();
+			defnameParsersByType_Registered.Add(typeof(T), parserMethod); //throws in case of duplicity
+			defnameParsersByType_Inferred.Clear();
 		}
 
 		private static DefnameParser GetDefnameParser(Type defType) {
-			Shield.AssertInTransaction();
 			DefnameParser parserMethod;
 
-			if (inferredDefnameParsersByType.TryGetValue(defType, out parserMethod)) {
+			if (defnameParsersByType_Inferred.TryGetValue(defType, out parserMethod)) {
 				return parserMethod;
 			}
 
 			//lazy initialisation. We're looking for the according parser
 			Type type = defType;
 			while (type != typeof(AbstractDef)) {
-				if (registeredDefnameParsersByType.TryGetValue(type, out parserMethod)) {
-					inferredDefnameParsersByType.Add(defType, parserMethod);
+				if (defnameParsersByType_Registered.TryGetValue(type, out parserMethod)) {
+					defnameParsersByType_Inferred.Add(defType, parserMethod);
 					return parserMethod;
 				}
 				type = type.BaseType;
 			}
 
 			parserMethod = DefaultDefnameParser;
-			inferredDefnameParsersByType.Add(defType, parserMethod);
+			defnameParsersByType_Inferred.Add(defType, parserMethod);
 			return parserMethod;
 		}
 
@@ -373,15 +354,12 @@ namespace SteamEngine {
 		}
 
 		public static bool RegisterSubtype(Type defType) {
-			Shield.AssertInTransaction();
 			if (!defType.IsAbstract) {
 				ConstructorInfo ci;
-				if (constructorsByTypeName.TryGetValue(defType.Name, out ci)) {
-					//we have already a Def type named like that
-					throw new OverrideNotAllowedException("Trying to overwrite class " + LogStr.Ident(ci.DeclaringType) +
-															" in the register of AbstractDef classes.");
+				if (constructorsByTypeName.TryGetValue(defType.Name, out ci)) { //we have already a Def type named like that
+					throw new OverrideNotAllowedException("Trying to overwrite class " + LogStr.Ident(ci.DeclaringType) + " in the register of AbstractDef classes.");
 				}
-				ci = defType.GetConstructor(constructorParamTypes);
+				ci = defType.GetConstructor(ConstructorParamTypes);
 				if (ci != null) {
 					constructorsByTypeName[defType.Name] = MemberWrapper.GetWrapperFor(ci);
 
@@ -404,7 +382,6 @@ namespace SteamEngine {
 		}
 
 		public static IUnloadable LoadFromScripts(PropsSection input) {
-			Shield.AssertInTransaction();
 			//it is something like this in the .scp file: [headerType headerName] = [WarcryDef a_warcry] etc.
 			string typeName = input.HeaderType;
 			ConstructorInfo constructor = constructorsByTypeName[typeName];
@@ -423,18 +400,17 @@ namespace SteamEngine {
 						def = defByAltdefname;
 						defByAltdefname = null;
 					} else if (defByAltdefname != def) {
-						throw new OverrideNotAllowedException("Header defname '" + defname + "' and alternate defname '" + altdefname +
-															  "' identify two different objects: "
-															  + "'" + def + "' and '" + defByAltdefname + "'. Ignoring.");
+						throw new OverrideNotAllowedException("Header defname '" + defname + "' and alternate defname '" + altdefname + "' identify two different objects: "
+							+ "'" + def + "' and '" + defByAltdefname + "'. Ignoring.");
 					}
 				}
 			}
 
-			//check if it isn't another type or duplicity
-			if (def != null) {
+			//check if it isn't another type or duplicity			
+			if (def != null)
+			{
 				if (def.GetType() != type) {
-					throw new OverrideNotAllowedException(
-						"You can not change the class of a Def while resync. You have to recompile or restart to achieve that. Ignoring.");
+					throw new OverrideNotAllowedException("You can not change the class of a Def while resync. You have to recompile or restart to achieve that. Ignoring.");
 				}
 				if (!def.IsUnloaded) {
 					throw new OverrideNotAllowedException(def + " defined multiple times.");
@@ -453,7 +429,7 @@ namespace SteamEngine {
 			}
 
 			constructed.InternalSetDefname(defname);
-			constructed.shieldedAltDefname.Value = altdefname;
+			constructed.altdefname = altdefname;
 
 			constructed.LoadScriptLines(input);
 
@@ -467,14 +443,14 @@ namespace SteamEngine {
 			defname = section.HeaderName.ToLowerInvariant();
 
 			bool defnameIsNum;
-			defname = DenumerizeDefname(typeName, defname, out defnameIsNum);
+			defname = DeNumerizeDefname(typeName, defname, out defnameIsNum);
 
 			altdefname = null;
 			PropsLine defnameLine = section.TryPopPropsLine("defname");
 			if (defnameLine != null) {
 				altdefname = defnameLine.Value;
 				bool altdefnameIsNum;
-				altdefname = DenumerizeDefname(typeName, altdefname, out altdefnameIsNum);
+				altdefname = DeNumerizeDefname(typeName, altdefname, out altdefnameIsNum);
 
 				if (string.Equals(defname, altdefname, StringComparison.OrdinalIgnoreCase)) {
 					Logger.WriteWarning("Defname redundantly specified for " + section.HeaderType + " " + LogStr.Ident(defname) + ".");
@@ -490,7 +466,7 @@ namespace SteamEngine {
 			}
 		}
 
-		private static string DenumerizeDefname(string typeName, string defname, out bool isNumeric) {
+		private static string DeNumerizeDefname(string typeName, string defname, out bool isNumeric) {
 			int defnum;
 			isNumeric = false;
 			if (ConvertTools.TryParseInt32(defname, out defnum)) {
@@ -505,41 +481,38 @@ namespace SteamEngine {
 		//register with static dictionaries and lists. 
 		//Can be called multiple times without harm
 		public override AbstractScript Register() {
-			Shield.AssertInTransaction();
-
-			var alt = this.Altdefname;
-			if (!string.IsNullOrEmpty(alt)) {
-				AbstractScript previous;
-				if (AllScriptsByDefname.TryGetValue(alt, out previous)) {
+			try {
+				if (!string.IsNullOrEmpty(this.altdefname)) {
+					var previous = AllScriptsByDefname.GetOrAdd(this.altdefname, this);
 					if (previous != this) {
-						throw new SEException("previous != this when registering AbstractScript '" + alt + "'");
+						throw new SEException("previous != this when registering AbstractScript '" + this.altdefname + "'");
 					}
-				} else {
-					AllScriptsByDefname.Add(alt, this);
 				}
+			} finally {
+				base.Register();
 			}
-
-			return base.Register();
+			return this;
 		}
 
 		//unregister from static dictionaries and lists. 
 		//Can be called multiple times without harm
 		protected override void Unregister() {
-			Shield.AssertInTransaction();
+			try {
+				if (!string.IsNullOrEmpty(this.altdefname)) {
 
-			var alt = this.Altdefname;
-			if (!string.IsNullOrEmpty(alt)) {
-				AbstractScript previous;
-				if (AllScriptsByDefname.TryGetValue(alt, out previous)) {
-					if (previous != this) {
-						throw new SEException("previous != this when unregistering AbstractScript '" + alt + "'. Should not happen.");
-					} else {
-						AllScriptsByDefname.Remove(alt);
+					AbstractScript previous;
+					if (AllScriptsByDefname.TryRemove(this.altdefname, out previous)) {
+						if (previous != this) {
+							if (!AllScriptsByDefname.TryAdd(this.altdefname, previous)) {
+								throw new FatalException("Parallel loading fucked up.");
+							}
+							throw new SEException("previous != this when unregistering AbstractScript '" + this.altdefname + "'");
+						}
 					}
 				}
+			} finally {
+				base.Unregister();
 			}
-
-			base.Unregister();
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -551,11 +524,12 @@ namespace SteamEngine {
 					if (name.StartsWith("tag.") || (this.fieldValues.ContainsKey(name))) {
 						this.LoadScriptLine(ps.Filename, p.Line, name, p.Value);
 					} else {
+						if (this.postponedLines == null) {
+							this.postponedLines = new List<PropsLine>();
+						}
 						this.postponedLines.Add(p);
 					}
 				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
 					throw;
 				} catch (Exception ex) {
 					Logger.WriteWarning(ps.Filename, p.Line, ex);
@@ -565,15 +539,13 @@ namespace SteamEngine {
 
 		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "filename")]
 		protected virtual void LoadScriptLine(string filename, int line, string param, string args) {
-			Shield.AssertInTransaction();
-
 			Match m = TagHolder.tagRE.Match(param);
 			FieldValue fieldValue;
-			if (m.Success) {    //If the name begins with 'tag.'
+			if (m.Success) {	//If the name begins with 'tag.'
 				string tagName = m.Groups["name"].Value;
 				TagKey tk = TagKey.Acquire(tagName);
-
-				if (!this.fieldValues.TryGetValue(tk, out fieldValue)) {
+				fieldValue = (FieldValue) this.fieldValues[tk];
+				if (fieldValue == null) {
 					tagName = "tag." + tagName;
 					fieldValue = new FieldValue(tagName, FieldValueType.Typeless, null, filename, line, args);
 					this.fieldValues[tk] = fieldValue;
@@ -591,7 +563,8 @@ namespace SteamEngine {
 					return;
 				//axis props are ignored. Or shouldnt they? :)
 				default:
-					if (this.fieldValues.TryGetValue(param, out fieldValue)) {
+					fieldValue = (FieldValue) this.fieldValues[param];
+					if (fieldValue != null) {
 						fieldValue.SetFromScripts(filename, line, args);
 						return;
 					}
@@ -600,9 +573,10 @@ namespace SteamEngine {
 		}
 
 		internal static void LoadingFinished() {
-			// load postponed lines. That are those which are not initialised by the start of the loading.
-			// this is so scripts can load dynamically named defnames, where the dynamic names can depend on not-yet-loaded other scripts
-			// this way, for example ProfessionDef definition can list skills and abilities
+
+			//load postponed lines. That are those which are not initialised by the start of the loading.
+			//this is so scripts can load dynamically named defnames, where the dynamic names can depend on not-yet-loaded other scripts
+			//this way, for example ProfessionDef definition can list skills and abilities
 			foreach (AbstractScript script in AllScripts) {
 				AbstractDef def = script as AbstractDef;
 				if (def != null) {
@@ -613,27 +587,24 @@ namespace SteamEngine {
 		}
 
 		private void LoadPostponedScriptLines() {
-			foreach (var p in Shield.InTransaction(this.postponedLines.ToList)) {
-				try {
-					Shield.InTransaction(() =>
-						this.LoadScriptLine(this.filename, p.Line, p.Name.ToLowerInvariant(), p.Value));
-				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
-					throw;
-				} catch (Exception ex) {
-					Logger.WriteWarning(this.filename, p.Line, ex);
+			if (this.postponedLines != null) {
+				foreach (PropsLine p in this.postponedLines) {
+					try {
+						this.LoadScriptLine(this.filename, p.Line, p.Name.ToLowerInvariant(), p.Value);
+					} catch (FatalException) {
+						throw;
+					} catch (Exception ex) {
+						Logger.WriteWarning(this.filename, p.Line, ex);
+					}
 				}
+				this.postponedLines = null;
 			}
-			Shield.InTransaction(this.postponedLines.Clear);
 		}
 
 		private void Trigger_AfterLoadFromScripts() {
 			try {
-				Shield.InTransaction(this.On_AfterLoadFromScripts);
+				this.On_AfterLoadFromScripts();
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (SEException se) {
 				se.TryAddFileLineInfo(this.filename, this.headerLine);
@@ -654,36 +625,31 @@ namespace SteamEngine {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public static void ResolveAll() {
-			var all = AllScripts;
-			int count = all.Count;
+			int count = AllScripts.Count;
 			Logger.WriteDebug("Resolving " + count + " defs");
 
 			DateTime before = DateTime.Now;
-			var a = new Shielded<int>();
+			int a = 0;
 			int countPerCent = count / 100;
-			foreach (var script in all) {
-				Shield.InTransaction(() => {
-					AbstractDef def = script as AbstractDef;
-					if (def != null) {
-						if ((a.Value % countPerCent) == 0) {
-							Logger.SetTitle("Resolving def field values: " + ((a.Value * 100) / count) + " %");
-						}
-						if (!def.IsUnloaded) { //those should have already stated what's the problem :)
-							foreach (FieldValue fv in def.fieldValues.Values) {
-								try {
-									fv.ResolveTemporaryState();
-								} catch (FatalException) {
-									throw;
-								} catch (TransException) {
-									throw;
-								} catch (Exception e) {
-									Logger.WriteWarning(e);
-								}
+			foreach (AbstractScript script in AllScripts) {
+				AbstractDef def = script as AbstractDef;
+				if (def != null) {
+					if ((a % countPerCent) == 0) {
+						Logger.SetTitle("Resolving def field values: " + ((a * 100) / count) + " %");
+					}
+					if (!def.IsUnloaded) {//those should have already stated what's the problem :)
+						foreach (FieldValue fv in def.fieldValues.Values) {
+							try {
+								fv.ResolveTemporaryState();
+							} catch (FatalException) {
+								throw;
+							} catch (Exception e) {
+								Logger.WriteWarning(e);
 							}
 						}
-						a.Value++;
 					}
-				});
+					a++;
+				}
 			}
 			DateTime after = DateTime.Now;
 			Logger.WriteDebug("...took " + (after - before));
@@ -691,9 +657,7 @@ namespace SteamEngine {
 		}
 
 		public override void Unload() {
-			Shield.AssertInTransaction();
-
-			foreach (FieldValue fv in this.fieldValues.Values.ToList()) {
+			foreach (FieldValue fv in this.fieldValues.Values) {
 				fv.Unload();
 			}
 
@@ -705,38 +669,33 @@ namespace SteamEngine {
 
 		//unloads instances that come from scripts.
 		internal static void ForgetScripts() {
-			ForgetAll(); //just to be sure - unregister everything. Should have been be called by Main anyway at this point
+			ForgetAll(); //just to be sure - unregister everything. Should be called by Main anyway
 
-			Shield.InTransaction(() => {
-				constructorsByTypeName.Clear(); //we assume that inside core there are no non-abstract defs
+			constructorsByTypeName.Clear();//we assume that inside core there are no non-abstract defs
 
-				//only leave the defnameParsers defined in core (like AbstractSkillDef and ThingDef probably? :)
-				inferredDefnameParsersByType.Clear();
+			//only leave the defnameParsers defined in core (like AbstractSkillDef and ThingDef probably? :)
+			defnameParsersByType_Inferred.Clear();
 
-				foreach (var t in registeredDefnameParsersByType.Keys.ToList()) {
-					if (t.Assembly != ClassManager.CoreAssembly) {
-						//not in core
-						registeredDefnameParsersByType.Remove(t);
-					}
+			foreach (Type t in new List<Type>(defnameParsersByType_Registered.Keys)) {
+				if (t.Assembly != ClassManager.CoreAssembly) { //not in core
+					defnameParsersByType_Registered.Remove(t);
 				}
-			});
+			}
 		}
 		#endregion Loading from scripts
 
 		#region ITagHolder methods
 		public object GetTag(TagKey tk) {
-			FieldValue fv;
-			if (this.fieldValues.TryGetValue(tk, out fv)) {
+			FieldValue fv = (FieldValue) this.fieldValues[tk];
+			if (fv != null) {
 				return fv.CurrentValue;
 			}
 			return null;
 		}
 
 		public void SetTag(TagKey tk, object value) {
-			Shield.AssertInTransaction();
-
-			FieldValue fv;
-			if (!this.fieldValues.TryGetValue(tk, out fv)) {
+			FieldValue fv = (FieldValue) this.fieldValues[tk];
+			if (fv == null) {
 				string tagName = "tag." + tk;
 				fv = new FieldValue(tagName, FieldValueType.Typeless, null, "", -1, "");
 				this.fieldValues[tk] = fv;
@@ -746,44 +705,24 @@ namespace SteamEngine {
 		}
 
 		public bool HasTag(TagKey tk) {
-			return this.fieldValues.ContainsKey(tk);
+			return (this.fieldValues.ContainsKey(tk));
 		}
 
 		public void RemoveTag(TagKey tk) {
-			Shield.AssertInTransaction();
-
-			FieldValue fv;
-			if (this.fieldValues.TryGetValue(tk, out fv)) {
+			FieldValue fv = (FieldValue) this.fieldValues[tk];
+			if (fv != null) {
 				fv.CurrentValue = null;
 			}
 		}
 
 		public void ClearTags() {
-			Shield.AssertInTransaction();
-
-			foreach (var entry in this.fieldValues) {
+			foreach (DictionaryEntry entry in this.fieldValues) {
 				if (entry.Key is TagKey) {
-					entry.Value.CurrentValue = null;
+					FieldValue fv = (FieldValue) entry.Value;
+					fv.CurrentValue = null;
 				}
 			}
 		}
-
-		public class GenericComparerDecorator : IEqualityComparer<object> {
-			private readonly IEqualityComparer nonGeneriComparer;
-
-			public GenericComparerDecorator(IEqualityComparer nonGeneriComparer) {
-				this.nonGeneriComparer = nonGeneriComparer;
-			}
-
-			bool IEqualityComparer<object>.Equals(object x, object y) {
-				return this.nonGeneriComparer.Equals(x, y);
-			}
-
-			int IEqualityComparer<object>.GetHashCode(object obj) {
-				return this.nonGeneriComparer.GetHashCode(obj);
-			}
-		}
-
 		#endregion ITagHolder methods
 	}
 }

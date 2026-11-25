@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 
@@ -196,7 +195,7 @@ namespace SteamEngine.Regions {
 				ReturnItemOnGroundIfNeeded(item, point);
 				try {
 					region.On_ItemEnter(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				ReturnItemOnGroundIfNeeded(item, point);
 
 				region = region.parent;
@@ -214,7 +213,7 @@ namespace SteamEngine.Regions {
 				ReturnItemOnGroundIfNeeded(item, point);
 				try {
 					region.On_ItemLeave(args);
-				} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				ReturnItemOnGroundIfNeeded(item, point);
 
 				region = region.parent;
@@ -231,7 +230,7 @@ namespace SteamEngine.Regions {
 						if (TriggerResult.Cancel != region.On_DenyPickupItemFrom(args)) {
 							return;
 						}
-					} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				} else {
 					return;
 				}
@@ -256,7 +255,7 @@ namespace SteamEngine.Regions {
 						if (TriggerResult.Cancel != region.On_DenyPutItemOn(args)) {
 							return TriggerResult.Cancel;
 						}
-					} catch (FatalException) { throw; } catch (TransException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				} else {
 					return TriggerResult.Cancel;
 				}

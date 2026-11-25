@@ -20,7 +20,6 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -95,8 +94,6 @@ namespace SteamEngine.CompiledScripts {
 								ns.Types.Add(ctd);
 							}
 						} catch (FatalException) {
-							throw;
-						} catch (TransException) {
 							throw;
 						} catch (Exception e) {
 							Logger.WriteError(mi.DeclaringType.Name, mi.Name, e);

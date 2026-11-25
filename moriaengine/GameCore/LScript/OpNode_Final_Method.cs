@@ -21,7 +21,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using PerCederberg.Grammatica.Parser;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.LScript {
@@ -65,8 +64,6 @@ namespace SteamEngine.LScript {
 				throw ie;
 			} catch (FatalException) {
 				throw;
-			} catch (TransException) {
-				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while calling method '" + this.method.Name + "'",
 					this.line, this.column, this.filename, this.ParentScriptHolder.GetDecoratedName(), e);
@@ -83,8 +80,6 @@ namespace SteamEngine.LScript {
 				ie.AddTrace(this);
 				throw ie;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while calling method '" + this.method.Name + "'",
@@ -164,8 +159,6 @@ namespace SteamEngine.LScript {
 				throw ie;
 			} catch (FatalException) {
 				throw;
-			} catch (TransException) {
-				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while calling method '" + this.method.Name + "'",
 					this.line, this.column, this.filename, this.ParentScriptHolder.GetDecoratedName(), e);
@@ -190,8 +183,6 @@ namespace SteamEngine.LScript {
 				ie.AddTrace(this);
 				throw ie;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while calling method '" + this.method.Name + "'",
@@ -264,8 +255,6 @@ namespace SteamEngine.LScript {
 				throw;
 			} catch (FatalException) {
 				throw;
-			} catch (TransException) {
-				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while calling method '" + this.method.Name + "'", this.line,
 					this.column, this.filename, this.ParentScriptHolder.GetDecoratedName(), e);
@@ -280,8 +269,6 @@ namespace SteamEngine.LScript {
 			} catch (InterpreterException) {
 				throw;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while calling method '" + this.method.Name + "'", this.line,

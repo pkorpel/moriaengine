@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 
@@ -96,8 +95,6 @@ namespace SteamEngine.CompiledScripts {
 							Logger.WriteWarning("Unknown class '" + LogStr.Ident(splitKey[0]) + "' while trying to load static member '" + LogStr.Ident(entry.Key) + "'");
 						}
 					} catch (FatalException) {
-						throw;
-					} catch (TransException) {
 						throw;
 					} catch (Exception e) {
 						Logger.WriteError("Error while loading static members", e);

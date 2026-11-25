@@ -816,10 +816,6 @@
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shielded, Version=4.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shielded.4.4.2\lib\net40\Shielded.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="MySql.Data, Version=1.0.9.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>

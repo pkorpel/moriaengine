@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using PerCederberg.Grammatica.Parser;
-using Shielded;
 
 namespace SteamEngine.LScript {
 	[SuppressMessage("Microsoft.Naming", "CA1706:ShortAcronymsShouldBeUppercase"), SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores")]
@@ -123,8 +122,6 @@ namespace SteamEngine.LScript {
 				} catch (InterpreterException) {
 					throw;
 				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
 					throw;
 				} catch (Exception e) {
 					throw new InterpreterException("Expression while evaluating FOR statement",

@@ -20,7 +20,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using PerCederberg.Grammatica.Parser;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.LScript {
@@ -140,8 +139,6 @@ namespace SteamEngine.LScript {
 			} catch (InterpreterException) {
 				throw;
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (Exception e) {
 				throw new InterpreterException("Exception while evaluating random expression",

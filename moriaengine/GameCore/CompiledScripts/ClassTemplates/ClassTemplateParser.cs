@@ -23,7 +23,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.CSharp;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts.ClassTemplates {
@@ -89,8 +88,6 @@ namespace SteamEngine.CompiledScripts.ClassTemplates {
 				try {
 					ClassTemplateBase.ProcessSection(section, ccu);
 				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
 					throw;
 				} catch (Exception e) {
 					Logger.WriteError(scriptFile.FullName, section.line, e);

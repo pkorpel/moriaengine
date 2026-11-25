@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -48,14 +47,14 @@ namespace SteamEngine.CompiledScripts {
 			//can't be in GeneratedCodeUtil's Bootstrap, cos that's too late.
 			List<SupplySubclassInstanceBase> list = new List<SupplySubclassInstanceBase>();
 			list.Add(new SupplySubclassInstanceTuple<ISteamCSCodeGenerator>(GeneratedCodeUtil.RegisterGenerator, true, true)); //ClassManager.RegisterSupplySubclassInstances<ISteamCSCodeGenerator>(GeneratedCodeUtil.RegisterGenerator, true, true);
-			return list;
+			return list;			
 		}
 
 		public static ICollection<Type> AllManagedTypes {
 			get {
 				return allTypesbyName.Values;
 			}
-		}
+		} 
 
 		private static Assembly commonAssembly = typeof(LogStr).Assembly;
 		public static Assembly CommonAssembly {
@@ -196,7 +195,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			internal override Type TargetClass {
-				get {
+				get
+				{
 					if (this.deleg == null) {
 						return typeof(void);
 					}
@@ -252,22 +252,20 @@ namespace SteamEngine.CompiledScripts {
 			bool success = true;
 
 			//first call the Bootstrap methods (if present)
-			foreach (var type in types) {
-				MethodInfo m = type.GetMethod("Bootstrap", BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+			for (int i = 0; i < types.Length; i++) {
+				MethodInfo m = types[i].GetMethod("Bootstrap", BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
 				if (m != null) {
-					Shield.InTransaction(() => m.Invoke(null, null));
+					m.Invoke(null, null);
 				}
 			}
 			//then Initialize the classes as needed
-			foreach (var type in types) {
+			for (int i = 0; i < types.Length; i++) {
 				try {
-					Shield.InTransaction(() => InitClass(type));
+					InitClass(types[i]);
 				} catch (FatalException) {
 					throw;
-				} catch (TransException) {
-					throw;
 				} catch (Exception e) {
-					Logger.WriteError(assemblyName, Tools.TypeToString(type), e);
+					Logger.WriteError(assemblyName, Tools.TypeToString(types[i]), e);
 					success = false;
 				}
 			}
@@ -336,8 +334,8 @@ namespace SteamEngine.CompiledScripts {
 						}
 						if (instance != null) {
 							if (!entry.InvokeDeleg(instance)) {//if there's no loading method, just the constructor, 
-															   //and if it's an abstractscript, it needs to be registered. Can't be done in AbstractScript constructor itself cos that's too soon.
-															   //Or it would need some tweaks which I'm not in the mood to do :)
+								//and if it's an abstractscript, it needs to be registered. Can't be done in AbstractScript constructor itself cos that's too soon.
+								//Or it would need some tweaks which I'm not in the mood to do :)
 								AbstractScript script = instance as AbstractScript;
 								if (script != null) {
 									script.Register(); //can't be run inside of the constructor...
@@ -378,8 +376,6 @@ namespace SteamEngine.CompiledScripts {
 						try {
 							m.Invoke(null, null);
 						} catch (FatalException) {
-							throw;
-						} catch (TransException) {
 							throw;
 						} catch (Exception e) {
 							Logger.WriteError(type.Name, m.Name, e);

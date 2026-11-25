@@ -75,10 +75,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Shielded, Version=4.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shielded.4.4.2\lib\net40\Shielded.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -115,9 +111,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -21,7 +21,6 @@ using System.IO;
 using System.Text;
 using EQATEC.Profiler;
 using PerCederberg.Grammatica.Parser;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.Timers;
 
@@ -131,8 +130,6 @@ namespace SteamEngine.LScript {
 				return RunSnippet(filename, line, self, script);
 			} catch (FatalException) {
 				throw;
-			} catch (TransException) {
-				throw;
 			} catch (SEException sex) {
 				if (sex.StartsWithFileLine) {
 					Logger.WriteError(sex);
@@ -166,8 +163,6 @@ namespace SteamEngine.LScript {
 			try {
 				return Compile(parent, stream, startLine);
 			} catch (FatalException) {
-				throw;
-			} catch (TransException) {
 				throw;
 			} catch (ParserLogException ple) {
 				for (int i = 0, n = ple.GetErrorCount(); i < n; i++) {

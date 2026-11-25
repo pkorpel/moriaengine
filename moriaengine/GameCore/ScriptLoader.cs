@@ -16,12 +16,12 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using SteamEngine.LScript;
@@ -31,10 +31,10 @@ using SteamEngine.Regions;
 
 namespace SteamEngine {
 	public static class ScriptLoader {
-		private static readonly ScriptFileCollection allFiles = InitScpCollection();
+		private static ScriptFileCollection allFiles = InitScpCollection();
 
-		private static readonly ShieldedDictNc<string, RegisteredScript> scriptTypesByName =
-			new ShieldedDictNc<string, RegisteredScript>(comparer: StringComparer.OrdinalIgnoreCase);
+		private static ConcurrentDictionary<string, RegisteredScript> scriptTypesByName =
+			new ConcurrentDictionary<string, RegisteredScript>(StringComparer.OrdinalIgnoreCase);
 
 		static ScriptFileCollection InitScpCollection() {
 			ScriptFileCollection retVal = new ScriptFileCollection(Globals.ScriptsPath, ".scp");
@@ -57,19 +57,20 @@ namespace SteamEngine {
 				//ObjectSaver.StartingLoading();
 				AbstractSkillDef.StartingLoading();
 
-				long loadedBytes = 0;
+				long loadedBytes;
 
 				//load either paralell or sequentially, depending on .ini setting
+				Func<long, ScriptFile, long> loadAndAggregate = (alreadyloaded, sf) => {
+					Logger.WriteDebug("Loading " + sf.Name);
+					LoadFile(sf);
+					return alreadyloaded + sf.Length;
+				};
 				Action<long> showLoaded = alreadyloaded => Logger.SetTitle("Loading scripts: " + ((alreadyloaded * 100) / lengthSum) + " %");
 
 				if (Globals.ParallelStartUp) {
 					loadedBytes = files.AsParallel().Aggregate(
 						() => 0L,
-						(alreadyloaded, sf) => {
-							Logger.WriteDebug("Loading " + sf.Name);
-							LoadFile(sf);
-							return alreadyloaded + sf.Length;
-						},
+						loadAndAggregate,
 						(a, b) => {
 							var alreadyloaded = a + b;
 							showLoaded(alreadyloaded);
@@ -77,12 +78,13 @@ namespace SteamEngine {
 						},
 						a => a);
 				} else {
-					foreach (var sf1 in files) {
-						Logger.WriteDebug("Loading " + sf1.Name);
-						LoadFile(sf1);
-						loadedBytes += sf1.Length;
-						showLoaded(loadedBytes);
-					}
+					loadedBytes = files.Aggregate(
+						0L,
+						(alreadyloaded, sf) => {
+							alreadyloaded = loadAndAggregate(alreadyloaded, sf);
+							showLoaded(alreadyloaded);
+							return alreadyloaded;
+						});
 				}
 
 				Sanity.IfTrueSay(lengthSum != loadedBytes, "ScriptLoader.Load: lengthSum != loadedBytes");
@@ -162,87 +164,91 @@ namespace SteamEngine {
 			}
 		}
 
-		private static void LoadFile(ScriptFile file) {
-			var scripts = LoadScriptsFromFile(file);
-			foreach (var script in scripts) {
-				file.Add(script);
-			}
-		}
+		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		internal static void LoadFile(ScriptFile file) {
+			//string filepath = file.Name;
+			//WorldSaver.currentfile = filepath;
+			if (file.Exists) { //this may not be true on rare circumstances (basically, delete script and recompile) not gonna do any better fix
 
-		private static IEnumerable<IUnloadable> LoadScriptsFromFile(ScriptFile file) {
-			if (file.Exists) //this may not be true on rare circumstances (basically, delete script and recompile) not gonna do any better fix
-			{
 				using (StreamReader stream = file.OpenText()) {
-					foreach (var script in PropsFileParser.Load(file.FullName, stream, StartsAsScript, false).SelectMany(LoadSection)) {
-						yield return script;
+					foreach (PropsSection section in PropsFileParser.Load(
+							file.FullName, stream, StartsAsScript, false)) {
+
+						try {
+							string type = section.HeaderType.ToLowerInvariant();
+							string name = section.HeaderName;
+							if ((string.IsNullOrEmpty(name)) && (type == "eof")) {
+								continue;
+							}
+
+							switch (type) {
+								case "function":
+									file.Add(LScriptMain.LoadAsFunction(section.GetTrigger(0)));
+									if (section.TriggerCount > 1) {
+										Logger.WriteWarning(section.Filename, section.HeaderLine, "Triggers in a function are nonsensual (and ignored).");
+									}
+									continue;
+								case "typedef":
+								case "triggergroup":
+								case "events":
+								case "event":
+									file.Add(ScriptedTriggerGroup.Load(section));
+									continue;
+								case "defname":
+								case "defnames":
+								case "constants":
+								case "constant":
+									foreach (Constant constant in Constant.Load(section)) {
+										file.Add(constant);
+									}
+									continue;
+
+								case "loc":
+								case "localisation":
+								case "language":
+								case "languages":
+								case "servloc":
+								case "scriptloc":
+								case "scriptedloc":
+								case "scriptedloccollection":
+								case "scriptedlocstringcollection":
+								case "locstringcollection":
+								case "locstrings":
+									file.Add(ScriptedLocStringCollection.Load(section));
+									continue;
+								//case "template":
+								//	
+								//	//file.Add(ThingDef.LoadFromScripts(input));
+								//	return null;
+								case "dialog":
+								case "gump":
+									IUnloadable gump = ScriptedGumpDef.Load(section);
+									if (gump != null) {//it could have been a "subsection" of dialog, i.e. TEXT or BUTTON part
+										file.Add(gump);
+									}
+									continue;
+								//case "skill":
+								//	Skills.Load(input);
+								//	return null;
+								default:
+									RegisteredScript rs;
+									if (scriptTypesByName.TryGetValue(type, out rs)) {
+										file.Add(rs.deleg(section));
+										continue;
+									}
+
+									break;
+							}
+						} catch (FatalException) {
+							throw;
+						} catch (Exception e) {
+							Logger.WriteError(section.Filename, section.HeaderLine, e);
+							continue;
+						}
+						Logger.WriteError(section.Filename, section.HeaderLine, "Unknown section " + LogStr.Ident(section));
 					}
 				}
 			}
-		}
-
-		private static IEnumerable<IUnloadable> LoadSection(PropsSection section) {
-			return Shield.InTransaction(() => {
-				try {
-					string type = section.HeaderType.ToLowerInvariant();
-					string name = section.HeaderName;
-					if ((string.IsNullOrEmpty(name)) && (type == "eof")) {
-						return Enumerable.Empty<IUnloadable>();
-					}
-
-					switch (type) {
-						case "function":
-							if (section.TriggerCount > 1) {
-								Logger.WriteWarning(section.Filename, section.HeaderLine, "Triggers in a function are nonsensual (and ignored).");
-							}
-							return new[] { LScriptMain.LoadAsFunction(section.GetTrigger(0)) };
-						case "typedef":
-						case "triggergroup":
-						case "events":
-						case "event":
-							return new[] { ScriptedTriggerGroup.Load(section) };
-						case "defname":
-						case "defnames":
-						case "constants":
-						case "constant":
-							return Constant.Load(section);
-						case "loc":
-						case "localisation":
-						case "language":
-						case "languages":
-						case "servloc":
-						case "scriptloc":
-						case "scriptedloc":
-						case "scriptedloccollection":
-						case "scriptedlocstringcollection":
-						case "locstringcollection":
-						case "locstrings":
-							return new[] { ScriptedLocStringCollection.Load(section) };
-						case "dialog":
-						case "gump":
-							IUnloadable gump = ScriptedGumpDef.Load(section);
-							if (gump != null) {
-								//it could have been a "subsection" of dialog, i.e. TEXT or BUTTON part
-								return new[] { gump };
-							}
-							return Enumerable.Empty<IUnloadable>();
-						default:
-							RegisteredScript rs;
-							if (scriptTypesByName.TryGetValue(type, out rs)) {
-								return new[] { rs.deleg(section) };
-							}
-
-							Logger.WriteError(section.Filename, section.HeaderLine, "Unknown section " + LogStr.Ident(section));
-							return Enumerable.Empty<IUnloadable>();
-					}
-				} catch (FatalException) {
-					throw;
-				} catch (TransException) {
-					throw;
-				} catch (Exception e) {
-					Logger.WriteError(section.Filename, section.HeaderLine, e);
-					return Enumerable.Empty<IUnloadable>();
-				}
-			});
 		}
 
 		internal static bool StartsAsScript(string headerType) {
@@ -295,19 +301,15 @@ namespace SteamEngine {
 		}
 
 		public static void RegisterScriptType(string name, LoadSection deleg, bool startAsScript) {
-			Shield.AssertInTransaction();
-			RegisteredScript scp;
-			if (!scriptTypesByName.TryGetValue(name, out scp)) {
-				scp = new RegisteredScript(deleg, startAsScript);
-				scriptTypesByName.Add(name, scp);
-			} else {
-				if (scp.deleg.Method != deleg.Method) {
-					throw new OverrideNotAllowedException("There is already a script section loader (" + LogStr.Ident(scp) +
-														  ") registered for handling the section name " + LogStr.Ident(name));
-				}
-				scp.startAsScript = scp.startAsScript || startAsScript;
-				//if any wants true, it stays true. This is here because of AbstractDef and TemplateDef... yeah not exactly clean
-			}
+			scriptTypesByName.AddOrUpdate(name,
+				n => new RegisteredScript(deleg, startAsScript),
+				(n, rs) => {
+					if (rs.deleg.Method != deleg.Method) {
+						throw new OverrideNotAllowedException("There is already a script section loader (" + LogStr.Ident(rs) + ") registered for handling the section name " + LogStr.Ident(name));
+					}
+					rs.startAsScript = rs.startAsScript || startAsScript; //if any wants true, it stays true. This is here because of AbstractDef and TemplateDef... yeah not exactly clean
+					return rs;
+				});
 		}
 
 		public static void RegisterScriptType(string[] names, LoadSection deleg, bool startAsScript) {
@@ -328,13 +330,12 @@ namespace SteamEngine {
 
 		//forgets stuff that come from scripts.
 		internal static void ForgetScripts() {
-			Shield.AssertInTransaction();
 			allFiles.Clear();
 
 			Assembly coreAssembly = ClassManager.CoreAssembly;
 
 			var origScripts = scriptTypesByName.ToArray();
-			scriptTypesByName.Clear();
+			scriptTypesByName = new ConcurrentDictionary<string, RegisteredScript>(StringComparer.OrdinalIgnoreCase);
 			foreach (KeyValuePair<string, RegisteredScript> pair in origScripts) {
 				if (coreAssembly == pair.Value.deleg.Method.DeclaringType.Assembly) {
 					scriptTypesByName[pair.Key] = pair.Value;

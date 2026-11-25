@@ -16,7 +16,8 @@
 */
 
 using System;
-using Shielded;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace SteamEngine {
 
@@ -31,9 +32,9 @@ namespace SteamEngine {
 	/// "key" classes
 	/// </summary>
 	public abstract class AbstractKey<T> : IAbstractKey where T : IAbstractKey {
-		private static readonly Shielded<int> uids = new Shielded<int>(0);
+		private static int uids;
 
-		private static ShieldedDictNc<string, T> byName = new ShieldedDictNc<string, T>(comparer: StringComparer.OrdinalIgnoreCase);
+		private static ConcurrentDictionary<string, T> byName = new ConcurrentDictionary<string, T>(StringComparer.OrdinalIgnoreCase);
 
 		private readonly string name;
 		private readonly int uid;
@@ -64,16 +65,13 @@ namespace SteamEngine {
 		}
 
 		protected static T Acquire(string name, Func<string, int, T> factory) {
-			return Shield.InTransaction(() => {
-				T key;
-				if (!byName.TryGetValue(name, out key)) {
-					var uid = uids.Value++;
-					key = factory(name, uid);
-					byName.Add(name, key);
-				}
+			var k = byName.GetOrAdd(name,
+				n => {
+					var uid = Interlocked.Increment(ref uids);
+					return factory(n, uid);
+				});
 
-				return key;
-			});
+			return k;
 		}
 	}
 }

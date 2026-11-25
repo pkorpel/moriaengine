@@ -16,20 +16,19 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Shielded;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 
 namespace SteamEngine {
 	public abstract class AbstractScript : IUnloadable {
 
-		private static readonly ShieldedDictNc<string, AbstractScript> byDefname =
-			new ShieldedDictNc<string, AbstractScript>(comparer: StringComparer.OrdinalIgnoreCase);
+		private static readonly ConcurrentDictionary<string, AbstractScript> byDefname = new ConcurrentDictionary<string, AbstractScript>(StringComparer.OrdinalIgnoreCase);
 
-		private readonly Shielded<string> shieldedDefname = new Shielded<string>();
-		private readonly Shielded<bool> shieldedUnloaded = new Shielded<bool>();
+		private string defname;
+		private bool unloaded;
 
 		public static void Bootstrap() {
 			ClassManager.RegisterSupplySubclassInstances<AbstractScript>(null, false, false);
@@ -42,28 +41,20 @@ namespace SteamEngine {
 		}
 
 		public static void ForgetAll() {
-			foreach (AbstractScript gs in AllScripts) {
-				Shield.InTransaction(() =>
-					gs.Unregister());
+			foreach (AbstractScript gs in byDefname.Values.ToList()) {
+				gs.Unregister();
 			}
-			Sanity.IfTrueThrow(byDefname.Any(), "byDefname.Count > 0 after UnloadAll");
+			Sanity.IfTrueThrow(byDefname.Count != 0, "byDefname.Count > 0 after UnloadAll");
 		}
 
 		//register with static dictionaries and lists. 
 		//Can be called multiple times without harm
 		//Returns self for easier usage 
 		public virtual AbstractScript Register() {
-			Shield.AssertInTransaction();
-
-			var defname = this.Defname;
-			if (!string.IsNullOrEmpty(defname)) {
-				AbstractScript previous;
-				if (byDefname.TryGetValue(defname, out previous)) {
-					if (previous != this) {
-						throw new SEException("previous != this when registering AbstractScript '" + defname + "'");
-					}
-				} else {
-					byDefname.Add(defname, this);
+			if (!string.IsNullOrEmpty(this.defname)) {
+				var previous = byDefname.GetOrAdd(this.defname, this);
+				if (previous != this) {
+					throw new SEException("previous != this when registering AbstractScript '" + this.defname + "'");
 				}
 			}
 			return this;
@@ -72,78 +63,84 @@ namespace SteamEngine {
 		//unregister from static dictionaries and lists. 
 		//Can be called multiple times without harm
 		protected virtual void Unregister() {
-			Shield.AssertInTransaction();
-			var defname = this.Defname;
-			if (!string.IsNullOrEmpty(defname)) {
+			if (!string.IsNullOrEmpty(this.defname)) {
 				AbstractScript previous;
-				if (byDefname.TryGetValue(defname, out previous)) {
+				if (byDefname.TryRemove(this.defname, out previous)) {
 					if (previous != this) {
-						throw new SEException("previous != this when registering AbstractScript '" + defname + "'");
-					} else {
-						byDefname.Remove(defname);
+						if (!byDefname.TryAdd(this.defname, previous)) {
+							throw new FatalException("Parallel loading fucked up.");
+						}
+						throw new SEException("previous != this when unregistering AbstractScript '" + this.defname + "'");
 					}
 				}
 			}
 		}
 
-		internal static ShieldedDictNc<string, AbstractScript> AllScriptsByDefname {
+		internal static ConcurrentDictionary<string, AbstractScript> AllScriptsByDefname {
 			get {
-				Shield.AssertInTransaction();
 				return byDefname;
 			}
 		}
 
-		public static IReadOnlyCollection<AbstractScript> AllScripts {
+		public static ICollection<AbstractScript> AllScripts {
 			get {
-				return Shield.InTransaction(byDefname.Values.ToList);
+				return byDefname.Values;
 			}
 		}
 
-		protected AbstractScript() {
-			Shield.AssertInTransaction();
-			this.shieldedDefname.Value = this.InternalFirstGetDefname();
-			if (byDefname.ContainsKey(this.shieldedDefname.Value)) {
-				throw new SEException("AbstractScript called " + LogStr.Ident(this.shieldedDefname.Value) + " already exists!");
+		protected AbstractScript()
+		{
+			this.defname = this.InternalFirstGetDefname();
+			if (byDefname.ContainsKey(this.defname)) {
+				throw new SEException("AbstractScript called " + LogStr.Ident(this.defname) + " already exists!");
 			}
 		}
 
-		protected AbstractScript(string defname) {
-			Shield.AssertInTransaction();
+		protected AbstractScript(string defname)
+		{
 			if (string.IsNullOrEmpty(defname)) {
-				this.shieldedDefname.Value = this.InternalFirstGetDefname();
+				this.defname = this.InternalFirstGetDefname();
 			} else {
-				this.shieldedDefname.Value = defname;
+				this.defname = defname;
 			}
-			if (byDefname.ContainsKey(this.shieldedDefname.Value)) {
-				throw new SEException("AbstractScript called " + LogStr.Ident(this.shieldedDefname.Value) + " already exists!");
+			if (byDefname.ContainsKey(this.defname)) {
+				throw new SEException("AbstractScript called " + LogStr.Ident(this.defname) + " already exists!");
 			}
 		}
 
 		public virtual void Unload() {
-			this.shieldedUnloaded.Value = true;
+			this.unloaded = true;
 		}
 
 		public virtual void UnUnload() {
-			this.shieldedUnloaded.Value = false;
+			this.unloaded = false;
 		}
 
 		public bool IsUnloaded {
 			get {
-				return this.shieldedUnloaded.Value;
+				return this.unloaded;
 			}
 		}
 
 		internal void InternalSetDefname(string value) {
-			this.shieldedDefname.Value = value;
+			this.defname = value;
 		}
 
-		public string Defname => this.shieldedDefname.Value;
+		public string Defname {
+			get {
+				return this.defname;
+			}
+		}
 
-		public virtual string PrettyDefname => this.shieldedDefname.Value;
+		public virtual string PrettyDefname {
+			get {
+				return this.defname;
+			}
+		}
 
 		protected void ThrowIfUnloaded() {
-			if (this.shieldedUnloaded.Value) {
-				throw new UnloadedException("The " + Tools.TypeToString(this.GetType()) + " '" + LogStr.Ident(this.Defname) + "' is unloaded.");
+			if (this.unloaded) {
+				throw new UnloadedException("The " + Tools.TypeToString(this.GetType()) + " '" + LogStr.Ident(this.defname) + "' is unloaded.");
 			}
 		}
 
