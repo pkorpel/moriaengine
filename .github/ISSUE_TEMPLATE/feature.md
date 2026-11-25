@@ -16,7 +16,7 @@ Filled in before any code (as a comment if the issue is already open). What we p
 reinvented:
 
 - **Engine:** how the engine already does this or something close: its page under `moriaengine/docs/current/`,
-  the code, and the original (`git show a27bbf6:<path>`).
+  the code, and the original (`git show 2dbc90b:<path>`).
 - **Erebor:** how Erebor did it: archive script/def, and Sphere 0.99z8 behaviour where it matters.
 - **Gaps or bugs found:** each becomes its own issue and is fixed first. A broken existing piece is fixed, never
   replaced.

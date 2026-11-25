@@ -777,7 +777,7 @@ A and B don't depend on each other; within C and D the order matters.
   No caller depends on that order. An item made while the characters are being walked can now be met in the same query.
 - **Release, scale 1, the design world, `.TestPerf bench` (2000 calls each), one run each:**
 
-| Query at the densest dungeon spot | Before (main 2f1eea8) | After |
+| Query at the densest dungeon spot | Before (main e392b3a) | After |
 |---|---|---|
 | Characters within 14 (7 found) | 3.0 µs | **1.2–1.6 µs** |
 | Items within 18 (131 found) | 6.9 µs | 4.8–5.1 µs |
@@ -814,7 +814,7 @@ A and B don't depend on each other; within C and D the order matters.
   - `StaticSector` memory-maps each facet's `map`, `staidx` and `statics` `.mul` files once, for the life of the process.
   - A sector load copies each 8×8 block, staidx entry and statics block out of the view with one read and parses it. Before, every load opened three new `FileStream`s and read them a seek and a few bytes at a time.
   - Missing, short or corrupt files still disable the map with the same messages.
-- **Release, scale 1, world-building steps of the harness (they load sectors all over the map), main a6dee8c vs E3:**
+- **Release, scale 1, world-building steps of the harness (they load sectors all over the map), main aa2ee04 vs E3:**
 
 | Step | Before (two runs) | After |
 |---|---|---|

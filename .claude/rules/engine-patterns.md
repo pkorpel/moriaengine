@@ -11,7 +11,7 @@ lists the rules whose breakage is silent.
 ## Pattern first (#1366)
 
 Before using or changing an engine mechanism, read its page and the existing code. The original engine is
-commit `a27bbf6` (`git show a27bbf6:<path>`). If the page is missing or wrong, fix it first (its own PR is
+commit `2dbc90b` (`git show 2dbc90b:<path>`). If the page is missing or wrong, fix it first (its own PR is
 fine). Build in that pattern. A bug in the pattern is fixed in the pattern, never worked around with a second
 mechanism; the reviewer blocks one. Prefer a plugin that reacts to triggers over a static class called from many
 files, and typed def fields over tags.

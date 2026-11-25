@@ -32,7 +32,7 @@ issue thread shows where it stands.
    | Type | Extra step |
    |---|---|
    | `bug` | Reproduce at the reported spot; a test fails with the reported symptom before the fix |
-   | `feature` | An "Existing system" comment: how the engine already does it (its `docs/current/` page, the code, the original `a27bbf6`) and how Erebor does it. The feature plugs into that system. A broken existing piece is fixed first in its own issue, never replaced. A new system, or one touching more than one existing system, also gets a design note the maintainer OKs. |
+   | `feature` | An "Existing system" comment: how the engine already does it (its `docs/current/` page, the code, the original `2dbc90b`) and how Erebor does it. The feature plugs into that system. A broken existing piece is fixed first in its own issue, never replaced. A new system, or one touching more than one existing system, also gets a design note the maintainer OKs. |
    | `chore` | none |
    | `docs` | none (the review checks the stated facts against the code) |
    | `research` | The output is a docs page, no code, until the maintainer picks items |

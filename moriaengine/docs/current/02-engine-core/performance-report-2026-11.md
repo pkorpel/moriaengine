@@ -73,7 +73,7 @@ Found and fixed on the way:
 ## 2. How it was measured
 
 - **Harness:** the review's harness (`scripts/test-perf.sh`, see the review's
-  [section 9](performance-review.md#9-benchmark-and-stress-test-setup)), on `main` at 454432d.
+  [section 9](performance-review.md#9-benchmark-and-stress-test-setup)), on `main` at fc65e10.
 - **Settings:** Release, scale 1, 50 players, 30 s windows, all phases:
 
   ```

@@ -48,7 +48,7 @@ Only on code the diff touches:
 - engine patterns (#1366): a second way of doing what the engine already does (plugins,
   code-made defs, def fields, tags, triggers) is blocking unless the PR says why the
   existing one can't serve; so is a workaround of a bug in an existing pattern instead of a
-  fix in it. Compare with the original code (`git show a27bbf6:<path>`) and the pattern's
+  fix in it. Compare with the original code (`git show 2dbc90b:<path>`) and the pattern's
   page under `moriaengine/docs/current/`. A new trigger must follow
   `trigger-system-architecture.md` section 8 and be agreed on its issue (#1558).
 - engine core (`GameCore/`, `Common/`, `Communication/`, `AuxiliaryServer/`, the generators): say so in

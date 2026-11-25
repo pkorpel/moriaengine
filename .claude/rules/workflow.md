@@ -22,7 +22,7 @@ The lifecycle every piece of work follows (#1559). The full process, for people 
 ## 3. Before building
 
 - **Feature or port: investigate the existing system first.** Post an "Existing system" comment: how the
-  engine already does it or something close (its `docs/current/` page, the code, the original in `a27bbf6`),
+  engine already does it or something close (its `docs/current/` page, the code, the original in `2dbc90b`),
   and how Erebor does it. Then plug into that system and never reinvent it. **If the existing piece is broken,
   file it and fix it first, never replace it.** The review agent blocks a second mechanism.
 - A feature that adds a new system or touches more than one existing one: a short design note on the issue,
