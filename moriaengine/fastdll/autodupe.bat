@@ -1,1 +1,0 @@
-c:\python23\python autodupe.py
