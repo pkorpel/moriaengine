@@ -347,10 +347,10 @@ still missed; the rest are improvements.
    - `globals.sav`'s defs (130 ms);
    - `SaveBuffer.Rent` (80 ms with a warm pool);
    - `TimeSpan` formatting.
-5. **Script compile: 15.9 s of a 36 s boot.** Done in #1358: a boot with no change reuses both script assemblies
-   (test server boot 27 s -> 11 s), see scripting-pipeline.md.
-   - Every boot and every test server compiles all of `scripts/`.
-   - Reusing the last build's assembly when no source changed (a hash of the sources) would cut most of it.
+5. **Script compile: 15.9 s of a 36 s boot.** Done in #1358: a boot with no change reuses the scripts build
+   (test server boot 27 s -> 11 s), see scripting-pipeline.md. The separate generated project was later removed.
+   - Before #1358, every boot and every test server compiled all of `scripts/`.
+   - Reusing the last build's assembly when no source changed (a hash of the sources) cuts most of that work.
    - That speeds up restarts, and every protocol test boot even more.
 6. **Read the game clock once per timer round.**
    - `Globals.TimeAsSpan` is 21% of the timer thread's busy time in P5 (section 4).

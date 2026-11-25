@@ -1,8 +1,8 @@
 # Scripting & code generation pipeline
 
-moriaengine content is split across three genuinely different input roles, plus two
-*different* code-generation mechanisms that turn parts of it into real C#. Both are part of
-the boot/build pipeline.
+moriaengine content is split across three input roles. Roslyn source generators turn
+attributed C# into additional C# code during compilation, whether the build is started
+by GameCore at boot or separately.
 
 ## The three input types
 
@@ -16,12 +16,12 @@ A `.def` file's `[ItemDef i_something]` block configures an instance of a class 
 the attributed C# template pipeline already generated. It never defines a new class. A
 `.scp` file is interpreted LScript, not compiled - see [lscript.md](lscript.md).
 
-## Mechanism 1: attributed template classes → generated C# glue (Thing/Plugin generator)
+## Thing and Plugin templates
 
 `SteamEngine.Generators.ThingAndPluginClasses.Generator` reads template attributes in script
 C# and emits the equivalent partial-class glue during build (as Roslyn-generated source in
 the compilation, not source-adjacent files). The other generators work the same way - see
-mechanism 2 below.
+[Other attribute-driven generators](#other-attribute-driven-generators).
 
 Template classes are authored directly in C#, for example:
 
@@ -72,12 +72,12 @@ def-level and instance-level fields both called `attributes`, with the instance 
 `"attr"` alias in `AbstractItemDef.LoadScriptLine`. (The def field was `attributesDefault`
 until #1382.)
 
-## Mechanism 2: attribute-scanning Roslyn generators
+## Other attribute-driven generators
 
-The other generators also run at scripts compile time, inside the same compilation. Each one
-scans the attributes on script types and adds its output as generated source. Nothing is
-written to disk and nothing is compiled at runtime (#1563 removed the old runtime
-`ISteamCSCodeGenerator` pass and its `Generated/` project).
+The generic and other generators also run inside the scripts compilation. Each scans
+attributes on script types and adds its output as generated source. Nothing is written to
+disk, and there is no separate runtime generation pass or `Generated/` project (#1563).
+GameCore can still invoke the scripts compilation at boot.
 
 `[SteamFunction]` dispatch is now generated at scripts compile time by the Roslyn source
 generator `Tools/SteamEngine.Generators/CompiledScriptHolders/Generator.cs` (see
@@ -107,7 +107,8 @@ The `.info` DataViews are emitted at scripts compile time by
 
 A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
 
-1. the scripts project is compiled and loaded, every generator's output included;
+1. the scripts project is compiled if needed, or its last build is reused, then the
+   assembly is loaded with every generator's output included;
 2. `ClassManager` reflects over it and registers its types.
 
 So a new `[ViewableClass]` member is picked up by the next Scripts compilation.
@@ -124,9 +125,9 @@ Since #1358 a boot doesn't compile the scripts when they haven't changed:
   - An input that can't be read, or a stamp that can't be written, only means a normal build.
   - The boot log says which happened: "Reused compiled C# scripts, no source changed." or "Done compiling C# scripts."
 
-Measured on the test servers: a boot with nothing changed reached ready in 11 s. A boot that
-compiled both projects took 27 s. With only the first part (MSBuild finding both projects up
-to date), it took 15 s.
+Measured on the test servers before the separate generated project was removed: a boot with
+nothing changed reached ready in 11 s. A boot that compiled both projects took 27 s. With only
+the first part (MSBuild finding both projects up to date), it took 15 s.
 
 ## Building outside a boot
 

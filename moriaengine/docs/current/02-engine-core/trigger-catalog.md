@@ -3,7 +3,7 @@
 This is a reference for the current trigger system, including core and script-defined triggers. May not be complete as scripts can define their own triggers.
 Documents the state as of 2026, before AI changes. 
 
-For theoretic/architectural background look at `docs/triggers/trigger-system-architecture.md`
+For architectural background, see [Trigger system architecture](trigger-system-architecture.md).
 
 Table columns:
 - **Step**: trigger order within a chain (`-` when not an ordered chain)

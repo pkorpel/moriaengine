@@ -29,7 +29,7 @@ The icons are ones Erebor's client has: side 0x2B04, tabs from the priest book 0
 seen on a 3.0.6m client yet. Four tabs sit 60 apart instead of 64, so the row fits the window.
 
 **How a system fills a page:** it calls `QuestJournalPages.Register(section, build, onButton)` from a class's `public static
-void Bootstrap()`. The engine calls every scripts class's `Bootstrap` at compile time, so the journal never names the systems
+void Bootstrap()`. The engine calls each scripts class's `Bootstrap` when registering the assembly, so the journal never names the systems
 it shows.
 - `build(gump, player, width, height)` draws below the tabs. It may add numbered pages for paging, as the quest list does.
 - Its buttons are numbered from `QuestJournalPages.FirstButton` (5000) up and come back to `onButton(player, button)`. The
