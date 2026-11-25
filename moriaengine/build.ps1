@@ -7,10 +7,9 @@
   Single entry point for building MoriaEngine/SteamEngine. Works identically
   on Windows (powershell.exe or pwsh) and macOS/Linux (pwsh).
 
-  scripts/Generated's generated C# files are produced at runtime by
-  GameCore's code generators and are not checked into source control. On a
-  fresh checkout this script runs GameCore just long enough to generate them
-  before attempting the full solution build - see Invoke-ScriptGeneration
+  Generated code comes from the Roslyn source generators during the normal
+  build. On a fresh checkout without steamengine.ini, this script runs GameCore
+  once afterwards so it writes its default ini - see Initialize-SteamEngineIni
   below. You never need to do this by hand.
 
 .PARAMETER Configuration
@@ -22,7 +21,8 @@
   None (default, just build), GameCore, AuxiliaryServer, or Both.
 
 .PARAMETER Clean
-  Deletes bin/obj for every project before building. Does not touch
+  Runs dotnet clean (this configuration) on GameCore's and AuxiliaryServer's
+  projects and everything they reference, before building. Does not touch
   steamengine.ini, steamaux.ini, logs/, or saves/.
 
 .EXAMPLE
@@ -49,19 +49,11 @@ Set-Location $PSScriptRoot
 # relying on relative paths to just happen to work.
 [System.Environment]::CurrentDirectory = $PSScriptRoot
 
-$StandaloneProjects = @(
-	'ThirdParty/SteamEngine.ThirdParty.csproj'
-	'Common/SteamEngine.Common.csproj'
-	'Communication/SteamEngine.Communication.csproj'
-	'GameCore/SteamEngine.GameCore.csproj'
+# dotnet clean follows project references: scripts covers GameCore, Common,
+# Communication, ThirdParty and the generators.
+$CleanProjects = @(
+	'scripts/SteamEngine.Scripts.csproj'
 	'AuxiliaryServer/SteamEngine.AuxiliaryServer.csproj'
-	'ProcessRestarter/SteamEngine.ProcessRestarter.csproj'
-	# Tests/SteamEngine.Tests.csproj is NOT standalone anymore (issue #358 gave it a
-	# ProjectReference on scripts/SteamEngine.Scripts.csproj, to test StaticMemberSaver
-	# against a real [HasSavedMembers] type) - building it this early, before
-	# Invoke-ScriptGeneration has produced required generated files, fails. The final
-	# "Building full solution" step below already builds it, by which point script
-	# generation has run.
 )
 
 function Invoke-Dotnet {
@@ -72,111 +64,55 @@ function Invoke-Dotnet {
 	}
 }
 
-function Invoke-ScriptGeneration {
-	# scripts/Generated needs GameCore to have actually booted once (it writes
-	# a default steamengine.ini and exits) and then a second time (it compiles
-	# scripts/Generated from source metadata). No UO
-	# client data or AuxiliaryServer needed - that happens later in boot.
+function Initialize-SteamEngineIni {
+	# A first boot of GameCore writes a default steamengine.ini and exits by itself
+	# ("Getting started"); the full-boot tests and run-local.sh need that file.
+	# No UO client data or AuxiliaryServer needed for this.
 	param([string]$Configuration)
 
-	$dll = "GameCore/bin/$Configuration/net8.0/SteamEngine.GameCore.dll"
-	# #1358: GameCore writes generated sources only when their text changes, so their own write times no longer say when
-	# generation last ran; GeneratedCodeUtil touches this file every time instead.
-	$generatedMarker = 'Generated/generated-at.txt'
-
-	# Real bug found 2026-10-14: checking only whether the marker file EXISTS (not
-	# whether it's still current) meant editing source left every *.Generated.cs file on disk silently
-	# stale, with this function skipping regeneration entirely on every subsequent
-	# build until something else happened to force a fresh one. Compare timestamps
-	# instead: if any source input anywhere in the repo is newer than the marker, the
-	# generated output no longer reflects current sources and must be redone.
-	#
-	# Real bug found 2026-10-15: relying on one subset of generated outputs was incomplete.
-	# Also compare against the newest plain .cs source file (excluding the
-	# *.Generated.cs outputs themselves, and bin/obj) anywhere in the repo so
-	# source changes that affect generated code cannot be skipped.
-	$newestSource = Get-ChildItem -Path . -Filter '*.cs' -Recurse -File -ErrorAction SilentlyContinue |
-		Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' -and $_.Name -notlike '*.Generated.cs' } |
-		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
-	$newestInput = $newestSource
-	function Test-GeneratedUpToDate {
-		if (-not (Test-Path $generatedMarker)) {
-			return $false
-		}
-		if (-not $newestInput) {
-			return $true
-		}
-		return $newestInput.LastWriteTimeUtc -le (Get-Item $generatedMarker).LastWriteTimeUtc
-	}
-
-	if ((Test-Path 'steamengine.ini') -and (Test-GeneratedUpToDate)) {
-		Write-Host '==> scripts/Generated already present and up to date, skipping script generation'
+	if (Test-Path 'steamengine.ini') {
 		return
 	}
-	if ((Test-Path $generatedMarker) -and -not (Test-GeneratedUpToDate)) {
-		Write-Host "==> scripts/Generated is stale ($($newestInput.FullName) was edited after the last generation) - regenerating"
-	}
 
-	for ($run = 1; $run -le 2; $run++) {
-		if ($run -eq 2 -and (Test-GeneratedUpToDate)) {
-			break
-		}
-
-		Write-Host "==> Running GameCore to generate scripts ($run/2)..."
-		$stdout = New-TemporaryFile
-		$stderr = New-TemporaryFile
+	Write-Host '==> No steamengine.ini yet, running GameCore once to write the default one...'
+	$dll = "GameCore/bin/$Configuration/net8.0/SteamEngine.GameCore.dll"
+	$stdout = New-TemporaryFile
+	$stderr = New-TemporaryFile
+	try {
 		$proc = Start-Process -FilePath 'dotnet' -ArgumentList $dll -NoNewWindow -PassThru `
 			-WorkingDirectory $PSScriptRoot `
 			-RedirectStandardOutput $stdout -RedirectStandardError $stderr
 
-		$deadline = (Get-Date).AddSeconds(120)
-		while (-not $proc.HasExited -and (Get-Date) -lt $deadline) {
-			Start-Sleep -Milliseconds 300
-			if ((Get-Content $stdout -ErrorAction SilentlyContinue | Select-String 'Init done\.|Getting started' -Quiet)) {
-				Start-Sleep -Seconds 1 # give it a moment in case it's about to self-exit
-				break
-			}
-		}
-
-		if (-not $proc.HasExited) {
+		# Wait for GameCore to exit on its own, so the ini is complete. A first boot
+		# that doesn't exit is a failure; its ini may be half written, so remove it.
+		$exited = $proc.WaitForExit(120000)
+		if (-not $exited) {
 			$proc | Stop-Process -Force
+			$proc.WaitForExit()
+			Remove-Item 'steamengine.ini' -ErrorAction SilentlyContinue
 		}
-		$proc.WaitForExit()
-
-		Write-Host "    exit code: $($proc.ExitCode)"
-		Get-Content $stdout -ErrorAction SilentlyContinue | Select-Object -Last 15 | ForEach-Object { Write-Host "    [out] $_" }
-		Get-Content $stderr -ErrorAction SilentlyContinue | Select-Object -Last 30 | ForEach-Object { Write-Host "    [err] $_" }
+		if (-not $exited -or -not (Test-Path 'steamengine.ini')) {
+			Get-Content $stdout -ErrorAction SilentlyContinue | Select-Object -Last 15 | ForEach-Object { Write-Host "    [out] $_" }
+			Get-Content $stderr -ErrorAction SilentlyContinue | Select-Object -Last 30 | ForEach-Object { Write-Host "    [err] $_" }
+			$why = if ($exited) { 'exited without writing steamengine.ini' } else { "didn't exit within 120 s" }
+			throw "GameCore's first boot $why - see its output above."
+		}
+	} finally {
 		Remove-Item $stdout, $stderr -ErrorAction SilentlyContinue
-	}
-
-	if (-not (Test-Path $generatedMarker)) {
-		throw 'Script generation did not produce scripts/Generated - see GameCore output above.'
 	}
 }
 
 if ($Clean) {
-	Write-Host '==> Cleaning bin/obj'
-	# Scoped to known project dirs only - the top-level bin/ holds checked-in
-	# legacy vendor binaries (see .gitignore's */bin/ pattern), not build
-	# output, and must never be touched here.
-	foreach ($proj in @($StandaloneProjects + 'Generated/SteamEngine.Generated.csproj' + 'scripts/SteamEngine.Scripts.csproj' + 'RemoteConsole/SteamEngine.RemoteConsole.csproj')) {
-		$projDir = Split-Path $proj -Parent
-		Remove-Item "$projDir/bin", "$projDir/obj" -Recurse -Force -ErrorAction SilentlyContinue
+	Write-Host "==> Cleaning ($Configuration)"
+	foreach ($proj in $CleanProjects) {
+		Invoke-Dotnet @('clean', $proj, '-c', $Configuration, '--nologo', '-v', 'quiet')
 	}
 }
 
-Write-Host '==> Restoring SteamEngine.sln'
-Invoke-Dotnet @('restore', 'SteamEngine.sln')
-
-Write-Host "==> Building standalone-buildable projects ($Configuration)"
-foreach ($proj in $StandaloneProjects) {
-	Invoke-Dotnet @('build', $proj, '--no-restore', '-c', $Configuration)
-}
-
-Invoke-ScriptGeneration -Configuration $Configuration
-
 Write-Host "==> Building full solution ($Configuration)"
-Invoke-Dotnet @('build', 'SteamEngine.sln', '--no-restore', '-c', $Configuration)
+Invoke-Dotnet @('build', 'SteamEngine.sln', '-c', $Configuration)
+
+Initialize-SteamEngineIni -Configuration $Configuration
 
 Write-Host '==> Build succeeded.'
 
