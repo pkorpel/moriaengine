@@ -66,7 +66,7 @@ namespace SteamEngine.CompiledScripts {
 		/// - "unexpected token ' -' <OP_SUB>, expected <COMEOL>" - the full LScript parser's
 		/// bareword-call-without-parens grammar apparently can't start an ArgsList item with a
 		/// unary minus in this position. Single-letter words sidestep both that and the separate
-		/// bareword-vs-live-object-defname collision risk (see CLAUDE.md's elevated-account-
+		/// bareword-vs-live-object-defname collision risk (see docs/history/claude-md-log.md's elevated-account-
 		/// bareword-args note) - "G"/"M" are in no danger of matching a real registered
 		/// AbstractScript defname.</summary>
 		[SteamFunction]

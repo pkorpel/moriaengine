@@ -59,6 +59,12 @@ element, and the rule needs at least two. Write `{ colors_white, 9, color_gray_l
   parse error; the fully bare form `100+arg.i*2` (no brackets at all - `arg.i` resolves fine
   un-bracketed in an arithmetic position) is correct.
 
+- **A bare word in a `.def` string array is read as a name, not a string.** An unquoted entry of a `string[]`
+  field is resolved as an identifier. If it matches a class, it fails with "Badly placed or invalid namespace/class
+  name" (`GameCore/LScript/Exceptions.cs`), and because def fields are resolved lazily the error appears only when
+  that field is first read (#844: the title `Healer` hit the `Healer` class the first time a priest needed a
+  title). Quoted entries are strings.
+
 - **`for (name, start, end)` loop bounds DO accept full dotted expressions** as a bound
   (e.g. `for (arg.i, 0, someObject.SomeProperty)`) - this part works fine on its own; it's
   easy to mistakenly blame this syntax for a parse error that's actually caused by something

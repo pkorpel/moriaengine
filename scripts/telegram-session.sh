@@ -87,7 +87,7 @@ EOF
     tmux kill-session -t "$SESSION" && echo "telegram-session: stopped $SESSION"
     ;;
   notify)
-    # Plain Bot API call, so a session without the channel plugin (e.g. /task-run) can
+    # Plain Bot API call, so a session without the channel plugin (e.g. a long batch run) can
     # report too. Goes only to chats on the allowlist; prints a warning, never fails.
     [ $# -ge 1 ] || die "usage: notify \"text\""
     t=$(bot_token) \

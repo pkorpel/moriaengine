@@ -1,12 +1,10 @@
 # Design decisions log
 
-Durable "why it works this way" reasoning distilled from session history (the repo-root
-`CLAUDE.md`), organized by system rather than chronologically. `CLAUDE.md` itself is a
-session-continuity log, not a reference document - it will keep accumulating new,
-unrelated entries over time. This page exists so the *permanent* reasoning behind
-already-shipped decisions survives independent of that log's own churn. When a decision
-here is superseded by later work, update this page in the same change (see the root
-`CLAUDE.md`'s workflow section) rather than leaving two conflicting "why" stories.
+Durable "why it works this way" reasoning distilled from session history (the old
+session log, archived as `docs/history/claude-md-log.md`), organized by system rather than
+chronologically. New decisions are recorded here directly (and on their issues). When a decision
+here is superseded by later work, update this page in the same change (see the repo-root
+`AGENTS.md`) rather than leaving two conflicting "why" stories.
 
 ## Item decay: per-item timers over a periodic sweep
 
@@ -161,5 +159,5 @@ referencing the shipping PR.
 **Why**: explicit standing user instruction - issues should capture the *reasoning trail*
 as it happens, not just a terse "found and fixed" summary after the fact. This is also
 why so much of this very design-decisions log exists: the reasoning was already being
-captured in issue comments and `CLAUDE.md`, this page just consolidates it into a
+captured in issue comments and the session log, this page just consolidates it into a
 reference someone can read without archaeology through dozens of closed issues.

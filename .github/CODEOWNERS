@@ -1,0 +1,9 @@
+# Engine core (#1559): a PR changing these paths needs an approving review from a code owner.
+# With the ruleset on main ("Require review from Code Owners"), GitHub enforces it, and
+# scripts/hooks/require_review.py checks it before Claude merges. janslav reviews core changes;
+# pkorpel reviews janslav's own. Keep these paths in sync with CORE_PATHS in that hook.
+/moriaengine/GameCore/                   @janslav @pkorpel
+/moriaengine/Common/                     @janslav @pkorpel
+/moriaengine/Communication/              @janslav @pkorpel
+/moriaengine/AuxiliaryServer/            @janslav @pkorpel
+/moriaengine/Tools/SteamEngine.Generators*/ @janslav @pkorpel

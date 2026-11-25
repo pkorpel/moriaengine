@@ -58,6 +58,9 @@ engine-wide lock order (#17, `Main.cs`). Packet handlers already hold `globalLoc
 deleting a Thing locks each of its timers in `Timer.Delete`. Before #798 the timer thread took
 those two locks the other way round, so deleting an NPC whose timer was just coming due (a
 fresh NPC's AI timer, a newly owned pet's hunger timer) deadlocked the server.
+Changes to timers reach the timer thread through one queue guarded by `Timer.changesLock`
+(static). It is taken last and held only briefly (one queue operation, or `Timer.Clear` draining the
+queue), never around another lock (#17, #798).
 Two knobs control it:
 
 - `DueInSeconds` - delay before the *next* firing. Negative pauses the timer (removes it from
