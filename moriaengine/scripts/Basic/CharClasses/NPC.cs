@@ -1963,7 +1963,7 @@ namespace SteamEngine.CompiledScripts {
 				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)
 			}
 			if (candidate == this.FollowTarget) {
-				return false; //#1174 - nor a wild monster a GM commands ("come"): never its commander. aee9d81 meant to add this
+				return false; //#1174 - nor a wild monster a GM commands ("come"): never its commander. 3fdef6e meant to add this
 				//and didn't, so FindTarget picked the commander every think and IsValidTarget dropped it on the next
 			}
 			if (MysticHypnosis.MonsterGoesFor(this, candidate)) {

@@ -36,7 +36,7 @@ findings as they land). A standing rule changes through a PR to the file that ho
 
 Before work uses or changes an engine system or pattern (plugins, code-made defs, def fields, tags,
 triggers, timers), its current form and use are written down from the existing code, with examples, in its
-page under `moriaengine/docs/current/` (the original engine is commit `a27bbf6`). New code then follows that
+page under `moriaengine/docs/current/` (the original engine is commit `2dbc90b`). New code then follows that
 pattern. A bug found in a pattern is fixed in the pattern, not worked around with a new mechanism. A feature
 starts with an "Existing system" comment on its issue, and a broken existing piece is fixed first, never
 replaced. The reviewer blocks a second way of doing what the engine already does.

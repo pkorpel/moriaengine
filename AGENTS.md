@@ -60,7 +60,7 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests, re
 2. **"Picking this up"** is the first comment when work starts: the plan and the branch. Findings and
    decisions go on the issue as comments while you work.
 3. **A feature investigates the existing system first** and plugs into it: an "Existing system" comment on
-   the issue covering the engine (its `docs/current/` page, the code, the original `a27bbf6`) and Erebor. If
+   the issue covering the engine (its `docs/current/` page, the code, the original `2dbc90b`) and Erebor. If
    the existing piece is broken, it's fixed first in its own issue, never replaced. A new system, or one
    touching more than one existing system, gets a design note the maintainer OKs first.
 4. **Branch** `<n>-<slug>`, in its own worktree `../moria-<n>`. `main` takes changes only through
@@ -89,7 +89,7 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests, re
   Details: `.claude/rules/converter.md`.
 - **Engine pattern first.** Before using or changing an engine mechanism (plugins, code-made defs, def
   fields, tags, triggers, timers), read its page in `docs/current/` and the existing code. The original
-  engine is commit `a27bbf6`. Build in that pattern. Fix a bug in the pattern itself and never add a
+  engine is commit `2dbc90b`. Build in that pattern. Fix a bug in the pattern itself and never add a
   second mechanism. Details: `.claude/rules/engine-patterns.md`.
 - **Czech text is written without diacritics** (`hrac`, not `hráč`), in code, `.resx` and `.def`.
   The old 3.0.6m clients can't show them.
