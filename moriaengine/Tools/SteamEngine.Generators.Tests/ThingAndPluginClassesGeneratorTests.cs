@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -26,7 +25,10 @@ public class PluginDef {
 
 public class MagicThing : global::SteamEngine.Thing { }
 public class MagicThingDef : global::SteamEngine.ThingDef { }
-public class EffectPlugin : Plugin { }
+public class EffectPlugin : Plugin {
+	[global::SteamEngine.Persistence.LoadingFinalizer]
+	public void FinishLoadingFromBasePlugin() { }
+}
 public class EffectPluginDef : PluginDef { }
 
 public delegate void LoadObject(object resolvedObject, string filename, int line);
@@ -68,12 +70,6 @@ public sealed class ComplexPayload {
 }
 """;
 
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-		internal IReadOnlyList<Diagnostic> DriverDiagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
-
 	[Fact]
 	public void FullThingPair_GeneratesThingSpecificFeatures() {
 		const string source = """
@@ -101,18 +97,28 @@ public partial class ArcaneBeaconDef : MagicThingDef {
 		AssertGeneratedContains(generated,
 			"partial class ArcaneBeacon : MagicThing",
 			"partial class ArcaneBeaconDef : MagicThingDef",
-			"[DeepCopyableClass]",
-			"[SaveableClass]",
+			"GeneratedDeepCopyImplementor_ArcaneBeacon",
+			"GeneratedSaveImplementor_ArcaneBeacon",
+			"class GeneratedSaveImplementor_ArcaneBeacon",
+			"class GeneratedDeepCopyImplementor_ArcaneBeacon",
+			"public sealed class GeneratedSaveImplementor_ArcaneBeacon : global::SteamEngine.Persistence.DecoratedClassesSaveImplementor",
+			"public sealed class GeneratedDeepCopyImplementor_ArcaneBeacon : global::SteamEngine.IDeepCopyImplementor",
+			"global::ScriptSandbox.ArcaneBeacon loadedObject = (global::ScriptSandbox.ArcaneBeacon) global::SteamEngine.Thing.Load(input);",
+			"castObjToSave.Save(writer);",
+			"public object DeepCopy(object copyFrom)",
+			"global::ScriptSandbox.ArcaneBeacon copy = new global::ScriptSandbox.ArcaneBeacon(copyFromConverted);",
+			"global::ScriptSandbox.ArcaneBeacon loadedObject = (global::ScriptSandbox.ArcaneBeacon) global::SteamEngine.Thing.Load(input);",
 			"public new ArcaneBeaconDef TypeDef",
 			"public override void Save(",
 			"public override void LoadLine(",
-			"[DeepCopyImplementation]",
 			"public ArcaneBeacon(ArcaneBeaconDef myDef)",
 			"public ArcaneBeacon(ArcaneBeacon copyFrom)",
 			"public int MaxCharge",
 			"public string School",
 			"InitTypedField(\"maxCharge\", 9, typeof(int))",
 			"InitTypedField(\"school\", \"Arcane\", typeof(string))",
+			"static ArcaneBeaconDef() {",
+			"public static new void Bootstrap() {",
 			"ThingDef.RegisterThingDef(typeof(ArcaneBeaconDef), typeof(ArcaneBeacon))");
 		AssertGeneratedOmits(generated, "RegisterPluginDef(");
 		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
@@ -143,19 +149,32 @@ public partial class EchoWardDef : EffectPluginDef {
 		AssertGeneratedContains(generated,
 			"partial class EchoWard : EffectPlugin",
 			"partial class EchoWardDef : EffectPluginDef",
+			"GeneratedDeepCopyImplementor_EchoWard",
+			"GeneratedSaveImplementor_EchoWard",
+			"class GeneratedSaveImplementor_EchoWard",
+			"class GeneratedDeepCopyImplementor_EchoWard",
+			"public sealed class GeneratedSaveImplementor_EchoWard : global::SteamEngine.Persistence.DecoratedClassesSaveImplementor",
+			"public sealed class GeneratedDeepCopyImplementor_EchoWard : global::SteamEngine.IDeepCopyImplementor",
+			"global::ScriptSandbox.EchoWard loadedObject = new global::ScriptSandbox.EchoWard();",
+			"this.LoadSectionLines(input, loadedObject);",
+			"loadedObject.FinishLoadingFromBasePlugin();",
+			"castObjToSave.Save(writer);",
+			"public object DeepCopy(object copyFrom)",
+			"global::ScriptSandbox.EchoWard copy = new global::ScriptSandbox.EchoWard(copyFromConverted);",
 			"public new EchoWardDef TypeDef",
 			"public override void Save(",
 			"public override void LoadLine(",
-			"[LoadingInitializer]",
 			"public EchoWard()",
 			"public int PulseSeconds",
 			"this.pulseSeconds = SteamEngine.Common.ConvertTools.ParseInt32(valueString);",
 			"this.label = (string) ObjectSaver.OptimizedLoad_String(valueString);",
 			"InitTypedField(\"pulseSeconds\", 5, typeof(int))",
+			"static EchoWardDef() {",
+			"public static new void Bootstrap() {",
 			"PluginDef.RegisterPluginDef(typeof(EchoWardDef), typeof(EchoWard))");
 		AssertGeneratedOmits(generated, "RegisterThingDef(");
 		AssertGeneratedOmits(generated, "Convert.ChangeType(");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -175,15 +194,15 @@ public partial class WhisperNodeDef : MagicThingDef {
 		AssertGeneratedContains(generated,
 			"partial class WhisperNode : MagicThing",
 			"partial class WhisperNodeDef : MagicThingDef",
+			"class GeneratedSaveImplementor_WhisperNode",
 			"public WhisperNode(WhisperNodeDef myDef)",
 			"public new WhisperNodeDef TypeDef",
 			"public int Pulse",
 			"InitTypedField(\"pulse\", 1, typeof(int))",
+			"static WhisperNodeDef() {",
+			"public static new void Bootstrap() {",
 			"ThingDef.RegisterThingDef(typeof(WhisperNodeDef), typeof(WhisperNode))");
-		AssertGeneratedOmits(generated,
-			"Save(",
-			"LoadLine(");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -203,11 +222,13 @@ public partial class EmberGlyph : EffectPlugin {
 		AssertGeneratedContains(generated,
 			"partial class EmberGlyph : EffectPlugin",
 			"partial class EmberGlyphDef : EffectPluginDef",
+			"static EmberGlyphDef() {",
+			"public static new void Bootstrap() {",
 			"PluginDef.RegisterPluginDef(typeof(EmberGlyphDef), typeof(EmberGlyph))",
 			"public new EmberGlyphDef TypeDef",
 			"public EmberGlyph()");
 		AssertGeneratedOmits(generated, "RegisterThingDef(");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -241,7 +262,7 @@ public partial class DelayedRelicBeaconDef : MagicThingDef {
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Mode), filename, line)",
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Payload), filename, line)",
 			"this.charges = SteamEngine.Common.ConvertTools.ParseInt32(valueString);");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -307,7 +328,7 @@ public partial class LinkedShrineBeaconDef : MagicThingDef {
 			"ObjectSaver.Load(valueString, new LoadObject(this.DelayedLoad_Linked), filename, line)");
 		AssertGeneratedOmits(generated,
 			"DeepCopyFactory.GetCopyDelayed(copyFrom.linked, this.DelayedCopy_Linked)");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -336,6 +357,7 @@ public partial class NoCopyBeaconDef : MagicThingDef {
 		AssertGeneratedOmits(generated,
 			"public NoCopyBeacon(NoCopyBeacon copyFrom)",
 			"[DeepCopyImplementation]",
+			"GeneratedDeepCopyImplementor_NoCopyBeacon",
 			"this.charges = copyFrom.charges;",
 			"this.payload = copyFrom.payload;",
 			"private void DelayedCopy_Payload(object copiedValue)");
@@ -361,6 +383,43 @@ public partial class CopyExpressionBeaconDef : MagicThingDef {
 		var run = RunGenerator(nameof(TemplateCopyNonLiteral_ReportsDiagnostic), source);
 		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN006");
 		Assert.Contains("!false", error.GetMessage(), StringComparison.Ordinal);
+	}
+
+	[Fact]
+	public void TemplateDeclaringLoadSectionAttributes_ReportsDiagnostic() {
+		const string source = """
+namespace ScriptSandbox;
+
+[PluginTemplate]
+public partial class BadLoadFactoryBeacon : EffectPlugin {
+	[SteamEngine.Persistence.LoadSection]
+	public static object Load(global::SteamEngine.PropsSection input) {
+		return null;
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(TemplateDeclaringLoadSectionAttributes_ReportsDiagnostic), source);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadSection", StringComparison.Ordinal));
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void TemplateDeclaringLoadingInitializerAttributes_ReportsDiagnostic() {
+		const string source = """
+namespace ScriptSandbox;
+
+[PluginTemplate]
+public partial class BadLoadFactoryBeacon : EffectPlugin {
+	[SteamEngine.Persistence.LoadingInitializer]
+	public BadLoadFactoryBeacon() {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(TemplateDeclaringLoadingInitializerAttributes_ReportsDiagnostic), source);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN012" && d.GetMessage().Contains("LoadingInitializer", StringComparison.Ordinal));
+		Assert.Empty(run.GeneratedSources);
 	}
 
 	[Fact]
@@ -390,7 +449,7 @@ public partial class OptInBeaconDef : MagicThingDef {
 		AssertGeneratedOmits(generated,
 			"ignoredCharge",
 			"case \"ignoredcharge\":");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -416,7 +475,7 @@ public partial class PropertyBeaconDef : MagicThingDef {
 			"this.Charges = copyFrom.Charges;",
 			"case \"charges\":",
 			"this.Charges = SteamEngine.Common.ConvertTools.ParseInt32(valueString);");
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 	}
 
 	[Fact]
@@ -516,7 +575,7 @@ public partial class FakeTemplateBeacon : MagicThing {
 	public void MissingTemplateAttributeDeclaration_ReportsDiagnostic() {
 		var run = RunGeneratorWithoutGeneratorAbstractions(
 			nameof(MissingTemplateAttributeDeclaration_ReportsDiagnostic));
-		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
+		Assert.Equal(23, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
 		Assert.Empty(run.GeneratedSources);
 	}
 
@@ -554,6 +613,24 @@ public partial class TypeConflictBeaconDef : MagicThingDef {
 		Assert.NotEmpty(errors);
 		Assert.Contains(errors, d => d.GetMessage().Contains("SteamEngine.Thing", StringComparison.Ordinal));
 		Assert.Contains(errors, d => d.GetMessage().Contains("SteamEngine.AbstractAccount", StringComparison.Ordinal));
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void SameTemplateNameInDifferentFamilies_ReportsConflict() {
+		const string source = """
+namespace A {
+	[ThingTemplate]
+	public partial class Shared : MagicThing { }
+}
+namespace B {
+	[PluginTemplate]
+	public partial class shared : EffectPlugin { }
+}
+""";
+		var run = RunGenerator(nameof(SameTemplateNameInDifferentFamilies_ReportsConflict), source);
+		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN010");
+		Assert.Contains("Shared", error.GetMessage(), StringComparison.OrdinalIgnoreCase);
 		Assert.Empty(run.GeneratedSources);
 	}
 
@@ -618,28 +695,7 @@ public partial class sharedbeaconDef : MagicThingDef {
 			CSharpSyntaxTree.ParseText(SharedStubs)
 		};
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(true),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		var generator = new ThingAndPluginClassesGenerator();
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList(),
-			DriverDiagnostics = run.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
+		return GeneratorTestRunner.Run(new ThingAndPluginClassesGenerator(), syntaxTrees, GetMetadataReferences(true), scenarioName);
 	}
 
 	private static GeneratorRunSnapshot RunGeneratorInternal(
@@ -654,41 +710,8 @@ public partial class sharedbeaconDef : MagicThingDef {
 		}
 		syntaxTrees.AddRange(sources.Select(s => CSharpSyntaxTree.ParseText(s)));
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(includeGeneratorAbstractionsReference),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		var generator = new ThingAndPluginClassesGenerator();
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList(),
-			DriverDiagnostics = run.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-		var scenarioDir = Path.Combine(root, scenarioName);
-		Directory.CreateDirectory(scenarioDir);
-		for (var i = 0; i < sources.Length; i++) {
-			var hintName = sources[i].HintName.Replace('/', '_').Replace('\\', '_');
-			var fileName = string.IsNullOrWhiteSpace(hintName) ? $"generated-{i}.g.cs" : hintName;
-			File.WriteAllText(Path.Combine(scenarioDir, fileName), sources[i].SourceText.ToString());
-		}
+		return GeneratorTestRunner.Run(new ThingAndPluginClassesGenerator(), syntaxTrees,
+			GetMetadataReferences(includeGeneratorAbstractionsReference), scenarioName);
 	}
 
 	private static IEnumerable<MetadataReference> GetMetadataReferences(bool includeGeneratorAbstractionsReference) {

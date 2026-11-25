@@ -3,10 +3,11 @@ using System.Text;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Renders persistence implementors from validated models.
 internal static class Renderer {
 	internal static string GetHintName(SaveImplementorModel model) => "SaveImplementors/" + model.GeneratedTypeName + ".g.cs";
 
-	internal static bool TryRender(SaveImplementorModel model, out string source) {
+	internal static string Render(SaveImplementorModel model) {
 		var builder = new StringBuilder();
 		builder.AppendLine("using System;");
 		builder.AppendLine("using SteamEngine.Persistence;");
@@ -20,8 +21,7 @@ internal static class Renderer {
 		AppendSave(builder, model);
 		builder.AppendLine("\t}");
 		builder.AppendLine("}");
-		source = builder.ToString();
-		return true;
+		return builder.ToString();
 	}
 
 	private static void AppendConstructor(StringBuilder builder, SaveImplementorModel model) {
@@ -123,8 +123,8 @@ internal static class Renderer {
 
 	private static string GetStaticFactoryExpression(SaveImplementorModel model, string arg) {
 		var invocation = arg.Length == 0
-			? $"{model.QualifiedTypeName}.{model.LoadFactory.MethodName}()"
-			: $"{model.QualifiedTypeName}.{model.LoadFactory.MethodName}({arg})";
+			? $"{model.LoadFactory.DeclaringTypeName}.{model.LoadFactory.MethodName}()"
+			: $"{model.LoadFactory.DeclaringTypeName}.{model.LoadFactory.MethodName}({arg})";
 		return model.LoadFactory.RequiresCast
 			? $"({model.QualifiedTypeName}) {invocation}"
 			: invocation;

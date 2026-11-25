@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using DeepCopyImplementorRenderer = SteamEngine.Generators.DeepCopyImplementors.Renderer;
+using SaveImplementorRenderer = SteamEngine.Generators.SaveImplementors.Renderer;
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
+// Renders template partial classes and their persistence and deep-copy implementors.
 internal static class Renderer {
 	internal static string GetHintName(TemplatePair pair) {
-		var family = SanitizeHintPathSegment(pair.Family.ToString());
-		var instance = SanitizeHintPathSegment(pair.InstanceName);
+		var family = pair.Family.ToString();
+		var instance = IdentifierSanitizer.EncodeHintName(pair.InstanceName);
 		return $"ThingAndPluginClasses/{family}/{instance}.TemplatePairing.g.cs";
 	}
 
-	internal static bool TryRenderPair(TemplatePair pair, out string source) {
+	internal static string RenderPair(TemplatePair pair) {
 		var builder = new StringBuilder();
 		AppendFileHeader(builder, pair.NamespaceName);
 		RenderDefPartial(builder, pair);
 		builder.AppendLine();
 		RenderInstancePartial(builder, pair);
 		builder.AppendLine("}");
-		source = builder.ToString();
-		return true;
+		return builder.ToString();
 	}
 
 	private static void AppendFileHeader(StringBuilder builder, string nameSpace) {
@@ -45,12 +47,16 @@ internal static class Renderer {
 	}
 
 	private static void AppendDefBootstrap(StringBuilder builder, TemplatePair pair) {
-		builder.AppendLine("\t\tpublic static new void Bootstrap() {");
+		builder.AppendLine($"\t\tstatic {pair.DefName}() {{");
 		if (pair.Family == TemplateFamily.Thing) {
 			builder.AppendLine($"\t\t\tThingDef.RegisterThingDef(typeof({pair.DefName}), typeof({pair.InstanceName}));");
 		} else {
 			builder.AppendLine($"\t\t\tPluginDef.RegisterPluginDef(typeof({pair.DefName}), typeof({pair.InstanceName}));");
 		}
+		builder.AppendLine("\t\t}");
+		builder.AppendLine();
+
+		builder.AppendLine("\t\tpublic static new void Bootstrap() {");
 		builder.AppendLine("\t\t}");
 		builder.AppendLine();
 	}
@@ -87,12 +93,6 @@ internal static class Renderer {
 	}
 
 	private static void RenderInstancePartial(StringBuilder builder, TemplatePair pair) {
-		if (pair.InstanceCopyAllowed)
-		{
-			builder.AppendLine("\t\t[DeepCopyableClass]");
-		}
-
-		builder.AppendLine("\t[SaveableClass]");
 		builder.AppendLine($"\tpublic partial class {pair.InstanceName} : {pair.InstanceBaseName} {{");
 		builder.AppendLine($"\t\tpublic new {pair.DefName} TypeDef => ({pair.DefName}) base.Def;");
 		builder.AppendLine();
@@ -105,9 +105,61 @@ internal static class Renderer {
 		builder.AppendLine("\t}");
 	}
 
+	internal static (string HintName, string Source) RenderSaveImplementor(TemplatePair pair) {
+		// The template generator owns save wiring for template-derived types and feeds
+		// the SaveImplementors renderer directly instead of relying on cross-generator
+		// attribute discovery. Load-factory semantics are pre-resolved in Analyzer.
+		var generatedTypeName = "GeneratedSaveImplementor_" + IdentifierSanitizer.Sanitize(pair.InstanceName);
+		var loadFactoryKind = pair.LoadFactory.Kind == TemplateLoadFactoryKind.Constructor
+			? SaveImplementors.SaveFactoryKind.Constructor
+			: SaveImplementors.SaveFactoryKind.StaticMethod;
+		var loadFactory = new SaveImplementors.SaveFactoryMethod(
+			loadFactoryKind,
+			pair.LoadFactory.DeclaringTypeName ?? pair.QualifiedInstanceTypeName,
+			pair.LoadFactory.MethodName ?? pair.InstanceName,
+			pair.LoadFactory.TakesPropsSection,
+			pair.LoadFactory.RequiresCast);
+
+		var model = new SaveImplementors.SaveImplementorModel(
+			generatedTypeName,
+			pair.QualifiedInstanceTypeName,
+			pair.InstanceName,
+			loadFactory,
+			loadLineMethodName: pair.Family == TemplateFamily.Plugin ? "LoadLine" : null,
+			loadingFinalizerMethodName: pair.LoadingFinalizerMethodName,
+			saveMethodName: "Save",
+			saveableMembers: []); // generated type already saves/loads its own properties/fields
+		return (SaveImplementorRenderer.GetHintName(model), SaveImplementorRenderer.Render(model));
+	}
+
+	internal static bool TryRenderDeepCopyImplementor(TemplatePair pair, out string hintName, out string source) {
+		hintName = string.Empty;
+		source = string.Empty;
+		if (!pair.InstanceCopyAllowed) {
+			return false;
+		}
+
+		// Same ownership model as save implementors: emit deep-copy implementors here
+		// from template metadata so we avoid depending on generated class-level attributes
+		// being re-discovered by a different source generator in the same compilation.
+		var generatedTypeName = "GeneratedDeepCopyImplementor_" + IdentifierSanitizer.Sanitize(pair.InstanceName);
+		var members = new List<global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyMemberModel>();
+		var initializer = new global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyInitializerModel(
+			global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyInitializerKind.Constructor,
+			pair.InstanceName,
+			acceptsSourceParameter: true);
+		var model = new global::SteamEngine.Generators.DeepCopyImplementors.DeepCopyModel(
+			generatedTypeName,
+			pair.QualifiedInstanceTypeName,
+			initializer,
+			members);
+		hintName = DeepCopyImplementorRenderer.GetHintName(model);
+		source = DeepCopyImplementorRenderer.Render(model);
+		return true;
+	}
+
 	private static void AppendPrimaryConstructor(StringBuilder builder, TemplatePair pair) {
 		if (pair.Family == TemplateFamily.Plugin) {
-			builder.AppendLine("\t\t[LoadingInitializer]");
 			builder.AppendLine($"\t\tpublic {pair.InstanceName}() {{");
 			builder.AppendLine("\t\t}");
 			builder.AppendLine();
@@ -123,7 +175,6 @@ internal static class Renderer {
 		if (!pair.InstanceCopyAllowed) {
 			return;
 		}
-		builder.AppendLine("\t\t[DeepCopyImplementation]");
 		builder.AppendLine($"\t\tpublic {pair.InstanceName}({pair.InstanceName} copyFrom) : base(copyFrom) {{");
 		foreach (var field in fields) {
 			AppendCopyAssignment(builder, field);
@@ -218,15 +269,4 @@ internal static class Renderer {
 		return char.ToUpperInvariant(name[0]) + name.Substring(1);
 	}
 
-	private static string SanitizeHintPathSegment(string value) {
-		if (string.IsNullOrEmpty(value)) {
-			return "_";
-		}
-
-		var builder = new StringBuilder(value.Length);
-		foreach (var ch in value) {
-			builder.Append(char.IsLetterOrDigit(ch) || ch == '_' || ch == '-' ? ch : '_');
-		}
-		return builder.ToString();
-	}
 }

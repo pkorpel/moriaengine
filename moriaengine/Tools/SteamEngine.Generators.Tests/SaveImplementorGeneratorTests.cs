@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SteamEngine.Generators.SaveImplementors;
@@ -30,11 +27,6 @@ namespace SteamEngine.Common {
 }
 """;
 
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
-
 	[Fact]
 	public void ValidSaveableClass_ReportsNoErrorsAndGeneratesImplementor() {
 		const string source = """
@@ -43,8 +35,14 @@ using SteamEngine.Persistence;
 
 namespace ScriptSandbox;
 
+public class ArenaStateBase {
+	[LoadingFinalizer]
+	public void FinishLoadingFromBase() {
+	}
+}
+
 [SaveableClass]
-public sealed class ArenaState {
+public sealed class ArenaState : ArenaStateBase {
 	[SaveableData]
 	public int Counter;
 
@@ -59,10 +57,6 @@ public sealed class ArenaState {
 	public void LoadLine(string filename, int line, string name, string value) {
 	}
 
-	[LoadingFinalizer]
-	public void LoadingFinished() {
-	}
-
 	[Save]
 	public void Save(SaveStream output) {
 	}
@@ -70,13 +64,31 @@ public sealed class ArenaState {
 """;
 
 		var run = RunGenerator(nameof(ValidSaveableClass_ReportsNoErrorsAndGeneratesImplementor), source);
-		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.Empty(run.Diagnostics);
 		var generated = string.Join("\n\n", run.GeneratedSources);
 		Assert.Contains("GeneratedSaveImplementor_ArenaState", generated);
 		Assert.Contains("global::SteamEngine.Persistence.ObjectSaver.Load(propsLine_1.Value, this.DelayedLoad_Payload", generated);
 		Assert.Contains("this.LoadSectionLines(input, loadedObject);", generated);
-		Assert.Contains("loadedObject.LoadingFinished();", generated);
+		Assert.Contains("loadedObject.FinishLoadingFromBase();", generated);
 		Assert.Contains("castObjToSave.Save(writer);", generated);
+	}
+
+	[Fact]
+	public void DistinctUnicodeTypeNames_GenerateDistinctImplementors() {
+		const string source = """
+using SteamEngine.Persistence;
+[SaveableClass]
+public sealed class State\u0301 {
+	[LoadingInitializer] public State\u0301() { }
+}
+[SaveableClass]
+public sealed class State_ {
+	[LoadingInitializer] public State_() { }
+}
+""";
+		var run = RunGenerator(nameof(DistinctUnicodeTypeNames_GenerateDistinctImplementors), source);
+		Assert.Equal(2, run.GeneratedSources.Count);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
 	}
 
 	[Fact]
@@ -107,6 +119,40 @@ public sealed class ArenaState {
 		var run = RunGenerator(nameof(LoadSectionWithLoadingInitializer_ReportsDiagnostic), source);
 		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN306");
 		Assert.Contains("LoadSection", diagnostic.GetMessage());
+	}
+
+	[Fact]
+	public void LoadSectionFactory_GeneratesLoadSectionFactoryInvocation() {
+		const string source = """
+using SteamEngine;
+using SteamEngine.Persistence;
+
+namespace ScriptSandbox;
+
+public class ArenaBase {
+	[LoadSection]
+	public static object Load(PropsSection input) {
+		return new ArenaState();
+	}
+}
+
+[SaveableClass]
+public sealed class ArenaState : ArenaBase {
+	[SaveableData]
+	public int Counter;
+
+	[Save]
+	public void Save(SaveStream output) {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(LoadSectionFactory_GeneratesLoadSectionFactoryInvocation), source);
+		Assert.Empty(run.Diagnostics);
+		var generated = string.Join("\n\n", run.GeneratedSources);
+		Assert.Contains("global::ScriptSandbox.ArenaState loadedObject = (global::ScriptSandbox.ArenaState) global::ScriptSandbox.ArenaBase.Load(input);", generated);
+		Assert.DoesNotContain("TryPopPropsLine(\"Counter\")", generated);
+		Assert.Contains("castObjToSave.Save(writer);", generated);
 	}
 
 	[Fact]
@@ -152,8 +198,36 @@ public sealed class ArenaState {
 """;
 
 		var run = RunGenerator(nameof(SaveableDataPrivateField_ReportsDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN307");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN905");
 		Assert.Contains("counter", diagnostic.GetMessage());
+	}
+
+	[Fact]
+	public void NoSaveableDataField_Supported() {
+		const string source = """
+using SteamEngine;
+using SteamEngine.Persistence;
+
+namespace ScriptSandbox;
+
+[SaveableClass]
+public sealed class ArenaState {
+
+	[LoadingInitializer]
+	public ArenaState() {
+	}
+
+	[Save]
+	public void Save(SaveStream output) {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(NoSaveableDataField_Supported), source);
+		Assert.Empty(run.Diagnostics);
+		var generated = string.Join(Environment.NewLine, run.GeneratedSources);
+		Assert.Contains("ArenaState()", generated);
+		Assert.Contains(".Save(writer)", generated);
 	}
 
 	[Fact]
@@ -203,64 +277,7 @@ namespace SecondNamespace {
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
 		}
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new SaveImplementorsGenerator());
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-
-		Directory.CreateDirectory(root);
-		var safeName = scenarioName.Replace(Path.DirectorySeparatorChar, '_').Replace(Path.AltDirectorySeparatorChar, '_');
-		for (var i = 0; i < sources.Length; i++) {
-			var path = Path.Combine(root, safeName + "." + i.ToString() + ".g.cs");
-			File.WriteAllText(path, sources[i].SourceText.ToString());
-		}
-	}
-
-	private static IReadOnlyList<MetadataReference> GetMetadataReferences() {
-		var refs = new List<MetadataReference>();
-		var runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
-		var needed = new[] {
-			"System.Private.CoreLib.dll",
-			"System.Runtime.dll",
-			"netstandard.dll",
-			"System.Collections.dll",
-			"System.Linq.dll",
-			"System.Console.dll",
-			"System.Text.RegularExpressions.dll"
-		};
-		foreach (var file in needed) {
-			var full = Path.Combine(runtimeDir, file);
-			if (File.Exists(full)) {
-				refs.Add(MetadataReference.CreateFromFile(full));
-			}
-		}
-		refs.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
-		refs.Add(MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location));
-		refs.Add(MetadataReference.CreateFromFile(typeof(System.Diagnostics.Debug).Assembly.Location));
-		refs.Add(MetadataReference.CreateFromFile(typeof(SteamEngine.Persistence.SaveableClassAttribute).Assembly.Location));
-		return refs;
+		return GeneratorTestRunner.Run(new SaveImplementorsGenerator(), syntaxTrees,
+			GeneratorTestRunner.GetRuntimeReferences(), scenarioName, flatDump: true);
 	}
 }

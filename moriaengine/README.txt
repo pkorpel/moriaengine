@@ -34,16 +34,15 @@ don't have it: https://github.com/PowerShell/PowerShell
 Options:
 
     ./build.ps1 -Configuration Release     # Debug (default) or Release
-    ./build.ps1 -Clean                      # wipe bin/obj first
+    ./build.ps1 -Clean                      # clean scripts/AuxiliaryServer dependency outputs
     ./build.ps1 -Run GameCore               # build, then run GameCore
     ./build.ps1 -Run AuxiliaryServer        # build, then run AuxiliaryServer
     ./build.ps1 -Run Both                   # build, then run both together
 
-The first build takes a bit longer than later ones: scripts/Generated's code
-is produced at runtime by GameCore itself (ClassTemplateParser, compiling
-the .ct templates under scripts/), not checked into source control, so the
-script runs GameCore briefly to generate it before building the full
-solution. This only happens once - subsequent runs skip it automatically.
+Script source and generated C# are built together by dotnet using Roslyn source
+generators; there is no separate runtime code-generation boot. If
+steamengine.ini is missing, build.ps1 starts GameCore after the build to write
+the default configuration and waits for it to exit.
 
 There is no "Sane" or "Optimized" build anymore - only the standard .NET
 Debug/Release split. (Older versions of this doc described three build
@@ -54,10 +53,10 @@ survived the conversion to SDK-style projects.)
 Running for the first time
 ---------------------------
 
-Run GameCore once (`./build.ps1 -Run GameCore`, or just the built binary
-directly). It will write a default `steamengine.ini` and exit - open it,
-adjust anything you want (settings are commented inline), then run GameCore
-again. Run AuxiliaryServer the same way to get `steamaux.ini`.
+The build script creates a default `steamengine.ini` when it is missing. Open
+it and adjust any settings (commented inline) before starting GameCore with
+`./build.ps1 -Run GameCore` or the built binary directly. Run AuxiliaryServer
+to create `steamaux.ini`.
 
 For a real game server, run both together: `./build.ps1 -Run Both`. Then
 connect with either a UO client or RemoteConsole - with either, logging in

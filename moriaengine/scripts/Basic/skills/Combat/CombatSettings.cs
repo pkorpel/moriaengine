@@ -136,11 +136,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#96 fix - dead, intentionally unused (not a mistake - see
 		/// CombatCalculator.CalculateArmorClassEffect's own comment). Used to unconditionally
 		/// discard the real armor value for every case except monster-attacks-player; the fix
-		/// is to stop discarding it, not to invent a new formula using these. Left declared
-		/// (not removed) purely because this engine's reflection-based ViewableClass/
-		/// SaveableClass code generator writes a position-indexed Generated/*.Generated.cs file
-		/// that would need hand-renumbering across potentially thousands of entries if a field
-		/// were deleted outright - same reasoning armorClassMvP above is already left unused.</summary>
+		/// is to stop discarding it, not to invent a new formula using these. It remains a
+		/// saveable field for compatibility with existing saved settings.</summary>
 		[SaveableData]
 		public double armorRandEffectMin = 0.945;
 

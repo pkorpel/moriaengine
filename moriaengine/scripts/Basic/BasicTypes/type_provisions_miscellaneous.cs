@@ -20,13 +20,13 @@ using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_pitcher_empty : CompiledTriggerGroup {
+	public partial class t_pitcher_empty : CompiledTriggerGroup {
 
 	}
 
 	/// <summary>#962 - Sphere's Use_Kindling: on the ground a roll against 0-29 of Camping makes a fire that burns 4
 	/// minutes and one more per stick. No gain by use.</summary>
-	public class t_kindling : CompiledTriggerGroup {
+	public partial class t_kindling : CompiledTriggerGroup {
 		private const int MostDifficulty = 30, DifficultyScale = 10, FireSound = 0x226, BaseMinutes = 4;
 
 		public TriggerResult On_DClick(Item self, Character clicker) {
@@ -59,23 +59,23 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_campfire : CompiledTriggerGroup {
+	public partial class t_campfire : CompiledTriggerGroup {
 
 	}
 
-	public class t_garbage : CompiledTriggerGroup {
+	public partial class t_garbage : CompiledTriggerGroup {
 
 	}
 
-	public class t_key : CompiledTriggerGroup {
+	public partial class t_key : CompiledTriggerGroup {
 
 	}
 
-	public class t_keyring : CompiledTriggerGroup {
+	public partial class t_keyring : CompiledTriggerGroup {
 
 	}
 
-	public class t_comm_crystal : CompiledTriggerGroup {
+	public partial class t_comm_crystal : CompiledTriggerGroup {
 
 	}
 }

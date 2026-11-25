@@ -4,25 +4,25 @@ using System.Text;
 namespace SteamEngine.Generators;
 
 internal static class MemberValueLoadRenderer {
-	internal static string GetSimpleExpression(MemberValueKind kind, string typeName) {
+	internal static string GetSimpleExpression(MemberValueKind kind, string typeName, string valueExpression = "valueString") {
 		return kind switch {
-			MemberValueKind.String => "(string) ObjectSaver.OptimizedLoad_String(valueString)",
-			MemberValueKind.Boolean => "SteamEngine.Common.ConvertTools.ParseBoolean(valueString)",
-			MemberValueKind.Byte => "SteamEngine.Common.ConvertTools.ParseByte(valueString)",
-			MemberValueKind.SByte => "SteamEngine.Common.ConvertTools.ParseSByte(valueString)",
-			MemberValueKind.Int16 => "SteamEngine.Common.ConvertTools.ParseInt16(valueString)",
-			MemberValueKind.UInt16 => "SteamEngine.Common.ConvertTools.ParseUInt16(valueString)",
-			MemberValueKind.Int32 => "SteamEngine.Common.ConvertTools.ParseInt32(valueString)",
-			MemberValueKind.UInt32 => "SteamEngine.Common.ConvertTools.ParseUInt32(valueString)",
-			MemberValueKind.Int64 => "SteamEngine.Common.ConvertTools.ParseInt64(valueString)",
-			MemberValueKind.UInt64 => "SteamEngine.Common.ConvertTools.ParseUInt64(valueString)",
-			MemberValueKind.Single => "SteamEngine.Common.ConvertTools.ParseSingle(valueString)",
-			MemberValueKind.Double => "SteamEngine.Common.ConvertTools.ParseDouble(valueString)",
-			MemberValueKind.Decimal => "SteamEngine.Common.ConvertTools.ParseDecimal(valueString)",
-			MemberValueKind.Char => $"Convert.ToChar(ObjectSaver.OptimizedLoad_SimpleType(valueString, typeof({typeName})))",
-			MemberValueKind.DateTime => $"Convert.ToDateTime(ObjectSaver.OptimizedLoad_SimpleType(valueString, typeof({typeName})))",
-			MemberValueKind.TimeSpan => $"({typeName}) ObjectSaver.OptimizedLoad_SimpleType(valueString, typeof({typeName}))",
-			MemberValueKind.Globals => $"({typeName}) ObjectSaver.OptimizedLoad_SimpleType(valueString, typeof({typeName}))",
+			MemberValueKind.String => $"(string) ObjectSaver.OptimizedLoad_String({valueExpression})",
+			MemberValueKind.Boolean => $"SteamEngine.Common.ConvertTools.ParseBoolean({valueExpression})",
+			MemberValueKind.Byte => $"SteamEngine.Common.ConvertTools.ParseByte({valueExpression})",
+			MemberValueKind.SByte => $"SteamEngine.Common.ConvertTools.ParseSByte({valueExpression})",
+			MemberValueKind.Int16 => $"SteamEngine.Common.ConvertTools.ParseInt16({valueExpression})",
+			MemberValueKind.UInt16 => $"SteamEngine.Common.ConvertTools.ParseUInt16({valueExpression})",
+			MemberValueKind.Int32 => $"SteamEngine.Common.ConvertTools.ParseInt32({valueExpression})",
+			MemberValueKind.UInt32 => $"SteamEngine.Common.ConvertTools.ParseUInt32({valueExpression})",
+			MemberValueKind.Int64 => $"SteamEngine.Common.ConvertTools.ParseInt64({valueExpression})",
+			MemberValueKind.UInt64 => $"SteamEngine.Common.ConvertTools.ParseUInt64({valueExpression})",
+			MemberValueKind.Single => $"SteamEngine.Common.ConvertTools.ParseSingle({valueExpression})",
+			MemberValueKind.Double => $"SteamEngine.Common.ConvertTools.ParseDouble({valueExpression})",
+			MemberValueKind.Decimal => $"SteamEngine.Common.ConvertTools.ParseDecimal({valueExpression})",
+			MemberValueKind.Char => $"Convert.ToChar(ObjectSaver.OptimizedLoad_SimpleType({valueExpression}, typeof({typeName})))",
+			MemberValueKind.DateTime => $"Convert.ToDateTime(ObjectSaver.OptimizedLoad_SimpleType({valueExpression}, typeof({typeName})))",
+			MemberValueKind.TimeSpan => $"({typeName}) ObjectSaver.OptimizedLoad_SimpleType({valueExpression}, typeof({typeName}))",
+			MemberValueKind.Globals => $"({typeName}) ObjectSaver.OptimizedLoad_SimpleType({valueExpression}, typeof({typeName}))",
 			_ => throw GetUnsupportedSimpleKindException(kind)
 		};
 	}

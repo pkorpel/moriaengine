@@ -338,7 +338,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	[ViewableClass]
-	public class ShipRegion : MultiRegion {
+	public partial class ShipRegion : MultiRegion {
 		public ShipRegion() {
 			throw new SEException("The constructor without paramaters is not supported");
 		}
@@ -370,46 +370,46 @@ namespace SteamEngine.CompiledScripts {
 			}
 			return result;
 		}
+	}
 
-		public class E_BeingOnShip : CompiledTriggerGroup {
-			private Ship GetShipOnPoint(Map map, int x, int y) {
-				Region region = map.GetRegionFor(x, y);
-				ShipRegion shipRegion = region as ShipRegion;
-				if (shipRegion != null) {
-					return shipRegion.Ship;
-				}
-				return null;
+	public partial class E_BeingOnShip : CompiledTriggerGroup {
+		private Ship GetShipOnPoint(Map map, int x, int y) {
+			Region region = map.GetRegionFor(x, y);
+			ShipRegion shipRegion = region as ShipRegion;
+			if (shipRegion != null) {
+				return shipRegion.Ship;
 			}
+			return null;
+		}
 
-			public int On_ItemPickUp_Ground(Character self, Item pickedUp) {
-				Ship ship = this.GetShipOnPoint(self.GetMap(), pickedUp.X, pickedUp.Y);
-				if (ship != null) {
-					ship.RemoveThing(pickedUp);
-				} else {
-					self.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
-				}
-				return 0;
+		public int On_ItemPickUp_Ground(Character self, Item pickedUp) {
+			Ship ship = this.GetShipOnPoint(self.GetMap(), pickedUp.X, pickedUp.Y);
+			if (ship != null) {
+				ship.RemoveThing(pickedUp);
+			} else {
+				self.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
 			}
+			return 0;
+		}
 
-			public int On_ItemDropOn_Ground(Character self, Item dropped, ushort x, ushort y, sbyte z) {
-				Ship ship = this.GetShipOnPoint(self.GetMap(), x, y);
-				if (ship != null) {
-					ship.AddThing(dropped);
-				} else {
-					self.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
-				}
-				return 0;
+		public int On_ItemDropOn_Ground(Character self, Item dropped, ushort x, ushort y, sbyte z) {
+			Ship ship = this.GetShipOnPoint(self.GetMap(), x, y);
+			if (ship != null) {
+				ship.AddThing(dropped);
+			} else {
+				self.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
 			}
+			return 0;
+		}
 
-			public int On_Say(Character self, string speech, SpeechType type, int[] keywords) {
-				Ship ship = this.GetShipOnPoint(self.GetMap(), self.X, self.Y);
-				if (ship != null) {
-					ship.HandleCommand(self, keywords);
-				} else {
-					self.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
-				}
-				return 0;
+		public int On_Say(Character self, string speech, SpeechType type, int[] keywords) {
+			Ship ship = this.GetShipOnPoint(self.GetMap(), self.X, self.Y);
+			if (ship != null) {
+				ship.HandleCommand(self, keywords);
+			} else {
+				self.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
 			}
+			return 0;
 		}
 	}
 }

@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
+// Pairs instance and definition templates, validates them, and builds render models.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor UnsupportedTemplateMemberDescriptor = new(
 		"SEGEN001",
@@ -51,7 +52,7 @@ internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor DuplicateTemplateNameDescriptor = new(
 		"SEGEN010",
 		"Duplicate template name",
-		"Template name '{0}' for family '{1}' is declared by both '{2}' and '{3}' (names must be globally unique, case-insensitive)",
+		"Template name '{0}' is declared by both '{1}' and '{2}' (names must be globally unique, case-insensitive)",
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
@@ -62,11 +63,25 @@ internal static class Analyzer {
 		"Usage",
 		DiagnosticSeverity.Error,
 		true);
+	internal static readonly DiagnosticDescriptor ForbiddenTemplateLoadFactoryAttributeDescriptor = new(
+		"SEGEN012",
+		"Invalid template loading method",
+		"Template member '{0}' on '{1}' uses [{2}], but {3}",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
+	internal static readonly DiagnosticDescriptor InvalidTemplateLoadingFinalizerDescriptor = new(
+		"SEGEN013",
+		"Invalid template loading finalizer",
+		"Member '{0}' on '{1}' has [LoadingFinalizer] but {2}",
+		"Usage",
+		DiagnosticSeverity.Error,
+		true);
 
 	internal static IReadOnlyList<TemplatePair> BuildTemplatePairs(
 		IReadOnlyCollection<TemplateCandidate> candidates,
 		ICollection<Diagnostic> diagnostics,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
+		RequiredSymbols symbols) {
 		var symbolPairs = new Dictionary<string, TemplatePairSymbols>(StringComparer.Ordinal);
 		foreach (var candidate in candidates) {
 			AddCandidateToPairs(symbolPairs, candidate, diagnostics);
@@ -79,7 +94,7 @@ internal static class Analyzer {
 				continue;
 			}
 			var symbolPair = pairEntry.Value;
-			if (!TryCreateRenderPair(symbolPair, diagnostics, requiredSymbols, out var renderPair)) {
+			if (!TryCreateRenderPair(symbolPair, diagnostics, symbols, out var renderPair)) {
 				continue;
 			}
 			if (renderPair is not null) {
@@ -97,7 +112,7 @@ internal static class Analyzer {
 
 		foreach (var pairEntry in symbolPairs) {
 			var pair = pairEntry.Value;
-			var nameKey = pair.Family + "|" + pair.InstanceName;
+			var nameKey = pair.InstanceName;
 			if (!seenByName.TryGetValue(nameKey, out var existing)) {
 				seenByName[nameKey] = (pairEntry.Key, pair);
 				continue;
@@ -110,7 +125,6 @@ internal static class Analyzer {
 				DuplicateTemplateNameDescriptor,
 				GetTemplatePairLocation(pair),
 				pair.InstanceName,
-				pair.Family.ToString(),
 				GetTemplatePairDisplay(existing.Pair),
 				GetTemplatePairDisplay(pair)));
 		}
@@ -127,10 +141,32 @@ internal static class Analyzer {
 		var pairKey = namespaceName + "|" + candidate.Family + "|" + instanceName;
 
 		if (!pairs.TryGetValue(pairKey, out var pair)) {
-			pair = new TemplatePairSymbols(instanceName, defName, candidate.Family, namespaceName, candidate.Compilation);
+			pair = new TemplatePairSymbols(instanceName, defName, candidate.Family, namespaceName);
 			pairs[pairKey] = pair;
 		}
+		if (!ValidateTemplateMethods(candidate, diagnostics)) {
+			pair.HasInvalidMethods = true;
+		}
 		UpdatePair(pair, candidate, isDef, diagnostics);
+	}
+
+	private static bool ValidateTemplateMethods(TemplateCandidate candidate, ICollection<Diagnostic> diagnostics) {
+		if (candidate.Kind == TemplateKind.Def) {
+			return true;
+		}
+
+		var valid = true;
+
+		if (candidate is { Family: TemplateFamily.Plugin, LoadSectionMethod: not null }) {
+			ReportForbiddenLoadingMethod(
+				candidate.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				candidate.LoadSectionMethod,
+				"LoadSection",
+				"plugin templates load through their generated parameterless constructor",
+				diagnostics);
+			valid = false;
+		}
+		return valid;
 	}
 
 	private static string GetInstanceName(string className, bool isDef) {
@@ -152,6 +188,8 @@ internal static class Analyzer {
 			}
 			pair.DefSymbol = candidate.Symbol;
 			pair.DefName = candidate.Symbol.Name;
+			pair.DefFields = candidate.DefFields;
+			pair.LoadSectionMethod ??= candidate.LoadSectionMethod;
 			return;
 		}
 
@@ -162,6 +200,9 @@ internal static class Analyzer {
 		pair.InstanceSymbol = candidate.Symbol;
 		pair.InstanceName = candidate.Symbol.Name;
 		pair.InstanceCopyAllowed = candidate.CopyAllowed ?? true;
+		pair.InstanceFieldDefaultExpressions = candidate.InstanceFieldDefaultExpressions;
+		pair.LoadSectionMethod = candidate.LoadSectionMethod;
+		pair.LoadingFinalizerMethod = candidate.LoadingFinalizerMethod;
 	}
 
 	private static Diagnostic CreateTemplatePairDiagnostic(INamedTypeSymbol conflictingSymbol, TemplatePairSymbols existingPair, string reason) {
@@ -182,11 +223,12 @@ internal static class Analyzer {
 	}
 
 	private static bool TryGetBaseTypeNames(TemplatePairSymbols pair, out string instanceBaseName, out string defBaseName) {
-		if (pair.InstanceSymbol?.BaseType is INamedTypeSymbol instanceBase) {
+		if (pair.InstanceSymbol?.BaseType is { } instanceBase) {
 			instanceBaseName = instanceBase.Name;
 			defBaseName = pair.DefSymbol?.BaseType?.Name ?? instanceBaseName + "Def";
 			return true;
 		}
+		// A definition-only template can still supply the missing instance's base name.
 		if (TryGetInstanceBaseNameFromDef(pair.DefSymbol, out instanceBaseName)) {
 			defBaseName = pair.DefSymbol?.BaseType?.Name ?? instanceBaseName + "Def";
 			return true;
@@ -199,36 +241,157 @@ internal static class Analyzer {
 	private static bool TryCreateRenderPair(
 		TemplatePairSymbols symbolPair,
 		ICollection<Diagnostic> diagnostics,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		out TemplatePair? renderPair) {
 		if (!TryGetBaseTypeNames(symbolPair, out var instanceBaseName, out var defBaseName)) {
 			renderPair = null;
 			return false;
 		}
+		if (symbolPair.HasInvalidMethods) {
+			renderPair = null;
+			return false;
+		}
+		if (!ValidateLoadingMethods(symbolPair, symbols, diagnostics, out var loadFactory)) {
+			renderPair = null;
+			return false;
+		}
 
-		var defFields = Parser.GetDefFields(
-			symbolPair.DefSymbol,
-			symbolPair.Compilation,
-			requiredSymbols.Attributes.DefFieldAttribute,
+		var defFields = symbolPair.DefFields;
+		var instanceFields = GetInstanceFields(
+			symbolPair.InstanceSymbol,
+			symbolPair.InstanceFieldDefaultExpressions,
+			symbols,
 			diagnostics).ToList();
-		var instanceFields = GetInstanceFields(symbolPair.InstanceSymbol, requiredSymbols, diagnostics).ToList();
 		WarnCopyableDataWithCopyDisabled(symbolPair.InstanceCopyAllowed, symbolPair.InstanceSymbol?.Name ?? string.Empty, instanceFields, diagnostics);
 		var saveLoadMembers = ValidateDistinctSaveLoadKeys(
 			instanceFields.Where(f => f.IncludeInSaveLoad).ToList(),
 			diagnostics);
 		var copyMembers = instanceFields.Where(f => f.IncludeInCopy).ToList();
-
+		if (!TryResolveLoadingFinalizerMethodName(symbolPair.InstanceSymbol, symbolPair.LoadingFinalizerMethod, diagnostics, out var loadingFinalizerMethodName)) {
+			renderPair = null;
+			return false;
+		}
 		renderPair = new TemplatePair(
 			symbolPair.InstanceName,
+			GetQualifiedTypeName(symbolPair.NamespaceName, symbolPair.InstanceName),
 			symbolPair.DefName,
 			symbolPair.Family,
 			symbolPair.NamespaceName,
 			instanceBaseName,
 			defBaseName,
 			symbolPair.InstanceCopyAllowed,
+			loadFactory,
+			loadingFinalizerMethodName,
 			defFields,
 			saveLoadMembers,
 			copyMembers);
+		return true;
+	}
+
+	private static string GetQualifiedTypeName(string namespaceName, string typeName) {
+		if (string.IsNullOrEmpty(namespaceName)) {
+			return "global::" + typeName;
+		}
+		return "global::" + namespaceName + "." + typeName;
+	}
+
+	private static bool ValidateLoadingMethods(
+		TemplatePairSymbols pair,
+		RequiredSymbols symbols,
+		ICollection<Diagnostic> diagnostics,
+		out TemplateLoadFactory loadFactory) {
+		loadFactory = null!;
+		if (pair.Family == TemplateFamily.Plugin) {
+			loadFactory = new TemplateLoadFactory(
+				TemplateLoadFactoryKind.Constructor,
+				methodName: null,
+				declaringTypeName: null,
+				takesPropsSection: false,
+				requiresCast: false);
+			return true;
+		}
+
+		var loadSectionMethod = pair.LoadSectionMethod;
+		if (loadSectionMethod is null) {
+			ReportMissingThingLoadSection(pair, diagnostics);
+			return false;
+		}
+		if (loadSectionMethod.Parameters.Length != 1
+			|| !SymbolEqualityComparer.Default.Equals(loadSectionMethod.Parameters[0].Type, symbols.CanonicalTypes.PropsSectionType)
+			|| (loadSectionMethod.MethodKind != MethodKind.Constructor && (loadSectionMethod.MethodKind != MethodKind.Ordinary || !loadSectionMethod.IsStatic))) {
+			ReportForbiddenLoadingMethod(
+				pair.InstanceSymbol?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? pair.InstanceName,
+				loadSectionMethod,
+				"LoadSection",
+				"it must be a constructor or static method with exactly one PropsSection parameter",
+				diagnostics);
+			return false;
+		}
+
+		var takesPropsSection = loadSectionMethod.Parameters.Length == 1;
+		var kind = loadSectionMethod.MethodKind == MethodKind.Constructor
+			? TemplateLoadFactoryKind.Constructor
+			: TemplateLoadFactoryKind.StaticMethod;
+		loadFactory = new TemplateLoadFactory(
+			kind,
+			kind == TemplateLoadFactoryKind.Constructor ? null : loadSectionMethod.Name,
+			kind == TemplateLoadFactoryKind.Constructor ? null : loadSectionMethod.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			takesPropsSection,
+			kind == TemplateLoadFactoryKind.StaticMethod
+				&& !SymbolEqualityComparer.Default.Equals(pair.InstanceSymbol, loadSectionMethod.ReturnType));
+		return true;
+	}
+
+	private static void ReportForbiddenLoadingMethod(
+		string templateTypeName,
+		IMethodSymbol method,
+		string attributeName,
+		string reason,
+		ICollection<Diagnostic> diagnostics) {
+		diagnostics.Add(Diagnostic.Create(
+			ForbiddenTemplateLoadFactoryAttributeDescriptor,
+			method.Locations.FirstOrDefault(),
+			method.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+			templateTypeName,
+			attributeName,
+			reason));
+	}
+
+	private static void ReportMissingThingLoadSection(TemplatePairSymbols pair, ICollection<Diagnostic> diagnostics) {
+		diagnostics.Add(Diagnostic.Create(
+			ForbiddenTemplateLoadFactoryAttributeDescriptor,
+			pair.InstanceSymbol?.Locations.FirstOrDefault(),
+			pair.InstanceName,
+			pair.InstanceSymbol?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? pair.InstanceName,
+			"LoadSection",
+			"a Thing template must resolve one inherited LoadSection factory"));
+	}
+
+	private static bool TryResolveLoadingFinalizerMethodName(
+		INamedTypeSymbol? instanceSymbol,
+		IMethodSymbol? method,
+		ICollection<Diagnostic> diagnostics,
+		out string? loadingFinalizerMethodName) {
+		loadingFinalizerMethodName = null;
+		if (instanceSymbol is null) {
+			return true;
+		}
+
+		if (method is null) {
+			return true;
+		}
+
+		if (method.MethodKind != MethodKind.Ordinary || method.IsStatic || method.Parameters.Length != 0) {
+			diagnostics.Add(Diagnostic.Create(
+				InvalidTemplateLoadingFinalizerDescriptor,
+				method.Locations.FirstOrDefault(),
+				method.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+				instanceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				"it must be an instance method with no parameters"));
+			return false;
+		}
+
+		loadingFinalizerMethodName = method.Name;
 		return true;
 	}
 
@@ -283,7 +446,8 @@ internal static class Analyzer {
 
 	internal static IEnumerable<InstanceFieldSpec> GetInstanceFields(
 		INamedTypeSymbol? instanceSymbol,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics) {
 		if (instanceSymbol is null) {
 			return Array.Empty<InstanceFieldSpec>();
@@ -291,7 +455,14 @@ internal static class Analyzer {
 
 		var fields = new List<InstanceFieldSpec>();
 		foreach (var member in instanceSymbol.GetMembers()) {
-			if (!TryCreateInstanceFieldSpec(instanceSymbol, member, requiredSymbols, diagnostics, out var spec, out var error)) {
+			if (!TryCreateInstanceFieldSpec(
+				instanceSymbol,
+				member,
+				instanceFieldDefaultExpressions,
+				symbols,
+				diagnostics,
+				out var spec,
+				out var error)) {
 				if (error is not null) {
 					diagnostics.Add(error);
 				}
@@ -305,12 +476,13 @@ internal static class Analyzer {
 	private static bool TryCreateInstanceFieldSpec(
 		INamedTypeSymbol instanceSymbol,
 		ISymbol member,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		out InstanceFieldSpec spec,
 		out Diagnostic? error) {
-		var hasSaveableData = HasMemberAttribute(member, requiredSymbols.Attributes.SaveableDataAttribute, diagnostics);
-		var hasCopyableData = HasMemberAttribute(member, requiredSymbols.Attributes.CopyableDataAttribute, diagnostics);
+		var hasSaveableData = HasMemberAttribute(member, symbols.Attributes.SaveableDataAttribute, diagnostics);
+		var hasCopyableData = HasMemberAttribute(member, symbols.Attributes.CopyableDataAttribute, diagnostics);
 		if (!hasSaveableData && !hasCopyableData) {
 			spec = default;
 			error = null;
@@ -331,13 +503,13 @@ internal static class Analyzer {
 		}
 
 		if (member is IFieldSymbol field) {
-			spec = CreateInstanceFieldSpec(field, requiredSymbols, diagnostics, hasSaveableData, hasCopyableData);
+			spec = CreateInstanceFieldSpec(field, instanceFieldDefaultExpressions, symbols, diagnostics, hasSaveableData, hasCopyableData);
 			error = null;
 			return true;
 		}
 
 		if (member is IPropertySymbol property) {
-			spec = CreateInstancePropertySpec(property, requiredSymbols, diagnostics, hasSaveableData, hasCopyableData);
+			spec = CreateInstancePropertySpec(property, instanceFieldDefaultExpressions, symbols, diagnostics, hasSaveableData, hasCopyableData);
 			error = null;
 			return true;
 		}
@@ -348,7 +520,7 @@ internal static class Analyzer {
 	}
 
 	private static bool HasMemberAttribute(ISymbol member, INamedTypeSymbol expectedSymbol, ICollection<Diagnostic> diagnostics) {
-		return AttributeUsageValidator.HasCanonicalAttribute(member, expectedSymbol, diagnostics);
+		return AttributeUsageValidator.HasAttribute(member, expectedSymbol, diagnostics);
 	}
 
 	private static string? GetUnsupportedMemberReason(ISymbol member) {
@@ -392,16 +564,17 @@ internal static class Analyzer {
 
 	private static InstanceFieldSpec CreateInstanceFieldSpec(
 		IFieldSymbol member,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		bool includeInSaveLoad,
 		bool includeInCopy) {
 		return CreateInstanceMemberSpec(
 			member.Name,
-			Parser.GetInitializer(member) ?? "default",
+			GetMemberInitializer(member, instanceFieldDefaultExpressions) ?? "default",
 			member.Type,
 			member.Locations.FirstOrDefault(),
-			requiredSymbols,
+			symbols,
 			diagnostics,
 			includeInSaveLoad,
 			includeInCopy);
@@ -409,16 +582,17 @@ internal static class Analyzer {
 
 	private static InstanceFieldSpec CreateInstancePropertySpec(
 		IPropertySymbol member,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		bool includeInSaveLoad,
 		bool includeInCopy) {
 		return CreateInstanceMemberSpec(
 			member.Name,
-			Parser.GetInitializer(member) ?? "default",
+			GetMemberInitializer(member, instanceFieldDefaultExpressions) ?? "default",
 			member.Type,
 			member.Locations.FirstOrDefault(),
-			requiredSymbols,
+			symbols,
 			diagnostics,
 			includeInSaveLoad,
 			includeInCopy);
@@ -429,7 +603,7 @@ internal static class Analyzer {
 		string defaultExpression,
 		ITypeSymbol type,
 		Location? location,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		bool includeInSaveLoad,
 		bool includeInCopy) {
@@ -443,9 +617,16 @@ internal static class Analyzer {
 			includeInCopy,
 			MemberValueKindClassifier.GetMemberValueKind(
 				type,
-				requiredSymbols.CanonicalTypes,
+				symbols.CanonicalTypes,
 				(actual, canonical) => diagnostics.Add(CreateTypeNameConflictDiagnostic(location, actual, canonical))),
 			location);
+	}
+
+	private static string? GetMemberInitializer(ISymbol member, IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions) {
+		// Missing key means the member had no explicit initializer in source.
+		return instanceFieldDefaultExpressions.TryGetValue(member, out var initializer)
+			? initializer
+			: null;
 	}
 
 	private static Diagnostic CreateTypeNameConflictDiagnostic(Location? location, ITypeSymbol actual, INamedTypeSymbol canonical) {
@@ -456,23 +637,29 @@ internal static class Analyzer {
 			canonical.ToDisplayString());
 	}
 
+	// Accumulates the declarations and metadata for a possibly incomplete pair.
 	private sealed class TemplatePairSymbols {
-		internal TemplatePairSymbols(string instanceName, string defName, TemplateFamily family, string namespaceName, Compilation compilation) {
+		internal TemplatePairSymbols(string instanceName, string defName, TemplateFamily family, string namespaceName) {
 			InstanceName = instanceName;
 			DefName = defName;
 			Family = family;
 			NamespaceName = namespaceName;
-			Compilation = compilation;
 		}
 
 		internal string InstanceName { get; set; }
 		internal string DefName { get; set; }
 		internal TemplateFamily Family { get; }
 		internal string NamespaceName { get; }
-		internal Compilation Compilation { get; }
 		internal INamedTypeSymbol? InstanceSymbol { get; set; }
 		internal INamedTypeSymbol? DefSymbol { get; set; }
 		internal bool InstanceCopyAllowed { get; set; } = true;
+		internal IReadOnlyList<DefFieldSpec> DefFields { get; set; } = Array.Empty<DefFieldSpec>();
+		// Parser result for instance-member initializer text.
+		internal IReadOnlyDictionary<ISymbol, string> InstanceFieldDefaultExpressions { get; set; } =
+			new Dictionary<ISymbol, string>(SymbolEqualityComparer.Default);
+		internal IMethodSymbol? LoadSectionMethod { get; set; }
+		internal IMethodSymbol? LoadingFinalizerMethod { get; set; }
+		internal bool HasInvalidMethods { get; set; }
 	}
 }
 

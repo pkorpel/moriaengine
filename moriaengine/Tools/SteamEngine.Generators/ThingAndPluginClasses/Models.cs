@@ -13,56 +13,109 @@ internal enum TemplateFamily {
 	Plugin
 }
 
+// Parsed instance or definition declaration awaiting pairing and validation.
 internal sealed class TemplateCandidate {
-	internal TemplateCandidate(INamedTypeSymbol symbol, TemplateKind kind, TemplateFamily family, bool? copyAllowed, Compilation compilation) {
+	internal TemplateCandidate(
+		INamedTypeSymbol symbol,
+		TemplateKind kind,
+		TemplateFamily family,
+		bool? copyAllowed,
+		IReadOnlyList<DefFieldSpec> defFields,
+		IReadOnlyDictionary<ISymbol, string> instanceFieldDefaultExpressions,
+		IMethodSymbol? loadSectionMethod,
+		IMethodSymbol? loadingFinalizerMethod) {
 		Symbol = symbol;
 		Kind = kind;
 		Family = family;
 		CopyAllowed = copyAllowed;
-		Compilation = compilation;
+		DefFields = defFields;
+		InstanceFieldDefaultExpressions = instanceFieldDefaultExpressions;
+		LoadSectionMethod = loadSectionMethod;
+		LoadingFinalizerMethod = loadingFinalizerMethod;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
 	internal TemplateKind Kind { get; }
 	internal TemplateFamily Family { get; }
 	internal bool? CopyAllowed { get; }
-	internal Compilation Compilation { get; }
+	internal IReadOnlyList<DefFieldSpec> DefFields { get; }
+	// Parser-captured source initializer expressions keyed by declared symbol.
+	internal IReadOnlyDictionary<ISymbol, string> InstanceFieldDefaultExpressions { get; }
+	internal IMethodSymbol? LoadSectionMethod { get; }
+	internal IMethodSymbol? LoadingFinalizerMethod { get; }
 }
 
+// Rendering data for a validated instance/definition pair, including inferred counterparts.
 internal sealed class TemplatePair {
 	internal TemplatePair(
 		string instanceName,
+		string qualifiedInstanceTypeName,
 		string defName,
 		TemplateFamily family,
 		string namespaceName,
 		string instanceBaseName,
 		string defBaseName,
 		bool instanceCopyAllowed,
+		TemplateLoadFactory loadFactory,
+		string? loadingFinalizerMethodName,
 		IReadOnlyList<DefFieldSpec> defFields,
 		IReadOnlyList<InstanceFieldSpec> saveLoadMembers,
 		IReadOnlyList<InstanceFieldSpec> copyMembers) {
 		InstanceName = instanceName;
+		QualifiedInstanceTypeName = qualifiedInstanceTypeName;
 		DefName = defName;
 		Family = family;
 		NamespaceName = namespaceName;
 		InstanceBaseName = instanceBaseName;
 		DefBaseName = defBaseName;
 		InstanceCopyAllowed = instanceCopyAllowed;
+		LoadFactory = loadFactory;
+		LoadingFinalizerMethodName = loadingFinalizerMethodName;
 		DefFields = defFields;
 		SaveLoadMembers = saveLoadMembers;
 		CopyMembers = copyMembers;
 	}
 
 	internal string InstanceName { get; }
+	internal string QualifiedInstanceTypeName { get; }
 	internal string DefName { get; }
 	internal TemplateFamily Family { get; }
 	internal string NamespaceName { get; }
 	internal string InstanceBaseName { get; }
 	internal string DefBaseName { get; }
 	internal bool InstanceCopyAllowed { get; }
+	internal TemplateLoadFactory LoadFactory { get; }
+	internal string? LoadingFinalizerMethodName { get; }
 	internal IReadOnlyList<DefFieldSpec> DefFields { get; }
 	internal IReadOnlyList<InstanceFieldSpec> SaveLoadMembers { get; }
 	internal IReadOnlyList<InstanceFieldSpec> CopyMembers { get; }
+}
+
+// Describes how a template instance is created during loading.
+internal sealed class TemplateLoadFactory {
+	internal TemplateLoadFactory(
+		TemplateLoadFactoryKind kind,
+		string? methodName,
+		string? declaringTypeName,
+		bool takesPropsSection,
+		bool requiresCast) {
+		Kind = kind;
+		MethodName = methodName;
+		DeclaringTypeName = declaringTypeName;
+		TakesPropsSection = takesPropsSection;
+		RequiresCast = requiresCast;
+	}
+
+	internal TemplateLoadFactoryKind Kind { get; }
+	internal string? MethodName { get; }
+	internal string? DeclaringTypeName { get; }
+	internal bool TakesPropsSection { get; }
+	internal bool RequiresCast { get; }
+}
+
+internal enum TemplateLoadFactoryKind {
+	Constructor,
+	StaticMethod
 }
 
 internal readonly struct DefFieldSpec {

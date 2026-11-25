@@ -17,31 +17,31 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_ship_other : CompiledTriggerGroup {
+	public partial class t_ship_other : CompiledTriggerGroup {
 
 	}
 
-	public class t_ship_plank : CompiledTriggerGroup {
+	public partial class t_ship_plank : CompiledTriggerGroup {
 
 	}
 
-	public class t_ship_side_locked : CompiledTriggerGroup {
+	public partial class t_ship_side_locked : CompiledTriggerGroup {
 
 	}
 
-	public class t_ship_tiller : CompiledTriggerGroup {
+	public partial class t_ship_tiller : CompiledTriggerGroup {
 
 	}
 
-	public class t_ship_hold : CompiledTriggerGroup {
+	public partial class t_ship_hold : CompiledTriggerGroup {
 
 	}
 
-	public class t_ship_side : CompiledTriggerGroup {
+	public partial class t_ship_side : CompiledTriggerGroup {
 
 	}
 
-	public class t_eq_horse : CompiledTriggerGroup {
+	public partial class t_eq_horse : CompiledTriggerGroup {
 		//public bool on_equip(Item self) {
 		//	Console.WriteLine("Moo.");
 		//	ISrc origsrc = Globals.src;

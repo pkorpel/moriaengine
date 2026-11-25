@@ -92,7 +92,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_KillCreditProbe : CompiledTriggerGroup {
+	public partial class E_KillCreditProbe : CompiledTriggerGroup {
 		public void On_KillCredit(Character self, KillCreditArgs args) {
 			LevelingTriggersTests.credits++;
 			LevelingTriggersTests.creditVictim = args.victim;
@@ -131,7 +131,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Records @killCredit. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class KillCreditProbePlugin : Plugin {
+	public partial class KillCreditProbePlugin : Plugin {
 		internal int heard;
 		internal Character victim;
 		internal int share;

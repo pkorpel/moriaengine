@@ -135,7 +135,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_Poisoned_Weapon_User : CompiledTriggerGroup {
+	public partial class E_Poisoned_Weapon_User : CompiledTriggerGroup {
 		public void On_AfterSwing(Character self, WeaponSwingArgs swingArgs) {
 			if (swingArgs.FinalDamage > 0) {
 				bool poisonUsed = false;

@@ -25,11 +25,8 @@ namespace SteamEngine.CompiledScripts {
 	/// fully wired into IsNotVisible/CanSeeVisibility (only GMs see through it), but nothing
 	/// anywhere set it. Mirrors Paralyze's "timed character effect" shape, but as a plain
 	/// DurableSpellDef + BoundTimer rather than a new EffectDurationPlugin subclass (like
-	/// ParalyzeEffectPlugin) - a new Plugin class needs its own generated code-behind (produced
-	/// by the Cruncher template tool from a .ct file, not run by plain dotnet build - same class
-	/// of issue as the Generated/*.cs gotcha elsewhere in this codebase), which a BoundTimer
-	/// (a plain hand-written class, same pattern as SpellEffectItem's own SpellEffectTimer)
-	/// avoids entirely. Re-casting on an already-invisible target refreshes the duration (old
+	/// ParalyzeEffectPlugin), avoiding a separate plugin/template type for this effect.
+	/// Re-casting on an already-invisible target refreshes the duration (old
 	/// timer deleted before the new one is added), matching DurableCharEffectSpellDef's own
 	/// delete-then-reassign pattern for its plugin-based effects.</summary>
 	[ViewableClass]

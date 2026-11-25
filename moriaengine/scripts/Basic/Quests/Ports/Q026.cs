@@ -678,7 +678,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1272 - @UserDClick of Andor and Roxana.</summary>
-	public class E_Q026Npc : CompiledTriggerGroup {
+	public partial class E_Q026Npc : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;
@@ -691,7 +691,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1272 - the temple's tapestry, book pile and door, Dol Guldur's tile, wall and box.</summary>
-	public class E_Q026Fixture : CompiledTriggerGroup {
+	public partial class E_Q026Fixture : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (!(clicker is Player player) || player.Flag_Dead) {
 				return TriggerResult.Cancel;

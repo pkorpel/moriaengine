@@ -3,14 +3,23 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.DeepCopyImplementors;
 
+// Parsed type and attributed symbols awaiting deep-copy validation.
 internal sealed class DeepCopyCandidate {
-	internal DeepCopyCandidate(INamedTypeSymbol symbol) {
+	internal DeepCopyCandidate(
+		INamedTypeSymbol symbol,
+		IMethodSymbol? initializerMethod,
+		IReadOnlyList<AttributedMember> copyableMembers) {
 		Symbol = symbol;
+		InitializerMethod = initializerMethod;
+		CopyableMembers = copyableMembers;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
+	internal IMethodSymbol? InitializerMethod { get; }
+	internal IReadOnlyList<AttributedMember> CopyableMembers { get; }
 }
 
+// Validated type and member data used to render a deep-copy implementor.
 internal sealed class DeepCopyModel {
 	internal DeepCopyModel(
 		string generatedTypeName,

@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_SpellTriggersProbe : CompiledTriggerGroup {
+	public partial class E_SpellTriggersProbe : CompiledTriggerGroup {
 		public void On_SpellPower(Character self, SpellPowerArgs args) {
 			if (args.TargetChar == null) {
 				SpellTriggersTests.groundPowers++;
@@ -156,7 +156,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Counts @spellPower on characters and @spellSuccess. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class SpellTriggersProbePlugin : Plugin {
+	public partial class SpellTriggersProbePlugin : Plugin {
 		internal int powers, successes;
 		internal bool fromScroll;
 

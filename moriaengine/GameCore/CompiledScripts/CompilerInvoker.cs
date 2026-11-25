@@ -53,12 +53,6 @@ namespace SteamEngine.CompiledScripts {
 
 				success = success && ClassManager.InitClasses(compiledScripts.assembly);
 
-				success = success && GeneratedCodeUtil.WriteOutAndCompile(compilationNumber);
-
-				if (success) {
-					success = ClassManager.InitClasses(GeneratedCodeUtil.generatedAssembly);
-				}
-
 				return success;
 			}
 		}

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,11 +10,6 @@ namespace SteamEngine.Generators.Tests;
 
 public sealed class DeepCopyImplementorGeneratorTests {
 	private const string SharedStubs = "";
-
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
 
 	[Fact]
 	public void ValidDeepCopyableClass_ReportsNoErrors() {
@@ -48,6 +41,64 @@ public sealed class SpellState {
 		Assert.Contains("new global::ScriptSandbox.SpellState(copyFromConverted)", generated);
 	}
 
+
+	[Fact]
+	public void DistinctUnicodeTypeNames_GenerateDistinctImplementors() {
+		const string source = """
+using SteamEngine;
+[DeepCopyableClass]
+public sealed class State\u0301 {
+	[DeepCopyImplementation] public State\u0301(State\u0301 source) { }
+}
+[DeepCopyableClass]
+public sealed class State_ {
+	[DeepCopyImplementation] public State_(State_ source) { }
+}
+""";
+		var run = RunGenerator(nameof(DistinctUnicodeTypeNames_GenerateDistinctImplementors), source);
+		Assert.Equal(2, run.GeneratedSources.Count);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+	}
+
+	[Fact]
+	public void ValidDeepCopyableClass_NoData() {
+		const string source = """
+using SteamEngine;
+
+namespace ScriptSandbox;
+
+[DeepCopyableClass]
+public sealed class SpellState {
+	[DeepCopyImplementation]
+	public SpellState(SpellState copyFrom) {
+	}
+}
+""";
+
+		var run = RunGenerator(nameof(ValidDeepCopyableClass_NoData), source);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		var generated = string.Join("\n\n", run.GeneratedSources);
+		Assert.Contains("GeneratedDeepCopyImplementor_SpellState", generated);
+		Assert.Contains("new global::ScriptSandbox.SpellState(copyFromConverted)", generated);
+	}
+
+	[Fact]
+	public void EmptyClass_ReportsDiagnostic() {
+		const string source = """
+using SteamEngine;
+
+namespace ScriptSandbox;
+
+[DeepCopyableClass]
+public sealed class SpellState {
+	
+}
+""";
+
+		var run = RunGenerator(nameof(EmptyClass_ReportsDiagnostic), source);
+		Assert.Single(run.Diagnostics, d => d.Id == "SEGEN205");
+	}
+
 	[Fact]
 	public void CopyableDataPrivateField_ReportsDiagnostic() {
 		const string source = """
@@ -67,7 +118,7 @@ public sealed class SpellState {
 """;
 
 		var run = RunGenerator(nameof(CopyableDataPrivateField_ReportsDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN206");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN905");
 		Assert.Contains("charges", diagnostic.GetMessage());
 	}
 
@@ -134,7 +185,7 @@ public sealed class SpellState {
 """;
 
 		var run = RunGenerator(nameof(CopyableDataPropertyWithoutPublicSetter_ReportsDiagnostic), source);
-		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN206");
+		var diagnostic = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN905");
 		Assert.Contains("Payload", diagnostic.GetMessage());
 	}
 
@@ -219,41 +270,7 @@ namespace SecondNamespace {
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
 		}
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new DeepCopyImplementorsGenerator());
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-
-		var scenarioDir = Path.Combine(root, scenarioName);
-		Directory.CreateDirectory(scenarioDir);
-		for (var i = 0; i < sources.Length; i++) {
-			var hintName = sources[i].HintName.Replace('/', '_').Replace('\\', '_');
-			var fileName = string.IsNullOrWhiteSpace(hintName) ? $"generated-{i}.g.cs" : hintName;
-			File.WriteAllText(Path.Combine(scenarioDir, fileName), sources[i].SourceText.ToString());
-		}
+		return GeneratorTestRunner.Run(new DeepCopyImplementorsGenerator(), syntaxTrees, GetMetadataReferences(), scenarioName);
 	}
 
 	private static IEnumerable<MetadataReference> GetMetadataReferences() {

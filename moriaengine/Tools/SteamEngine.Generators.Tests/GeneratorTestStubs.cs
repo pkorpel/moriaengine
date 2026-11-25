@@ -3,16 +3,37 @@ namespace SteamEngine.Generators.Tests;
 internal static class GeneratorTestStubs {
 	internal const string CanonicalEngineTypes = """
 namespace SteamEngine {
-	public class Thing { }
+	public class Thing {
+		[global::SteamEngine.Persistence.LoadSection]
+		public static object Load(global::SteamEngine.PropsSection input) => new Thing();
+	}
 	public class FieldValue { }
 	public class ThingDef {
 		protected FieldValue InitTypedField(string name, object value, System.Type type) => new FieldValue();
 		public static void RegisterThingDef(System.Type defType, System.Type instanceType) { }
 	}
 	public class AbstractScript { }
+	public class Plugin {
+		public virtual object Run(TriggerKey tk, ScriptArgs sa) => null;
+	}
 	public class Globals { }
 	public class AbstractAccount { }
 	public interface IAbstractKey { }
+
+	public sealed class TriggerKey : IAbstractKey {
+		private TriggerKey(string name) {
+			Name = name;
+			LowercaseName = name.ToLowerInvariant();
+		}
+
+		public string Name { get; }
+		public string LowercaseName { get; }
+		public int Uid => 0;
+
+		public static TriggerKey Acquire(string name) {
+			return new TriggerKey(name);
+		}
+	}
 
 	public interface IDeepCopyImplementor {
 		object DeepCopy(object copyFrom);
@@ -71,6 +92,11 @@ namespace SteamEngine.Regions {
 }
 
 namespace SteamEngine.CompiledScripts {
+	public abstract class CompiledTriggerGroup {
+		public virtual object Run(object self, global::SteamEngine.TriggerKey tk, global::SteamEngine.ScriptArgs sa) => null;
+		protected virtual string InternalFirstGetDefname() => "";
+	}
+
 	public abstract class CompiledScriptHolder : SteamEngine.ScriptHolder {
 		private readonly string desc;
 
@@ -93,6 +119,8 @@ namespace SteamEngine.Persistence {
 	public static class ObjectSaver {
 		public static object OptimizedLoad_String(string value) => value;
 		public static object OptimizedLoad_SimpleType(string value, System.Type type) => value;
+		public static string Save(object value) => value?.ToString() ?? "";
+		public static object Load(string value) => value;
 		public static void Load(string value, LoadObjectParam callback, string filename, int line, object param) { }
 	}
 

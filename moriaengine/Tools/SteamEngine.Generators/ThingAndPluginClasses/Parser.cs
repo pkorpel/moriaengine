@@ -7,53 +7,155 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SteamEngine.Generators.ThingAndPluginClasses;
 
+// Discovers template declarations and their fields and persistence metadata.
 internal static class Parser {
-	private static readonly string DefFieldAttributeName = AttributeUsageValidator.StripAttributeSuffix("DefFieldAttribute");
-
 	internal static TemplateCandidate? DiscoverCandidate(
 		Compilation compilation,
 		ClassDeclarationSyntax declaration,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics) {
+
 		var semanticModel = compilation.GetSemanticModel(declaration.SyntaxTree);
-		if (semanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol) {
+		if (semanticModel.GetDeclaredSymbol(declaration) is not { } symbol) {
 			return null;
 		}
 
-		var classification = ClassifyTemplate(symbol, declaration, requiredSymbols, diagnostics);
+		var classification = ClassifyTemplate(symbol, symbols, diagnostics);
 		if (classification is null) {
+			return null;
+		}
+		if (NestedTypeValidator.TryReportNestedType(symbol, diagnostics)) {
+			return null;
+		}
+
+		// Def candidates carry parsed def fields. Thing loading is resolved from the
+		// canonical Thing base here because a def-only pair has no instance syntax.
+		if (classification.Value.Kind == TemplateKind.Def) {
+			var defFields = GetDefFields(symbol, symbols.Attributes.DefFieldAttribute, diagnostics).ToList();
+			IMethodSymbol? thingLoadSectionMethod = null;
+			if (classification.Value.Family == TemplateFamily.Thing
+				&& !AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+					symbols.CanonicalTypes.ThingType,
+					symbols.Attributes.LoadSectionAttribute,
+					diagnostics,
+					includeInheritedTypes: true,
+					out thingLoadSectionMethod)) {
+				return null;
+			}
+
+			return new TemplateCandidate(
+				symbol,
+				TemplateKind.Def,
+				classification.Value.Family,
+				copyAllowed: null,
+				defFields,
+				new Dictionary<ISymbol, string>(SymbolEqualityComparer.Default),
+				thingLoadSectionMethod,
+				loadingFinalizerMethod: null);
+		}
+
+		var instanceFieldDefaultExpressions = GetInstanceFieldDefaultExpressions(symbol);
+		if (!AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+			symbol,
+			symbols.Attributes.LoadSectionAttribute,
+			diagnostics,
+			includeInheritedTypes: true,
+			out var loadSectionMethod)
+			|| !AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+				symbol,
+				symbols.Attributes.LoadingInitializerAttribute,
+				diagnostics,
+				includeInheritedTypes: true,
+				out var loadingInitializerMethod)
+			|| !AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+				symbol,
+				symbols.Attributes.LoadLineAttribute,
+				diagnostics,
+				includeInheritedTypes: false, // Plugin base class does have [LoadLine] and we generate overloads for it, so it shouldn't be redeclared
+				out var loadLineMethod)
+			|| !AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+				symbol,
+				symbols.Attributes.LoadingFinalizerAttribute,
+				diagnostics,
+				includeInheritedTypes: true,
+				out var loadingFinalizerMethod)
+			|| !AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+				symbol,
+				symbols.Attributes.SaveAttribute,
+				diagnostics,
+				includeInheritedTypes: false,
+				out var saveMethod)
+			|| !AttributedMemberResolver.TryFindMethodOrCtorWithAttribute(
+				symbol,
+				symbols.Attributes.DeepCopyImplementationAttribute,
+				diagnostics,
+				includeInheritedTypes: false,
+				out var deepCopyImplementationMethod)) {
+			return null;
+		}
+
+		// These methods are emitted by the renderer and are therefore not valid user declarations on template classes.
+		// In other words,we're looking for methods that scripters may have declared with some of the loading/saving/copying attributes,
+		// but which are in fact not valid in this context for template classes, so most likely they made a mistake
+		var valid = ValidateNoUserGeneratedMethod(symbol, saveMethod, "Save", diagnostics);
+		valid &= ValidateNoUserGeneratedMethod(symbol, deepCopyImplementationMethod, "DeepCopyImplementation", diagnostics);
+		valid &= ValidateNoUserGeneratedMethod(symbol, loadingInitializerMethod, "LoadingInitializer", diagnostics);
+		valid &= ValidateNoUserGeneratedMethod(symbol, loadLineMethod, "LoadLine", diagnostics);
+		if (!valid) {
 			return null;
 		}
 
 		return new TemplateCandidate(
 			symbol,
-			classification.Value.Kind,
+			TemplateKind.Instance,
 			classification.Value.Family,
 			classification.Value.CopyAllowed,
-			compilation);
+			Array.Empty<DefFieldSpec>(),
+			instanceFieldDefaultExpressions,
+			loadSectionMethod,
+			loadingFinalizerMethod);
+	}
+
+	private static bool ValidateNoUserGeneratedMethod(
+		INamedTypeSymbol symbol,
+		IMethodSymbol? method,
+		string attributeName,
+		ICollection<Diagnostic> diagnostics) {
+		if (method is null) {
+			return true;
+		}
+
+		diagnostics.Add(Diagnostic.Create(
+			Analyzer.ForbiddenTemplateLoadFactoryAttributeDescriptor,
+			method.Locations.FirstOrDefault(),
+			method.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+			symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			attributeName,
+			"this method is generated by the template generator"));
+		return false;
 	}
 
 	private static (TemplateKind Kind, TemplateFamily Family, bool? CopyAllowed)? ClassifyTemplate(
 		INamedTypeSymbol symbol,
-		ClassDeclarationSyntax declaration,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics) {
-		var thingTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.ThingTemplateAttribute, diagnostics);
+
+		var thingTemplate = AttributeUsageValidator.FindAttributeOnSymbol(symbol, symbols.Attributes.ThingTemplateAttribute, diagnostics);
 		if (thingTemplate is not null) {
 			return (TemplateKind.Instance, TemplateFamily.Thing, GetTemplateCopySetting(thingTemplate, diagnostics));
 		}
 
-		var thingDefTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.ThingDefTemplateAttribute, diagnostics);
+		var thingDefTemplate = AttributeUsageValidator.FindAttributeOnSymbol(symbol, symbols.Attributes.ThingDefTemplateAttribute, diagnostics);
 		if (thingDefTemplate is not null) {
 			return (TemplateKind.Def, TemplateFamily.Thing, null);
 		}
 
-		var pluginTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.PluginTemplateAttribute, diagnostics);
+		var pluginTemplate = AttributeUsageValidator.FindAttributeOnSymbol(symbol, symbols.Attributes.PluginTemplateAttribute, diagnostics);
 		if (pluginTemplate is not null) {
 			return (TemplateKind.Instance, TemplateFamily.Plugin, GetTemplateCopySetting(pluginTemplate, diagnostics));
 		}
 
-		var pluginDefTemplate = AttributeUsageValidator.FindCanonicalAttribute(symbol, requiredSymbols.Attributes.PluginDefTemplateAttribute, diagnostics);
+		var pluginDefTemplate = AttributeUsageValidator.FindAttributeOnSymbol(symbol, symbols.Attributes.PluginDefTemplateAttribute, diagnostics);
 		if (pluginDefTemplate is not null) {
 			return (TemplateKind.Def, TemplateFamily.Plugin, null);
 		}
@@ -86,37 +188,45 @@ internal static class Parser {
 		return true;
 	}
 
-	private static string GetAttributeSimpleName(NameSyntax nameSyntax) {
-		var name = nameSyntax switch {
-			IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
-			QualifiedNameSyntax qualified => qualified.Right.Identifier.ValueText,
-			AliasQualifiedNameSyntax aliasQualified => aliasQualified.Name.Identifier.ValueText,
-			_ => nameSyntax.ToString()
-		};
-		return AttributeUsageValidator.StripAttributeSuffix(name);
-	}
-
-	internal static IEnumerable<DefFieldSpec> GetDefFields(
+	private static IEnumerable<DefFieldSpec> GetDefFields(
 		INamedTypeSymbol? defSymbol,
-		Compilation compilation,
 		INamedTypeSymbol expectedDefFieldAttribute,
 		ICollection<Diagnostic> diagnostics) {
+
 		if (defSymbol is null) {
 			return Array.Empty<DefFieldSpec>();
 		}
 
 		var fields = new List<DefFieldSpec>();
-		foreach (var syntaxRef in defSymbol.DeclaringSyntaxReferences) {
-			if (syntaxRef.GetSyntax() is not ClassDeclarationSyntax classDeclaration) {
+		foreach (var fieldSymbol in defSymbol.GetMembers().OfType<IFieldSymbol>()) {
+			if (!TryGetCanonicalDefFieldAttribute(fieldSymbol, expectedDefFieldAttribute, diagnostics, out var attributeSyntax)) {
 				continue;
 			}
-			var semanticModel = compilation.GetSemanticModel(classDeclaration.SyntaxTree);
-			fields.AddRange(GetDefFields(classDeclaration, semanticModel, expectedDefFieldAttribute, diagnostics));
+
+			var spec = ParseDefField(attributeSyntax, diagnostics);
+			fields.Add(new DefFieldSpec(fieldSymbol.Name, spec.TypeName, spec.DefaultExpression));
 		}
 		return fields;
 	}
 
-	internal static string? GetInitializer(IFieldSymbol field) {
+	private static IReadOnlyDictionary<ISymbol, string> GetInstanceFieldDefaultExpressions(INamedTypeSymbol symbol) {
+		var initializers = new Dictionary<ISymbol, string>(SymbolEqualityComparer.Default);
+		foreach (var field in symbol.GetMembers().OfType<IFieldSymbol>()) {
+			var initializer = GetInitializer(field);
+			if (initializer is not null) {
+				initializers[field] = initializer;
+			}
+		}
+		foreach (var property in symbol.GetMembers().OfType<IPropertySymbol>()) {
+			var initializer = GetInitializer(property);
+			if (initializer is not null) {
+				initializers[property] = initializer;
+			}
+		}
+		return initializers;
+	}
+
+	private static string? GetInitializer(IFieldSymbol field) {
 		foreach (var syntaxRef in field.DeclaringSyntaxReferences) {
 			if (syntaxRef.GetSyntax() is VariableDeclaratorSyntax declarator && declarator.Initializer?.Value is { } value) {
 				return value.ToString();
@@ -125,32 +235,13 @@ internal static class Parser {
 		return null;
 	}
 
-	internal static string? GetInitializer(IPropertySymbol property) {
+	private static string? GetInitializer(IPropertySymbol property) {
 		foreach (var syntaxRef in property.DeclaringSyntaxReferences) {
 			if (syntaxRef.GetSyntax() is PropertyDeclarationSyntax declaration && declaration.Initializer?.Value is { } value) {
 				return value.ToString();
 			}
 		}
 		return null;
-	}
-
-	private static IEnumerable<DefFieldSpec> GetDefFields(
-		ClassDeclarationSyntax classDeclaration,
-		SemanticModel semanticModel,
-		INamedTypeSymbol expectedDefFieldAttribute,
-		ICollection<Diagnostic> diagnostics) {
-		var fields = new List<DefFieldSpec>();
-		foreach (var field in classDeclaration.Members.OfType<FieldDeclarationSyntax>()) {
-			var attribute = FindCanonicalDefFieldAttribute(field, semanticModel, expectedDefFieldAttribute, diagnostics);
-			if (attribute is null) {
-				continue;
-			}
-			var spec = ParseDefField(attribute, diagnostics);
-			foreach (var variable in field.Declaration.Variables) {
-				fields.Add(new DefFieldSpec(variable.Identifier.ValueText, spec.TypeName, spec.DefaultExpression));
-			}
-		}
-		return fields;
 	}
 
 	private static (string TypeName, string DefaultExpression) ParseDefField(AttributeSyntax attribute, ICollection<Diagnostic> diagnostics) {
@@ -194,21 +285,18 @@ internal static class Parser {
 			arg.Expression.ToString()));
 	}
 
-	private static AttributeSyntax? FindCanonicalDefFieldAttribute(
-		FieldDeclarationSyntax fieldDeclaration,
-		SemanticModel semanticModel,
+	private static bool TryGetCanonicalDefFieldAttribute(
+		IFieldSymbol fieldSymbol,
 		INamedTypeSymbol expectedDefFieldAttribute,
-		ICollection<Diagnostic> diagnostics) {
-		var firstVariable = fieldDeclaration.Declaration.Variables.FirstOrDefault();
-		if (firstVariable is null
-			|| semanticModel.GetDeclaredSymbol(firstVariable) is not IFieldSymbol fieldSymbol) {
-			return null;
-		}
+		ICollection<Diagnostic> diagnostics,
+		out AttributeSyntax attributeSyntax) {
+		attributeSyntax = null!;
 
-		var canonicalAttribute = AttributeUsageValidator.FindCanonicalAttribute(fieldSymbol, expectedDefFieldAttribute, diagnostics);
+		var canonicalAttribute = AttributeUsageValidator.FindAttributeOnSymbol(fieldSymbol, expectedDefFieldAttribute, diagnostics);
 		if (canonicalAttribute?.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax canonicalAttributeSyntax) {
-			return canonicalAttributeSyntax;
+			attributeSyntax = canonicalAttributeSyntax;
+			return true;
 		}
-		return null;
+		return false;
 	}
 }

@@ -17,25 +17,25 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_door : CompiledTriggerGroup {
+	public partial class t_door : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
 			self.TryUseDoor(clicker);
 		}
 	}
 
-	public class t_door_open : CompiledTriggerGroup {
+	public partial class t_door_open : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
 			self.TryUseDoor(clicker);
 		}
 	}
 
-	public class t_door_locked : CompiledTriggerGroup {
+	public partial class t_door_locked : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
 			self.TryUseDoor(clicker);
 		}
 	}
 
-	public class t_portculis : CompiledTriggerGroup {
+	public partial class t_portculis : CompiledTriggerGroup {
 
 	}
 }

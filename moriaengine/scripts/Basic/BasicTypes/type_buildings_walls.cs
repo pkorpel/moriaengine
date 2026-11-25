@@ -16,11 +16,11 @@
 */
 
 namespace SteamEngine.CompiledScripts {
-	public class t_wall : CompiledTriggerGroup {
+	public partial class t_wall : CompiledTriggerGroup {
 
 	}
 
-	public class t_window : CompiledTriggerGroup {
+	public partial class t_window : CompiledTriggerGroup {
 
 	}
 }

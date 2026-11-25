@@ -64,7 +64,7 @@ ATTR = attr_static|attr_magic
 
 Two script-file extensions are used for different *kinds* of content, while template class
 shape is authored in attributed C# and compiled by the
-[ThingAndPluginClasses `Generator`](../02-engine-core/code%20generators/thing-and-plugin-classes-generator.md):
+[scripting generators](../02-engine-core/code%20generators/scripting-generators.md):
 
 - **`.def`** - *definitions*: the actual `[ItemDef ...]`/`[CharacterDef ...]`/etc blocks
   that create real, loadable content (an item type, an NPC type, a house type...).
@@ -92,20 +92,11 @@ order:
    changed reuses the last build without running `dotnet` at all ("Reused compiled C#
    scripts"; see [scripting-pipeline.md](../02-engine-core/scripting-pipeline.md#reusing-the-last-build)).
 2. Registers the resulting assembly's classes (`ClassManager.InitClasses`).
-3. Runs the **central** code generator (`GeneratedCodeUtil.WriteOutAndCompile`), which
-   writes a handful of files directly into the repo-root `Generated/` folder - one per
-   registered generator (compiled `SteamFunction`/command dispatch tables, trigger-group
-   tables, save/deep-copy implementors, and the reflection metadata backing the generic
-   `.info` dialog). These are logged individually ("Generating compiled ScriptHolders",
-   "Generating compiled Triggergroups", etc).
-4. Compiles *that* generated code and loads it too.
 
-Neither kind of generated file is checked into source control and regeneration is handled
-by running GameCore when source inputs change. `build.ps1` automates this
-(`Invoke-ScriptGeneration`); see
-[Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md) for the
-full mechanics and the manual regeneration steps when `pwsh` isn't available.
+All generated code comes from Roslyn source generators that run inside step 1's compile
+(and inside any plain `dotnet build`); none of it is written to disk or checked in. See
+[Scripting & code generation pipeline](../02-engine-core/scripting-pipeline.md).
 
-Once script compilation and code generation succeed, GameCore loads the actual game world
+Once script compilation succeeds, GameCore loads the actual game world
 (regions, accounts, saved items/characters from the most recent `saves/<date>/<time>/`
 snapshot) and starts listening for connections.

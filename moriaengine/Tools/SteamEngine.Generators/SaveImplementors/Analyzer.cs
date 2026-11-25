@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Validates persistence configuration and builds save implementor models.
 internal static class Analyzer {
 	internal static readonly DiagnosticDescriptor InvalidSaveImplementorMemberDescriptor = new(
 		"SEGEN303",
@@ -30,22 +31,6 @@ internal static class Analyzer {
 		DiagnosticSeverity.Error,
 		true);
 
-	internal static readonly DiagnosticDescriptor UnsupportedSaveableMemberDescriptor = new(
-		"SEGEN307",
-		"Unsupported [SaveableData] member",
-		"Member '{0}' on '{1}' is marked with [SaveableData], but {2}",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
-	internal static readonly DiagnosticDescriptor MissingSavePathDescriptor = new(
-		"SEGEN308",
-		"Missing save path",
-		"Type '{0}' is marked with [SaveableClass] but has no [Save] method and no valid [SaveableData] members",
-		"Usage",
-		DiagnosticSeverity.Error,
-		true);
-
 	internal static readonly DiagnosticDescriptor DuplicateSaveableTypeNameDescriptor = new(
 		"SEGEN309",
 		"Duplicate saveable type name",
@@ -65,25 +50,22 @@ internal static class Analyzer {
 	internal static IReadOnlyList<SaveImplementorModel> BuildModels(
 		IReadOnlyCollection<SaveImplementorCandidate> candidates,
 		ICollection<Diagnostic> diagnostics,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols) {
-		var orderedCandidates = candidates
-			.OrderBy(static c => c.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparer.Ordinal)
-			.ToList();
+		RequiredSymbols symbols) {
 		var conflictingTypeNames = DuplicateNameValidator.Validate(
-			orderedCandidates.Select(candidate => (
+			candidates.Select(candidate => (
 				Name: candidate.Symbol.Name,
 				Symbol: (ISymbol) candidate.Symbol)),
 			DuplicateSaveableTypeNameDescriptor,
 			diagnostics);
 		var models = new List<SaveImplementorModel>();
-		foreach (var candidate in orderedCandidates) {
+		foreach (var candidate in candidates) {
 			if (conflictingTypeNames.Contains(candidate.Symbol.Name)) {
 				continue;
 			}
 
 			if (!TryBuildModel(
-				candidate.Symbol,
-				requiredSymbols,
+				candidate,
+				symbols,
 				diagnostics,
 				out var model)) {
 				continue;
@@ -96,51 +78,53 @@ internal static class Analyzer {
 	}
 
 	private static bool TryBuildModel(
-		INamedTypeSymbol typeSymbol,
-		global::SteamEngine.Generators.RequiredSymbols requiredSymbols,
+		SaveImplementorCandidate candidate,
+		RequiredSymbols symbols,
 		ICollection<Diagnostic> diagnostics,
 		out SaveImplementorModel model) {
 		model = null!;
+		var typeSymbol = candidate.Symbol;
 		var hasErrors = false;
 
-		var loadingInitializer = ResolveSingleAttributedMethod(
+		var loadingInitializer = ValidateAttributedMethod(
 			typeSymbol,
-			requiredSymbols.Attributes.LoadingInitializerAttribute,
+			candidate.LoadingInitializer,
 			"LoadingInitializer",
 			static m => ValidateLoadingInitializer(m),
 			diagnostics,
 			ref hasErrors);
-		var loadSection = ResolveSingleAttributedMethod(
+		var loadSection = ValidateAttributedMethod(
 			typeSymbol,
-			requiredSymbols.Attributes.LoadSectionAttribute,
+			candidate.LoadSection,
 			"LoadSection",
-			m => ValidateLoadSection(typeSymbol, m, requiredSymbols.CanonicalTypes.PropsSectionType),
+			m => ValidateLoadSection(typeSymbol, m, symbols.CanonicalTypes.PropsSectionType),
 			diagnostics,
 			ref hasErrors);
-		var loadLine = ResolveSingleAttributedMethod(
+		var loadLine = ValidateAttributedMethod(
 			typeSymbol,
-			requiredSymbols.Attributes.LoadLineAttribute,
+			candidate.LoadLine,
 			"LoadLine",
 			static m => ValidateLoadLine(m),
 			diagnostics,
 			ref hasErrors);
-		var loadingFinalizer = ResolveSingleAttributedMethod(
+		var loadingFinalizer = ValidateAttributedMethod(
 			typeSymbol,
-			requiredSymbols.Attributes.LoadingFinalizerAttribute,
+			candidate.LoadingFinalizer,
 			"LoadingFinalizer",
 			static m => ValidateLoadingFinalizer(m),
 			diagnostics,
 			ref hasErrors);
-		var saveMethod = ResolveSingleAttributedMethod(
+		var saveMethod = ValidateAttributedMethod(
 			typeSymbol,
-			requiredSymbols.Attributes.SaveAttribute,
+			candidate.SaveMethod,
 			"Save",
-			m => ValidateSave(typeSymbol, m, requiredSymbols.CanonicalTypes.SaveStreamType),
+			m => ValidateSave(typeSymbol, m, symbols.CanonicalTypes.SaveStreamType),
 			diagnostics,
 			ref hasErrors);
 
-		var saveableMembers = ResolveSaveableMembers(typeSymbol, requiredSymbols.Attributes.SaveableDataAttribute, requiredSymbols.CanonicalTypes, diagnostics, ref hasErrors);
+		var saveableMembers = ResolveSaveableMembers(typeSymbol, candidate.SaveableMembers, symbols.CanonicalTypes, diagnostics, ref hasErrors);
 
+		// when there's LoadSection, there should not be LoadingInitializer or LoadLine
 		if (loadSection is not null) {
 			if (loadingInitializer is not null || loadLine is not null) {
 				diagnostics.Add(Diagnostic.Create(
@@ -158,23 +142,6 @@ internal static class Analyzer {
 					typeSymbol.ToDisplayString()));
 				hasErrors = true;
 			}
-
-			if (loadLine is null && saveableMembers.Count == 0) {
-				diagnostics.Add(Diagnostic.Create(
-					InvalidLoadConfigurationDescriptor,
-					typeSymbol.Locations.FirstOrDefault(),
-					typeSymbol.ToDisplayString(),
-					"no [LoadLine] method and no valid [SaveableData] members"));
-				hasErrors = true;
-			}
-		}
-
-		if (saveMethod is null && saveableMembers.Count == 0) {
-			diagnostics.Add(Diagnostic.Create(
-				MissingSavePathDescriptor,
-				typeSymbol.Locations.FirstOrDefault(),
-				typeSymbol.ToDisplayString()));
-			hasErrors = true;
 		}
 
 		if (hasErrors) {
@@ -184,8 +151,8 @@ internal static class Analyzer {
 		var sourceTypeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 		var generatedTypeName = "GeneratedSaveImplementor_" + IdentifierSanitizer.Sanitize(typeSymbol.Name);
 		var loadFactory = loadSection is not null
-			? CreateFactory(typeSymbol, loadSection, requiredSymbols.CanonicalTypes.PropsSectionType)
-			: CreateFactory(typeSymbol, loadingInitializer!, requiredSymbols.CanonicalTypes.PropsSectionType);
+			? CreateFactory(typeSymbol, loadSection, symbols.CanonicalTypes.PropsSectionType)
+			: CreateFactory(typeSymbol, loadingInitializer!, symbols.CanonicalTypes.PropsSectionType);
 
 		model = new SaveImplementorModel(
 			generatedTypeName,
@@ -207,28 +174,21 @@ internal static class Analyzer {
 			: SaveFactoryKind.StaticMethod;
 		var requiresCast = kind == SaveFactoryKind.StaticMethod
 			&& !SymbolEqualityComparer.Default.Equals(targetType, method.ReturnType);
-		return new SaveFactoryMethod(kind, method.Name, takesPropsSection, requiresCast);
+		return new SaveFactoryMethod(
+			kind,
+			method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			method.Name,
+			takesPropsSection,
+			requiresCast);
 	}
 
-	private static IMethodSymbol? ResolveSingleAttributedMethod(
+	private static IMethodSymbol? ValidateAttributedMethod(
 		INamedTypeSymbol typeSymbol,
-		INamedTypeSymbol expectedAttribute,
+		IMethodSymbol? method,
 		string attributeDisplayName,
 		Func<IMethodSymbol, string?> validator,
 		ICollection<Diagnostic> diagnostics,
 		ref bool hasErrors) {
-		var diagnosticsBeforeResolve = diagnostics.Count;
-		var method = SingleAttributedMethodResolver.Resolve(
-			GetAttributedSearchMembers(typeSymbol),
-			expectedAttribute,
-			diagnostics,
-			typeSymbol,
-			attributeDisplayName);
-
-		if (diagnostics.Count > diagnosticsBeforeResolve) {
-			hasErrors = true;
-		}
-
 		if (method is null) {
 			return null;
 		}
@@ -251,26 +211,17 @@ internal static class Analyzer {
 
 	private static List<SaveableMemberModel> ResolveSaveableMembers(
 		INamedTypeSymbol typeSymbol,
-		INamedTypeSymbol saveableDataAttribute,
+		IReadOnlyList<AttributedMember> collectedMembers,
 		CanonicalTypeSymbols knownTypes,
 		ICollection<Diagnostic> diagnostics,
 		ref bool hasErrors) {
-		var collection = global::SteamEngine.Generators.AttributedFieldPropertyCollector.Collect(
-			GetAttributedSearchMembers(typeSymbol),
-			saveableDataAttribute,
-			diagnostics,
-			typeSymbol,
-			UnsupportedSaveableMemberDescriptor);
-
-		hasErrors |= collection.HasInvalidMembers;
-
 		var unique = new Dictionary<string, SaveableMemberModel>(StringComparer.OrdinalIgnoreCase);
-		foreach (var member in collection.Items
+		foreach (var member in collectedMembers
 			.Select(collected => new SaveableMemberModel(
 				collected.Name,
 				collected.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 				GetMemberValueKind(collected.Type, knownTypes, diagnostics, collected.Location)))
-			.OrderBy(m => m.Name, StringComparer.Ordinal)) {
+			) {
 			if (unique.ContainsKey(member.Name)) {
 				diagnostics.Add(Diagnostic.Create(
 					InvalidLoadConfigurationDescriptor,
@@ -369,64 +320,6 @@ internal static class Analyzer {
 			location,
 			actualType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 			expectedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
-	}
-
-	private static IEnumerable<ISymbol> GetAttributedSearchMembers(INamedTypeSymbol typeSymbol) {
-		var symbols = new List<ISymbol>();
-		var seen = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-
-		void AddMembers(INamedTypeSymbol symbol, bool includeNonPublic) {
-			foreach (var member in symbol.GetMembers()) {
-				if (member is IMethodSymbol { MethodKind: MethodKind.Constructor } constructor
-					&& !SymbolEqualityComparer.Default.Equals(constructor.ContainingType, typeSymbol)) {
-					continue;
-				}
-
-				if (!includeNonPublic && member.DeclaredAccessibility != Accessibility.Public) {
-					continue;
-				}
-
-				if (!includeNonPublic && IsOverriddenByExisting(member, symbols)) {
-					continue;
-				}
-
-				if (seen.Add(member)) {
-					symbols.Add(member);
-				}
-			}
-		}
-
-		AddMembers(typeSymbol, includeNonPublic: true);
-		for (var current = typeSymbol.BaseType; current is not null; current = current.BaseType) {
-			AddMembers(current, includeNonPublic: false);
-		}
-
-		return symbols;
-	}
-
-	private static bool IsOverriddenByExisting(ISymbol baseMember, List<ISymbol> existingMembers) {
-		if (baseMember is IMethodSymbol baseMethod) {
-			foreach (var existing in existingMembers.OfType<IMethodSymbol>()) {
-				for (var current = existing; current is not null; current = current.OverriddenMethod) {
-					if (SymbolEqualityComparer.Default.Equals(current, baseMethod)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-		if (baseMember is IPropertySymbol baseProperty) {
-			foreach (var existing in existingMembers.OfType<IPropertySymbol>()) {
-				for (var current = existing; current is not null; current = current.OverriddenProperty) {
-					if (SymbolEqualityComparer.Default.Equals(current, baseProperty)) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
 	}
 
 }

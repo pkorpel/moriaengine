@@ -10,40 +10,41 @@ namespace SteamEngine.Generators.SaveImplementors;
 [Microsoft.CodeAnalysis.Generator]
 public sealed class SaveImplementorsGenerator : IIncrementalGenerator {
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
+		var typeValidator = new RequiredTypeValidator();
 		var types = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (node, _) => node is TypeDeclarationSyntax tds && tds.AttributeLists.Count > 0,
 				static (ctx, _) => (TypeDeclarationSyntax) ctx.Node)
+			// Analyze all declarations together to detect duplicate saveable type names.
 			.Collect();
 
 		context.RegisterSourceOutput(
 			context.CompilationProvider.Combine(types),
-			static (spc, data) => Execute(spc, data.Left, data.Right));
+			(spc, data) => Execute(spc, data.Left, data.Right, typeValidator));
 	}
 
 	private static void Execute(
 		SourceProductionContext context,
 		Compilation compilation,
-		IReadOnlyCollection<TypeDeclarationSyntax> declarations) {
-		var diagnostics = new List<Diagnostic>();
-		var requiredSymbols = RequiredTypeValidator.ResolveRequiredSymbols(compilation, diagnostics);
+		IReadOnlyCollection<TypeDeclarationSyntax> declarations,
+		RequiredTypeValidator typeValidator) {
+		var resolution = typeValidator.Resolve(compilation);
+		var diagnostics = new List<Diagnostic>(resolution.Diagnostics);
+		var symbols = resolution.Symbols;
 
-		if (requiredSymbols is not null) {
+		if (symbols is not null) {
 			var candidates = new List<SaveImplementorCandidate>();
 			foreach (var declaration in declarations) {
-				var candidate = Parser.DiscoverCandidate(compilation, declaration, requiredSymbols, diagnostics);
+				var candidate = Parser.DiscoverCandidate(compilation, declaration, symbols, diagnostics);
 				if (candidate is null) {
 					continue;
 				}
 				candidates.Add(candidate);
 			}
 
-			var models = Analyzer.BuildModels(candidates, diagnostics, requiredSymbols);
+			var models = Analyzer.BuildModels(candidates, diagnostics, symbols);
 			foreach (var model in models) {
-				if (!Renderer.TryRender(model, out var source)) {
-					continue;
-				}
-				context.AddSource(Renderer.GetHintName(model), source);
+				context.AddSource(Renderer.GetHintName(model), Renderer.Render(model));
 			}
 		}
 

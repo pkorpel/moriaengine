@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SteamEngine.Generators\SteamEngine.Generators.csproj" />
     <ProjectReference Include="..\SteamEngine.Generators.Abstractions\SteamEngine.Generators.Abstractions.csproj" />
+    <ProjectReference Include="..\..\scripts\SteamEngine.Scripts.csproj" />
   </ItemGroup>
 
 </Project>

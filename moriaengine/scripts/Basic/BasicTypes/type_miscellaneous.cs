@@ -17,15 +17,15 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_eq_bank_box : CompiledTriggerGroup {
+	public partial class t_eq_bank_box : CompiledTriggerGroup {
 
 	}
 
-	public class t_telescope : CompiledTriggerGroup {
+	public partial class t_telescope : CompiledTriggerGroup {
 
 	}
 
-	public class t_scroll : CompiledTriggerGroup {
+	public partial class t_scroll : CompiledTriggerGroup {
 		//#962 - Sphere's double click on IT_SCROLL casts it
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (self is SpellScroll scroll) {
@@ -39,32 +39,32 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class t_eq_memory_obj : CompiledTriggerGroup {
+	public partial class t_eq_memory_obj : CompiledTriggerGroup {
 
 	}
 
-	public class t_eq_vendor_box : CompiledTriggerGroup {
+	public partial class t_eq_vendor_box : CompiledTriggerGroup {
 
 	}
 
-	public class t_game_piece : CompiledTriggerGroup {
+	public partial class t_game_piece : CompiledTriggerGroup {
 
 	}
 
-	public class t_advance_gate : CompiledTriggerGroup {
+	public partial class t_advance_gate : CompiledTriggerGroup {
 
 	}
 
-	public class t_script : CompiledTriggerGroup {
+	public partial class t_script : CompiledTriggerGroup {
 
 	}
 
-	public class t_eq_script : CompiledTriggerGroup {
+	public partial class t_eq_script : CompiledTriggerGroup {
 
 	}
 
 
-	public class t_stone_guild : CompiledTriggerGroup {
+	public partial class t_stone_guild : CompiledTriggerGroup {
 
 	}
 }

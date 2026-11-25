@@ -38,10 +38,11 @@ first (`AddPlugin` puts a plugin at the front; a save and load and a dupe keep t
 
 1. the scripted triggers of its def: the `on=@x` lines in the def's script section;
 2. the compiled triggers of its class: every public method named `On_x`. These are collected
-   at boot into `Generated/PluginTriggerGroups.Generated.cs`
-   (`GameCore/PluginTriggerGroupGenerator.cs`) and registered for the def class named
-   `<plugin class>Def`. The method's parameters are filled from the trigger's arguments, the
-   same way as for compiled trigger groups.
+   at scripts compile time by the Plugin trigger-dispatch source generator
+   (`Tools/SteamEngine.Generators/PluginTriggerDispatch/*`), which emits partial overrides of
+   `Plugin.Run(TriggerKey, ScriptArgs)`. The method's parameters are filled from the trigger's
+   arguments, the same way as for compiled trigger groups. See
+   [plugin-trigger-dispatch-generator.md](code generators/plugin-trigger-dispatch-generator.md).
 
 In a cancellable trigger, a plugin returning `1`/`true` (or `TriggerResult.Cancel`) cancels
 the action, exactly as a trigger group would.
@@ -307,6 +308,6 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 
 ## Related
 
-- [scripting-pipeline.md](scripting-pipeline.md): generation pipeline and `Generated/`.
+- [scripting-pipeline.md](scripting-pipeline.md): script compilation and code generation.
 - [triggers-and-deny-chains.md](triggers-and-deny-chains.md): trigger dispatch.
 - [persistence-and-saving.md](persistence-and-saving.md): def values and saves.

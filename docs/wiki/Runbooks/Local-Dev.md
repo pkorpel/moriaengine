@@ -18,8 +18,8 @@ Last reviewed: 2026-10-16
 ## Build and test
 
 ```sh
-scripts/test-fast.sh                      # Debug build + Release compile + fast tier (~1 min)
-scripts/test-fast.sh "FullyQualifiedName~RaceTests"
+scripts/test-fast.sh                      # Debug build + Release compile + generator and fast-tier tests (~1 min)
+scripts/test-fast.sh "FullyQualifiedName~RaceTests"  # filter the fast tier; all generator tests still run
 scripts/test-full.sh                      # whole suite, class by class (one run at a time)
 scripts/test-full.sh "FullyQualifiedName~LevelingTests"
 ```

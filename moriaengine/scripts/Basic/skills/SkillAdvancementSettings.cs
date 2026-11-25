@@ -30,10 +30,9 @@ namespace SteamEngine.CompiledScripts {
 	/// SkillDef.AdvRate array directly, so an edit here takes effect immediately with zero
 	/// extra sync step, and persists for free via AbstractDef's own existing FieldValue save
 	/// mechanism (a GM-edited .def field is already marked changed and written to globals.sav -
-	/// confirmed working end to end by the #168 fix). ViewableClassGenerator doesn't care
-	/// whether a member is a field or a property - it reflects over both identically and calls
-	/// whatever setter exists, confirmed by reading GenerateFieldIDFW's own codegen directly
-	/// before relying on this.
+	/// confirmed working end to end by the #168 fix). The generated data view treats
+	/// fields and properties the same way: it reads the member and assigns it when it's
+	/// writable (a public setter or a non-readonly field).
 	///
 	/// The 2 custom-formula skills (Lockpicking/Taming, 1 field each) have no other backing
 	/// store to write through to, so they're real [SaveableData] fields here - this class IS

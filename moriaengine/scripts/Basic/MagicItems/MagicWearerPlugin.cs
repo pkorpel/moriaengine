@@ -10,7 +10,7 @@ namespace SteamEngine.CompiledScripts {
 	/// Leech isn't here: it's class points + 2 x the items' (MagicCombat.LeechSum), whoever wears nothing.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class MagicWearerPlugin : Plugin {
+	public partial class MagicWearerPlugin : Plugin {
 		internal static readonly PluginKey Key = PluginKey.Acquire("_magicWearer_");
 
 		[DeepCopyImplementation]

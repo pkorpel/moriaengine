@@ -196,7 +196,7 @@ back in.
 
 `MagerySettings` (referenced from `CombatCalculator`/`Magery.cs` as `mindPowerIntModifier`/
 `bareHandsMindPowerVsP`) is the matching `.settings` category for the mind-power side of
-spellcasting math - see [settings-dialog.md](../03-admin-tooling/settings-dialog.md). A
+spellcasting math - see [the `.settings` dialog](../03-admin-tooling/info-and-settings-dialogs.md). A
 nested `SpellsSettings` page (`MagerySettings.spells`) covers damage-spell `Effect`/
 `DamageType` mass-editing and the new `spellDifficultyFallbackMultiplier` above.
 

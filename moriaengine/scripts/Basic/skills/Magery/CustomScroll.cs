@@ -21,7 +21,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - Erebor's t_customspell_scroll: a scroll of a spell past Sphere's numbers. It's for the professions
 	/// tagged on its def, and customspellcast checks mana and skill before the cursor comes up.</summary>
-	public class t_customspell_scroll : CompiledTriggerGroup {
+	public partial class t_customspell_scroll : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (clicker is Player player) {
 				Use(player, self);

@@ -1,54 +1,28 @@
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-
 namespace SteamEngine.Generators.CompiledScriptHolders;
 
-internal sealed class ScriptHolderCandidate {
-	internal ScriptHolderCandidate(IMethodSymbol methodSymbol, string functionName, string? description) {
-		MethodSymbol = methodSymbol;
-		FunctionName = functionName;
-		Description = description;
-	}
+// Parsed function with the display name and location needed for duplicate diagnostics.
+internal sealed record ScriptHolderCandidate(
+	string DisplayName, SourceLocationData Location, ScriptHolderModel Model);
 
-	internal IMethodSymbol MethodSymbol { get; }
-	internal string FunctionName { get; }
-	internal string? Description { get; }
-}
+// Parser output for one declaration; the source position preserves diagnostic order.
+internal sealed record ScriptHolderParseResult(
+	int TreeIndex, int SpanStart,
+	ScriptHolderCandidate? Candidate, EquatableArray<GeneratorDiagnosticData> Diagnostics);
 
-internal sealed class ScriptHolderModel {
-	internal ScriptHolderModel(
-		string generatedTypeName,
-		string functionName,
-		string? description,
-		string declaringTypeName,
-		string methodName,
-		bool returnsVoid,
-		bool needsArgvArray,
-		IReadOnlyList<InvocationParameterModel> parameters) {
-		GeneratedTypeName = generatedTypeName;
-		FunctionName = functionName;
-		Description = description;
-		DeclaringTypeName = declaringTypeName;
-		MethodName = methodName;
-		ReturnsVoid = returnsVoid;
-		NeedsArgvArray = needsArgvArray;
-		Parameters = parameters;
-	}
+// Analyzer output: accepted models and diagnostics from all declarations.
+internal sealed record ScriptHolderOutput(
+	EquatableArray<ScriptHolderModel> Models, EquatableArray<GeneratorDiagnosticData> Diagnostics);
 
-	internal string GeneratedTypeName { get; }
-	internal string FunctionName { get; }
-	internal string? Description { get; }
-	internal string DeclaringTypeName { get; }
-	internal string MethodName { get; }
-	internal bool ReturnsVoid { get; }
-	internal bool NeedsArgvArray { get; }
-	internal IReadOnlyList<InvocationParameterModel> Parameters { get; }
-}
+// Rendering data for one function; emitted only after function-name validation.
+internal sealed record ScriptHolderModel(
+	string GeneratedTypeName,
+	string FunctionName,
+	string? Description,
+	string DeclaringTypeName,
+	string MethodName,
+	bool ReturnsVoid,
+	bool NeedsArgvArray,
+	EquatableArray<InvocationParameterModel> Parameters);
 
-internal sealed class InvocationParameterModel {
-	internal InvocationParameterModel(string expression) {
-		Expression = expression;
-	}
-
-	internal string Expression { get; }
-}
+// Expression used to pass one argument to the script function.
+internal sealed record InvocationParameterModel(string Expression);

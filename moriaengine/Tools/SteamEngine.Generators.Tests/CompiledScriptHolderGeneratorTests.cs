@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,11 +11,6 @@ namespace SteamEngine.Generators.Tests;
 
 public sealed class CompiledScriptHolderGeneratorTests {
 	private const string SharedStubs = "";
-
-	private sealed class GeneratorRunSnapshot {
-		internal IReadOnlyList<string> GeneratedSources { get; init; } = Array.Empty<string>();
-		internal IReadOnlyList<Diagnostic> Diagnostics { get; init; } = Array.Empty<Diagnostic>();
-	}
 
 	[Fact]
 	public void PublicStaticSteamFunction_GeneratesCompiledHolder() {
@@ -88,6 +82,24 @@ public static class CommandScripts {
 	}
 
 	[Fact]
+	public void SteamFunctionEnumParameter_UsesItsUnderlyingType() {
+		const string source = """
+using SteamEngine.CompiledScripts;
+namespace ScriptSandbox;
+public enum Choice : ulong { None }
+public static class Commands {
+	[SteamFunction] public static void Choose(object self, Choice choice, System.DateTime time) { }
+}
+""";
+		var run = RunGenerator(nameof(SteamFunctionEnumParameter_UsesItsUnderlyingType), source);
+		var generated = Assert.Single(run.GeneratedSources);
+		Assert.Contains("(global::ScriptSandbox.Choice)global::System.Convert.ToUInt64(argv[0])", generated);
+		Assert.Contains("global::System.Convert.ToDateTime(argv[1])", generated);
+		Assert.DoesNotContain(run.Diagnostics, d => d.Severity == DiagnosticSeverity.Error);
+		Assert.DoesNotContain(run.OutputCompilation.GetDiagnostics(), d => d.Severity == DiagnosticSeverity.Error);
+	}
+
+	[Fact]
 	public void NonStaticSteamFunction_ReportsDiagnostic() {
 		const string source = """
 using SteamEngine.CompiledScripts;
@@ -109,31 +121,41 @@ public sealed class CommandScripts {
 	}
 
 	[Fact]
-	public void DuplicateFunctionNames_ReportsDiagnostic() {
+	public void InvalidMethodsAndNames_ReportDiagnostics() {
 		const string source = """
 using SteamEngine.CompiledScripts;
-
-namespace ScriptSandbox;
-
-public static class CommandScriptsA {
-	[SteamFunction("dupe")]
-	public static int One(object self, int range) {
-		return range;
-	}
-}
-
-public static class CommandScriptsB {
-	[SteamFunction("DUPE")]
-	public static int Two(object self, int range) {
-		return range;
-	}
+public class Commands {
+	const string Alias = "a";
+	[SteamFunction] public int First(object self) => 0; // Invalid: not static.
+	[SteamFunction(Alias)] public int Second(object self) => 0; // Invalid: not static and name is not a literal.
+	[SteamFunction] private static int Fourth(object self) => 0; // Invalid: not public.
+	[SteamFunction("dupe")] public static int One(object self) => 1; // Invalid: name conflicts with Two.
+	[SteamFunction("DUPE")] public static int Two(object self) => 2; // Invalid: name conflicts case-insensitively with One.
+	[SteamFunction("foo-bar")] public static int Three(object self) => 3; // Invalid: hyphen.
+	[SteamFunction("9start")] public static int Digit(object self) => 0; // Invalid: starts with a digit.
+	[SteamFunction("")] public static int Empty(object self) => 0; // Invalid: empty name.
+	[SteamFunction("has space")] public static int Space(object self) => 0; // Invalid: whitespace.
+	[SteamFunction("na\u00efve")] public static int Unicode(object self) => 0; // Invalid: non-ASCII letter.
+	[SteamFunction] public static int \u00c9cho(object self) => 0; // Invalid: default name is non-ASCII.
+	[SteamFunction] public static int _Valid123(object self) => 0; // Valid: underscore, letters, and digits.
+	[SteamFunction("foo_bar")] public static int Five(object self) => 5; // Valid: letters and underscore.
+	[SteamFunction("__ENCODED_foo_002dbar")] public static int Six(object self) => 6; // Valid: the encoding prefix is escaped.
 }
 """;
-
-		var run = RunGenerator(nameof(DuplicateFunctionNames_ReportsDiagnostic), source);
-		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN102");
-		Assert.Contains("dupe", error.GetMessage(), System.StringComparison.OrdinalIgnoreCase);
-		Assert.Single(run.GeneratedSources);
+		var run = RunGenerator(nameof(InvalidMethodsAndNames_ReportDiagnostics), source);
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN101" && d.GetMessage().Contains("First"));
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN101" && d.GetMessage().Contains("Second"));
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN101" && d.GetMessage().Contains("Fourth"));
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN103");
+		Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN102");
+		foreach (var invalidName in new[] { "foo-bar", "9start", "", "has space", "na\u00efve", "\u00c9cho" }) {
+			Assert.Contains(run.Diagnostics, d => d.Id == "SEGEN104" && d.GetMessage().Contains("'" + invalidName + "'"));
+		}
+		Assert.Equal(3, run.GeneratedSources.Count);
+		var generated = JoinGeneratedSources(run);
+		AssertGeneratedContains(generated, ": base(\"_Valid123\",", ": base(\"foo_bar\",", ": base(\"__ENCODED_foo_002dbar\",");
+		Assert.DoesNotContain(run.GeneratedSources, source => source.Contains(": base(\"dupe\",", StringComparison.OrdinalIgnoreCase));
+		Assert.DoesNotContain(run.OutputCompilation.GetDiagnostics(), d => d.Severity == DiagnosticSeverity.Error);
 	}
 
 	[Fact]
@@ -156,6 +178,25 @@ public static class CommandScripts {
 		var run = RunGenerator(nameof(NonLiteralSteamFunctionName_ReportsDiagnostic), source);
 		var error = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN103");
 		Assert.Contains("Alias", error.GetMessage(), StringComparison.Ordinal);
+		Assert.Empty(run.GeneratedSources);
+	}
+
+	[Fact]
+	public void ShadowedSteamFunction_ReportsWarning() {
+		const string source = """
+namespace Shadow {
+	public sealed class SteamFunctionAttribute : System.Attribute { }
+	public static class Commands {
+		[SteamFunction]
+		public static int Reveal(object self) => 1;
+	}
+}
+""";
+		var run = RunGenerator(nameof(ShadowedSteamFunction_ReportsWarning), source);
+		var warning = Assert.Single(run.Diagnostics, d => d.Id == "SEGEN902");
+		Assert.Equal(DiagnosticSeverity.Warning, warning.Severity);
+		Assert.Contains("global::Shadow.SteamFunctionAttribute", warning.GetMessage());
+		Assert.Empty(run.GeneratedSources);
 	}
 
 	[Fact]
@@ -163,9 +204,9 @@ public static class CommandScripts {
 		var run = RunGeneratorWithoutSharedStubs(
 			nameof(MissingSteamFunctionAttributeDeclaration_ReportsDiagnostic),
 			string.Empty);
-		Assert.Equal(16, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
+		Assert.Equal(23, run.Diagnostics.Count(d => d.Id == "SEGEN900"));
 		Assert.Contains(run.Diagnostics, d => d.GetMessage().Contains("SteamEngine.CompiledScripts.SteamFunctionAttribute", StringComparison.Ordinal));
-		Assert.Equal(20, run.Diagnostics.Count(d => d.Id == "SEGEN901"));
+		Assert.Equal(22, run.Diagnostics.Count(d => d.Id == "SEGEN901"));
 		Assert.Empty(run.GeneratedSources);
 	}
 
@@ -211,41 +252,8 @@ public static class CommandScripts {
 			syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
 		}
 
-		var compilation = CSharpCompilation.Create(
-			"GeneratorTestAssembly",
-			syntaxTrees,
-			GetMetadataReferences(includeGeneratorAbstractionsReference),
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(new CompiledScriptHoldersGenerator());
-		driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
-		var run = driver.GetRunResult();
-		var single = run.Results.Single();
-		if (single.Exception != null) {
-			throw single.Exception;
-		}
-
-		var snapshot = new GeneratorRunSnapshot {
-			GeneratedSources = single.GeneratedSources.Select(gs => gs.SourceText.ToString()).ToList(),
-			Diagnostics = single.Diagnostics.ToList()
-		};
-		DumpGeneratedSourcesIfRequested(scenarioName, single.GeneratedSources);
-		return snapshot;
-	}
-
-	private static void DumpGeneratedSourcesIfRequested(string scenarioName, ImmutableArray<GeneratedSourceResult> sources) {
-		var root = System.Environment.GetEnvironmentVariable("STEAMENGINE_GENERATOR_DUMP_DIR");
-		if (string.IsNullOrWhiteSpace(root)) {
-			return;
-		}
-
-		var scenarioDir = Path.Combine(root, scenarioName);
-		Directory.CreateDirectory(scenarioDir);
-		for (var i = 0; i < sources.Length; i++) {
-			var hintName = sources[i].HintName.Replace('/', '_').Replace('\\', '_');
-			var fileName = string.IsNullOrWhiteSpace(hintName) ? $"generated-{i}.g.cs" : hintName;
-			File.WriteAllText(Path.Combine(scenarioDir, fileName), sources[i].SourceText.ToString());
-		}
+		return GeneratorTestRunner.Run(new CompiledScriptHoldersGenerator(), syntaxTrees,
+			GetMetadataReferences(includeGeneratorAbstractionsReference), scenarioName);
 	}
 
 	private static IEnumerable<MetadataReference> GetMetadataReferences(bool includeGeneratorAbstractionsReference) {
@@ -255,6 +263,10 @@ public static class CommandScripts {
 		yield return MetadataReference.CreateFromFile(typeof(ImmutableArray<>).Assembly.Location);
 		yield return MetadataReference.CreateFromFile(typeof(System.Runtime.GCSettings).Assembly.Location);
 		yield return MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.Binder).Assembly.Location);
+		yield return MetadataReference.CreateFromFile(System.IO.Path.Combine(
+			System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location)!, "netstandard.dll"));
+		yield return MetadataReference.CreateFromFile(System.IO.Path.Combine(
+			System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location)!, "System.Runtime.dll"));
 		if (includeGeneratorAbstractionsReference) {
 			yield return MetadataReference.CreateFromFile(typeof(SteamEngine.CompiledScripts.SteamFunctionAttribute).Assembly.Location);
 		}

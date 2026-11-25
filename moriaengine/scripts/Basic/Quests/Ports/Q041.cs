@@ -585,7 +585,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1278 - the smuggler's double click.</summary>
-	public class E_Q041Paserak : CompiledTriggerGroup {
+	public partial class E_Q041Paserak : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;
@@ -598,7 +598,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1278 - Borek's double click (f_mq002_Borek_DClick).</summary>
-	public class E_Q041Borek : CompiledTriggerGroup {
+	public partial class E_Q041Borek : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (!(clicker is Player player)) {
 				return TriggerResult.Continue;
@@ -611,7 +611,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1278 - i_port_prechod_2.</summary>
-	public class E_Q041Portal : CompiledTriggerGroup {
+	public partial class E_Q041Portal : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			if (stepping is Player player) {
 				Q041.StepOnPortal(self, player);
@@ -620,7 +620,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1278 - i_level_gate.</summary>
-	public class E_Q041Gate : CompiledTriggerGroup {
+	public partial class E_Q041Gate : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			if (stepping is Player player) {
 				Q041.StepOnGate(self, player);

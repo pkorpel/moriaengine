@@ -22,10 +22,9 @@ using SteamEngine.Timers;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
-	/// Regression coverage for #411: Corpse.direction is a plain .ct Var (private Direction
-	/// direction, Corpse.ct), not a tag - a different save/load code path than #407's tag
-	/// fix, generated via ClassTemplate.LoadFieldStatement/GeneratedCodeUtil instead of
-	/// ObjectSaver's generic tag dispatch. #407's Save-side change (embedding "(Enum:Name)
+	/// Regression coverage for #411: Corpse.direction is a plain [SaveableData] field,
+	/// not a tag - a different save/load code path than #407's tag fix.
+	/// #407's Save-side change (embedding "(Enum:Name)
 	/// value" for every enum, unconditionally) broke this path's LoadLine, which parsed a
 	/// bare ConvertTools.ParseByte(valueString) straight into the field - confirms the fix
 	/// (excluding enums from the "simple direct-parse" codegen decision) actually produces

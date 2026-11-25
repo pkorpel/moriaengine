@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#962 - Erebor's t_trap_custom: a player's trap, set with a bomb, a poison bottle or another trap. Each works once
 	/// and only on a first step here. Erebor blanks the poison's kind when setting one, so its poison never fires there;
 	/// here it does, a question for the user.</summary>
-	public class t_trap_custom : CompiledTriggerGroup {
+	public partial class t_trap_custom : CompiledTriggerGroup {
 		private const int MostPoisonWound = 25, MostSprungWound = 50;
 		private static readonly TagKey lastTrapTK = TagKey.Acquire("past");
 		internal static readonly TagKey bombTK = TagKey.Acquire("bomba");

@@ -1105,7 +1105,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1293 - an errand item's double click (a lamp to light, a cart to search).</summary>
-	public class E_ErrandThingItem : CompiledTriggerGroup {
+	public partial class E_ErrandThingItem : CompiledTriggerGroup {
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (self.GetTag(Errands.ThingTK) != null) {
 				Errands.UseThing(self, clicker);
@@ -1116,7 +1116,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1293 - an errand NPC's double click (a runaway cat, a thief, a drunk orc to catch).</summary>
-	public class E_ErrandThingNpc : CompiledTriggerGroup {
+	public partial class E_ErrandThingNpc : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			if (self.GetTag(Errands.ThingTK) != null) {
 				Errands.UseThing(self, clicker);

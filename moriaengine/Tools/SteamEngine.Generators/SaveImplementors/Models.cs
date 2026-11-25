@@ -3,14 +3,35 @@ using Microsoft.CodeAnalysis;
 
 namespace SteamEngine.Generators.SaveImplementors;
 
+// Parsed type and attributed symbols awaiting persistence validation.
 internal sealed class SaveImplementorCandidate {
-	internal SaveImplementorCandidate(INamedTypeSymbol symbol) {
+	internal SaveImplementorCandidate(
+		INamedTypeSymbol symbol,
+		IMethodSymbol? loadingInitializer,
+		IMethodSymbol? loadSection,
+		IMethodSymbol? loadLine,
+		IMethodSymbol? loadingFinalizer,
+		IMethodSymbol? saveMethod,
+		IReadOnlyList<AttributedMember> saveableMembers) {
 		Symbol = symbol;
+		LoadingInitializer = loadingInitializer;
+		LoadSection = loadSection;
+		LoadLine = loadLine;
+		LoadingFinalizer = loadingFinalizer;
+		SaveMethod = saveMethod;
+		SaveableMembers = saveableMembers;
 	}
 
 	internal INamedTypeSymbol Symbol { get; }
+	internal IMethodSymbol? LoadingInitializer { get; }
+	internal IMethodSymbol? LoadSection { get; }
+	internal IMethodSymbol? LoadLine { get; }
+	internal IMethodSymbol? LoadingFinalizer { get; }
+	internal IMethodSymbol? SaveMethod { get; }
+	internal IReadOnlyList<AttributedMember> SaveableMembers { get; }
 }
 
+// Validated type and member data used to render a save implementor.
 internal sealed class SaveImplementorModel {
 	internal SaveImplementorModel(
 		string generatedTypeName,
@@ -41,19 +62,23 @@ internal sealed class SaveImplementorModel {
 	internal IReadOnlyList<SaveableMemberModel> SaveableMembers { get; }
 }
 
+// Describes the constructor or static method used to create an object while loading.
 internal sealed class SaveFactoryMethod {
 	internal SaveFactoryMethod(
 		SaveFactoryKind kind,
+		string declaringTypeName,
 		string methodName,
 		bool takesPropsSection,
 		bool requiresCast) {
 		Kind = kind;
+		DeclaringTypeName = declaringTypeName;
 		MethodName = methodName;
 		TakesPropsSection = takesPropsSection;
 		RequiresCast = requiresCast;
 	}
 
 	internal SaveFactoryKind Kind { get; }
+	internal string DeclaringTypeName { get; }
 	internal string MethodName { get; }
 	internal bool TakesPropsSection { get; }
 	internal bool RequiresCast { get; }

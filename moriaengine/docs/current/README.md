@@ -55,9 +55,6 @@ buried in a log whose job was session continuity, not permanent reference.
   blocked (pickup, drop, trade, equip), and why reach is checked after it.
 - [Plugins](02-engine-core/plugins.md) - objects attached to a thing that hear its triggers,
   keep data and a timer, and save with it: how to declare, install and use one.
-- [ViewableClasses & the `.info` dialog](02-engine-core/viewable-classes-and-info-dialog.md) -
-  reflection-based property discovery, `[ViewDescriptor]`/`[Button]` injection, and when to
-  use that instead of a dedicated dialog.
 - [Regions](02-engine-core/regions.md) - `Region`/`StaticRegion`/`DynamicRegion`/
   `FlaggedRegion`, how dynamic regions (houses, ships) take priority over static ones.
 - [Networking & the protocol layer](02-engine-core/networking-protocol.md) - packet
@@ -70,8 +67,9 @@ buried in a log whose job was session continuity, not permanent reference.
   measured costs, whether optimistic multithreading would help this server (no), what to do instead if cores are needed.
 
 ### 3. Admin & GM tooling
-- [The `.settings` dialog framework](03-admin-tooling/settings-dialog.md) -
-  `SettingsMetaCategory`, `[SaveableData]`, how to add a new GM-tunable setting.
+- [The `.info` and `.settings` dialogs](03-admin-tooling/info-and-settings-dialogs.md) -
+  using them, `[ViewableClass]`/`[ViewDescriptor]`, adding a GM-tunable setting, tips,
+  generator rules and diagnostics.
 - [GM commands](03-admin-tooling/gm-commands.md) - `CommandsAuthorization`, the
   default-deny-above-plevel-4 fallback, the target-cursor command pattern (`.flip`/`.kill`
   shape) vs self-referential commands (`.TagList` shape).

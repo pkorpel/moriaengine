@@ -321,7 +321,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1493 - a TimerPlugin that does nothing on its timer. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class TimedProbePlugin : TimerPlugin {
+	public partial class TimedProbePlugin : TimerPlugin {
 		[DeepCopyImplementation]
 		public TimedProbePlugin(TimedProbePlugin copyFrom)
 			: base(copyFrom) {

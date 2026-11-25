@@ -155,7 +155,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#833 - i_hadi_teleport.</summary>
-	public class E_MasterQuestTeleport : CompiledTriggerGroup {
+	public partial class E_MasterQuestTeleport : CompiledTriggerGroup {
 		public void On_Step(Item self, Character stepping) {
 			Player player = stepping as Player;
 			if (player != null) {

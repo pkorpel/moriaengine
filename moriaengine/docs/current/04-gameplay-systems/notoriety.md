@@ -19,7 +19,7 @@ the worst notoriety tier, flagging would add nothing (line 58).
 
 Both `MurdererThreshold` and `CriminalFlagSeconds` are backed by `NotorietySettings`
 (`scripts/Basic/NotorietySettings.cs`) - GM-tunable via the `.settings` dialog's
-"Notoriety" category (cross-link [settings-dialog.md](../03-admin-tooling/settings-dialog.md)),
+"Notoriety" category (cross-link [the `.settings` dialog](../03-admin-tooling/info-and-settings-dialogs.md)),
 same pattern as `DecaySettings`/`ProfessionSettings`. `Notoriety.MurdererThreshold`/
 `CriminalFlagSeconds` are thin pass-through properties onto
 `NotorietySettings.instance`'s fields, kept so existing call sites didn't need to change

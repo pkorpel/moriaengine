@@ -39,16 +39,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private static List<SupplyDecoratedTypeBase> supplyDecoratedTypesDelegs = new List<SupplyDecoratedTypeBase>();
 
-		private static List<SupplySubclassInstanceBase> supplySubclassInstanceDelegs = InitDecoratedTypesDelegsList();
+		private static List<SupplySubclassInstanceBase> supplySubclassInstanceDelegs = new List<SupplySubclassInstanceBase>();
 
 		private static List<TypeDelegPair> supplySubclassDelegs = new List<TypeDelegPair>();
-
-		static List<SupplySubclassInstanceBase> InitDecoratedTypesDelegsList() {
-			//can't be in GeneratedCodeUtil's Bootstrap, cos that's too late.
-			List<SupplySubclassInstanceBase> list = new List<SupplySubclassInstanceBase>();
-			list.Add(new SupplySubclassInstanceTuple<ISteamCSCodeGenerator>(GeneratedCodeUtil.RegisterGenerator, true, true)); //ClassManager.RegisterSupplySubclassInstances<ISteamCSCodeGenerator>(GeneratedCodeUtil.RegisterGenerator, true, true);
-			return list;			
-		}
 
 		public static ICollection<Type> AllManagedTypes {
 			get {
@@ -73,12 +66,6 @@ namespace SteamEngine.CompiledScripts {
 		public static Assembly ScriptsAssembly {
 			get {
 				return CompilerInvoker.compiledScripts.assembly;
-			}
-		}
-
-		public static Assembly GeneratedAssembly {
-			get {
-				return GeneratedCodeUtil.generatedAssembly;
 			}
 		}
 
@@ -122,8 +109,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool IsTypeFromScripts(Type type) {
-			return (type.Assembly == GeneratedAssembly) ||
-				(type.Assembly == ScriptsAssembly);
+			return type.Assembly == ScriptsAssembly;
 		}
 
 		public static Type GetType(string name) {

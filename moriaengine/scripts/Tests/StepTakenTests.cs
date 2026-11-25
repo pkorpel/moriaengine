@@ -84,7 +84,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public class E_StepTakenProbe : CompiledTriggerGroup {
+	public partial class E_StepTakenProbe : CompiledTriggerGroup {
 		public void On_StepTaken(Character self, bool running) {
 			StepTakenTests.groupHeard++;
 			StepTakenTests.groupRunning = running;
@@ -92,7 +92,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>On an item: deletes the NPC that steps onto it, as a trap's kill would.</summary>
-	public class E_DeleteWhoSteps : CompiledTriggerGroup {
+	public partial class E_DeleteWhoSteps : CompiledTriggerGroup {
 		internal static int killed;
 
 		public void On_Step(Item self, Character stepping) {
@@ -123,7 +123,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Counts @stepTaken and keeps its `running`. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
-	public class StepTakenProbePlugin : Plugin {
+	public partial class StepTakenProbePlugin : Plugin {
 		internal int heard;
 		internal bool running;
 

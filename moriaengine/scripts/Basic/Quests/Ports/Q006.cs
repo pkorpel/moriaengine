@@ -266,7 +266,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1264 - @UserDClick of q006's NPCs.</summary>
-	public class E_Q006Npc : CompiledTriggerGroup {
+	public partial class E_Q006Npc : CompiledTriggerGroup {
 		public TriggerResult On_DClick(NPC self, Character clicker) {
 			Player player = clicker as Player;
 			if (player == null) {
@@ -280,7 +280,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1264 - i_roba_alchemisty's click line, and (#1475) its own @equip and @unequip.</summary>
-	public class E_Q006Robe : CompiledTriggerGroup {
+	public partial class E_Q006Robe : CompiledTriggerGroup {
 		/// <summary>#1475 - i_roba_alchemisty's own @equip and @unequip.</summary>
 		public void On_Equip(Item self, ItemInCharArgs args) {
 			if (args.Cont is Character ch) {

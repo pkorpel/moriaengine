@@ -158,8 +158,8 @@ namespace SteamEngine {
 				AuxServerPipeClient.Init();
 				Thread.Sleep(1000);//wait before namedpipe link to auxserver is initialised. 1 second should be enough
 
-				Console.WriteLine($"Starting SteamEngine ({Globals.Version}, {Build.Type} build)" + " - " + Globals.ServerName);
-				Console.WriteLine("https://sourceforge.net/projects/steamengine/");
+				Console.WriteLine($"Starting SteamEngine ({Globals.Version}, {Build.Type} build, PID {Environment.ProcessId})" + " - " + Globals.ServerName);
+				Console.WriteLine("https://github.com/pkorpel/moriaengine/");
 				Console.WriteLine($"Running under {Environment.OSVersion}, Framework version: {Environment.Version}.");
 
 				Globals.Init(); //reads .ini
@@ -322,7 +322,6 @@ namespace SteamEngine {
 			LocManager.ForgetInstancesOfType(typeof(ScriptedLocStringCollection));
 			//CompilerInvoker.UnLoadScripts();//bye-bye to all stored assemblies and such that are not core-related
 			ClassManager.ForgetScripts();//bye-bye to all storec types
-			GeneratedCodeUtil.ForgetScripts();//bye-bye to scripted code generators
 											  //TriggerGroup.UnloadAll();//bye-bye to all triggergroups and their triggers
 			ScriptHolder.ForgetAllFunctions();//bye-bye to all scripted functions
 			ThingDef.ForgetAll();//clear thingdef constructors etc.

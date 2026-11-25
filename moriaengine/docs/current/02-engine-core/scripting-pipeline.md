@@ -20,8 +20,8 @@ the attributed C# template pipeline already generated. It never defines a new cl
 
 `SteamEngine.Generators.ThingAndPluginClasses.Generator` reads template attributes in script
 C# and emits the equivalent partial-class glue during build (as Roslyn-generated source in
-the compilation, not source-adjacent files). This is a different place from the central
-`moriaengine/Generated/` folder - see mechanism 2 below.
+the compilation, not source-adjacent files). The other generators work the same way - see
+mechanism 2 below.
 
 Template classes are authored directly in C#, for example:
 
@@ -46,7 +46,7 @@ typed property wrapper (see
 `[SaveableData]` / `[CopyableData]` members, generated code provides save/load/deep-copy
 plumbing on the thing/plugin class.
 
-See [ThingAndPluginClasses `Generator`](code%20generators/thing-and-plugin-classes-generator.md)
+See [Scripting generators](code%20generators/scripting-generators.md)
 for the exact generated members and constraints.
 
 ### A def value and a thing's own value
@@ -72,69 +72,57 @@ def-level and instance-level fields both called `attributes`, with the instance 
 `"attr"` alias in `AbstractItemDef.LoadScriptLine`. (The def field was `attributesDefault`
 until #1382.)
 
-## Mechanism 2: attribute-scanning → central `Generated/*.Generated.cs`
+## Mechanism 2: attribute-scanning Roslyn generators
 
-A second, unrelated generation pass currently produces three files directly under the
-`moriaengine/Generated/` folder:
-
-- `CompiledTriggerGroups.Generated.cs` - compiled-C# trigger group dispatch.
-- `PluginTriggerGroups.Generated.cs` - same idea for plugin trigger groups.
-- `ViewableClasses.Generated.cs` - reflection metadata backing the `.info` dialog's property
-  discovery for every `[ViewableClass]` type (see
-  [viewable-classes-and-info-dialog.md](viewable-classes-and-info-dialog.md)).
-
-This is driven by `GameCore/CompiledScripts/GeneratedCodeUtil.cs`'s `WriteOutAndCompile`,
-which runs a loop of registered `ISteamCSCodeGenerator` instances (one per file above).
-Each generator's `WriteSources()` emits CodeDom-built C# from whatever it has already
-collected via reflection; `ClassManager` (`GameCore/CompiledScripts/ClassManager.cs`) is what
-actually does that reflection - after the scripts assembly is compiled, it walks
-`assembly.GetTypes()`.
+The other generators also run at scripts compile time, inside the same compilation. Each one
+scans the attributes on script types and adds its output as generated source. Nothing is
+written to disk and nothing is compiled at runtime (#1563 removed the old runtime
+`ISteamCSCodeGenerator` pass and its `Generated/` project).
 
 `[SteamFunction]` dispatch is now generated at scripts compile time by the Roslyn source
 generator `Tools/SteamEngine.Generators/CompiledScriptHolders/Generator.cs` (see
-`docs/current/02-engine-core/code generators/compiled-script-holder-generator.md`), not by the
-CodeDom `Generated/*.Generated.cs` pass.
+`docs/current/02-engine-core/code generators/scripting-generators.md`).
 
 Deep-copy implementors are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/DeepCopyImplementors/Generator.cs`. See
-`docs/current/02-engine-core/code generators/deep-copy-implementor-generator.md`.
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
 
 Save implementors for `[SaveableClass]` types are now generated at scripts compile time by
 `Tools/SteamEngine.Generators/SaveImplementors/Generator.cs`. See
-`docs/current/02-engine-core/code generators/save-implementor-generator.md`.
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
 
-### One boot does both
+Compiled trigger groups are now generated at scripts compile time by
+`Tools/SteamEngine.Generators/CompiledTriggerGroups/Generator.cs`. See
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
+
+Plugin trigger dispatch is now generated at scripts compile time by
+`Tools/SteamEngine.Generators/PluginTriggerDispatch/Generator.cs`. See
+`docs/current/02-engine-core/code generators/scripting-generators.md`.
+
+The `.info` DataViews are emitted at scripts compile time by
+`Tools/SteamEngine.Generators/ViewableClasses/Generator.cs`; see
+[The `.info` and `.settings` dialogs](../03-admin-tooling/info-and-settings-dialogs.md).
+
+### One boot
 
 A boot runs, in order (`Main.cs:171-173`, `CompilerInvoker.CompileScripts`):
 
-1. the scripts project is compiled and loaded (including build-time template generation);
-2. `ClassManager` reflects over it, feeding each generator;
-3. `GeneratedCodeUtil.WriteOutAndCompile` writes the four `Generated/*.Generated.cs` files and
-   compiles the Generated project against the scripts assembly just loaded, then loads it.
+1. the scripts project is compiled and loaded, every generator's output included;
+2. `ClassManager` reflects over it and registers its types.
 
-So a new `[SteamFunction]`, `[ViewableClass]` member, or template field/attribute change is
-picked up by the next boot, once. Checked 2026-11-10: with all central generated
-`Generated/*.Generated.cs` files deleted, one boot came up, passed `BootLogTests` and wrote
-them again.
+So a new `[ViewableClass]` member is picked up by the next Scripts compilation.
 
 ## Reusing the last build
 
-Since #1358 a boot doesn't compile what hasn't changed. Two parts:
+Since #1358 a boot doesn't compile the scripts when they haven't changed:
 
-- **Generated sources are written only when their text changes.**
-  - `GeneratedCodeUtil` generators write through `MsBuildLauncher.WriteSourceIfChanged`.
-  - Before, every boot rewrote them with the same text. The new write times made MSBuild
-    recompile both projects every time: about 12.5 s for the scripts and 10.7 s for Generated.
-- **A fingerprint of each project's inputs.**
+- **A fingerprint of the project's inputs.**
   - `BuildFingerprint.Of` hashes the content of every `.cs`, `.resx`, `.csproj`, `.props` and `.targets` file below the project. The top-level `bin/` and `obj/` folders and hidden folders are left out, as the SDK's default globs do.
   - It also hashes any `Directory.Build.*` files above the project, the `SteamEngine.*.dll` files the running GameCore was started from, the build type and the assembly number.
-  - Generated's fingerprint also covers the scripts assembly's MVID.
   - `MsBuildLauncher.Compile` keeps it in `obj/<Configuration>/moria-build-stamp.<number>.txt`, next to the output's path, length and write time. While the stamp still matches, the output is loaded and `dotnet` doesn't run. That saves about 3 s per project even when MSBuild would find the project up to date.
   - A failed build deletes the stamp. An output rebuilt by anything else (an IDE, a plain `dotnet build`) no longer matches the stamp. A stamp pointing outside its project (a tree copied with its `obj/`) doesn't count. An in-game recompile has a new assembly number, so it always builds.
   - An input that can't be read, or a stamp that can't be written, only means a normal build.
-  - Generated builds with `-p:BuildProjectReferences=false`. The scripts assembly it references is the one just loaded, and building that reference again could rewrite the loaded file.
-  - Since the generated sources keep their write times, `build.ps1`'s "is generation current" check reads `Generated/generated-at.txt` instead, which `GeneratedCodeUtil` touches every time it generates.
-  - The boot log says which happened: "Reused compiled C# scripts, no source changed." or "Done compiling C# scripts.", and the same for Generated.
+  - The boot log says which happened: "Reused compiled C# scripts, no source changed." or "Done compiling C# scripts."
 
 Measured on the test servers: a boot with nothing changed reached ready in 11 s. A boot that
 compiled both projects took 27 s. With only the first part (MSBuild finding both projects up
@@ -142,11 +130,6 @@ to date), it took 15 s.
 
 ## Building outside a boot
 
-A plain `dotnet build` of the solution (an IDE, the test scripts, the pre-push hook) compiles
-the scripts and Generated projects from the generated files already on disk. On a fresh
-checkout there are none, so `build.ps1`'s `Invoke-ScriptGeneration` boots GameCore first (twice
-when the first boot has to write `steamengine.ini` and exits), and again whenever a `.cs`
-source is newer than `Generated/generated-at.txt`. After a change that removes or renames something a boot-generated file refers to (a
-compiled trigger group's method, a `[ViewableClass]` member), the old generated file can fail such a
-build until the next boot rewrites it. `[SteamFunction]` dispatch, deep copy and save code come from
-the Roslyn generators at compile time, so they never go stale this way.
+A plain `dotnet build` of the solution (an IDE, the test scripts, the pre-push hook) runs every
+generator, so it needs no boot. `build.ps1` boots GameCore once afterwards only when
+`steamengine.ini` is missing: that first boot writes the default ini and exits.

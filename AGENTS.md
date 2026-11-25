@@ -15,9 +15,11 @@ whatever tool you use.
   `ThirdParty/` are shared infrastructure.
 - `moriaengine/scripts/` holds game scripts in C# and LScript (`.def`/`.scp`). Every server boot compiles
   them from disk. `scripts/converted/` is **generated** by `SphereShardConverter` from the Erebor archive.
-- `moriaengine/Tools/SteamEngine.Generators*` holds the Roslyn source generators. `moriaengine/Generated/`
-  is boot-time generated output. Neither kind of generated code is edited by hand; see
-  `moriaengine/docs/current/02-engine-core/scripting-pipeline.md`.
+- `moriaengine/Tools/SteamEngine.Generators*` holds the Roslyn source generators. They add the generated
+  code (templates, `[SteamFunction]` dispatch, save/copy implementors, `.info` views, trigger dispatch) at
+  compile time, and none of it is written to disk. To change generated code, change the generator or the
+  attributed source; see `moriaengine/docs/current/02-engine-core/scripting-pipeline.md` and
+  `code generators/scripting-generators.md`.
 - `moriaengine/Tests/` is xUnit: the fast unit tier, plus `Tests/Protocol/`, which boots real servers.
   `moriaengine/scripts/Tests/` holds the server-side test commands.
 - `uo-files/` holds the UO client files the server needs at runtime. They are checked in, not build output.
@@ -43,10 +45,8 @@ scripts/worktree-add.sh <n>-<slug>             # sparse worktree ../moria-<n> fr
   anything.
 - Build with the scripts. They source `scripts/lean-build-env.sh`, which stops idle MSBuild and compiler
   processes. A bare `dotnet build`/`dotnet test` leaves them behind.
-- After removing or renaming something the boot-generated `Generated/` files refer to (a compiled trigger
-  group's method, a `[ViewableClass]` member), the old files can break a plain build until the next boot.
-  `build.ps1` handles it. The Roslyn generators run at compile time and don't have this problem.
-- `steamengine.ini`/`steamaux.ini` are local and not committed. The first boot writes them and exits.
+- `steamengine.ini`/`steamaux.ini` are local and not committed. The first boot writes them and exits;
+  `build.ps1` runs that boot when `steamengine.ini` is missing.
 
 ## How changes land
 

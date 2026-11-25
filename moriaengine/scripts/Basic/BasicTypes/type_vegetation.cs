@@ -17,11 +17,11 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	public class t_foliage : CompiledTriggerGroup {
+	public partial class t_foliage : CompiledTriggerGroup {
 
 	}
 
-	public class t_tree : CompiledTriggerGroup {
+	public partial class t_tree : CompiledTriggerGroup {
 
 	}
 }

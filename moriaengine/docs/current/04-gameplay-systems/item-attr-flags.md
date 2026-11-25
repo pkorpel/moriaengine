@@ -73,7 +73,7 @@ call site.
 The first draft put 22 individual public boolean properties on `Item` (e.g.
 `AttrNewbie`), meant to auto-surface through the generic reflection-based `.info`
 property list (see
-[ViewableClasses & the `.info` dialog](../02-engine-core/viewable-classes-and-info-dialog.md)
+[The `.info` and `.settings` dialogs](../03-admin-tooling/info-and-settings-dialogs.md)
 - the same mechanism `Player.Level`/`Experience` use). The user's explicit follow-up:
 "I like the idea of having entire separate dialog (just as we have timers, plugins,
 tags) with all the possible attributes and checkbox next to them." Rebuilt as `D_AttrList`

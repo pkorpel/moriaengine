@@ -243,11 +243,10 @@ namespace SteamEngine.Tests.Protocol {
 		/// whole folder" mistake flagged elsewhere this session) and mistook the unrelated,
 		/// fully-commented-out legacy OldInfo in Commands.cs for the only candidate, nearly
 		/// shipping a duplicate SteamFunction named "Info" that collided with the real one at
-		/// the generated-code level (CS0101 in Generated/CompiledScriptHolders.Generated.cs).
-		/// No production code needed to change at all: D_Info's own ViewableClassGenerator
-		/// already auto-discovers every public property on a [ViewableClass]-marked type via
-		/// reflection with no per-property opt-in needed (see ViewableClassAttributes.cs's own
-		/// doc comment, "all other attributes will be displayed") - Player already carries
+		/// generated-source level (CS0101 from colliding generated script-holder names).
+		/// No production code needed to change at all: D_Info's generated data view
+		/// already includes every public property on a [ViewableClass]-marked type with no
+		/// per-property opt-in needed - Player already carries
 		/// [ViewableClass], so Level/Experience/the point-pool properties already show up here
 		/// with zero wiring. TestPromoteToGM sidesteps this file's established "which account
 		/// happened to be first" plevel fragility, since .info is GM-only (unlisted in
@@ -268,7 +267,7 @@ namespace SteamEngine.Tests.Protocol {
 				// InfoDialog/D_Info.cs) - with no arguments it opens the caller's own info
 				// dialog immediately, no target cursor involved. Player.Level/Experience are
 				// plain public properties on a [ViewableClass]-tagged type, so they show up
-				// here automatically via ViewableClassGenerator - no new command was needed,
+				// here automatically via the generated data view - no new command was needed,
 				// just confirming the existing one surfaces them.
 				client.SendSpeech(".Info");
 				// If Construct() threw, no gump packet would ever arrive at all - that's the real
