@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>$(SteamEngineTargetFramework)</TargetFramework>
     <RootNamespace>SteamEngine.Common</RootNamespace>
     <AssemblyName>SteamEngine.Common</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

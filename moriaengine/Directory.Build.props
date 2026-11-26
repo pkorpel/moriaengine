@@ -1,0 +1,11 @@
+<Project>
+
+  <!-- #1551: the target framework of every project here, in one place. A project file says
+       <TargetFramework>$(SteamEngineTargetFramework)</TargetFramework> (RemoteConsole adds -windows);
+       build.ps1, scripts/run-local.sh and the protocol tests' fixture derive their bin/<config>/<tfm>
+       paths from it. The source generators stay on netstandard2.0, as the compiler requires. -->
+  <PropertyGroup>
+    <SteamEngineTargetFramework>net10.0</SteamEngineTargetFramework>
+  </PropertyGroup>
+
+</Project>

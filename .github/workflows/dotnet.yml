@@ -43,7 +43,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       # Single source of truth for "how to build this solution" - the same
       # script contributors run locally on Windows/macOS/Linux. It handles
@@ -81,7 +81,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Build
         shell: pwsh

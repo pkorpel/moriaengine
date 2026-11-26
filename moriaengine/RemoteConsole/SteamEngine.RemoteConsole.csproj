@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>$(SteamEngineTargetFramework)-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <!-- #29: WinForms runs only on Windows, but the project still compiles on Linux/macOS, so the solution builds everywhere. -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>

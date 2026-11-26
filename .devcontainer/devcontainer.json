@@ -12,11 +12,6 @@
 			"installDirectlyFromGitHubRelease": true,
 			"version": "latest"
 		},
-
-		// install dotnet 8 in addition to 10.0
-		"ghcr.io/devcontainers/features/dotnet:2": {
-			"additionalVersions": "8.0"
-		},
 	},
 	
 	"mounts": [

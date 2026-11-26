@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Builds the SteamEngine .NET 8 solution, and optionally runs it.
+  Builds the SteamEngine solution, and optionally runs it.
 
 .DESCRIPTION
   Single entry point for building MoriaEngine/SteamEngine. Works identically
@@ -56,6 +56,12 @@ $CleanProjects = @(
 	'AuxiliaryServer/SteamEngine.AuxiliaryServer.csproj'
 )
 
+# #1551: the target framework (bin/<config>/<tfm>) comes from Directory.Build.props, the one place it is set.
+$TargetFramework = ([xml](Get-Content (Join-Path $PSScriptRoot 'Directory.Build.props'))).Project.PropertyGroup.SteamEngineTargetFramework
+if (-not $TargetFramework) {
+	throw 'Directory.Build.props sets no SteamEngineTargetFramework.'
+}
+
 function Invoke-Dotnet {
 	param([string[]]$DotnetArgs)
 	& dotnet @DotnetArgs
@@ -75,7 +81,7 @@ function Initialize-SteamEngineIni {
 	}
 
 	Write-Host '==> No steamengine.ini yet, running GameCore once to write the default one...'
-	$dll = "GameCore/bin/$Configuration/net8.0/SteamEngine.GameCore.dll"
+	$dll = "GameCore/bin/$Configuration/$TargetFramework/SteamEngine.GameCore.dll"
 	$stdout = New-TemporaryFile
 	$stderr = New-TemporaryFile
 	try {
@@ -120,8 +126,8 @@ if ($Run -eq 'None') {
 	exit 0
 }
 
-$gameCoreDll = "GameCore/bin/$Configuration/net8.0/SteamEngine.GameCore.dll"
-$auxDll = "AuxiliaryServer/bin/$Configuration/net8.0/SteamEngine.AuxiliaryServer.dll"
+$gameCoreDll = "GameCore/bin/$Configuration/$TargetFramework/SteamEngine.GameCore.dll"
+$auxDll = "AuxiliaryServer/bin/$Configuration/$TargetFramework/SteamEngine.AuxiliaryServer.dll"
 $auxProc = $null
 $auxOutSub = $null
 $auxErrSub = $null
