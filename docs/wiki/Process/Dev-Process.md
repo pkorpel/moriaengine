@@ -8,7 +8,8 @@ Last reviewed: 2026-11-18
 - Issue branches: `<n>-<slug>` (e.g. `12-poison-tick-damage`), made from
   `origin/main` in their own worktree `../moria-<n>` by `scripts/worktree-add.sh`
   (sparse: `archive/` is excluded; `uo-files/` stays for the build).
-- PRs are squash-merged; the remote branch is deleted after merge.
+- PRs are merged with a merge commit (#1569), so every branch commit lands on `main` and needs a proper
+  subject; the remote branch is deleted after merge.
 
 ## The merge gate
 
@@ -37,7 +38,7 @@ empty bypass list. It already restricts deletions, blocks force pushes and requi
 approvals. For #1559 the admin edits it:
 
 - Require a pull request: turn on **Require review from Code Owners**, keep required approvals at 0 (so only
-  PRs touching a CODEOWNERS path need an approval), and allow only the **squash** merge method.
+  PRs touching a CODEOWNERS path need an approval), and allow only the **merge** method (#1569).
 - Require status checks to pass: add `build-and-unit-test` (the `.NET Build` workflow's fast-tier job). It
   runs on every PR, docs-only ones too. "Require branches to be up to date" is already on, so a PR behind
   `main` is updated (GitHub's "Update branch" button) before it can merge.
