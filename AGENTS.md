@@ -64,7 +64,7 @@ Full process: `docs/wiki/Process/Dev-Process.md` (branches, hooks, CI, tests, re
    the existing piece is broken, it's fixed first in its own issue, never replaced. A new system, or one
    touching more than one existing system, gets a design note the maintainer OKs first.
 4. **Branch** `<n>-<slug>`, in its own worktree `../moria-<n>`. `main` takes changes only through
-   PRs merged with a merge commit, so every branch commit lands on `main`. Run `pre-commit install` once per clone, and never `--no-verify`. Commit subject:
+   squash-merged PRs, the PR title becoming the commit subject. Run `pre-commit install` once per clone, and never `--no-verify`. Commit subject:
    `area: what changed (#1234)`, imperative, at most 72 characters, never a leading `#`. No `Co-Authored-By`
    or session trailers: the commit-msg hook rejects them.
 5. **Done means, in order:**

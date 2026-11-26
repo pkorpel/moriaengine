@@ -57,11 +57,10 @@ In this order:
    or `Tools/SteamEngine.Generators*` gets the `needs-core-review` label and a review request to janslav
    (`gh pr edit --add-reviewer janslav`), and waits for his approval. A ruleset on `main` and the merge hook
    enforce it. Carry on with other work meanwhile.
-5. **Merged:** CI green, then `gh pr merge --merge` (a merge commit, never squash or rebase). Every branch
-   commit lands on `main` as it is, so each needs the subject `area: what changed (#n)` and a real step of
-   the change, not "fix typo"; never push `fixup!`/`squash!` commits. The one exception is the
-   "Merge branch 'main' into …" commit that updating a branch behind `main` adds. Delete the branch, and
-   remove the worktree when done.
+5. **Merged:** CI green, then `gh pr merge --squash` (never a merge commit or rebase). The PR becomes one
+   commit on `main` whose subject is the PR title with ` (#<PR>)` appended, so the title is
+   `area: what changed (#n)`, short enough to stay near 72 characters with that suffix. Delete the branch,
+   and remove the worktree when done.
 6. **Issue closed with a summary comment**: what shipped, the PR, follow-up issues, and what isn't tried in a
    real client (then also the `needs-in-game-check` label). The PR says `Closes #n`. Close with a separate
    update call where needed: `issue_write create` with `state: closed` leaves an issue open.

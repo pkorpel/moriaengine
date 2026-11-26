@@ -162,15 +162,15 @@ why so much of this very design-decisions log exists: the reasoning was already 
 captured in issue comments and the session log, this page just consolidates it into a
 reference someone can read without archaeology through dozens of closed issues.
 
-## PRs land on `main` with a merge commit (#1569)
+## PRs are squash-merged onto `main` (#1580, reverses #1569)
 
-**Decision**: pull requests are merged with a merge commit (`gh pr merge --merge`), not squashed or
-rebased. This replaced the earlier squash-merge rule on 2026-11-26.
+**Decision**: pull requests are squash-merged (`gh pr merge --squash`): each PR becomes one commit on
+`main`, its subject the PR title (`area: what changed (#n)`) with ` (#<PR>)` appended.
 
-**Why**: the maintainer's choice. A merge commit keeps the branch's own commits and shows where each PR
-joined `main`; from now on `git log --first-parent main` gives one line per PR (older history mixes
-squash and rebase merges). janslav had already merged #1567 and #1568 this way. Because branch commits now reach `main` unchanged, each one carries a proper `area: what changed (#n)`
-subject and stands for a real step of the change.
+**Why**: the maintainer's choice. On 2026-11-26 #1569 switched to merge commits, so that every branch commit
+reached `main`; the same day the maintainer went back to squash (#1580). #1567, #1568 and #1571 (like most PRs
+before November) landed as merge commits and stay that way, so `main` history mixes squash, rebase and
+merge commits.
 
 ## .NET 10, one target-framework property, SDK pinned (#1551)
 

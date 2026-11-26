@@ -44,7 +44,7 @@ issue thread shows where it stands.
    3. tested: a new test red-checked (A/B), the fast tier, the area's protocol classes, with the PR listing
       only what ran;
    4. engine core approved by janslav (see [Dev process](Dev-Process.md#the-merge-gate));
-   5. CI green, merged with a merge commit, branch and worktree removed;
+   5. CI green, squash-merged, branch and worktree removed;
    6. the issue closed with a summary comment (what shipped, the PR, follow-ups, and whether it was tried in
       a real client; if not, `needs-in-game-check`).
 
