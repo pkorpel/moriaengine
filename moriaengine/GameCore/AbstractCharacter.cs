@@ -727,35 +727,17 @@ namespace SteamEngine {
 			if (this.Direction == dir) { //no dir change = step forward
 				Point4D oldPoint = new Point4D(this.point4d);
 
-				Map map = this.GetMap();
-				int newZ, newY, newX;
-
-				bool canMoveEverywhere = (this.IsPlayer && this.Plevel >= Globals.PlevelOfGM);
-				//#778/#779 - can this character take a step at all right now (held, exhausted, overloaded)
-				if (!canMoveEverywhere && !this.CheckCanMove(running)) {
+				//#1558 - the deny chain: the mover's @denyStep, its On_DenyStep (terrain, finds the destination), the regions
+				DenyStepArgs denyArgs = new DenyStepArgs(this, dir, running);
+				if (!this.Trigger_DenyStep(denyArgs).Allow) {
 					return false;
 				}
-				if (!map.CheckMovement(oldPoint, this.MovementSettings, dir, canMoveEverywhere, out newX, out newY, out newZ)) {
-					return false;
-				}
+				Point4D destination = denyArgs.Destination;
 
-				//#767 - another character standing on the destination tile. The actual rules
-				//(Sphere-style shove for players, hard block for NPCs) live in scripts.
-				if (!canMoveEverywhere && !this.CheckCharacterObstacles(map, newX, newY, newZ)) {
-					return false;
-				}
-
-				if (TriggerResult.Cancel == this.Trigger_Step(dir, running)) {
-					return false;
-				}
-
-				//should we really be asking regions, even for npcs? -tar
 				Region oldRegion = this.Region;
-				Region newRegion = map.GetRegionFor(newX, newY);
+				Region newRegion = this.GetMap().GetRegionFor(destination.X, destination.Y);
 				if (oldRegion != newRegion) {
-					if (!Region.TryExitAndEnter(oldRegion, newRegion, this)) {
-						return false;
-					}
+					Region.ExitAndEnter(oldRegion, newRegion, this, false); //#1558 - notifications now, the regions were asked in the deny chain
 				}
 
 				MovementType mt;
@@ -771,11 +753,9 @@ namespace SteamEngine {
 				//move char, and send 0x77 to players nearby
 				CharSyncQueue.AboutToChangePosition(this, mt);
 
-				this.point4d.SetXYZ(newX, newY, newZ);
+				this.point4d.SetXYZ(destination.X, destination.Y, destination.Z);
 				this.ChangedP(oldPoint, mt);
-				if (!canMoveEverywhere) {
-					this.Trigger_StepTaken(running); //#779 - e.g. walking stamina drain; #1414 - @stepTaken
-				}
+				this.Trigger_Step(dir, running, oldPoint); //#1558 - after the move, as Sphere's @Step (was @stepTaken, #1414)
 				if ((oldRegion != newRegion) && !this.IsDeleted) {
 					this.On_RegionChanged(oldRegion, newRegion); //#813
 				}
@@ -819,13 +799,76 @@ namespace SteamEngine {
 		}
 
 
-		private TriggerResult Trigger_Step(Direction dir, bool running) {
-			if (TriggerResult.Cancel == this.TryCancellableTrigger(TriggerKey.step, new ScriptArgs(dir, running))) {
+		/// <summary>#1558 - whether this character's steps skip the terrain check and the regions' denies: a player of
+		/// GM plevel. Core uses it only for those; scripts give GMs their other passes in their own On_DenyStep.</summary>
+		public bool CanMoveEverywhere {
+			get {
+				return this.IsPlayer && (this.Plevel >= Globals.PlevelOfGM);
+			}
+		}
+
+		/// <summary>#1558 - the step's deny chain, without taking the step: the character's @denyStep (trigger groups and
+		/// plugins: holds), its On_DenyStep (the terrain check, which finds the destination; scripts add stamina and
+		/// collision), then @denyExit on each region left and @denyEnter on each region entered (not for CanMoveEverywhere).
+		/// Stops at the first cancel or deny. The destination is in args.Destination when allowed.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public DenyResult Trigger_DenyStep(DenyStepArgs args) {
+			this.ThrowIfDeleted();
+			TriggerResult result = this.TryCancellableTrigger(TriggerKey.denyStep, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenyStep(args);
+				} catch (FatalException) { throw; } catch (Exception e) {
+					Logger.WriteError(e);
+					result = TriggerResult.Cancel;
+				}
+			}
+			if ((result == TriggerResult.Cancel) || !args.Result.Allow || (args.Destination == null)) {
+				if (args.Result.Allow) {
+					args.Result = DenyResultMessages.Deny_NoMessage; //a cancel without a reason, or no destination found
+				}
+				return args.Result;
+			}
+			if (!args.CanMoveEverywhere) {
+				Region oldRegion = this.Region;
+				Region newRegion = this.GetMap().GetRegionFor(args.Destination.X, args.Destination.Y);
+				if ((oldRegion != newRegion) && (Region.Trigger_DenyExitAndEnter(oldRegion, newRegion, args) == TriggerResult.Cancel)
+						&& args.Result.Allow) {
+					args.Result = DenyResultMessages.Deny_NoMessage;
+				}
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the default step check: the terrain (skipped for CanMoveEverywhere), which sets args.Destination.
+		/// Scripts override it to add their own rules around it (stamina, collision).</summary>
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		public virtual TriggerResult On_DenyStep(DenyStepArgs args) {
+			int newX, newY, newZ;
+			if (!this.GetMap().CheckMovement(this, this.MovementSettings, args.Direction, args.CanMoveEverywhere, out newX, out newY, out newZ)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
 				return TriggerResult.Cancel;
 			}
+			args.Destination = new Point4D(newX, newY, newZ, this.M);
+			return TriggerResult.Continue;
+		}
+
+		/// <summary>#1558 - right after a step was taken (not a teleport): @step with (direction, running, the point left), then
+		/// On_Step. As Sphere's @Step it comes after the move, after @newPosition and the destination items' @step. Raised for
+		/// everyone, GMs included (was @stepTaken, #1414, not raised for GMs). Not raised for a character the move itself
+		/// deleted (an NPC killed by a trap it stepped on).</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private void Trigger_Step(Direction dir, bool running, Point4D oldPoint) {
+			if (this.IsDeleted) {
+				return;
+			}
+			this.TryTrigger(TriggerKey.step, new ScriptArgs(dir, running, oldPoint));
+			if (this.IsDeleted) {
+				return;
+			}
 			try {
-				return this.On_Step(dir, running);
-			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); return TriggerResult.Cancel; }
+				this.On_Step(dir, running, oldPoint);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
@@ -833,45 +876,8 @@ namespace SteamEngine {
 		public virtual void On_OpenDoorMacro() {
 		}
 
-		public virtual TriggerResult On_Step(Direction direction, bool running) {
-			return TriggerResult.Continue;
-		}
-
-		/// <summary>Called by WalkRunOrFly once the terrain allows a step onto (x, y, z), before @step.
-		/// Return false to refuse the step because of other characters standing there (#767).
-		/// The default lets everyone walk through everyone.</summary>
-		public virtual bool CheckCharacterObstacles(Map map, int x, int y, int z) {
-			return true;
-		}
-
-		/// <summary>Called by WalkRunOrFly before anything else about a step is checked: false refuses
-		/// the step outright (e.g. held in place, too exhausted or too overloaded to move - #778/#779).
-		/// Not called for GM players.</summary>
-		public virtual bool CheckCanMove(bool running) {
-			return true;
-		}
-
-		/// <summary>#1414 - right after a step was actually taken: @stepTaken (with `running`) as any trigger (the global
-		/// trigger groups, the character's own and its plugins, its def's), then On_StepTaken. Unlike @step it comes after
-		/// the move (and after @newPosition and the destination items' @step), and unlike @newPosition only for a step, never
-		/// a teleport. Not raised for GM players (they move anywhere), nor for a character the move itself deleted (an NPC
-		/// killed by a trap it stepped on).</summary>
-		private void Trigger_StepTaken(bool running) {
-			if (this.IsDeleted) {
-				return;
-			}
-			this.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(running));
-			if (this.IsDeleted) {
-				return;
-			}
-			try {
-				this.On_StepTaken(running);
-			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-		}
-
-		/// <summary>Called by WalkRunOrFly right after a step was actually taken (#779), after @stepTaken. Not called for GM
-		/// players.</summary>
-		public virtual void On_StepTaken(bool running) {
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		public virtual void On_Step(Direction direction, bool running, Point4D oldPoint) {
 		}
 
 		/// <summary>#813 - after a step or a teleport that moved this character into another region
@@ -1546,6 +1552,58 @@ namespace SteamEngine {
 		object IEnumerator.Current {
 			get {
 				return this.current;
+			}
+		}
+	}
+
+	/// <summary>#1558 - @denyStep and the regions' @denyExit/@denyEnter: Argv is (DenyResult, mover, direction, running).
+	/// The mover's On_DenyStep sets Destination (the terrain check); the regions' denies see it.</summary>
+	public class DenyStepArgs : DenyTriggerArgs {
+		private readonly AbstractCharacter mover;
+		private readonly Direction direction;
+		private readonly bool running, canMoveEverywhere;
+		private Point4D destination;
+
+		public DenyStepArgs(AbstractCharacter mover, Direction direction, bool running)
+			: base(DenyResultMessages.Allow, mover, direction, running) {
+			this.mover = mover;
+			this.direction = direction;
+			this.running = running;
+			this.canMoveEverywhere = mover.CanMoveEverywhere;
+		}
+
+		public AbstractCharacter Mover {
+			get {
+				return this.mover;
+			}
+		}
+
+		public Direction Direction {
+			get {
+				return this.direction;
+			}
+		}
+
+		public bool Running {
+			get {
+				return this.running;
+			}
+		}
+
+		/// <summary>The mover's AbstractCharacter.CanMoveEverywhere when the step was tried.</summary>
+		public bool CanMoveEverywhere {
+			get {
+				return this.canMoveEverywhere;
+			}
+		}
+
+		/// <summary>Where the step lands, once the terrain check (AbstractCharacter.On_DenyStep) has found it; null before.</summary>
+		public Point4D Destination {
+			get {
+				return this.destination;
+			}
+			set {
+				this.destination = value;
 			}
 		}
 	}

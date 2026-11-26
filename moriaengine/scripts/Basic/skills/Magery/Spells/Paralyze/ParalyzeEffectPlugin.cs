@@ -30,8 +30,8 @@ namespace SteamEngine.CompiledScripts {
 			self.ClilocSysMessage(500111); //You are frozen and cannot move.
 		}
 
-		/// <summary>#1386 - at @denyMove, not @step: #767's collision runs before @step and would shove first.</summary>
-		public TriggerResult On_DenyMove(bool running) {
+		/// <summary>#1386 - a hold, at @denyStep (#1558; was @denyMove): before the step's collision, which would shove first.</summary>
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			Character self = (Character) this.Cont;
 			self.ClilocSysMessage(500111); //You are frozen and cannot move.
 			return TriggerResult.Cancel;

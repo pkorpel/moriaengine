@@ -22,8 +22,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1461 - Erebor's i_hypno_timer with e_hypnotizing: the concentration before the swap. A step (@step, here
-	/// @stepTaken) or a blow (@aftergetswing, here @getSwingLanding) breaks it.</summary>
+	/// <summary>#1461 - Erebor's i_hypno_timer with e_hypnotizing: the concentration before the swap. A step (@step, after
+	/// the move) or a blow (@aftergetswing, here @getSwingLanding) breaks it.</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
 	public partial class ConcentrationPlugin : TimerPlugin {
@@ -46,8 +46,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public void On_StepTaken(bool running) {
+		/// <summary>#1558 - @step after the move (was @stepTaken); not for a GM (CanMoveEverywhere), as @stepTaken wasn't raised for one.</summary>
+		public void On_Step(Direction direction, bool running) {
 			if (this.Cont is Character self) {
+				if (self.CanMoveEverywhere) {
+					return;
+				}
 				self.RedMessage("Prerusil jsi sve soustredeni, hypnoza se nezdarila");
 			}
 			this.Delete();

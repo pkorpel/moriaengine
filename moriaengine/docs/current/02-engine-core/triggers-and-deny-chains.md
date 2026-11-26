@@ -15,9 +15,9 @@ The steps share one `args` object carrying a `DenyResult` (`args.Result`, allowe
 with). A step denies by setting `args.Result`, and usually cancels as well; the caller reads
 `args.Result` at the end.
 
-A character's `@denyMove` (#1386, `Character.CheckCanMove`) is a plain cancellable trigger, not
-such a chain: it has no `DenyResult`, whatever returns Cancel holds the character still and
-sends its own message, if any (see [movement-and-collision.md](../04-gameplay-systems/movement-and-collision.md)).
+A character's step is such a chain since #1558: `@denyStep` (`DenyStepArgs`) on the mover, its `On_DenyStep`, then
+`@denyExit`/`@denyEnter` on the regions (see [movement-and-collision.md](../04-gameplay-systems/movement-and-collision.md)).
+A hold returns Cancel and sends its own message, if any; a step's `DenyResult` isn't shown.
 
 `@denyDeath` (#1463, args: the killer) is another: it is raised at the very top of `Character.CauseDeath`, only for a
 living character, and the first handler to return Cancel keeps the character alive. Nothing in `CauseDeath` happens

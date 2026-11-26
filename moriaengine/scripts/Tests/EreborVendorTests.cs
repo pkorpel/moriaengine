@@ -15,12 +15,12 @@ namespace SteamEngine.CompiledScripts {
 				old.Delete();
 			}
 			Item deed = (Item) ((ItemDef) ThingDef.GetByDefname("i_deed_erebor_vendor")).Create(player.Backpack);
-			deed.Trigger_DClickFromAfar(player); //the client hasn't opened its pack, so a reach test would refuse
+			deed.Trigger_DClick(player, true); //the client hasn't opened its pack, so a reach test would refuse
 			Report("aDeedOnlyInOwnStall", !deed.IsDeleted);
 			Stall stall = (Stall) House.Create((FlaggedRegion) StaticRegion.GetByDefname("a_stanek_13"));
 			stall.Claim(player);
 			player.P(stall);
-			deed.Trigger_DClickFromAfar(player);
+			deed.Trigger_DClick(player, true);
 			EreborVendor vendor = stall.Vendor;
 			Report("aDeedPlacesAVendor", (vendor != null) && deed.IsDeleted && vendor.IsOwner(player) && vendor.Flag_Invulnerable);
 			if (vendor == null) {

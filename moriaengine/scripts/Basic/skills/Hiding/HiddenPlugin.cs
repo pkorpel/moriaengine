@@ -4,7 +4,7 @@ using SteamEngine.Generators.Abstractions;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1478 - present while its character is hidden or invisible by magic, added and removed by those flags' setters
-	/// (Character.Trigger_VisibilityChange), so every way of hiding has it. Its @stepTaken is Sphere's CheckRevealOnMove. The
+	/// (Character.Trigger_VisibilityChange), so every way of hiding has it. Its @step (after the move) is Sphere's CheckRevealOnMove. The
 	/// other reveals (a skill's start, a blow, a class command) stay calls: Sphere reveals per skill, and a blow's reveal has
 	/// its place in the swing (a backstab needs the thief still hidden when its bonus is worked out).</summary>
 	[Dialogs.ViewableClass]
@@ -27,9 +27,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Sphere's CheckRevealOnMove.</summary>
-		public void On_StepTaken(bool running) {
-			if (this.Cont is Character self) {
+		/// <summary>Sphere's CheckRevealOnMove. #1558 - @step after the move (was @stepTaken); not for a GM (CanMoveEverywhere),
+		/// as @stepTaken wasn't raised for one.</summary>
+		public void On_Step(Direction direction, bool running) {
+			if ((this.Cont is Character self) && !self.CanMoveEverywhere) {
 				HidingSkillDef.OnStep(self, running);
 			}
 		}

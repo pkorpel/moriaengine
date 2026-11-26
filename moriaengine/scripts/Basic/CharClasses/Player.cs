@@ -430,10 +430,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion Race
 
-		/// <summary>Every step is monitored by the ScriptSector system</summary>
-		public override TriggerResult On_Step(Direction direction, bool running) {
-			ScriptSector.AddTrackingStep(this, direction);
-			return base.On_Step(direction, running);
+		/// <summary>Every step is monitored by the ScriptSector system (#1558 - after the step now: the footprint is on the
+		/// tile left)</summary>
+		public override void On_Step(Direction direction, bool running, Point4D oldPoint) {
+			ScriptSector.AddTrackingStep(this, oldPoint, direction);
+			base.On_Step(direction, running, oldPoint);
 		}
 
 		/// <summary>Classic UO-style logout delay (#261) - the character stays fully standing/

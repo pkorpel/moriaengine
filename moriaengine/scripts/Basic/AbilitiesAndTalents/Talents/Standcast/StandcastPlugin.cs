@@ -130,8 +130,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Erebor's flag_immobile: refused before the step is worked out (Character.CheckCanMove).</summary>
-		public TriggerResult On_DenyMove(bool running) {
+		/// <summary>Erebor's flag_immobile: refused before the step is worked out (#1558 @denyStep).</summary>
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			return TriggerResult.Cancel;
 		}
 

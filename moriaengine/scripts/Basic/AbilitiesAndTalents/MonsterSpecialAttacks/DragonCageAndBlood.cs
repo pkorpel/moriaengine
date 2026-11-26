@@ -61,7 +61,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Character.CheckCharacterObstacles: a living player stepping into a cage's fire.</summary>
+		/// <summary>Character.On_DenyStep (#1558): a living player stepping into a cage's fire.</summary>
 		public static bool Refuses(Character ch, int x, int y, byte m) {
 			if ((blockers.Count == 0) || !MonsterSpecialAttacks.IsDragonFireVictim(ch)) {
 				return false;
@@ -156,7 +156,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Character.On_StepTaken: onto a puddle.</summary>
+		/// <summary>Character.On_Step: onto a puddle.</summary>
 		internal static void CheckStep(Character stepping) {
 			if ((puddles.Count == 0) || stepping.IsGM || !stepping.IsAliveAndValid) {
 				return;

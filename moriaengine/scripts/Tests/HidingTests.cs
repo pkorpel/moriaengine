@@ -40,14 +40,14 @@ namespace SteamEngine.CompiledScripts {
 			for (int i = 0; i < 100; i++) {
 				self.Flag_Hidden = true;
 				pluginFollows &= HiddenPlugin.Of(self) != null; //#1478 - on while hidden
-				self.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false)); //its @stepTaken, as a real step raises it
+				self.TryTrigger(TriggerKey.step, new ScriptArgs(self.Direction, false, new Point4D(self.P()))); //its @step (#1558; was @stepTaken), as a real step raises it
 				if (self.Flag_Hidden) {
 					stayed++;
 				} else {
 					pluginFollows &= HiddenPlugin.Of(self) == null; //off once seen
 				}
 				self.Flag_Hidden = true;
-				self.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(true));
+				self.TryTrigger(TriggerKey.step, new ScriptArgs(self.Direction, true, new Point4D(self.P())));
 				if (self.Flag_Hidden) {
 					ran++;
 				}
@@ -55,7 +55,7 @@ namespace SteamEngine.CompiledScripts {
 			self.Flag_Hidden = false;
 			self.Flag_InvisByMagic = true; //the Invisibility spell's flag too, and a step ends it
 			bool invisible = HiddenPlugin.Of(self) != null;
-			self.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false));
+			self.TryTrigger(TriggerKey.step, new ScriptArgs(self.Direction, false, new Point4D(self.P())));
 			bool invisibilityEnds = !self.Flag_InvisByMagic && (HiddenPlugin.Of(self) == null);
 			Console.WriteLine("HIDE_STEPS: stayed=" + stayed + " ran=" + ran + " pluginFollows=" + (pluginFollows && invisible && invisibilityEnds) + " |");
 		}

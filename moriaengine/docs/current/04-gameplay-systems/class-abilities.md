@@ -92,7 +92,7 @@ How these are held (#1450):
   - A shaman with either can't curse ("Prokleti ti brani proklinat nekoho jinyho."), and someone with either throws a
     curse back.
   - A curse's events are the plugin's own triggers: no casting and no Recall at `@denySpellCast`, after the casting
-    rules, as Erebor's events ran after e_allplayers. No riding is at `@stepTaken`.
+    rules, as Erebor's events ran after e_allplayers. No riding is at `@step` (after the move, #1558).
   - The travel stone and the ferry still ask the curse directly, as nothing there raises a trigger.
 - **Not ported:** the extra `i_warcry_effect` Erebor's woodooeffect gave a curse. Its time reads `var(warcry_src)`, a
   global left by whoever last used a warcry anywhere. Also e_noport's telepad refusal (`t_telepad2` does nothing here).
@@ -140,7 +140,7 @@ Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
 ## Mystic hypnosis and the world
 
 Before the swap, the mystic concentrates for 1 to 14 s: a `ConcentrationPlugin` (Erebor's `i_hypno_timer` with
-`e_hypnotizing`, #1461). A step breaks it at its own `@stepTaken`, a blow at its `@getSwingLanding` (Erebor's `@step`
+`e_hypnotizing`, #1461). A step breaks it at its own `@step` (after the move), a blow at its `@getSwingLanding` (Erebor's `@step`
 and `@aftergetswing`). The retry delay after a failed or impossible try (2 s, or 0.5 s) is `MysticProfessionPlugin`'s,
 so a GM who isn't a mystic has none.
 

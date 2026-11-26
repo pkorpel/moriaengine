@@ -38,7 +38,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Same body height Map.CanFit assumes for characters.</summary>
 		private const int CharHeight = 16;
 
-		/// <summary>Entry point from Character.CheckCharacterObstacles. Returns false to refuse
+		/// <summary>Entry point from Character.On_DenyStep (#1558). Returns false to refuse
 		/// the step. Has side effects on success (stamina, reveal, message, trigger).</summary>
 		public static bool CheckStep(Character mover, Map map, int x, int y, int z) {
 			if (mover.Flag_Dead || mover.Flag_Insubst) {

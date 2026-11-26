@@ -82,7 +82,7 @@ namespace SteamEngine.CompiledScripts {
 			hazardTiles[HazardKey(x, y, m)] = tile;
 		}
 
-		/// <summary>Character.On_StepTaken - a player or pet walking onto a live hazard tile takes
+		/// <summary>Character.On_Step - a player or pet walking onto a live hazard tile takes
 		/// its damage and the tile goes out.</summary>
 		internal static void CheckHazardTileStep(Character stepping) {
 			if (hazardTiles.Count == 0) {

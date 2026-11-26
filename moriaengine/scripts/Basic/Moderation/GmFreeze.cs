@@ -19,7 +19,7 @@ using SteamEngine.Common;
 using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
-	/// <summary>#1107, #1409 - a GM's .freeze (and .summoncage): the frozen character refuses every step in its @denyMove,
+	/// <summary>#1107, #1409 - a GM's .freeze (and .summoncage): the frozen character refuses every step in its @denyStep (#1558),
 	/// with the frozen line.</summary>
 	[PluginTemplate]
 	public partial class GmFreezePlugin : Plugin {
@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			Character self = (Character) this.Cont;
 			self.SysMessage(Loc<GmToolsLoc>.Get(self.Language).Frozen);
 			return TriggerResult.Cancel;

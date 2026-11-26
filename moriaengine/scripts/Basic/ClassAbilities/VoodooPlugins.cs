@@ -10,7 +10,7 @@ namespace SteamEngine.CompiledScripts {
 	/// new memory for each (newitemsafe), so they stack: a blessing beside a curse, a curse thrown back beside one already
 	/// there. Each has a key of its own. A curse comes back every 30 s, "Jsi pod prokletim voodoo.", until its owner is
 	/// blessed (the Bless spell) or dead; a blessing goes at its first tick. The curse's events are its own triggers:
-	/// e_warcry_effect and e_noport at @denySpellCast, e_nohorse at @stepTaken. .boosts shows each, as Erebor's boosty_menu.</summary>
+	/// e_warcry_effect and e_noport at @denySpellCast, e_nohorse at @step. .boosts shows each, as Erebor's boosty_menu.</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
 	public partial class VoodooEffectPlugin : TimerPlugin, IEffectDescriber {
@@ -111,9 +111,10 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>e_nohorse's @step: a rider (no GM) gets off.</summary>
-		public void On_StepTaken(bool running) {
-			if ((this.kind == ShamanVoodoo.NoHorse) && (this.Cont is Character ch) && ch.Flag_Riding && !ch.IsGM) {
+		/// <summary>e_nohorse's @step: a rider (no GM) gets off. #1558 - @step after the move (was @stepTaken), now raised for
+		/// GMs too: CanMoveEverywhere keeps them out, as @stepTaken did.</summary>
+		public void On_Step(Direction direction, bool running) {
+			if ((this.kind == ShamanVoodoo.NoHorse) && (this.Cont is Character ch) && !ch.CanMoveEverywhere && ch.Flag_Riding && !ch.IsGM) {
 				ch.Dismount();
 				ch.SysMessage(Loc<RegionEventsLoc>.Get(ch.Language).mountRefuses);
 			}

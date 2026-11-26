@@ -2282,17 +2282,33 @@ namespace SteamEngine.CompiledScripts {
 
 		}
 
-		public override bool CheckCharacterObstacles(Map map, int x, int y, int z) {
-			if (HouseDoorstep.Refuses(this, map, x, y, z)) { //a house's doorstep tile, i_duch_dlazba
+		/// <summary>#1558 - the step's default checks, after the @denyStep handlers (the holds: freeze, paralysis, vine...):
+		/// #779 Sphere's fatigue/overload refusal, then the terrain (base, which finds the destination), then what stands
+		/// on the destination - a house's doorstep, a dragon's fire cage, #767 another character (Sphere's shove for players,
+		/// a hard block for NPCs). A GM (CanMoveEverywhere) gets the terrain's z and nothing else, as before.</summary>
+		public override TriggerResult On_DenyStep(DenyStepArgs args) {
+			if (!args.CanMoveEverywhere && !MovementStamina.CheckCanMove(this)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			TriggerResult result = base.On_DenyStep(args);
+			if ((result == TriggerResult.Cancel) || !args.Result.Allow || args.CanMoveEverywhere) {
+				return result;
+			}
+			Map map = this.GetMap();
+			Point4D to = args.Destination;
+			if (HouseDoorstep.Refuses(this, map, to.X, to.Y, to.Z)) { //a house's doorstep tile, i_duch_dlazba
 				if (this is Player) {
 					this.SysMessage(HouseDoorstep.Refused);
 				}
-				return false;
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
 			}
-			if (DragonCage.Refuses(this, x, y, this.M)) { //#1022 a dragon's fire cage
-				return false;
+			if (DragonCage.Refuses(this, to.X, to.Y, this.M) || !CharacterCollision.CheckStep(this, map, to.X, to.Y, to.Z)) { //#1022 a dragon's fire cage
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
 			}
-			return CharacterCollision.CheckStep(this, map, x, y, z);
+			return TriggerResult.Continue;
 		}
 
 		//#918 looting a corpse can be a crime
@@ -2315,20 +2331,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
-		private static readonly TriggerKey tkDenyMove = TriggerKey.Acquire("denyMove");
-
-		/// <summary>#1386 - @denyMove: whatever holds a character still (a plugin returning Cancel: a cast's freeze,
-		/// paralysis) refuses here, before any step is worked out - as Sphere's immobile flags, so a refused step doesn't
-		/// shove anyone first (#767's collision comes after this and before @step). #1409 - the GM's freeze, flag_immobile,
-		/// a looter's hold and a strangler vine are plugins answering it too; only the stamina rule, for everyone, stays
-		/// here.</summary>
-		public override bool CheckCanMove(bool running) {
-			return (this.TryCancellableTrigger(tkDenyMove, new ScriptArgs(running)) != TriggerResult.Cancel) && MovementStamina.CheckCanMove(this);
+		/// <summary>#1558 - whether something holds this character in place: its @denyStep handlers (the plugins and trigger
+		/// groups - a GM's freeze, paralysis, a vine, a looter's hold...) refuse a step, asked without taking one. The
+		/// step's own checks (stamina, terrain, collision, regions) aren't asked.</summary>
+		public bool IsHeld(bool running) {
+			DenyStepArgs args = new DenyStepArgs(this, this.Direction, running);
+			return (this.TryCancellableTrigger(TriggerKey.denyStep, args) == TriggerResult.Cancel) || !args.Result.Allow;
 		}
 
-		//#779 walking stamina drain
-		public override void On_StepTaken(bool running) {
+		/// <summary>#1558 - after a step was taken (was On_StepTaken, #1414). #779 walking stamina drain and the rest; not
+		/// for a GM (CanMoveEverywhere), as before.</summary>
+		public override void On_Step(Direction direction, bool running, Point4D oldPoint) {
+			base.On_Step(direction, running, oldPoint);
+			if (this.CanMoveEverywhere) {
+				return;
+			}
 			if (this.GetTag(EreborVendor.SessionTK) != null) {
 				EreborVendors.EndSession(this); //#1017 - e_vendor_check: a step ends dealing with a vendor
 			}
@@ -2546,6 +2563,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override TriggerResult On_DenyItemDClick(DenyClickArgs args) {
+			if (args.SkipReachChecks) {
+				return TriggerResult.Continue; //#1558 - Telekinesis: every other deny still runs
+			}
 			DenyResult dr = this.CanReach(args.Target);
 			args.Result = dr;
 			return dr.Allow ? TriggerResult.Continue : TriggerResult.Cancel;

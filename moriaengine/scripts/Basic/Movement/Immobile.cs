@@ -18,7 +18,7 @@
 using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
-	/// <summary>#1409 - Sphere's flag_immobile, as a plugin refusing every step in @denyMove (no line): a mystic's catch
+	/// <summary>#1409 - Sphere's flag_immobile, as a plugin refusing every step in @denyStep (#1558, no line): a mystic's catch
 	/// and catch field, a hypnotized body and its alter ego, Erebor's player vendors. One flag, as on Erebor: whoever
 	/// clears it clears it. A blow is still possible.</summary>
 	[PluginTemplate]
@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			return TriggerResult.Cancel;
 		}
 	}

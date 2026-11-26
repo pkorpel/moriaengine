@@ -29,7 +29,7 @@ namespace SteamEngine.CompiledScripts {
 	/// past the vine (#767's @personalSpace) gets entangled: neither of them can move and the vine
 	/// attacks. The grip loosens once the vine has taken HitsToBreak landed hits, when it dies, or
 	/// when the two no longer share a tile. Erebor checked the last two with a 2s timer item on the
-	/// victim; here they're checked whenever the victim tries to step (CheckCanMove), which is the
+	/// victim; here they're checked whenever the victim tries to step (@denyStep, #1558), which is the
 	/// only time the hold matters. One victim at a time; invulnerable characters aren't grabbed.
 	/// </summary>
 	[ViewableClass]
@@ -103,7 +103,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public static readonly PluginKey key = PluginKey.Acquire("_entangled_");
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			Character self = (Character) this.Cont;
 			if ((this.vine != null) && (this.vine.GetPlugin(VineHoldPlugin.key) is VineHoldPlugin hold) && (hold.Victim == self) && hold.IsIntact()) {
 				self.SysMessage("You are entangled and cannot move!");
@@ -175,7 +175,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			if (this.IsIntact()) {
 				return TriggerResult.Cancel; //the vine holds on, it doesn't walk off
 			}

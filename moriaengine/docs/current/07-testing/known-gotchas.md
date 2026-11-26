@@ -243,8 +243,8 @@ because the feature under test correctly produced no change). See
   `MovementSpeedTests.TestTeleportToOpenGround(self)`. That ground is only about 7-9 tiles clear, so keep
   distances around 6 tiles and check line of sight.
 - The server only lets a client reach what it can see. A drag or a uid target inside a pack, chest or corpse the
-  client hasn't opened does nothing, so open it first, or use `Thing.Trigger_DClickFromAfar` server-side.
-- `P(...)` and `Go(...)` set the position directly: no `@step`/`@stepTaken` on the character, and no `Flag_Moving`
+  client hasn't opened does nothing, so open it first, or use `Thing.Trigger_DClick(clicker, true)` (skips only the reach test) server-side.
+- `P(...)` and `Go(...)` set the position directly: no `@step` on the character, and no `Flag_Moving`
   (only `AbstractCharacter.WalkRunOrFly` sets it). Items under the new spot still get `@step`, with
   `MovementType.Teleporting` (`AbstractCharacter.Trigger_NewPosition`), and telepads ignore teleport moves
   (`type_animations.cs`), while other step items don't. A test of walking takes real steps. A step in a new

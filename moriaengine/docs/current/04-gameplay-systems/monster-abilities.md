@@ -35,7 +35,7 @@ prefixed (`stunChance`, `npcCurseManaChance`...).
 | `NPCAiTimer.Fight` (once per think-tick while fighting) | roundattack/pull, detect, paralyzing scream, the three curses, summoner, infinite mana, leaper, warcry |
 | `NPCAiTimer.OnTimeout` (every tick, any state, `MonsterSpecialAttacks.OnAiTick`) | dragon regeneration, backstab hiding, mass leap hops, dispel bomb fuses |
 | `Character.CauseDeath` (position still valid) | self-res, explode |
-| `Character.On_StepTaken` | hazard tiles, inexhaustible |
+| `Character.On_Step` (after the move, #1558) | hazard tiles, inexhaustible |
 | `Corpse.On_Step` / `NPC.On_PersonalSpace` | looter / strangler vine |
 | `@getHit` on the vine (#1411, `VineHoldPlugin`) | strangler-vine hit count |
 

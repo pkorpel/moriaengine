@@ -78,13 +78,13 @@ reagents, the casting rules and the spell's own `@start`; custom spell scrolls r
 casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
 spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `MonsterSpellPowerArgs`
 whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. A character's
-`@denyMove` (`Character.CheckCanMove`, #1386) asks whether it may move at all, before the step
+`@denyStep` (#1558; was `@denyMove`, #1386) asks whether it may move at all, before the step
 is worked out: a plugin returning Cancel holds it still (`CastFreezePlugin`, the paralysis
 plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `EntangledPlugin`
-and `VineHoldPlugin`, which were tags read by a hard-coded chain). Refusing in `@step` instead comes too late: #767's collision with other characters
-(a shove, its stamina) runs before `@step`. After the step, `@stepTaken` (#1414, `AbstractCharacter.Trigger_StepTaken`,
-with `running`) tells it a step was really taken. It comes before `On_StepTaken`, only for a step (`@newPosition`
-fires for teleports too and has no `running`), and never for a GM. A voodoo curse throws its rider there (#1450), and a
+and `VineHoldPlugin`, which were tags read by a hard-coded chain). It comes before #767's collision with other characters
+(a shove, its stamina). After the step, `@step` (#1558, `AbstractCharacter.Trigger_Step`, with direction, running and the
+point left; was `@stepTaken`, #1414) tells it a step was really taken. It comes before `On_Step`, only for a step
+(`@newPosition` fires for teleports too and has no `running`); it is raised for GMs too, and the handlers below skip one. A voodoo curse throws its rider there (#1450), and a
 mystic's concentration on a hypnosis breaks there (#1461). A hidden character's step
 reveals it there (#1478, `HiddenPlugin`).
 
@@ -275,7 +275,7 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 
 - **Standcast** (#1386): `StandcastPlugin` answers the caster's `@spellCast`,
   `@monsterSpellPower` and `@activateAbility` instead of being looked up by the spell formula
-  and switched off by Magery; its freeze is `CastFreezePlugin`, refusing `@denyMove`.
+  and switched off by Magery; its freeze is `CastFreezePlugin`, refusing `@denyStep`.
 - **Poison** (#1422): a running poison is `DamagingPoisonEffectPlugin` (`p_poison`, the original code's dead plugin
   rebuilt on `EffectDurationPlugin`), one per kind under its kind's key, instead of `Poison`'s per-kind timers, its own
   `.boosts` source and a green-bar flag set by hand. `Poison` keeps the rules and its API (Apply, IsPoisoned, RemoveAll,
@@ -298,7 +298,7 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   custom scrolls' casting rule) still call `PlayerHunger`, which reads the plugin. A cast the
   casting rules refuse still hurts (#1401): Erebor's hungryhurts was its `@spellcast`'s first line.
 - **Hiding's step reveal** (#1478): `HiddenPlugin` (`p_hidden`) is on a character while it is hidden or
-  invisible by magic; `Character.Trigger_VisibilityChange` adds and removes it. Its `@stepTaken` runs
+  invisible by magic; `Character.Trigger_VisibilityChange` adds and removes it. Its `@step` (after the move, #1558) runs
   `HidingSkillDef.OnStep` (Stealth's roll, the reveal), which `Character.On_StepTaken` used to call for every step of
   every character.
 - **The labour camp's convict** (#1480): `ConvictPlugin` (`p_convict`) holds what six character tags held (Erebor's

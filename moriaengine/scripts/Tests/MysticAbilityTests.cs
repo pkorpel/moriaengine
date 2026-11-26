@@ -239,7 +239,7 @@ namespace SteamEngine.CompiledScripts {
 			MysticHypnosis.Targeted(player, body);
 			ConcentrationPlugin concentration = ConcentrationPlugin.Of(player); //#1461 - i_hypno_timer
 			Report("concentrationStarts", (concentration != null) && (concentration.monster == body) && (concentration.Timer > 0)); //1 to 14 s, read a moment after it's set
-			player.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false)); //@stepTaken, as a real step raises it
+			player.TryTrigger(TriggerKey.step, new ScriptArgs(player.Direction, false, new Point4D(player.P()))); //@step (#1558; was @stepTaken), as a real step raises it
 			Report("aStepBreaksIt", ConcentrationPlugin.Of(player) == null);
 			MysticHypnosis.Targeted(player, body);
 			ConcentrationPlugin second = ConcentrationPlugin.Of(player);

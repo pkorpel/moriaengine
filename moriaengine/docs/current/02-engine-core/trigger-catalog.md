@@ -93,13 +93,20 @@ This is the implementation chain used when dropping one item onto another item.
 
 \* Step 0 is conditional (only when slot replacement is required).
 
-## 1.7 Chain: Region transition (character)
+## 1.7 Chain: Step (character), with the region transition
+
+Since #1558 (until then: `CheckCanMove` with `@denyMove`, `CheckCharacterObstacles`, a cancellable `@step` before the
+move, cancellable region `@exit`/`@enter`, and `@stepTaken` after the move, not for GMs).
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1 | `@exit` (old branch, child -> parent) | region hierarchy | deny/implementation | cancellable | Old regions are asked to allow leaving | Keep player inside event area until finished |
-| 2 | `@enter` (new branch, parent -> child) | region hierarchy | deny/implementation | cancellable | New regions are asked to allow entry | Entry checks by zone hierarchy |
-| 3 | `@exit` / `@enter` forced notifications | region hierarchy | notification | regular | Committed transition notifications | Arrival/departure announcements |
+| 1 | `@denyStep` (`DenyStepArgs`) | moving character | deny | cancellable | Holds refuse the step before anything is worked out | Paralysis, freeze, a vine |
+| 2 | `On_DenyStep` | moving character | deny | (method) | Core: terrain, finds `args.Destination`; scripts: stamina, doorstep, collision | Override for movement rules |
+| 3 | `@denyExit` (old branch, child -> parent) | region hierarchy | deny | cancellable | Old regions may refuse leaving (not for GM-plevel players) | Keep player inside event area until finished |
+| 4 | `@denyEnter` (new branch, parent -> child) | region hierarchy | deny | cancellable | New regions may refuse entry (not for GM-plevel players) | Entry checks by zone hierarchy |
+| 5 | `@exit` / `@enter` (`argv[1]`: 1 teleport, 0 step) | region hierarchy | notification | regular | Committed transition, also for teleports | Arrival/departure announcements |
+| 6 | `@newPosition`, then the items' `@itemStep`/`@step` | character, items underfoot | notification | regular | The character is on the new tile | Traps, teleport pads |
+| 7 | `@step` (direction, running, point left) | character | notification | regular | A step was taken (not a teleport); also for GMs | Step-based effects, stamina drain |
 
 ## 1.8 Chain: Item stack merge
 
@@ -119,7 +126,7 @@ This is the implementation chain used when dropping one item onto another item.
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1 | `@denyItemDClick` (character-side) | dclicking character | deny | cancellable | Character-side gate before target dclick logic | Block use while frozen / restricted |
+| 1 | `@denyItemDClick` / `@denyCharDClick` (character-side, by target kind; #1558 - a character target raised `@denyItemDClick` until then) | dclicking character | deny | cancellable | Character-side gate before target dclick logic; the reach test is `Character.On_DenyItemDClick`, skipped for `DenyClickArgs.SkipReachChecks` (Telekinesis) | Block use while frozen / restricted |
 | 2 | `@denyDClick` | clicked thing | deny | cancellable | Target object gate for dclick | Item/target denies activation |
 | 3 | `@itemDClick` or `@charDClick` | dclicking character | implementation | regular | Character-side dclick handling by target kind | Route use action by target type |
 | 4 | `@dClick` | clicked thing | implementation | regular | Target object executes/consumes use behavior | Open/equip/activate object behavior |
@@ -171,7 +178,7 @@ This is the implementation chain used when dropping one item onto another item.
 |---|---|---|---|---|---|---|
 | - | `@login` | character | notification | regular | Character login event | Initialize per-character systems |
 | - | `@logout` | character | notification | regular | Character logout event | Persist temporary state |
-| - | `@step` | character | notification | regular | Character stepped | Step-based effects |
+| - | `@step` | character | notification | regular | Character stepped (chain 1.7) | Step-based effects |
 | - | `@newPosition` | character | notification | regular | Position changed | Re-evaluate positional mechanics |
 | - | `@say` | character | notification | regular | Character says text | Speech command parsing |
 | - | `@hear` | character | notification | regular | Character hears text | NPC/reactive conversation logic |

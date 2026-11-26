@@ -143,45 +143,88 @@ namespace SteamEngine.Regions {
 			return FindCommonParent(a.parent, b);
 		}
 
-		public static bool TryExitAndEnter(Region oldRegion, Region newRegion, AbstractCharacter ch) {
+		/// <summary>#1558 - a step's deny chain on the regions: @denyExit on each region left (the innermost first, up to the
+		/// shared parent), then @denyEnter on each region entered (the outermost first). Stops at the first cancel or deny.</summary>
+		public static TriggerResult Trigger_DenyExitAndEnter(Region oldRegion, Region newRegion, DenyStepArgs args) {
 			Region sharedParent = FindCommonParent(oldRegion, newRegion);
 			while (oldRegion != sharedParent) {
-				if (!oldRegion.TryExit(ch)) {//cancelled
-					return false;
+				if (oldRegion.Trigger_DenyExit(args) == TriggerResult.Cancel) {
+					return TriggerResult.Cancel;
 				}
 				oldRegion = oldRegion.parent;
 			}
 			if (sharedParent != newRegion) {//otherwise we are not entering anything
-				return TryEnterHierarchy(sharedParent, newRegion, ch);
+				return DenyEnterHierarchy(sharedParent, newRegion, args);
 			}
-			return true;
+			return TriggerResult.Continue;
 		}
 
-		private static bool TryEnterHierarchy(Region parent, Region child, AbstractCharacter ch) {//enters the parent first, and then all the children till the given child
+		private static TriggerResult DenyEnterHierarchy(Region parent, Region child, DenyStepArgs args) {//the parent first, and then all the children till the given child
 			if (child.parent != parent) {
-				if (!TryEnterHierarchy(parent, child.parent, ch)) {
-					return false;
+				if (DenyEnterHierarchy(parent, child.parent, args) == TriggerResult.Cancel) {
+					return TriggerResult.Cancel;
 				}
 			}
-			return child.TryEnter(ch);
+			return child.Trigger_DenyEnter(args);
 		}
 
-		public static void ExitAndEnter(Region oldRegion, Region newRegion, AbstractCharacter ch) {//exit and enter all the regions in hierarchy
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private TriggerResult Trigger_DenyExit(DenyStepArgs args) {
+			this.ThrowIfDeleted();
+			TriggerResult result = this.TryCancellableTrigger(TriggerKey.denyExit, args);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_DenyExit(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			return ((result == TriggerResult.Cancel) || !args.Result.Allow) ? TriggerResult.Cancel : TriggerResult.Continue;
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private TriggerResult Trigger_DenyEnter(DenyStepArgs args) {
+			this.ThrowIfDeleted();
+			TriggerResult result = this.TryCancellableTrigger(TriggerKey.denyEnter, args);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_DenyEnter(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			return ((result == TriggerResult.Cancel) || !args.Result.Allow) ? TriggerResult.Cancel : TriggerResult.Continue;
+		}
+
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		public virtual TriggerResult On_DenyExit(DenyStepArgs args) {
+			return TriggerResult.Continue;
+		}
+
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		public virtual TriggerResult On_DenyEnter(DenyStepArgs args) {
+			return TriggerResult.Continue;
+		}
+
+		/// <summary>Exits and enters all the regions in the hierarchy: @exit/@enter, then On_Exit/On_Enter, as notifications
+		/// (#1558 - a step's regions were asked in its deny chain, @denyExit/@denyEnter).</summary>
+		public static void ExitAndEnter(Region oldRegion, Region newRegion, AbstractCharacter ch) {
+			ExitAndEnter(oldRegion, newRegion, ch, true);
+		}
+
+		/// <summary>teleported: true for a teleport, false for a step (Argv[1] of @exit/@enter is 1 or 0).</summary>
+		public static void ExitAndEnter(Region oldRegion, Region newRegion, AbstractCharacter ch, bool teleported) {
 			Region sharedParent = FindCommonParent(oldRegion, newRegion);
 			while (oldRegion != sharedParent) {
-				oldRegion.Exit(ch);
+				oldRegion.Exit(ch, teleported);
 				oldRegion = oldRegion.parent;
 			}
 			if (sharedParent != newRegion) {//otherwise we are not entering anything
-				EnterHierarchy(sharedParent, newRegion, ch);
+				EnterHierarchy(sharedParent, newRegion, ch, teleported);
 			}
 		}
 
-		private static void EnterHierarchy(Region parent, Region child, AbstractCharacter ch) {//enters the parent first, and then all the children till the given child
+		private static void EnterHierarchy(Region parent, Region child, AbstractCharacter ch, bool teleported) {//enters the parent first, and then all the children till the given child
 			if (child.parent != parent) {
-				EnterHierarchy(parent, child.parent, ch);
+				EnterHierarchy(parent, child.parent, ch, teleported);
 			}
-			child.Enter(ch);
+			child.Enter(ch, teleported);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -329,50 +372,36 @@ namespace SteamEngine.Regions {
 			}
 		}
 
-		public bool TryEnter(AbstractCharacter ch) {
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private void Enter(AbstractCharacter ch, bool teleported) {
 			this.ThrowIfDeleted();
-			if (TriggerResult.Cancel != this.TryCancellableTrigger(TriggerKey.enter, new ScriptArgs(ch, 0))) {
-				if (TriggerResult.Cancel != this.On_Enter(ch, false)) {
-					return true;
-				}
-			}
-			return false;
+			this.TryTrigger(TriggerKey.enter, new ScriptArgs(ch, teleported ? 1 : 0));
+			try {
+				this.On_Enter(ch, teleported);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		public bool TryExit(AbstractCharacter ch) {
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private void Exit(AbstractCharacter ch, bool teleported) {
 			this.ThrowIfDeleted();
-			if (TriggerResult.Cancel != this.TryCancellableTrigger(TriggerKey.exit, new ScriptArgs(ch, 0))) {
-				if (TriggerResult.Cancel != this.On_Exit(ch, false)) {
-					return true;
-				}
-			}
-			return false;
+			this.TryTrigger(TriggerKey.exit, new ScriptArgs(ch, teleported ? 1 : 0));
+			try {
+				this.On_Exit(ch, teleported);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		public void Enter(AbstractCharacter ch) {
-			this.ThrowIfDeleted();
-			this.TryTrigger(TriggerKey.enter, new ScriptArgs(ch, 1));
-			this.On_Enter(ch, true);
-		}
-
-		public void Exit(AbstractCharacter ch) {
-			this.ThrowIfDeleted();
-			this.TryTrigger(TriggerKey.exit, new ScriptArgs(ch, 1));
-			this.On_Exit(ch, true);
-		}
-
+		/// <summary>#1558 - a notification: the step or teleport is happening, the regions already allowed it (@denyEnter).</summary>
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member"), SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
-		public virtual TriggerResult On_Enter(AbstractCharacter ch, bool forced) {//if forced is true, the return value is irrelevant
+		public virtual void On_Enter(AbstractCharacter ch, bool teleported) {
 			Logger.WriteDebug(ch + " entered " + this);
 			ch.SysMessage("You have just entered " + this);
-			return TriggerResult.Continue;
 		}
 
+		/// <summary>#1558 - a notification, as On_Enter.</summary>
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member"), SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
-		public virtual TriggerResult On_Exit(AbstractCharacter ch, bool forced) {
+		public virtual void On_Exit(AbstractCharacter ch, bool teleported) {
 			Logger.WriteDebug(ch + " left " + this);
 			ch.SysMessage("You have just left " + this);
-			return TriggerResult.Continue;
 		}
 
 		public bool IsInactivated {

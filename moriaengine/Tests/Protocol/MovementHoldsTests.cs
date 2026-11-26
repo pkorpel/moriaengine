@@ -3,7 +3,7 @@ using System.Threading;
 using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
-	/// <summary>#1409 - the movement holds are plugins refusing @denyMove; a frozen player's real step is refused and taken
+	/// <summary>#1409 - the movement holds are plugins refusing @denyStep (#1558; was @denyMove); a frozen player's real step is refused and taken
 	/// once unfrozen. Server side: scripts/Tests/MovementHoldsTests.cs.</summary>
 	[Collection(MovementHoldsCollection.Name)]
 	public class MovementHoldsTests : LivingWorldTestBase {
@@ -35,12 +35,13 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		/// <summary>#1414 - @stepTaken after a real step, heard by trigger groups and plugins.</summary>
+		/// <summary>#1414 - @stepTaken after a real step, heard by trigger groups and plugins. #1558 - the character's @step now,
+		/// raised for a GM too.</summary>
 		[Fact]
 		public void AStepTakenIsATrigger() {
 			using (TestGameClient game = this.Login("Krokovy")) {
 				this.Run(game, ".TestStepTaken", "HOLDS_STEP_DONE");
-				this.AssertChecks("stepTakenWalk", "stepTakenRun", "teleportNotAStep", "gmStepNotRaised", "deletedByItsStep");
+				this.AssertChecks("stepTakenWalk", "stepTakenRun", "teleportNotAStep", "gmStepRaised", "deletedByItsStep");
 			}
 		}
 	}

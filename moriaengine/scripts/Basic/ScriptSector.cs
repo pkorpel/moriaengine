@@ -243,10 +243,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>For the given player make a record of his actual position as a new tracking step</summary>
-		internal static void AddTrackingStep(Player whose, Direction direction) {
+		/// <summary>For the given player make a record of the point he stepped from as a new tracking step (#1558 - recorded
+		/// after the step now, so given the point left)</summary>
+		internal static void AddTrackingStep(Player whose, IPoint4D steppedFrom, Direction direction) {
 			//get actual sector
-			ScriptSector hisSector = GetScriptSector(whose);
+			ScriptSector hisSector = GetScriptSector(steppedFrom);
 
 			//check if we already have this any of char's trackpoints in this sector
 			TrackPoint.LinkedQueue sectorTPQueue;
@@ -278,7 +279,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			//add the actually stepped point to the queue (no matter if we have stepped on it previously)
-			TrackPoint tp = new TrackPoint(whose, whose, model);
+			TrackPoint tp = new TrackPoint(steppedFrom, whose, model);
 
 			//check if we are being tracked and in this case, send the information about the new step made
 			List<Character> tbList = (List<Character>) whose.GetTag(TrackingSkillDef.trackedByTK);

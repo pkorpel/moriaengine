@@ -52,7 +52,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsFrozen(Character ch) {
-			return GmFreezePlugin.IsFrozen(ch); //#1409 - a plugin refusing @denyMove
+			return GmFreezePlugin.IsFrozen(ch); //#1409 - a plugin refusing @denyStep (#1558)
 		}
 
 		internal static void Carry(Player gm, Character who, Order order) {
