@@ -12,7 +12,7 @@ agents, status labels) was dropped on 2026-11-18 (#1559); its trial notes are in
 |---|---|---|
 | `AGENTS.md` | everyone: people, Claude Code, Copilot, other agents | repo shape, build/test, how changes land, rules that hold everywhere |
 | `CLAUDE.md` | Claude Code (imports `AGENTS.md`) | Claude-only rules: session continuity via issues, the dev container's limits, git hazards, subagents |
-| `.claude/rules/*.md` | Claude Code automatically (area rules only when matching files are touched); others by link | topic rules: workflow, Erebor porting, engine patterns, testing, converter, LScript, localization, world setup |
+| `.claude/rules/*.md` | Claude Code automatically (area rules only when matching files are touched); others by link | topic rules: workflow, Erebor porting, engine patterns and C# comments, testing, converter, LScript, localization, world setup |
 | `.claude/skills/*/SKILL.md` | Claude Code, on demand | procedures: protocol tests, converter regen, hang debugging, Erebor lookups |
 | `docs/history/claude-md-log.md` | nobody routinely | the old CLAUDE.md work log (2026-10-12 to 2026-11-13), archived |
 
