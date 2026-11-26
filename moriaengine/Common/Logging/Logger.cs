@@ -69,10 +69,10 @@ namespace SteamEngine.Common {
 		}
 
 		public static void Show(string comment, object toshow) {
-			instance.WriteLine(comment + " : " + Tools.ObjToString(toshow));
+			StaticWriteLine(comment + " : " + Tools.ObjToString(toshow));
 		}
 		public static void Show(object toshow) {
-			instance.WriteLine(Tools.ObjToString(toshow));
+			StaticWriteLine(Tools.ObjToString(toshow));
 		}
 
 		#region WriteFatal
@@ -698,7 +698,7 @@ namespace SteamEngine.Common {
 		}
 
 		public static void StaticWriteLine(object value) {
-			instance.WriteLine(value);
+			WriteLine(ErrText(value));
 		}
 
 		public override void WriteLine(string value) {
@@ -761,6 +761,10 @@ namespace SteamEngine.Common {
 		public static void Write(LogStr value) {
 			lock (Console.Out) //#815 lock order, see lockObject
 			lock (lockObject) {
+				if (console == null) { //like WriteLine, allow output before a process logger is installed
+					Console.Write(value.RawString);
+					return;
+				}
 				console.Write(value.RawString);
 				if (OnConsoleWrite != null) {
 					OnConsoleWrite(value.NiceString);
