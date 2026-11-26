@@ -1105,7 +1105,7 @@ namespace SteamEngine {
 							} else {
 								MutablePoint4D p = item.point4d;
 								Region region = Map.GetMap(p.m).GetRegionFor(p.x, p.y);
-								region.Trigger_DenyPickupItemFrom(args);
+								result = region.Trigger_DenyPickupItemFrom(args);
 							}
 						}
 					}

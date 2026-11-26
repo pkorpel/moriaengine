@@ -220,22 +220,26 @@ namespace SteamEngine.Regions {
 			} while (region != null);
 		}
 
+		/// <summary>Asks this region and then each parent up to the world region, stopping at the first that cancels
+		/// or denies (#1579 - it used to stop after the first region that allowed).</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		internal void Trigger_DenyPickupItemFrom(DenyPickupArgs args) {
+		internal TriggerResult Trigger_DenyPickupItemFrom(DenyPickupArgs args) {
 			Region region = this;
 
 			do {
-				if (TriggerResult.Cancel != region.TryCancellableTrigger(TriggerKey.denyPickupItemFrom, args)) {
+				TriggerResult result = region.TryCancellableTrigger(TriggerKey.denyPickupItemFrom, args);
+				if (result != TriggerResult.Cancel) {
 					try {
-						if (TriggerResult.Cancel != region.On_DenyPickupItemFrom(args)) {
-							return;
-						}
+						result = region.On_DenyPickupItemFrom(args);
 					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-				} else {
-					return;
+				}
+				if ((result == TriggerResult.Cancel) || !args.Result.Allow) {
+					return result;
 				}
 				region = region.parent;
 			} while (region != null);
+
+			return TriggerResult.Continue;
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
@@ -244,20 +248,23 @@ namespace SteamEngine.Regions {
 			return TriggerResult.Continue;
 		}
 
+		/// <summary>Asks this region and then each parent up to the world region, stopping at the first that cancels
+		/// or denies (#1579 - it returned Cancel after the first region whatever it answered, so the caller's default
+		/// reach check never ran).</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal TriggerResult Trigger_DenyPutItemOn(DenyPutOnGroundArgs args) {
 			this.ThrowIfDeleted();
 			Region region = this;
 
 			do {
-				if (TriggerResult.Cancel != region.TryCancellableTrigger(TriggerKey.denyPutItemOn, args)) {
+				TriggerResult result = region.TryCancellableTrigger(TriggerKey.denyPutItemOn, args);
+				if (result != TriggerResult.Cancel) {
 					try {
-						if (TriggerResult.Cancel != region.On_DenyPutItemOn(args)) {
-							return TriggerResult.Cancel;
-						}
+						result = region.On_DenyPutItemOn(args);
 					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-				} else {
-					return TriggerResult.Cancel;
+				}
+				if ((result == TriggerResult.Cancel) || !args.Result.Allow) {
+					return result;
 				}
 
 				region = region.parent;
