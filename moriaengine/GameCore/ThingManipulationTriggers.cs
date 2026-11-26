@@ -1020,12 +1020,7 @@ namespace SteamEngine {
 		}
 
 		private void PickupImpl(AbstractItem item, int amountToPick) {
-			this.TryTrigger(TriggerKey.pickingUp, new ScriptArgs(item, amountToPick)); //#1426 - where the item is still lying, as On_PickingUp
-			this.ThrowIfDeleted(); //a handler may not take the picker or the item away
-			item.ThrowIfDeleted();
-			try {
-				this.On_PickingUp(item);
-			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			this.Trigger_PickingUp(item, amountToPick);
 
 			IPoint4D oldPoint = item.TopObj();
 			if (oldPoint != this) {
@@ -1049,6 +1044,18 @@ namespace SteamEngine {
 			if (oldPoint != null) {
 				this.SendMovingItemAnimation(oldPoint, this, item);
 			}
+		}
+
+		/// <summary>#1426 - @pickingUp on the picker (argv: item, amount), then On_PickingUp: a notification once the pickup
+		/// is certain and the item still lies where it was. A handler may not take the picker or the item away.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private void Trigger_PickingUp(AbstractItem item, int amountToPick) {
+			this.TryTrigger(TriggerKey.pickingUp, new ScriptArgs(item, amountToPick));
+			this.ThrowIfDeleted();
+			item.ThrowIfDeleted();
+			try {
+				this.On_PickingUp(item);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		/// <summary>#918 - the pickup is certain and the item is still where it lay, the last moment

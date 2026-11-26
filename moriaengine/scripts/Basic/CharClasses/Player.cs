@@ -111,6 +111,29 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TriggerKey gainExperienceTK = TriggerKey.Acquire("gainExperience");
+
+		/// <summary>#1416 - @gainExperience, a calculation that can cancel: this player is about to gain (or lose) `amount`
+		/// experience (LevelingSystem.AddExperience; `baseAmount` is it before the bonuses). The handlers, then
+		/// On_GainExperience, may change args.Amount or cancel. Returns the amount to add, or null when cancelled.</summary>
+		public int? Trigger_GainExperience(int baseAmount, int amount) {
+			GainExperienceArgs args = new GainExperienceArgs(baseAmount, amount);
+			TriggerResult result = this.TryCancellableTrigger(gainExperienceTK, args);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_GainExperience(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if (result == TriggerResult.Cancel) {
+				return null;
+			}
+			return args.Amount;
+		}
+
+		public virtual TriggerResult On_GainExperience(GainExperienceArgs args) {
+			return TriggerResult.Continue;
+		}
+
 		/// <summary>How much total experience is needed to reach the next level - see LevelingSystem.AddExperience for the formula this mirrors.</summary>
 		public int NextLevelExperienceThreshold {
 			get {

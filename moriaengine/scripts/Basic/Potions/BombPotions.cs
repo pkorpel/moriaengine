@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
+using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
@@ -52,15 +53,22 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal void Explode(Potion potion) {
-			Blast(potion);
+			this.Explode(potion, potion);
+		}
+
+		/// <summary>Goes off at `at`: where it lies, or where it lay before it was lifted.</summary>
+		internal void Explode(Potion potion, IPoint4D at) {
+			Map map = Map.GetMap(at.M);
+			EffectFactory.StationaryEffectAt(at, ExplosionEffect, 6, 15);
+			PacketSequences.SendSound(at, ExplosionSound, Globals.MaxUpdateRange);
 			List<Character> chars = new List<Character>();
-			foreach (AbstractCharacter around in potion.GetMap().GetCharsInRange(potion.X, potion.Y, Range)) {
+			foreach (AbstractCharacter around in map.GetCharsInRange(at.X, at.Y, Range)) {
 				if (around is Character ch) {
 					chars.Add(ch);
 				}
 			}
 			List<Item> items = new List<Item>();
-			foreach (AbstractItem around in potion.GetMap().GetItemsInRange(potion.X, potion.Y, Range)) {
+			foreach (AbstractItem around in map.GetItemsInRange(at.X, at.Y, Range)) {
 				if ((around is Item item) && (item != potion)) {
 					items.Add(item);
 				}
@@ -69,14 +77,14 @@ namespace SteamEngine.CompiledScripts {
 				if (this.dispels) {
 					this.DispelOn(ch);
 				} else {
-					this.Hurt(ch, potion);
+					this.Hurt(ch, at);
 				}
 			}
 			foreach (Item item in items) {
 				if (this.dispels) {
 					this.Dispel(item);
 				} else {
-					this.Destroy(item, potion);
+					this.Destroy(item, at);
 				}
 			}
 			potion.Delete();
@@ -92,12 +100,12 @@ namespace SteamEngine.CompiledScripts {
 			return (distance > 1) ? (damage / distance) : damage;
 		}
 
-		private void Hurt(Character ch, Potion potion) {
+		private void Hurt(Character ch, IPoint4D at) {
 			int armor = ch.ArmorClassVsP;
 			if (ch.IsPlayer && !ch.IsGM) {
 				armor += DamageManager.GetPvPArmorChange(ch);
 			}
-			int damage = DamageAt(this.strength(), armor, Point2D.GetSimpleDistance(ch.X, ch.Y, potion.X, potion.Y));
+			int damage = DamageAt(this.strength(), armor, Point2D.GetSimpleDistance(ch.X, ch.Y, at.X, at.Y));
 			if (damage > 0) {
 				DamageManager.CauseDamage(null, ch, DamageType.MagicFire, damage); //no attacker: nobody answers it
 				Blast(ch);
@@ -110,12 +118,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>znicsit: webs, and a rock, the closer the likelier.</summary>
-		private void Destroy(Item item, Potion potion) {
+		private void Destroy(Item item, IPoint4D at) {
 			if (VarGate.Matches(item, "t_web", true)) {
 				Blast(item);
 				item.Delete();
 			} else if (VarGate.Matches(item, "i_rock_plain", false)) {
-				int distance = Math.Max(Point2D.GetSimpleDistance(item.X, item.Y, potion.X, potion.Y), 1);
+				int distance = Math.Max(Point2D.GetSimpleDistance(item.X, item.Y, at.X, at.Y), 1);
 				if ((distance < Range) && ((this.strength() / distance) > Globals.dice.Next(151))) {
 					Blast(item);
 					item.Delete();
@@ -161,6 +169,27 @@ namespace SteamEngine.CompiledScripts {
 			if (this.count <= 0) {
 				this.Delete();
 				(PotionKinds.Find(potion) as BombPotionKind)?.Explode(potion);
+			}
+		}
+	}
+
+	/// <summary>#1558 - a bomb lifted from the ground goes off where it lay (Potion.On_EnterChar).</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class BombLiftedTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_bomb_lifted_");
+
+		[SaveableData, CopyableData]
+		public int x, y, z;
+		[SaveableData, CopyableData]
+		public byte m;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public BombLiftedTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			if ((cont is Potion potion) && !potion.IsDeleted && (PotionKinds.Find(potion) is BombPotionKind bomb)) {
+				bomb.Explode(potion, new Point4D(this.x, this.y, this.z, this.m));
 			}
 		}
 	}

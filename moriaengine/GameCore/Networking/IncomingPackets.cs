@@ -210,13 +210,10 @@ namespace SteamEngine.Networking {
 				}
 
 				AbstractCharacter requester = state.CharacterNotNull;
-				// Rebuilt fresh rather than cached from the request - see ContextMenu's own
+				// The menu is rebuilt fresh rather than cached from the request - see ContextMenu's own
 				// comment for why that's safe here (menus are small, infrequent, and the client
 				// only ever sends a selection right after requesting the same menu).
-				ContextMenu menu = target.GetContextMenu(requester);
-				menu.InvokeSelected(this.selectedIndex, requester);
-
-				target.TryTrigger(TriggerKey.contextMenuSelect, new ScriptArgs(requester, (int) this.selectedIndex));
+				target.Trigger_ContextMenuSelect(requester, this.selectedIndex); //#1558 - @contextMenuSelect before the action
 			}
 		}
 

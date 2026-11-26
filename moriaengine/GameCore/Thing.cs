@@ -1251,6 +1251,28 @@ namespace SteamEngine {
 		public virtual void On_BuildContextMenu(ContextMenu menu, AbstractCharacter requester) {
 		}
 
+		/// <summary>#1558 - the requester picked entry `selectedIndex` of this Thing's context menu: @contextMenuSelect
+		/// (argv: requester, index), then On_ContextMenuSelect, both before the entry's action and able to cancel it (an
+		/// implementation trigger, section 8). The menu is rebuilt for the selection, as GetContextMenu says.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public void Trigger_ContextMenuSelect(AbstractCharacter requester, int selectedIndex) {
+			this.ThrowIfDeleted();
+			TriggerResult result = this.TryCancellableTrigger(TriggerKey.contextMenuSelect, new ScriptArgs(requester, selectedIndex));
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_ContextMenuSelect(requester, selectedIndex);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result != TriggerResult.Cancel) && !this.IsDeleted && !requester.IsDeleted) {
+				this.GetContextMenu(requester).InvokeSelected((ushort) selectedIndex, requester);
+			}
+		}
+
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		public virtual TriggerResult On_ContextMenuSelect(AbstractCharacter requester, int selectedIndex) {
+			return TriggerResult.Continue;
+		}
+
 		//public Gump Dialog(string gumpName) {
 		//	GumpDef GumpDef = GumpDef.Get(gumpName);
 		//	if (GumpDef == null) {

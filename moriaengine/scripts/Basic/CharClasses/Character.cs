@@ -2240,42 +2240,42 @@ namespace SteamEngine.CompiledScripts {
 			this.Stam = (short) Math.Max(0, Math.Min(this.MaxStam, newCount));
 		}
 
-		private static TriggerKey disruptionTK = TriggerKey.Acquire("disruption");
-		public void Trigger_Disrupt() {
-			this.TryTrigger(disruptionTK, null);
-			this.On_Disruption();
-		}
+		private static readonly TriggerKey disruptionTK = TriggerKey.Acquire("disruption");
 
-		private bool keepCastingWhenDisrupted;
-
-		/// <summary>#860 - a blow breaks paralysis and the like, but casting only if it's hard enough.</summary>
-		public void Trigger_Disrupt(bool interruptCasting) {
-			this.keepCastingWhenDisrupted = !interruptCasting;
+		/// <summary>@disruption, a notification: something (a blow, a spell, a death, a warcry) disrupted this character.
+		/// It breaks paralysis and the like; #860 - casting only when args.InterruptCasting (a blow hard enough).</summary>
+		public void Trigger_Disrupt(bool interruptCasting = true) {
+			DisruptionArgs args = new DisruptionArgs(interruptCasting);
+			this.TryTrigger(disruptionTK, args);
 			try {
-				this.Trigger_Disrupt();
-			} finally {
-				this.keepCastingWhenDisrupted = false;
-			}
+				this.On_Disruption(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		public virtual void On_Disruption() {
-			if ((this.CurrentSkillName == SkillName.Magery) && !this.keepCastingWhenDisrupted) {
+		public virtual void On_Disruption(DisruptionArgs args) {
+			if ((this.CurrentSkillName == SkillName.Magery) && args.InterruptCasting) {
 				this.AbortSkill();
 			}
 		}
 
-		private static TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
+		private static readonly TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
+
+		/// <summary>@hostileAction, a notification: `enemy` attacked this character. #1558 - not raised without an enemy
+		/// (a death with no killer), which 2dbc90b did.</summary>
 		public void Trigger_HostileAction(Character enemy) {
-			if (enemy != null) { //a death can have no killer
-				HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
+			if (enemy == null) {
+				return;
 			}
+			HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
 			Notoriety.OnHostileAction(this, enemy);
 			FightMemory.Record(this, enemy); //#826
 			NPCAiTimer.AlertGuardiansOf(this, enemy);
 			NPCAiTimer.AlertPetsOf(enemy, this); //#768 - before On_HostileAction, so a pet hit by its own owner is still recognized as theirs
 			ScriptArgs sa = new ScriptArgs(enemy);
 			this.TryTrigger(hostileActionTK, sa);
-			this.On_HostileAction(enemy);
+			try {
+				this.On_HostileAction(enemy);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		public virtual void On_HostileAction(Character enemy) {
@@ -2381,10 +2381,12 @@ namespace SteamEngine.CompiledScripts {
 
 		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere
 		//0.99z8, it fires after the pusher paid the stamina and its return value is ignored.
-		private static TriggerKey personalSpaceTK = TriggerKey.Acquire("personalSpace");
+		private static readonly TriggerKey personalSpaceTK = TriggerKey.Acquire("personalSpace");
 		public void Trigger_PersonalSpace(Character pusher) {
 			this.TryTrigger(personalSpaceTK, new ScriptArgs(pusher));
-			this.On_PersonalSpace(pusher);
+			try {
+				this.On_PersonalSpace(pusher);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		public virtual void On_PersonalSpace(Character pusher) {
@@ -3065,11 +3067,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1411 - a landed blow, before its damage; can be cancelled (DamageManager.Trigger_Hit).</summary>
-		public TriggerResult On_Hit(WeaponSwingArgs args) {
+		public virtual TriggerResult On_Hit(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		public TriggerResult On_GetHit(WeaponSwingArgs args) {
+		public virtual TriggerResult On_GetHit(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
@@ -3194,16 +3196,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#483/#486 - was an empty no-op, so casting Dispel/Mass Dispel directly on a
-		/// character never actually removed any of their buffs/debuffs (only WallSpellItem's own
-		/// override, for fields, and EffectDurationPlugin.On_Dispell itself, which nothing ever
-		/// called since a plugin can't be a spell's direct target) did anything. Now removes
-		/// every dispellable EffectDurationPlugin the character is carrying - book-sourced spell
-		/// effects (EffectDurationPlugin.Dispellable is keyed off EffectFlag.FromBook), not
-		/// potion effects, matching that property's own existing, pre-established rule. Snapshots
-		/// the dispellable plugins into a list BEFORE calling On_Dispell on each - On_Dispell
-		/// deletes the plugin, and GetAllPlugins() enumerates the live backing tags dictionary,
-		/// so deleting while still iterating it directly would throw.</summary>
+		/// <summary>#483/#486 - the character's part of a dispel: a summoned creature goes whole. Its dispellable effects
+		/// (book-sourced, EffectDurationPlugin.Dispellable; not potion effects) end in their own On_Dispell, which the
+		/// @dispell raised just before this reaches (#1558 - this used to call them a second time).</summary>
 		public virtual void On_Dispell(SpellEffectArgs spellEffectArgs) {
 			// #485's own summon-pet infrastructure tags its creatures specifically so this check
 			// could be added once this method actually did something - dispelling a summoned
@@ -3213,16 +3208,8 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			List<EffectDurationPlugin> dispellablePlugins = new List<EffectDurationPlugin>();
-			foreach (Plugin plugin in this.GetAllPlugins()) {
-				EffectDurationPlugin durationPlugin = plugin as EffectDurationPlugin;
-				if ((durationPlugin != null) && durationPlugin.Dispellable) {
-					dispellablePlugins.Add(durationPlugin);
-				}
-			}
-			foreach (EffectDurationPlugin durationPlugin in dispellablePlugins) {
-				durationPlugin.On_Dispell(spellEffectArgs);
-			}
+			//#1558 - the dispellable effects themselves end through @dispell, which DispellDef.Trigger_Dispell raises on this
+			//character before this: it reaches each EffectDurationPlugin's own On_Dispell
 		}
 	}
 

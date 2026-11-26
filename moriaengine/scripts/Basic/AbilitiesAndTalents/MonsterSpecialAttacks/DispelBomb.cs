@@ -29,7 +29,7 @@ namespace SteamEngine.CompiledScripts {
 	/// 30) - to throw a dispel bomb (i_potion_ExplosionDispell) at a random spot within
 	/// tag.e_explosiondispell_range (default 5). It counts down 3 s, then dispels every
 	/// character within 5 tiles of it - the thrower included: summons vanish, dispellable
-	/// effects end (Character.On_Dispell). No real potion item is created; the fuse runs off the
+	/// effects end (DispellDef.Trigger_Dispell). No real potion item is created; the fuse runs off the
 	/// thrower's AI tick, so a bomb whose thrower died with it fizzles.</summary>
 	[ViewableClass]
 	public class DispelBombAbilityDef : PassiveAbilityDef {
@@ -165,7 +165,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				SpellEffectArgs args = SpellEffectArgs.Acquire(thrower, point, ch, dispelSpellDef, 1000, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
 				DispellDef.ShowDispellEffect(ch);
-				ch.On_Dispell(args);
+				DispellDef.Trigger_Dispell(ch, args); //#1558 - through @dispell, as the spell
 				dispelled++;
 			}
 			return dispelled;

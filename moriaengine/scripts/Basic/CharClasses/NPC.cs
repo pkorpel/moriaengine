@@ -1997,6 +1997,42 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.DefendAgainst(this, enemy); //#768 - fight back (a rebel now fights its ex-owner too, as in Sphere)
 		}
 
+		private static readonly TriggerKey npcRefuseItemTK = TriggerKey.Acquire("npcRefuseItem");
+
+		/// <summary>#808 - Sphere's @NPCRefuseItem, an implementation trigger: this NPC turns down `item` from `giver`
+		/// (NpcItemGive). A handler that says its own line cancels (Erebor's guards: "you can't bribe me"); otherwise
+		/// On_NpcRefuseItem's default runs, the giver seeing "They don't appear to want the item". The item goes back to
+		/// the giver either way.</summary>
+		public void Trigger_NpcRefuseItem(Character giver, AbstractItem item) {
+			TriggerResult result = this.TryCancellableTrigger(npcRefuseItemTK, new ScriptArgs(giver, item));
+			if (result != TriggerResult.Cancel) {
+				try {
+					this.On_NpcRefuseItem(giver, item);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+		}
+
+		public virtual void On_NpcRefuseItem(Character giver, AbstractItem item) {
+			GameState state = giver.GameState;
+			if (state != null) {
+				PacketSequences.SendOverheadMessageFrom(state.Conn, this, "They don't appear to want the item.", 0);
+			}
+		}
+
+		private static readonly TriggerKey leaveSpawnTK = TriggerKey.Acquire("leaveSpawn");
+
+		/// <summary>#962 - a notification: this NPC stops counting for its spawn (tamed: memory_ispawned goes), and the
+		/// spawn's trigger group (spawn.scp's e_spawned_char) makes another.</summary>
+		public void Trigger_LeaveSpawn() {
+			this.TryTrigger(leaveSpawnTK, new ScriptArgs());
+			try {
+				this.On_LeaveSpawn();
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_LeaveSpawn() {
+		}
+
 		//#778 - someone shoved past this NPC (#767): a strangler vine grabs them
 		public override void On_PersonalSpace(Character pusher) {
 			base.On_PersonalSpace(pusher);

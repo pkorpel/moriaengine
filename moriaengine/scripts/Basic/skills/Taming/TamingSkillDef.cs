@@ -213,7 +213,7 @@ namespace SteamEngine.CompiledScripts {
 		//memory_ispawned goes: the spawn counts it as gone and makes another
 		private static void LeaveSpawn(NPC npc) {
 			if (SpawnOf(npc) != null) {
-				npc.TryTrigger(TriggerKey.Acquire("leaveSpawn"), new ScriptArgs());
+				npc.Trigger_LeaveSpawn();
 				npc.RemoveTag(spawnGemTK);
 				npc.RemoveTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char"));
 			}

@@ -73,7 +73,7 @@ namespace SteamEngine.CompiledScripts {
 			int baseAmount = amount;
 			amount += RpRanks.Bonus(player, baseAmount); //#1116 - and the RP rank's, both of the base, added
 			amount += WorldEvents.ExperienceBonus(player, baseAmount); //#1286 - the beacons of Gondor lit: the realm's bonus
-			int? granted = LevelingTriggers.GainExperience(player, baseAmount, amount); //#1416 - @gainExperience may change it or cancel
+			int? granted = player.Trigger_GainExperience(baseAmount, amount); //#1416 - @gainExperience may change it or cancel
 			if ((granted == null) || (granted.Value == 0)) {
 				return;
 			}

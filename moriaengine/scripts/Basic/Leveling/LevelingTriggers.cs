@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -21,16 +22,14 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1416 - @gainExperience: a player about to gain (or lose) experience through LevelingSystem.AddExperience.
 	/// Amount is what will be added, the inline bonuses (boosters, RP rank, the beacons) already in it; a handler may
 	/// change it, adding to it a share of BaseAmount as those do, or cancel, and nothing is added. Both are negative for
-	/// a loss (a hypnosis paying back less than nothing). Compiled handlers only: a scripted one sees the numbers in Argv
-	/// and can't change Amount.</summary>
+	/// a loss (a hypnosis paying back less than nothing). Argv is (BaseAmount, Amount): #1558 - a scripted handler changes
+	/// Amount by setting argv[1].</summary>
 	public class GainExperienceArgs : ScriptArgs {
 		private readonly int baseAmount;
-		private int amount;
 
 		public GainExperienceArgs(int baseAmount, int amount)
 			: base(baseAmount, amount) {
 			this.baseAmount = baseAmount;
-			this.amount = amount;
 		}
 
 		/// <summary>The gain before any bonus: what bonuses take their percent of.</summary>
@@ -42,17 +41,16 @@ namespace SteamEngine.CompiledScripts {
 
 		public int Amount {
 			get {
-				return this.amount;
+				return Convert.ToInt32(this.Argv[1], CultureInfo.InvariantCulture);
 			}
 			set {
-				this.amount = value;
+				this.Argv[1] = value;
 			}
 		}
 	}
 
 	public static class LevelingTriggers {
 		private static readonly TriggerKey killCreditTK = TriggerKey.Acquire("killCredit");
-		private static readonly TriggerKey gainExperienceTK = TriggerKey.Acquire("gainExperience");
 
 		/// <summary>@killCredit on a fighter (its trigger groups and plugins), player or NPC.</summary>
 		public static void KillCredit(Character fighter, Character victim, int share) {
@@ -60,15 +58,6 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			fighter.TryTrigger(killCreditTK, new KillCreditArgs(victim, share));
-		}
-
-		/// <summary>@gainExperience on the player; the amount to add, or null when a handler cancelled.</summary>
-		public static int? GainExperience(Player player, int baseAmount, int amount) {
-			GainExperienceArgs args = new GainExperienceArgs(baseAmount, amount);
-			if (player.TryCancellableTrigger(gainExperienceTK, args) == TriggerResult.Cancel) {
-				return null;
-			}
-			return args.Amount;
 		}
 	}
 }
