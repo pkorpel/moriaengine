@@ -44,7 +44,7 @@ It goes once it holds neither side. One plugin, not one per side: a mana pact ma
 - **Death and logout:** the plugin's own `@death` and `@logout` end the pacts, the borne one first, otherwise the given
   one. They were direct calls before.
 - **Blood sharing:** a monster's blow moves 15%, at most 20, from the one hit to the other side. It answers
-  `@afterGetHit`, raised once the blow's damage is dealt.
+  `@afterGetSwing` for a landed blow (`!Dodged`), raised once the blow's damage is dealt (#1558; was `@afterGetHit`).
 - **Experience:** the blood pact's experience (the giver earns through the bearer) is still read by the leveling code.
 
 ## Shaman's life pact and empathy elixir (#1447)
@@ -57,8 +57,8 @@ It goes once it holds neither side. One plugin, not one per side: a mana pact ma
   - Rising ends the pact.
 - **The empathy elixir** is an `EmpathyPlugin` for 8 s (in `LifePactPlugin.cs`): Erebor's `i_getphysresists` with
   `e_getphysresists`.
-  - Its own `@swingLanding` reads the struck monster's physical resists by Arms Lore. Erebor's `@AfterSwing` ran for a
-    dodged blow and a landed one alike, and `@swingLanding` runs before the dodge, so a dodged blow is still read.
+  - Its own `@hit` reads the struck monster's physical resists by Arms Lore. Erebor's `@AfterSwing` ran for a dodged
+    blow and a landed one alike, and `@hit` runs for both (#1558), so a dodged blow is still read.
   - It stays through death and shows in `.boosts`. It ends with Erebor's line ("Nyni jiz nejsi schopen rozpoznat
     rezisty.").
 
@@ -121,8 +121,8 @@ Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
   half as much stamina drain, more each second, until 25 ticks or either is under 20. A death lets go at the next tick
   with "Uz nemas silu monstrum drzet!", as Erebor's @timer saw `statf_dead`.
 - **`.catchfield`** is a `CatchFieldPlugin` on the mystic (`i_memory_catchField`). Its own `@death` ends it, as
-  `e_catchField`'s. Each monster it holds has a `CaughtPlugin` (`e_catchedInField`, with its mystic and power); a blow
-  at it frees it at `@getSwingLanding`, Erebor's `@aftergetswing`.
+  `e_catchField`'s. Each monster it holds has a `CaughtPlugin` (`e_catchedInField`, with its mystic and power); a landed
+  blow at it frees it at `@getHit`, Erebor's `@aftergetswing`.
 - **`.controlnpc`** is a `ControlNpcPlugin` (`i_controlnpc`): in 5 s the creature may become the mystic's.
 - The mystic's own profession plugin, `MysticProfessionPlugin` (`p_profession_mystic`), holds the catch field's
   cooldown and the hypnosis' retry delay (#1461). As with the other classes, setting the profession again resets them.
@@ -130,17 +130,17 @@ Each of Erebor's memory items is a plugin (`MysticPlugins.cs`):
   `_catchFieldReleasedAt_` (no field again for an hour).
 - **`.buffsteal`** (#1457) is a `BuffStealPlugin` on the mystic (`i_buffSteal`). It goes through 3 s of wind-up, then
   60 s of the stolen talent (or of the crippling after a fatal failure), then its rest of 50 s + 7 a power. A stolen
-  attack talent (`tag.buffDmgBonus`) adds to blows and spell power against monsters, at the plugin's own `@swingLanding`
+  attack talent (`tag.buffDmgBonus`) adds to blows and spell power against monsters, at the plugin's own `@hit`
   and `@spellPower`. Its own `@death` ends it, as Erebor's `e_mystik @death` consumes `i_buffSteal`: a held talent goes
   back and the rest goes with it. Whenever it goes while a talent is held, its `@unAssign` gives the talent back, as
   Erebor's `@unEquip`.
 - The robbed monster has a `BuffStolenPlugin` (`i_buffStealNPC`) for 60 s. Its blows lose the cut
-  (`tag.changeDmgPercent`) at its own `@swingLanding`, Erebor's `e_npcChangeDmg @AfterSwing`.
+  (`tag.changeDmgPercent`) at its own `@hit`, Erebor's `e_npcChangeDmg @AfterSwing`.
 
 ## Mystic hypnosis and the world
 
 Before the swap, the mystic concentrates for 1 to 14 s: a `ConcentrationPlugin` (Erebor's `i_hypno_timer` with
-`e_hypnotizing`, #1461). A step breaks it at its own `@step` (after the move), a blow at its `@getSwingLanding` (Erebor's `@step`
+`e_hypnotizing`, #1461). A step breaks it at its own `@step` (after the move), a landed blow at its `@getHit` (Erebor's `@step`
 and `@aftergetswing`). The retry delay after a failed or impossible try (2 s, or 0.5 s) is `MysticProfessionPlugin`'s,
 so a GM who isn't a mystic has none.
 
@@ -152,7 +152,7 @@ The body swap itself is in `MysticHypnosis.cs` (#1467):
   - At its `@logout` the mystic comes home.
   - At its `@gainExperience` a gain only counts, its base before bonuses; it is paid, with its bonuses, at home.
 - **The alter ego's `AlterEgoPlugin`** rings the alarm pads every second.
-  - A blow at it (`@getSwingLanding`) or a spell on it (`@spellEffect`, which then does nothing) brings the mystic home
+  - A landed blow at it (`@getHit`) or a spell on it (`@spellEffect`, which then does nothing) brings the mystic home
     with half the hits.
   - Its death (`@denyDeath`) brings the mystic home hurt, and the ego doesn't die.
 - **Asked twice:** a caller that sets `Hits = 0` and then calls `CauseDeath` again asks twice. The first ask brings the
@@ -224,17 +224,18 @@ detection, left out in #777.
 
 The warrior has its own profession plugin, `WarriorProfessionPlugin` (`p_profession_warrior` in warrior.def, #1429). It
 holds the stance and the cooldowns of round attack, leap, war cry and both taunts. Erebor kept these in tags. It also
-changes the warrior's blows through `@swingLanding` and `@getSwingLanding`: double swing and the stance on its own blow,
-the stance on a monster's. A blow's order is unchanged. The critical blow (the shared counter) runs first, then
-`@swingLanding`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433), the mystic's
-buff steal on either side (#1457) and the magic items' slayers (`MagicWearerPlugin`, #1476; all of them multiply, so
-their order doesn't matter), then the jagged bolt (which since #1476 reads the slayed damage), `@getSwingLanding`, then
-the dodge. Shield
-blocking (`vykryti`) is open to six classes, so every profession plugin does it in `@getSwingLanding`, after the stance.
+changes the warrior's blows through `@hit` and `@getHit`: double swing and the stance on its own blow, the stance on a
+monster's. A blow's order (#1558, Erebor's `damage_final`): the critical blow (the shared counter), then the dodge,
+then `@hit`, where each class's plugin does its own part (warrior, ranger #1431, thief #1433), the mystic's buff steal
+on either side (#1457) and the magic items' slayers (`MagicWearerPlugin`, #1476; all of them multiply, so their order
+doesn't matter), then the jagged bolt (which reads the slayed damage), then `@getHit` on a landed blow. `@hit` and the
+jagged bolt run on a dodged blow too, so their charges are spent either way, as Erebor's `@AfterSwing`. Before #1558
+`@hit`'s handlers ran before the dodge, so a thief's reflected blow saw the class bonuses; now it doesn't. Shield blocking (`vykryti`) is open to six
+classes, so every profession plugin does it in `@getHit`, after the stance.
 The critical blow is shared by several classes and is still a plain call (the counter itself is the profession plugin's
 since #1438). The stun blow (`.omraceni`, warriors, priests and craftsmen, Erebor's `e_stunattack`) is the base profession
-plugin's since #1459: its readiness and window are its fields, and the blow lands in its `@afterHit`, once the damage is
-dealt. A profession
+plugin's since #1459: its readiness and window are its fields, and the blow lands in its `@afterSwing` (a landed blow), once the
+damage is dealt. A profession
 change starts a fresh plugin: a stance and cooldowns don't carry over.
 
 ## Ranger
@@ -253,7 +254,7 @@ weaker, shorter one is dropped.
 
 The ranger has its own profession plugin, `RangerProfessionPlugin` (`p_profession_ranger` in ranger.def, #1431), on the
 warrior's pattern. It holds the cooldowns of knockback, split shot and crushing arrow, and the killing spree's last
-target. Erebor kept these in tags. The spree adds to the ranger's blow in `@swingLanding`, after the critical shot. It gets a charge in `@kill`, Sphere's trigger on the killer (Erebor's `@finalBlow`), and two when
+target. Erebor kept these in tags. The spree adds to the ranger's blow in `@hit`, after the critical shot. It gets a charge in `@kill`, Sphere's trigger on the killer (Erebor's `@finalBlow`), and two when
 its own target dies. A dodged blow still uses a charge up, as on Erebor. Shared with other classes and still plain
 calls: the critical shot (the counter), the bleed bolt, and the readied effects' timers on the player.
 
@@ -268,10 +269,10 @@ warrior's pattern. It holds what Erebor kept in the thief's tags:
 - the readied throat slit and shield strike, with their cooldowns;
 - the knife throw's and round strike's cooldowns.
 
-e_thief's @AfterSwing is its `@swingLanding`, in Erebor's order: the blow from behind and the throat slit, the war fork's
+e_thief's @AfterSwing is its `@hit`, in Erebor's order: the blow from behind and the throat slit, the war fork's
 charge, then the war fork's double swing, which spends the slit. Only a thief charges a war fork or strikes from behind
 now. Before, anyone fencing a war fork with a class counter could charge it, and stray `utok_do_zad` points struck from
-behind; on Erebor both were the thief's own event. The shield strike lands in the thief's plugin's `@afterHit` (#1459), after
+behind; on Erebor both were the thief's own event. The shield strike lands in the thief's plugin's `@afterSwing` (#1459, a landed blow), after
 the shared stun blow, with its state on the plugin. The mask
 and the knife immunity stay tags: the mask swaps the character's own identity and must outlast a profession change, and
 the immunity belongs to the target.

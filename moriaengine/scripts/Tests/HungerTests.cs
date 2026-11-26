@@ -79,8 +79,8 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HUNGER_HITS: hits=" + self.Hits);
 		}
 
-		/// <summary>A blow tried on nothing in the stomach costs 10, as the swing is drawn (Erebor's @hittry, the plugin's
-		/// @hitTry); the landed blow costs nothing more (#1396: it cost another 10 since #995).</summary>
+		/// <summary>A blow tried on nothing in the stomach costs 10, as the swing is drawn (Erebor's @hittry: WeaponSkillDef's
+		/// hunger call before @denySwing, #1558); the landed blow costs nothing more (#1396: it cost another 10 since #995).</summary>
 		[SteamFunction]
 		public static void TestHungerSwing(Character self) {
 			NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);

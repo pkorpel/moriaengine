@@ -122,7 +122,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1429 - the warrior's state is its profession plugin's, and the blow modifiers reach a blow through
-		/// @swingLanding and @getSwingLanding: the stance both ways, the shield block (any class) on the way in.</summary>
+		/// @hit and @getHit (#1558, were @swingLanding/@getSwingLanding): the stance both ways, the shield block (any class) on the way in.</summary>
 		private static void TestWarriorPlugin(Player player, Item sword) {
 			WarriorProfessionPlugin war = ProfessionPlugin.GetInstalledPlugin(player) as WarriorProfessionPlugin;
 			Report("theWarriorsPluginIsItsProfessionPlugin", war != null);
@@ -141,12 +141,12 @@ namespace SteamEngine.CompiledScripts {
 
 			WeaponSwingArgs own = DamageManager.GetWeaponSwingArgs(player, monster);
 			own.DamageAfterAC = 1000;
-			DamageManager.Trigger_SwingLanding(own);
+			DamageManager.Trigger_Hit(own);
 			Report("theStanceWeakensOwnBlowThroughTheTrigger", Math.Abs(own.DamageAfterAC - (1000 * stance)) < 0.001);
 
 			WeaponSwingArgs incoming = DamageManager.GetWeaponSwingArgs(monster, player);
 			incoming.DamageAfterAC = 1000;
-			DamageManager.Trigger_GetSwingLanding(incoming);
+			DamageManager.Trigger_GetHit(incoming);
 			Report("theStanceSoftensABlowThroughTheTrigger", Math.Abs(incoming.DamageAfterAC - (1000 * stance)) < 0.001);
 
 			sword.Delete();
@@ -155,19 +155,19 @@ namespace SteamEngine.CompiledScripts {
 			ClassAbilities.SetPoints(player, "vykryti", 100); //always over the roll of 0-99
 			incoming = DamageManager.GetWeaponSwingArgs(monster, player);
 			incoming.DamageAfterAC = 1000;
-			DamageManager.Trigger_GetSwingLanding(incoming);
+			DamageManager.Trigger_GetHit(incoming);
 			Report("theShieldBlocksWithTheStance", (player.FindLayer(LayerNames.Hand2) == shield) && (Math.Abs(incoming.DamageAfterAC - (1000 * stance * 0.5)) < 0.001));
 
 			ClassAbilities.SetPoints(player, "vykryti", 0);
 			TestSwingLandingInASwing(player);
 
-			Item mace = (Item) ((ItemDef) ThingDef.GetByDefname("i_mace_mithril")).Create(player); //#1459 - the stun blow at @afterHit
+			Item mace = (Item) ((ItemDef) ThingDef.GetByDefname("i_mace_mithril")).Create(player); //#1459 - the stun blow at @afterSwing (#1558)
 			player.InvalidateCombatWeaponValues();
 			NPC stunned = Dummy(player, 2);
 			stunned.ExperienceReward = 0;
 			war.stunReady = true;
 			war.nextStun = Globals.TimeInSeconds + 20;
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, stunned), 10);
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(player, stunned), 10);
 			Report("theStunLandsAtAfterHit", ParalyzeEffectPluginDef.IsParalyzed(stunned) && !war.stunReady);
 			stunned.Delete();
 
@@ -179,7 +179,7 @@ namespace SteamEngine.CompiledScripts {
 				plain.stunReady = true;
 				plain.nextStun = Globals.TimeInSeconds + 20;
 			}
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, stunnedByCraftsman), 10);
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(player, stunnedByCraftsman), 10);
 			Report("aCraftsmansStunLandsToo", (plain != null) && (plain.GetType() == typeof(ProfessionPlugin)) && ParalyzeEffectPluginDef.IsParalyzed(stunnedByCraftsman) && !plain.stunReady);
 			stunnedByCraftsman.Delete();
 			player.Profession = Professions.Warrior;
@@ -193,7 +193,7 @@ namespace SteamEngine.CompiledScripts {
 			ClassAbilities.SetPoints(player, "vykryti", 100);
 			incoming = DamageManager.GetWeaponSwingArgs(monster, player);
 			incoming.DamageAfterAC = 1000;
-			DamageManager.Trigger_GetSwingLanding(incoming);
+			DamageManager.Trigger_GetHit(incoming);
 			Report("aThiefsShieldBlocksThroughItsPlugin", !(ProfessionPlugin.GetInstalledPlugin(player) is WarriorProfessionPlugin) && (Math.Abs(incoming.DamageAfterAC - 500) < 0.001));
 			player.Profession = Professions.Warrior;
 			ClassAbilities.Reset(player);
@@ -204,9 +204,9 @@ namespace SteamEngine.CompiledScripts {
 		internal static bool setTheBlow;
 		internal static double getHitSaw;
 
-		/// <summary>#1429 - the triggers are raised inside a real swing, before @hit: a probe sets the blow to 1000 in the
-		/// attacker's @swingLanding (trigger groups run before plugins), the defender's @getHit sees the stance's 750. Both
-		/// ways, the warrior in its stance hitting and being hit. @getHit zeroes the blow, so nobody gets hurt.</summary>
+		/// <summary>#1429 - the triggers are raised inside a real swing: a probe sets the blow to 1000 in the attacker's @hit
+		/// (trigger groups run before plugins), the defender's @denyDamage sees the stance's 750 and refuses it, so nobody gets
+		/// hurt. Both ways, the warrior in its stance hitting and being hit.</summary>
 		private static void TestSwingLandingInASwing(Player player) {
 			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
 			NPCAiTimer.Freeze(orc, 300);
@@ -224,7 +224,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Swings until one blow lands (dodges don't reach @hit); what @getHit saw, -1 if none landed.</summary>
+		/// <summary>Swings until one blow lands (a dodged one never reaches @denyDamage); what it saw, -1 if none landed.</summary>
 		private static double LandOne(Character attacker, Character defender) {
 			getHitSaw = -1;
 			setTheBlow = true;
@@ -383,7 +383,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1431 - the ranger's state is its profession plugin's; the killing spree adds to a blow through
-		/// @swingLanding (also in a real swing, before @hit) and gains its charges through @kill: one a kill, two when the
+		/// @hit (also in a real swing) and gains its charges through @kill: one a kill, two when the
 		/// spree's own target dies. 10 points: a charge adds 5 + 10 percent.</summary>
 		private static void TestRangerPlugin(Player player) {
 			RangerProfessionPlugin ranger = ProfessionPlugin.GetInstalledPlugin(player) as RangerProfessionPlugin;
@@ -423,7 +423,7 @@ namespace SteamEngine.CompiledScripts {
 
 			WeaponSwingArgs swing = DamageManager.GetWeaponSwingArgs(player, second);
 			swing.DamageAfterAC = 1000;
-			DamageManager.Trigger_SwingLanding(swing);
+			DamageManager.Trigger_Hit(swing);
 			Report("theSpreeAddsThroughTheTrigger", (Math.Abs(swing.DamageAfterAC - 1150) < 0.001) && (ranger.spreeTarget == second) &&
 				!player.HasTimer(SpreeTimer.Key));
 			second.CauseDeath(player); //the spree's own target: two charges
@@ -456,7 +456,7 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("STAB_GONE_DONE");
 		}
 
-		/// <summary>#1433 - e_thief's @AfterSwing in a real swing, before @hit: a fencing blow from behind with a readied
+		/// <summary>#1433 - e_thief's @AfterSwing in a real swing (the plugin's @hit): a fencing blow from behind with a readied
 		/// throat slit, 10 points of each: the probe's 1000, +100 permille from behind, +40% for the slit, and the slit spent.</summary>
 		private static void TestThiefBlowInASwing(Player player, ThiefProfessionPlugin thief, NPC victim) {
 			ClassAbilities.SetPoints(player, "utok_do_zad", 10);
@@ -586,13 +586,13 @@ namespace SteamEngine.CompiledScripts {
 				player.SetRealSkillValue((int) skill, 1000);
 			}
 			((ItemDef) ThingDef.GetByDefname("i_kryss")).Create(player);
-			Item thiefShield = (Item) ((ItemDef) ThingDef.GetByDefname("i_MITHRIL_METAL_SHIELD")).Create(player); //#1459 - at @afterHit
+			Item thiefShield = (Item) ((ItemDef) ThingDef.GetByDefname("i_MITHRIL_METAL_SHIELD")).Create(player); //#1459 - at @afterSwing (#1558)
 			player.InvalidateCombatWeaponValues();
 			int victimExp = victim.ExperienceReward;
 			victim.ExperienceReward = 0;
 			thief.shieldReady = true;
 			thief.nextShield = Globals.TimeInSeconds + 100;
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, victim), 10);
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(player, victim), 10);
 			Report("theShieldStrikeLandsAtAfterHit", ParalyzeEffectPluginDef.IsParalyzed(victim) && !thief.shieldReady);
 			ParalyzeEffectPluginDef.Unparalyze(victim);
 			victim.ExperienceReward = victimExp;
@@ -695,7 +695,7 @@ namespace SteamEngine.CompiledScripts {
 			thief.throatReady = true;
 			NPC forked = Dummy(self, 1);
 			WeaponSwingArgs forkSwing = new WeaponSwingArgs(player, forked, 0, 0, 0, 100);
-			DamageManager.Trigger_SwingLanding(forkSwing); //#1433 - e_thief's @AfterSwing is the plugin's @swingLanding
+			DamageManager.Trigger_Hit(forkSwing); //#1433 - e_thief's @AfterSwing is the plugin's @hit
 			Report("aWarForkSwingsTwice", (forkSwing.DamageAfterAC == 150) && (player.Stam == 200 - ClassAbilitySettings.instance.doubleSwingStamina));
 			Report("aFencingBlowSpendsTheSlit", !thief.throatReady);
 			forked.Delete();
@@ -763,19 +763,22 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1429 - a probe on both: the attacker's @swingLanding sets the blow, the defender's @getHit reads it.</summary>
+	/// <summary>#1429 - a probe on both: the attacker's @hit sets the blow (trigger groups run before plugins), the defender's
+	/// @denyDamage reads what reaches the damage (#1558: after both sides' @hit/@getHit plugins) and refuses it.</summary>
 	public partial class E_SwingLandingProbe : CompiledTriggerGroup {
-		public void On_SwingLanding(Character self, WeaponSwingArgs swingArgs) {
+		public void On_Hit(Character self, WeaponSwingArgs swingArgs) {
 			if (ClassAbilityTests.setTheBlow) {
 				swingArgs.DamageAfterAC = 1000;
 			}
 		}
 
-		public void On_GetHit(Character self, WeaponSwingArgs swingArgs) {
-			if (ClassAbilityTests.setTheBlow) {
-				ClassAbilityTests.getHitSaw = swingArgs.DamageAfterAC;
-				swingArgs.DamageAfterAC = 0;
+		public TriggerResult On_DenyDamage(Character self, DenyDamageArgs args) {
+			if (ClassAbilityTests.setTheBlow && args.isSwing) {
+				ClassAbilityTests.getHitSaw = args.damage;
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
 			}
+			return TriggerResult.Continue;
 		}
 	}
 }

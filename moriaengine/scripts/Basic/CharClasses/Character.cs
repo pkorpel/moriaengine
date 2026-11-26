@@ -3058,20 +3058,94 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public TriggerResult On_BeforeSwing(WeaponSwingArgs args) {
+		private static readonly TriggerKey denySwingTK = TriggerKey.Acquire("denySwing");
+
+		/// <summary>#1558 - Erebor's @hittry as a deny (was @hitTry): @denySwing on the attacker, then On_DenySwing, as a swing
+		/// is drawn in reach (WeaponSkillDef), for every attacker. A deny means "not now": WeaponSkillDef tries the stroke again
+		/// a second later. Handlers only decide; the deny's message, if any, is theirs to send.</summary>
+		public DenyResult Trigger_DenySwing(Character target) {
+			DenySwingArgs args = new DenySwingArgs(this, target);
+			TriggerResult result = this.TryCancellableTrigger(denySwingTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenySwing(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the default swing check: none (Player adds the work light).</summary>
+		public virtual TriggerResult On_DenySwing(DenySwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		public TriggerResult On_BeforeGetSwing(WeaponSwingArgs args) {
+		public TriggerResult On_Swing(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>#1411 - a landed blow, before its damage; can be cancelled (DamageManager.Trigger_Hit).</summary>
-		public virtual TriggerResult On_Hit(WeaponSwingArgs args) {
+		public TriggerResult On_GetSwing(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		public virtual TriggerResult On_GetHit(WeaponSwingArgs args) {
+		/// <summary>#1411, #1558 - the attacker's calculation after the dodge (DamageManager.Trigger_Hit); args.Dodged on a
+		/// dodged blow.</summary>
+		public virtual void On_Hit(WeaponSwingArgs args) {
+		}
+
+		/// <summary>#1411, #1558 - the defender's calculation after the dodge, a landed blow only (DamageManager.Trigger_GetHit).</summary>
+		public virtual void On_GetHit(WeaponSwingArgs args) {
+		}
+
+		private static readonly TriggerKey denyDamageTK = TriggerKey.Acquire("denyDamage");
+
+		/// <summary>#1558 - may this character be hurt by this damage at all: @denyDamage, then On_DenyDamage, first thing in
+		/// DamageManager.CauseDamage, for every kind of damage. Refused damage does nothing; a swing's blow still ends in
+		/// @afterSwing/@afterGetSwing with FinalDamage 0.</summary>
+		public DenyResult Trigger_DenyDamage(DenyDamageArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(denyDamageTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenyDamage(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the default refusals (were hard-coded at the top of CauseDamage): Rinald, the copy guard, a guard
+		/// spawn's monster, invulnerability on either side, and a creature hurting its own master.</summary>
+		public virtual TriggerResult On_DenyDamage(DenyDamageArgs args) {
+			Character attacker = args.attacker;
+			if (MonsterSpecialAttacks.TryRinald(attacker, this) //#1022 e_rinald: only players hurt him, his invulnerability answers too
+					|| MonsterSpecialAttacks.CopyGuardRefuses(attacker, this, args.flags) //#1022 e_rozdeleni: nothing hurts it while its copy lives
+					|| GuardBoss.Refuses(attacker, this)) { //#1234 a guard spawn's monster still lives
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			if (this.Flag_Invulnerable) {
+				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
+				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
+				//in this codebase, and this one is already an established "your attack had no effect"
+				//visual language here, so reuse it rather than invent a new effect id.
+				EffectFactory.StationaryEffect(this, 0x37B9, 10, 5);
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			//#267: symmetric with the check above - an invulnerable character deals no damage either, not just takes none.
+			//No extra visual cue here (the normal swing/cast animation already plays regardless of the resulting damage).
+			//Defense in depth: a creature can never damage its own current owner/commander, however the attack got
+			//triggered - target selection (NPC.ShouldAggroOn, NPCAiTimer.IsValidTarget) already keeps this from happening,
+			//but this is the one choke point everything routes through. A legitimate "rebel" (owner attacks pet first)
+			//clears ControlMaster/FollowTarget before this could ever trigger - see NPC.On_HostileAction.
+			if ((attacker != null) && (attacker.Flag_Invulnerable || (this == (attacker.FollowTarget ?? attacker.ControlMaster)))) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -3090,7 +3164,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_AfterGetSwing(WeaponSwingArgs args) {
-			NPCAiTimer.MaybeTurnOn(this as NPC, args.attacker); //#1022
+			if (!args.attacker.IsDeleted) { //#1558 - raised also after reactive armour killed the attacker
+				NPCAiTimer.MaybeTurnOn(this as NPC, args.attacker); //#1022
+			}
 		}
 
 		/// <summary>hodi zbran do batohu</summary>

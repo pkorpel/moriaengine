@@ -75,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#summoneater - unconditional in the real archive: if the attacker lands a
 		/// swing on a summoned creature, that creature is deleted outright instead of taking
-		/// normal damage. Must be called right after Trigger_BeforeSwing succeeds, before the
+		/// normal damage. Must be called right after Trigger_Swing succeeds, before the
 		/// normal critic/damage/stun/bleed/knockback chain - returns true when the defender was
 		/// consumed, telling the caller to skip the rest of the swing entirely (there's nothing
 		/// left to apply any of that to).</summary>

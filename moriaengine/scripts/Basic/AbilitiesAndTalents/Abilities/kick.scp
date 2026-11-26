@@ -9,7 +9,7 @@ PluginKey = @@kick
 PluginDef = p_kick
 
 [EffectDurationPluginDef p_kick]
-on=@beforeswing //params: attacker, defender, attack, piercing, armorClass, damageAfterAC
+on=@swing //#1558 - was @beforeswing. params: attacker, defender, attack, piercing, armorClass, damageAfterAC
 	if (a_kick.CheckSuccess(this.Cont))
 		argv[5] = argv[5] * a_kick.EffectPower //reduce damage
 		argv[1].AbortSkill() //abort skill of the defender

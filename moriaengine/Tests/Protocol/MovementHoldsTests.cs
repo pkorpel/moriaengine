@@ -31,7 +31,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestHoldsAfter", "HOLDS_DONE");
 				this.AssertChecks("lootHoldRanOut", "entangledHolds", "blowsFree", "leavingTheTileFrees", "spellsFreeAfterSix", "abilityHitsFreeAfterSix");
 				this.Run(game, ".TestHitTriggers", "HOLDS_HIT_DONE"); //#1411
-				this.AssertChecks("hitThenGetHit", "cancelledHit");
+				this.AssertChecks("hitThenGetHit", "dodgedHit");
 			}
 		}
 

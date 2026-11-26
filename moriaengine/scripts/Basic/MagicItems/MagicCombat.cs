@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>e_paralysing after a landed blow (MagicWearerPlugin's @afterHit).</summary>
+		/// <summary>e_paralysing after a landed blow (MagicWearerPlugin's @afterSwing).</summary>
 		internal static void TryFreeze(Character attacker, Character defender, int damage) {
 			if (!attacker.IsPlayer || (damage <= 0) || defender.IsDeleted || attacker.IsDeleted) {
 				return;

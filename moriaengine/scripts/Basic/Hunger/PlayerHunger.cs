@@ -65,9 +65,9 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing.</summary>
+		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing. Never a GM's (#1558: the swing's own GM skip went).</summary>
 		public static void HurtIfStarving(Character ch) {
-			if ((ch is Player) && (FoodOf(ch) < 1) && !ch.Flag_Dead) {
+			if ((ch is Player) && !ch.IsGM && (FoodOf(ch) < 1) && !ch.Flag_Dead) {
 				ch.SysMessage(Loc<HungerLoc>.Get(ch.Language).Dying);
 				DamageManager.CauseDamage(ch, ch, DamageType.Irresistable, HungerSettings.instance.starvingDamage);
 			}

@@ -24,7 +24,7 @@ namespace SteamEngine.CompiledScripts {
 	[PluginTemplate]
 	public partial class WeaponSkillDmgBonusPlugin : EffectDurationPlugin {
 
-		public void On_BeforeSwing(WeaponSwingArgs swingArgs) {
+		public void On_Swing(WeaponSwingArgs swingArgs) { //#1558 - was @beforeSwing
 			var attackerSkill = swingArgs.attacker.CurrentSkill as WeaponSkillDef;
 			if (attackerSkill == this.TypeDef.Skill) {
 				swingArgs.DamageAfterAC *= (1 + this.EffectPower);

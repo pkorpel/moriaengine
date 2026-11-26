@@ -224,7 +224,7 @@ namespace SteamEngine.CompiledScripts {
 			return (resist < 750) ? "Cil z casti odolava tvemu drtivemu sipu!" : "Cil znacne odolava tvemu drtivemu sipu!";
 		}
 
-		/// <summary>e_killingSpreeCharge's blow on a monster (the ranger's @swingLanding, #1431): each charge adds 5% and
+		/// <summary>e_killingSpreeCharge's blow on a monster (the ranger's @hit, #1431): each charge adds 5% and
 		/// a point, one is used up.</summary>
 		internal static void ApplySpree(RangerProfessionPlugin ranger, WeaponSwingArgs swing) {
 			Player self = (Player) ranger.Cont;

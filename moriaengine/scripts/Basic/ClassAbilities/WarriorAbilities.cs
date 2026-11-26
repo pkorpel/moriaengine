@@ -181,7 +181,7 @@ namespace SteamEngine.CompiledScripts {
 			return limit + ((limit * koeficient) / 100);
 		}
 
-		/// <summary>e_stunattack's @AfterSwing, from the profession plugin's @afterHit (#1459).</summary>
+		/// <summary>e_stunattack's @AfterSwing, from the profession plugin's @afterSwing (#1459, #1558).</summary>
 		internal static void TryStun(Player self, ProfessionPlugin plugin, NPC target, int damage) {
 			if (!plugin.stunReady) {
 				return;
@@ -322,7 +322,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1429 - the warrior's part of its @AfterSwing on a blow that's landing (WarriorProfessionPlugin's
-		/// @swingLanding): e_war's double swing, then the stance.</summary>
+		/// @hit): e_war's double swing, then the stance.</summary>
 		internal static void ModifyOwnBlow(WarriorProfessionPlugin war, WeaponSwingArgs swing) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
 			Player self = (Player) war.Cont;
@@ -364,7 +364,7 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>#1429 - the warrior's part of its @aftergetswing (WarriorProfessionPlugin's @getSwingLanding): the stance,
+		/// <summary>#1429 - the warrior's part of its @aftergetswing (WarriorProfessionPlugin's @getHit): the stance,
 		/// against monsters only.</summary>
 		internal static void ModifyIncomingBlow(WarriorProfessionPlugin war, WeaponSwingArgs swing) {
 			if (war.defending && !swing.attacker.IsPlayer) {
@@ -373,7 +373,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>f_shieldDodge_afterGetSwing: a shield takes part of a monster's blow. Six classes may learn it, so
-		/// every profession plugin's @getSwingLanding runs it (#1429).</summary>
+		/// every profession plugin's @getHit runs it (#1429).</summary>
 		internal static void ShieldBlock(Character self, WeaponSwingArgs swing) {
 			if (swing.attacker.IsPlayer) {
 				return;

@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1461 - Erebor's i_hypno_timer with e_hypnotizing: the concentration before the swap. A step (@step, after
-	/// the move) or a blow (@aftergetswing, here @getSwingLanding) breaks it.</summary>
+	/// the move) or a blow (@aftergetswing, here @getHit) breaks it.</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
 	public partial class ConcentrationPlugin : TimerPlugin {
@@ -57,7 +57,7 @@ namespace SteamEngine.CompiledScripts {
 			this.Delete();
 		}
 
-		public void On_GetSwingLanding(WeaponSwingArgs swing) {
+		public void On_GetHit(WeaponSwingArgs swing) {
 			if (this.Cont is Character self) {
 				self.RedMessage("Utok prerusil tve soustredeni, hypnoza se nezdarila");
 			}
@@ -141,7 +141,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1455 - Erebor's e_catchedInField with tag.catchedBy and tag.catchPower: a monster held by a catch field.
-	/// A blow at it frees it (@aftergetswing, here @getSwingLanding).</summary>
+	/// A blow at it frees it (@aftergetswing, here @getHit).</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
 	public partial class CaughtPlugin : Plugin {
@@ -157,9 +157,9 @@ namespace SteamEngine.CompiledScripts {
 			return ch.GetPlugin(Key) as CaughtPlugin;
 		}
 
-		/// <remarks>Inside its holder's @getSwingLanding this also removes the NPC's ImmobilePlugin and every paralysis
+		/// <remarks>Inside its holder's @getHit this also removes the NPC's ImmobilePlugin and every paralysis
 		/// (Erebor's paralyze_remove); the trigger still reaches the NPC's other plugins (#1468).</remarks>
-		public void On_GetSwingLanding(WeaponSwingArgs swing) {
+		public void On_GetHit(WeaponSwingArgs swing) {
 			if (this.Cont is NPC npc) {
 				MysticMind.ReleaseFromField(npc, CatchFieldPlugin.Of(this.mystic));
 			}
@@ -203,7 +203,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1457 - Erebor's i_buffSteal on the mystic: state 0 the 3 s wind-up, 1 the 60 s stolen talent (or the
 	/// crippling of a fatal failure), 2 the rest. The stolen attack talent (tag.buffDmgBonus) is its bonus: blows and spell
-	/// power against monsters, at @swingLanding and @spellPower. Its own @death ends it, as e_mystik's @death consumed
+	/// power against monsters, at @hit and @spellPower. Its own @death ends it, as e_mystik's @death consumed
 	/// i_buffSteal; its @unAssign (Erebor's @unEquip) gives a held talent back whenever it goes.</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
@@ -266,7 +266,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>The stolen attack talent on a blow at a monster (magie.scp:176's buffDmgBonus).</summary>
-		public void On_SwingLanding(WeaponSwingArgs swing) {
+		public void On_Hit(WeaponSwingArgs swing) {
 			if ((this.bonus != 0) && (swing.attacker is Player) && !swing.defender.IsPlayerForCombat) {
 				swing.DamageAfterAC += (swing.DamageAfterAC / 100) * this.bonus;
 			}
@@ -287,7 +287,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1457 - Erebor's i_buffStealNPC with e_npcChangeDmg: 60 s of a robbed monster, then its talent comes
-	/// back. Its blows lose the cut (tag.changeDmgPercent) at @swingLanding, e_npcChangeDmg's @AfterSwing.</summary>
+	/// back. Its blows lose the cut (tag.changeDmgPercent) at @hit, e_npcChangeDmg's @AfterSwing.</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
 	public partial class BuffStolenPlugin : TimerPlugin {
@@ -321,7 +321,7 @@ namespace SteamEngine.CompiledScripts {
 			this.Delete();
 		}
 
-		public void On_SwingLanding(WeaponSwingArgs swing) {
+		public void On_Hit(WeaponSwingArgs swing) {
 			if (this.cut != 0) {
 				swing.DamageAfterAC -= (swing.DamageAfterAC * this.cut) / 100;
 			}

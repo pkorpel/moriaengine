@@ -144,14 +144,23 @@ move, cancellable region `@exit`/`@enter`, and `@stepTaken` after the move, not 
 
 ## 1.12 Chain: Combat resolution
 
+#1558 reworked this chain (`DamageManager`, `WeaponSkillDef`, `Character`). Old names: `@hitTry` became `@denySwing`;
+`@beforeSwing`/`@beforeGetSwing` became `@swing`/`@getSwing`; `@swingLanding`/`@getSwingLanding` merged into
+`@hit`/`@getHit`; `@afterHit`/`@afterGetHit` merged into `@afterSwing`/`@afterGetSwing`; the hard-coded refusals at the
+top of `CauseDamage` became `@denyDamage`. Each step is `@X` on the participant, then its `On_X`.
+
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1a | `@beforeSwing` | attacker | deny/implementation | cancellable | Pre-hit phase on attacker | Alter/deny pending hit |
-| 1b | `@beforeGetSwing` | defender | deny/implementation | cancellable | Pre-hit phase on defender | Defensive pre-hit logic |
-| 2a | `@causeDamage` | attacker | implementation/calculation | regular | Outgoing damage adjustment | Scale or transform outgoing damage |
-| 2b | `@damage` | defender | implementation/calculation | regular | Incoming damage adjustment | Absorb/redirect/modify incoming damage |
-| 3a | `@afterSwing` | attacker | notification | regular | Post-hit phase attacker side | Trigger on-hit aftermath |
-| 3b | `@afterGetSwing` | defender | notification | regular | Post-hit phase defender side | Trigger post-hit defensive effects |
+| 0 | `@denySwing` | attacker | deny | cancellable (`DenySwingArgs`) | A swing being drawn in reach (`WeaponSkillDef`), every attacker; a deny is a retry a second later (Sphere's `@HitTry` RETURN 1) | `Player.On_DenySwing`: too dark to fight (GMs pass) |
+| 1a | `@swing` | attacker | calculation | cancellable | After armour, before the monsters' modifiers and the dodge; `DamageAfterAC` mutable; a cancel stops the whole swing | Whirlwind, weapon-skill bonus, `kick.scp` |
+| 1b | `@getSwing` | defender | calculation | cancellable | Same stage on the defender | |
+| 2a | `@hit` | attacker | calculation | regular | After the dodge; also on a dodged blow (`Dodged`), as Erebor's `@AfterSwing` | Class abilities, slayers, stolen talents |
+| 2b | `@getHit` | defender | calculation | regular | After the attacker's `@hit`, a landed blow only (Erebor's `@aftergetswing`) | Stance, shield block, hypnosis breaking |
+| 3 | `@denyDamage` | defender | deny | cancellable (`DenyDamageArgs`) | Every kind of damage, before the resists; refused damage does nothing | `Character.On_DenyDamage`: invulnerability, Rinald, guard spawns |
+| 4a | `@causeDamage` | attacker | calculation | regular | After resists, energy shield, minimum damage, reactive armour; every kind of damage | Scale or transform outgoing damage |
+| 4b | `@damage` | defender | calculation | regular | Same stage on the defender | Mana shield |
+| 5a | `@afterSwing` | attacker | notification | regular | The blow is over: after a dodge, or once a landed blow's damage was dealt (`FinalDamage`, 0 when refused or absorbed); not after a cancelled `@swing` | Stun blow, freezing blow, bleeding strike, poisoned weapon |
+| 5b | `@afterGetSwing` | defender | notification | regular | Same, on the defender; also when reactive armour killed the attacker | Blood pact, waking the NPC's AI |
 
 ---
 

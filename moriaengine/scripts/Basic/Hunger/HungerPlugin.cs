@@ -5,8 +5,8 @@ using SteamEngine.Persistence;
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#924, #1396 - a player's hunger, on every player from login. It does its work in its holder's triggers,
 	/// as Erebor's player event e_allplayers does (sphereevents.scp): its timer is Sphere's food tick, @skillSuccess
-	/// (ishungrymsg: a hungry player's success is a failure), @spellCast and @hitTry (hungryhurts, Erebor's @spellcast and
-	/// @hittry). The skills that ask about hunger themselves in Erebor's scripts call PlayerHunger, which reads this.</summary>
+	/// (ishungrymsg: a hungry player's success is a failure) and @spellCastTry (hungryhurts, Erebor's @spellcast; its @hittry
+	/// is WeaponSkillDef's call, #1558). The skills that ask about hunger themselves in Erebor's scripts call PlayerHunger, which reads this.</summary>
 	[ViewableClass]
 	[PluginTemplate]
 	public partial class HungerPlugin : TimerPlugin {
@@ -68,10 +68,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Erebor's @hittry: hungryhurts, trying a blow on nothing (WeaponSkillDef, as the swing is drawn).</summary>
-		public void On_HitTry(SkillSequenceArgs swingArgs) {
-			PlayerHunger.HurtIfStarving((Character) this.Cont);
-		}
 	}
 
 	[ViewableClass]

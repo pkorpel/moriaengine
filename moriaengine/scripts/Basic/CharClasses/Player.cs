@@ -460,6 +460,19 @@ namespace SteamEngine.CompiledScripts {
 			base.On_Step(direction, running, oldPoint);
 		}
 
+		/// <summary>#1558 - a player's swing (Erebor's e_allplayers @hittry): a GM swings anyway; otherwise nolightfizz, too
+		/// dark to fight is a retry a second later (WorkLight).</summary>
+		public override TriggerResult On_DenySwing(DenySwingArgs args) {
+			if (this.IsGM) {
+				return TriggerResult.Continue;
+			}
+			if (!WorkLight.CheckWithMessage(this)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			return base.On_DenySwing(args);
+		}
+
 		/// <summary>Classic UO-style logout delay (#261) - the character stays fully standing/
 		/// visible/interactable for LogoutSettings.logoutDelaySeconds (default 60s) after
 		/// disconnect, then actually disappears (CharLingeringTimer.OnTimeout -> Disconnect() ->

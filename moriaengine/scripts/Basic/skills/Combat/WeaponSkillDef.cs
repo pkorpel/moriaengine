@@ -60,9 +60,6 @@ namespace SteamEngine.CompiledScripts {
 		// print on every single hit instead of once per engagement.
 		static TagKey lastAttackedTargetTK = TagKey.Acquire("_combatMessagesLastTarget_");
 
-		/// <summary>#1396 - Erebor's @hittry on a player starting a swing (not GMs), as the swing is drawn.</summary>
-		private static readonly TriggerKey tkHitTry = TriggerKey.Acquire("hitTry");
-
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
@@ -185,13 +182,14 @@ namespace SteamEngine.CompiledScripts {
 			WeaponSkillPhase phase = (WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1);
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
-					if ((self is Player) && !self.IsGM) { //#976 - Erebor's @hittry
-						self.TryTrigger(tkHitTry, skillSeqArgs.scriptArgs); //#1396 - hunger answers it (HungerPlugin.On_HitTry)
-						if (!WorkLight.CheckWithMessage(self)) {
-							skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
-							skillSeqArgs.DelayStroke();
-							return TriggerResult.Cancel;
-						}
+					PlayerHunger.HurtIfStarving(self); //#976, #1396 - Erebor's @hittry: hungryhurts, before its refusals
+					if (self.IsDeleted || self.Flag_Dead) {
+						return TriggerResult.Cancel; //starved to death trying
+					}
+					if (!self.Trigger_DenySwing(target).Allow) { //#1558 - was @hitTry; a deny is a retry a second later
+						skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
+						skillSeqArgs.DelayStroke();
+						return TriggerResult.Cancel;
 					}
 					skillSeqArgs.Param1 = WeaponSkillPhase.Striking;
 					TimeSpan delay = self.WeaponDelay;

@@ -67,7 +67,7 @@ So a plugin on a character hears whatever the character hears without anyone cal
 `@skillSelect`, `@skillStart`, `@skillStroke`, `@skillSuccess` and `@skillFail` (raised on the
 character by `SkillDef`'s `Trigger_Select`, `Trigger_Start`, `Trigger_Stroke`,
 `Trigger_Success` and `Trigger_Fail` before the skill's own code, `SkillDef.cs:233-321`),
-`@beforeSwing`, `@death`, `@logout`, the deny triggers, and so on. `@damage` (`DamageManager`) carries a
+`@swing`, `@death`, `@logout`, the deny triggers, and so on. `@damage` (`DamageManager`) carries a
 `DamageArgs` whose `damage` a handler may lower (the mana shield does, #1401) and whose `isSwing`/`isSpell` say where
 it came from. Plugins hear a trigger newest first, so where the order of two changes matters (Erebor's damage_final:
 energy shield, then mana shield) the first is called at a fixed point instead (`EnergyShieldPlugin.Absorb`). Magery
@@ -104,35 +104,30 @@ and mage's mana back there (#1440). The charge and Koncentrace stay at a fixed p
 plugins run newest first; the mystic's stolen attack talent, which came last of them anyway, answers `@spellPower` on its
 `BuffStealPlugin` (#1457).
 
-`@hit` on the attacker and then `@getHit` on the defender (#1411, `DamageManager.Trigger_Hit`) are raised for a blow
-that landed, before its damage: a `WeaponSwingArgs` whose `DamageAfterAC` a handler may change (it's what
-`CauseDamage` gets), and both are cancellable: a cancel ends the blow as a dodged one (no damage, `@afterSwing` still
-raised, and the boss after-swing reactions a dodge runs) and `@getHit` isn't raised after a cancelled `@hit`. They
-differ from Sphere's: raised after the dodge and the blow's own modifiers (armour, monster shields, class abilities),
-with the damage stage (resists, shields, minimum damage, reactive armour) still to come in `CauseDamage`; only for
-swings (a mystic's strike too, not spells nor ability blows such as backstab or split shot); and SRC isn't set. `VineHoldPlugin` counts the blows on a holding vine there.
+The swing's chain is in [trigger-catalog.md](trigger-catalog.md) section 1.12 (#1558). The plugins that answer it:
 
-Before the dodge, a swing raises `@swingLanding` on the attacker and `@getSwingLanding` on the defender (#1429,
-`DamageManager.Trigger_SwingLanding`/`Trigger_GetSwingLanding`). They are Erebor's player `@AfterSwing` and
-`@aftergetswing`: armour and the monsters' own modifiers are applied and the dodge is still to come. Erebor rolled its
-dodge first and ran them on a dodged blow and a landed one alike, so they run on both here too. Handlers change
-`DamageAfterAC`. They can't cancel the blow; `@hit` can. The profession plugins answer them, and so do the shaman's
-empathy elixir (`EmpathyPlugin`, #1447), a monster held by a mystic's catch field (`CaughtPlugin`, #1455) and the
-mystic's buff steal on both sides (`BuffStealPlugin`, `BuffStolenPlugin`, #1457).
-
-Once a landed blow's damage is dealt, a swing raises `@afterHit` on the attacker and `@afterGetHit` on the defender
-(#1445, `DamageManager.Trigger_AfterHit`, args: the `WeaponSwingArgs` and the damage). They come after the damage, the
-monsters' stun, the knockback, the bleeding and the leech, and before the monsters' after-swing reactions; a magic item's
-freezing blow is one of its handlers (`MagicWearerPlugin`, #1476). They are not
-raised for a dodged or cancelled blow, which ends in `@afterSwing`, nor for a blow that killed and deleted the defender
-(an NPC), so a handler must not count kills here; `@kill` is for that. A blow of 0 still raises them. The shaman's blood
-pact answers `@afterGetHit`; the profession plugin's stun blow and the thief's shield strike answer `@afterHit` (#1459).
+- `@hit` on the attacker (`DamageManager.Trigger_Hit`, #1411; it absorbed #1429's `@swingLanding`) comes after the dodge
+  and the blow's own modifiers, with the damage stage (resists, shields, minimum damage, reactive armour) still to come
+  in `CauseDamage`. It is raised on a dodged blow too (`WeaponSwingArgs.Dodged`), as Erebor's `@AfterSwing` was: the
+  class plugins spend their charges on any blow (the thief's throat slit, the ranger's spree, the warrior's double
+  swing). They, the shaman's empathy elixir (`EmpathyPlugin`, #1447), the mystic's buff steal (`BuffStealPlugin`,
+  `BuffStolenPlugin`, #1457) and the magic items' slayers (`MagicWearerPlugin`) change `DamageAfterAC` there.
+- `@getHit` on the defender (`Trigger_GetHit`; it absorbed `@getSwingLanding`) follows, a landed blow only, as Erebor's
+  `@aftergetswing`: the stance and the shield block (the profession plugins), the hypnosis breaking (#1455, #1467), a
+  monster held by a catch field (`CaughtPlugin`) and the holding vine's count (`VineHoldPlugin`). Neither cancels.
+  Only for swings (a mystic's strike too, not spells nor ability blows such as backstab or split shot); SRC isn't set.
+- `@afterSwing`/`@afterGetSwing` (they absorbed #1445's `@afterHit`/`@afterGetHit`) come once the blow is over: after a
+  dodge, or once a landed blow's damage is dealt, after the monsters' after-swing reactions; also when reactive armour
+  killed the attacker or the blow the defender, each side only while it exists. `FinalDamage` is what a landed blow
+  dealt (0 when refused or fully absorbed). Handlers that need a landed blow check `!Dodged`: the profession plugin's
+  stun blow and the thief's shield strike (#1459), the magic items' freezing blow, the shaman's blood pact. Kills are
+  `@kill`'s, not these.
 
 Two spell triggers have Sphere's names (#1476): `@beforeDoEffect` on the caster, after the target's defense (or resist
 roll) with a `SpellPowerArgs` whose `SpellPower` a handler may still change (the magic items' spell slayers), and
 `@beforeGetEffect` on the target, cancellable, before the spell's effect reaches it (the items' reflex and block; a
 cancel means the spell doesn't land there). `MagicWearerPlugin` is on a character while anything magic is worn (items or
-a magic mount) and answers both, plus `@swingLanding` (slayers) and `@afterHit` (the freezing blow). Leech isn't on it:
+a magic mount) and answers both, plus `@hit` (slayers) and `@afterSwing` (the freezing blow). Leech isn't on it:
 class points and items count together, for every player, as a direct call.
 
 Before a death, `@denyDeath` (#1463, args: the killer) is raised on a living character at the top of
@@ -287,9 +282,10 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   was neither a potion, a book nor a scroll; an ability or a rune now uses the spell's key.
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
-  player's success fails), `@spellCastTry` and `@hitTry` (starving hurts), as Erebor's player
-  event `e_allplayers` did. `@hitTry` is raised by `WeaponSkillDef` on a player (not a GM) as a
-  swing is drawn. Before, those were calls from `Character.On_SkillSuccess`, `Magery.On_Start`
+  player's success fails) and `@spellCastTry` (starving hurts), as Erebor's player
+  event `e_allplayers` did. Its `@hittry` part is `WeaponSkillDef`'s `PlayerHunger.HurtIfStarving`
+  call as a swing is drawn, before `@denySwing` (#1558; it was the plugin's `@hitTry`), and never
+  hurts a GM. Before, those were calls from `Character.On_SkillSuccess`, `Magery.On_Start`
   and `WeaponSkillDef`, the food a tag and the tick a separate timer; and a landed blow hurt a
   second time from `DamageManager.ProcessSwing`, a leftover since #995. A custom spell scroll's
   cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`), and a cast whose caster

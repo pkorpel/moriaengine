@@ -190,38 +190,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true, bool noResponse = false, bool isCustom = false) {
 			reactiveReturn = 0;
-			if (MonsterSpecialAttacks.TryRinald(attacker, defender)) { //#1022 e_rinald: only players hurt him, his invulnerability answers too
-				return 0;
-			}
-			if (MonsterSpecialAttacks.CopyGuardRefuses(attacker, defender, flags)) { //#1022 e_rozdeleni: nothing hurts it while its copy lives
-				return 0;
-			}
-			if (GuardBoss.Refuses(attacker, defender)) { //#1234 a guard spawn's monster still lives
-				return 0;
-			}
-			if (defender.Flag_Invulnerable) {
-				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
-				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
-				//in this codebase, and this one is already an established "your attack had no effect"
-				//visual language here, so reuse it rather than invent a new effect id.
-				EffectFactory.StationaryEffect(defender, 0x37B9, 10, 5);
-				return 0;
-			}
-
-			//#267: symmetric with the defender check above - an invulnerable character deals no
-			//damage either, not just takes none. No extra visual cue here (the normal swing/cast
-			//animation already plays regardless of the resulting damage amount).
-			if ((attacker != null) && attacker.Flag_Invulnerable) {
-				return 0;
-			}
-
-			//Defense in depth: a creature can never damage its own current owner/commander,
-			//however the attack got triggered - target selection (NPC.ShouldAggroOn,
-			//NPCAiTimer.IsValidTarget) already keeps this from happening in practice, but this
-			//is the one choke point everything routes through, so it's the right place for a
-			//hard backstop too. A legitimate "rebel" (owner attacks pet first) clears
-			//ControlMaster/FollowTarget before this could ever trigger - see NPC.On_HostileAction.
-			if ((attacker != null) && (defender == (attacker.FollowTarget ?? attacker.ControlMaster))) {
+			//#1558 - the refusals (Rinald, the copy guard, a guard spawn's monster, invulnerability, an own master) are the
+			//defender's @denyDamage / Character.On_DenyDamage
+			if (!defender.Trigger_DenyDamage(new DenyDamageArgs(attacker, defender, flags, damage, isSwing, isSpell, isCustom)).Allow) {
 				return 0;
 			}
 
@@ -314,7 +285,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public static void ProcessSwing(Character attacker, Character defender) {
 			if (Camp.ProtectsFrom(attacker, defender)) {
-				return; //#1107 - e_lagr_nodmg's @BeforeSwing
+				return; //#1107 - e_lagr_nodmg's @BeforeSwing (Sphere's name)
 			}
 			HidingSkillDef.Reveal(attacker); //#962
 			WeaponSwingArgs swingArgs = GetWeaponSwingArgs(attacker, defender);
@@ -325,7 +296,7 @@ namespace SteamEngine.CompiledScripts {
 			// own TranslateAnim already handles handedness (left/right hand) on top of this.
 			AnimCalculator.PerformAnim(attacker, GetSwingAnim(attacker.WeaponType));
 
-			if (TriggerResult.Cancel != Trigger_BeforeSwing(swingArgs)) {
+			if (TriggerResult.Cancel != Trigger_Swing(swingArgs)) {
 				CombatWear.OnSwing(attacker);
 				//real-user-reported follow-up: a_tevent_e_summoneater (if the attacker has it)
 				//instantly deletes a summoned-creature defender instead of dealing normal
@@ -367,14 +338,6 @@ namespace SteamEngine.CompiledScripts {
 				if (attacker is Player striker) {
 					ClassAbilities.ModifyOwnBlow(striker, defender, swingArgs); //#1017
 				}
-				Trigger_SwingLanding(swingArgs); //#1429 - each class's own part, on its profession plugin
-				if (defender.IsDeleted || attacker.IsDeleted) {
-					return;
-				}
-				if (attacker is Player bolter) {
-					RangerAbilities.TryBleedBolt(bolter, defender, swingArgs); //#1070 - e_bleed_bolt
-				}
-				Trigger_GetSwingLanding(swingArgs); //#1429 - the stance and the shield, on the profession plugin
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
@@ -389,7 +352,13 @@ namespace SteamEngine.CompiledScripts {
 							return;
 						}
 					}
-					EndAsDodged(swingArgs);
+					//#1558 - Erebor's @AfterSwing ran on a dodged blow too: the attacker's @hit, flagged dodged
+					swingArgs.InternalSetDodged();
+					Trigger_Hit(swingArgs);
+					TryBleedBolt(attacker, defender, swingArgs);
+					if (!attacker.IsDeleted) {
+						EndAsDodged(swingArgs);
+					}
 					return;
 				}
 
@@ -398,114 +367,125 @@ namespace SteamEngine.CompiledScripts {
 				}
 				swingArgs.DamageAfterAC = Q026.WraithBlow(attacker, defender, swingArgs.DamageAfterAC); //#1272 e_q026_hcnPoisoning_NPC: curses, then hits a cursed hero harder
 
-				//#1411 - Sphere's @hit and @getHit: the blow landed; a cancel ends it as a dodged one
-				if (Trigger_Hit(swingArgs) == TriggerResult.Cancel) {
-					if (!attacker.IsDeleted) {
-						EndAsDodged(swingArgs);
-					}
+				//#1411, #1558 - the blow landed: the attacker's @hit (each class's own part, on its profession plugin, the
+				//slayers, the stolen talents), then the defender's @getHit (the stance and the shield block)
+				Trigger_Hit(swingArgs);
+				TryBleedBolt(attacker, defender, swingArgs);
+				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
+				Trigger_GetHit(swingArgs);
 				if (defender.IsDeleted || attacker.IsDeleted) {
 					return;
 				}
 
-				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false, out double reactiveReturn);
-
-				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
-				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
-				MonsterSpecialAttacks.TryApplyStun(attacker, defender); //a player's stun blow and shield strike are @afterHit's (#1459)
-
-				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback
-				//(if the attacker has it) can also push the defender back on a landed hit.
-				if (actualDamage > 0) { //#1155 - the user's call: only a blow that hurt knocks back (Erebor's did on any landed one)
-					MonsterSpecialAttacks.TryApplyKnockback(attacker, defender);
+				if (LandBlow(attacker, defender, swingArgs, damageType, attackerIsMystic)) {
+					Trigger_AfterSwing(swingArgs); //#1558 - also when the attacker or the defender didn't survive the blow
 				}
-
-				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
-				//the pre-armor swing value, so this must run after CauseDamage above.
-				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
-				MagicCombat.Leech(attacker, defender, actualDamage); //#1017 - leech (#1476: the slayers and the freezing blow are MagicWearerPlugin's)
-				if (!defender.IsDeleted) {
-					Trigger_AfterHit(swingArgs, actualDamage); //#1445 - the blow and its damage are done: the blood pact shares it
-				}
-				if (attacker is NPC poisoner) {
-					Poison.FromMonster(poisoner, defender); //#962 - combat.scp's wasHarmed
-				}
-
-				//#794 - a hit interrupts an elite's gate spell
-				EliteMonster.OnGotHit(defender);
-
-				//#797 batch 4 - abilities reacting to a landed swing. Attacker side first (its own
-				//leech/fire outburst), then the defender's, which only make sense while the
-				//defender survived the blow (a killed NPC is already deleted here).
-				MonsterSpecialAttacks.TryApplyLifeLeech(attacker);
-				MonsterSpecialAttacks.TryReactToOwnSwing(attacker, defender, actualDamage); //#1022
-				MonsterSpecialAttacks.TryEmoteDamage(defender, actualDamage, damageType); //#1022 e_emotedmg
-				MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
-				MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
-				MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799
-				if (reactiveReturn > 0) {
-					SendBlowBack(defender, attacker, damageType, reactiveReturn); //#1519 - f_dmgFinal_applyReactiveAR's src.damage_noresponse
-				}
-				if (attacker.IsDeleted) {
-					return;
-				}
-				if (!defender.IsDeleted && defender.IsAliveAndValid) {
-					MonsterSpecialAttacks.TryApplyReactiveArmor(attacker, defender, damageType, actualDamage);
-					MonsterSpecialAttacks.TryApplyStamDmg(attacker, defender);
-					MonsterSpecialAttacks.TryApplyManaGain(defender, actualDamage);
-					MonsterSpecialAttacks.TryApplyPhoenixRebirth(defender);
-					MonsterSpecialAttacks.TryApplyLightnings(defender);
-					MonsterSpecialAttacks.TryApplyPushall(defender);
-					MonsterSpecialAttacks.TryApplyAutoReflect(defender);
-					if (!attacker.IsDeleted) {
-						MonsterSpecialAttacks.TryReactToHit(attacker, defender); //#1022
-					}
-					//#799 batch 5 - the ones reading the attacker skip an NPC attacker reactive armor just killed
-					MonsterSpecialAttacks.TryInterruptBackstabHide(defender);
-					MonsterSpecialAttacks.TryApplyMultishot(defender);
-					MonsterSpecialAttacks.TryApplyDispelBomb(defender);
-					MonsterSpecialAttacks.TryDragonReactions(attacker, defender); //#1022 the dragons' @aftergetswing
-					if (!attacker.IsDeleted) {
-						MonsterSpecialAttacks.TryApplyCraftMonster(attacker, defender);
-						MonsterSpecialAttacks.TryApplyEyeAttention(attacker, defender);
-						MonsterSpecialAttacks.TryApplyGolemRetarget(attacker, defender);
-						MonsterSpecialAttacks.TryApplyMassLeap(attacker, defender);
-						MonsterSpecialAttacks.TryApplyDuplicator(attacker, defender);
-					}
-				}
-				if (attacker.IsDeleted) {
-					return; //reactive armor killed an NPC attacker - nothing left to message or drain
-				}
-
-				swingArgs.InternalSetFinalDamage(actualDamage);
-
-				// Testing combat messages (CombatSettings.showCombatMessages) - the only
-				// existing feedback for a landed hit was the defender's own anonymous "-N"
-				// overhead message (still unconditional, see CauseDamage above); neither side
-				// got a named, chat-log-visible line saying who hit whom for how much.
-				CombatMessages.Send(attacker, "[Combat] You hit " + defender.Name + " for " + actualDamage + " damage.");
-				CombatMessages.Send(defender, "[Combat] " + attacker.Name + " hits you for " + actualDamage + " damage.");
-
-				// #450 - confirmed from the Erebor source: every Mystic swing drains a fraction
-				// of current mana (the natural throttle instead of a hard mana gate - see
-				// CalculateCombatWeaponValues's mana-driven WeaponDelay, which slows down as
-				// this drains). Only on a landed swing (On_Success -> ProcessSwing), not a
-				// missed one - WeaponSkillDef has no separate "cast attempt" step to hook for a
-				// Mystic the way Erebor's own single dospellcustom_donesrc call would.
-				if (attackerIsMystic) {
-					if (swingArgs.MysticSpecial && !defender.IsDeleted && defender.IsAliveAndValid) {
-						MysticAbilities.ApplySpecialStrike(attacker, defender, swingArgs.MysticLightning);
-					}
-					DropManaShieldForStrike(attacker);
-					int manaBefore = attacker.Mana;
-					attacker.Mana = (short) Math.Round(attacker.Mana * MagerySettings.instance.mysticManaLossPermille / 1000.0);
-					CombatMessages.Send(attacker, "[Combat] Your attack channels " + (manaBefore - attacker.Mana) +
-						" mana (" + attacker.Mana + " left).");
-				}
-
-				Trigger_AfterSwing(swingArgs);
 			}
+		}
+
+		/// <summary>#1070 - e_bleed_bolt, a dodged blow too as before #1558, after the attacker's @hit so it reads the blow with
+		/// the slayers and class bonuses (#1476).</summary>
+		private static void TryBleedBolt(Character attacker, Character defender, WeaponSwingArgs swingArgs) {
+			if ((attacker is Player bolter) && !attacker.IsDeleted && !defender.IsDeleted) {
+				RangerAbilities.TryBleedBolt(bolter, defender, swingArgs);
+			}
+		}
+
+		/// <summary>#1558 - a landed blow from its damage on; true once the damage was dealt (resolved), so @afterSwing and
+		/// @afterGetSwing follow, even when one of the two died meanwhile.</summary>
+		private static bool LandBlow(Character attacker, Character defender, WeaponSwingArgs swingArgs, DamageType damageType, bool attackerIsMystic) {
+			int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false, out double reactiveReturn);
+
+			//a_tevent_e_npc_stun (if the attacker has it) - a landed swing can also stun the defender.
+			MonsterSpecialAttacks.TryApplyStun(attacker, defender); //a player's stun blow and shield strike are @afterSwing's (#1459, #1558)
+
+			//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback
+			//(if the attacker has it) can also push the defender back on a landed hit.
+			if (actualDamage > 0) { //#1155 - the user's call: only a blow that hurt knocks back (Erebor's did on any landed one)
+				MonsterSpecialAttacks.TryApplyKnockback(attacker, defender);
+			}
+
+			//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
+			//the pre-armor swing value, so this must run after CauseDamage above.
+			MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
+			swingArgs.InternalSetFinalDamage(actualDamage); //#1558 - read by the @afterSwing handlers (the blood pact, the stun blow)
+			MagicCombat.Leech(attacker, defender, actualDamage); //#1017 - leech (#1476: the slayers and the freezing blow are MagicWearerPlugin's)
+			if (attacker is NPC poisoner) {
+				Poison.FromMonster(poisoner, defender); //#962 - combat.scp's wasHarmed
+			}
+
+			//#794 - a hit interrupts an elite's gate spell
+			EliteMonster.OnGotHit(defender);
+
+			//#797 batch 4 - abilities reacting to a landed swing. Attacker side first (its own
+			//leech/fire outburst), then the defender's, which only make sense while the
+			//defender survived the blow (a killed NPC is already deleted here).
+			MonsterSpecialAttacks.TryApplyLifeLeech(attacker);
+			MonsterSpecialAttacks.TryReactToOwnSwing(attacker, defender, actualDamage); //#1022
+			MonsterSpecialAttacks.TryEmoteDamage(defender, actualDamage, damageType); //#1022 e_emotedmg
+			MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
+			MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
+			MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799
+			if (reactiveReturn > 0) {
+				SendBlowBack(defender, attacker, damageType, reactiveReturn); //#1519 - f_dmgFinal_applyReactiveAR's src.damage_noresponse
+			}
+			if (attacker.IsDeleted) {
+				return true;
+			}
+			if (!defender.IsDeleted && defender.IsAliveAndValid) {
+				MonsterSpecialAttacks.TryApplyReactiveArmor(attacker, defender, damageType, actualDamage);
+				MonsterSpecialAttacks.TryApplyStamDmg(attacker, defender);
+				MonsterSpecialAttacks.TryApplyManaGain(defender, actualDamage);
+				MonsterSpecialAttacks.TryApplyPhoenixRebirth(defender);
+				MonsterSpecialAttacks.TryApplyLightnings(defender);
+				MonsterSpecialAttacks.TryApplyPushall(defender);
+				MonsterSpecialAttacks.TryApplyAutoReflect(defender);
+				if (!attacker.IsDeleted) {
+					MonsterSpecialAttacks.TryReactToHit(attacker, defender); //#1022
+				}
+				//#799 batch 5 - the ones reading the attacker skip an NPC attacker reactive armor just killed
+				MonsterSpecialAttacks.TryInterruptBackstabHide(defender);
+				MonsterSpecialAttacks.TryApplyMultishot(defender);
+				MonsterSpecialAttacks.TryApplyDispelBomb(defender);
+				MonsterSpecialAttacks.TryDragonReactions(attacker, defender); //#1022 the dragons' @aftergetswing
+				if (!attacker.IsDeleted) {
+					MonsterSpecialAttacks.TryApplyCraftMonster(attacker, defender);
+					MonsterSpecialAttacks.TryApplyEyeAttention(attacker, defender);
+					MonsterSpecialAttacks.TryApplyGolemRetarget(attacker, defender);
+					MonsterSpecialAttacks.TryApplyMassLeap(attacker, defender);
+					MonsterSpecialAttacks.TryApplyDuplicator(attacker, defender);
+				}
+			}
+			if (attacker.IsDeleted) {
+				return true; //reactive armor killed an NPC attacker - nothing left to message or drain
+			}
+
+			// Testing combat messages (CombatSettings.showCombatMessages) - the only
+			// existing feedback for a landed hit was the defender's own anonymous "-N"
+			// overhead message (still unconditional, see CauseDamage above); neither side
+			// got a named, chat-log-visible line saying who hit whom for how much.
+			CombatMessages.Send(attacker, "[Combat] You hit " + defender.Name + " for " + actualDamage + " damage.");
+			CombatMessages.Send(defender, "[Combat] " + attacker.Name + " hits you for " + actualDamage + " damage.");
+
+			// #450 - confirmed from the Erebor source: every Mystic swing drains a fraction
+			// of current mana (the natural throttle instead of a hard mana gate - see
+			// CalculateCombatWeaponValues's mana-driven WeaponDelay, which slows down as
+			// this drains). Only on a landed swing (On_Success -> ProcessSwing), not a
+			// missed one - WeaponSkillDef has no separate "cast attempt" step to hook for a
+			// Mystic the way Erebor's own single dospellcustom_donesrc call would.
+			if (attackerIsMystic) {
+				if (swingArgs.MysticSpecial && !defender.IsDeleted && defender.IsAliveAndValid) {
+					MysticAbilities.ApplySpecialStrike(attacker, defender, swingArgs.MysticLightning);
+				}
+				DropManaShieldForStrike(attacker);
+				int manaBefore = attacker.Mana;
+				attacker.Mana = (short) Math.Round(attacker.Mana * MagerySettings.instance.mysticManaLossPermille / 1000.0);
+				CombatMessages.Send(attacker, "[Combat] Your attack channels " + (manaBefore - attacker.Mana) +
+					" mana (" + attacker.Mana + " left).");
+			}
+			return true;
 		}
 
 		private static GenericAnim GetSwingAnim(WeaponType weaponType) {
@@ -665,21 +645,23 @@ namespace SteamEngine.CompiledScripts {
 			return swingArgs;
 		}
 
-		static TriggerKey beforeSwingTK = TriggerKey.Acquire("beforeSwing");
-		static TriggerKey beforeGetSwingTK = TriggerKey.Acquire("beforeGetSwing");
+		private static readonly TriggerKey swingTK = TriggerKey.Acquire("swing");
+		private static readonly TriggerKey getSwingTK = TriggerKey.Acquire("getSwing");
 
-		/// <summary>Happens before applying armor, can be cancelled.</summary>
-		public static TriggerResult Trigger_BeforeSwing(WeaponSwingArgs swingArgs) {
-			var result = swingArgs.attacker.TryCancellableTrigger(beforeSwingTK, swingArgs);
+		/// <summary>#1558 - the swing's first calculation (was @beforeSwing/@beforeGetSwing): @swing and On_Swing on the attacker,
+		/// then @getSwing and On_GetSwing on the defender, after armour and before the monsters' modifiers and the dodge.
+		/// Handlers change swingArgs.DamageAfterAC; a cancel stops the whole swing (kick.scp's failed kick does).</summary>
+		public static TriggerResult Trigger_Swing(WeaponSwingArgs swingArgs) {
+			var result = swingArgs.attacker.TryCancellableTrigger(swingTK, swingArgs);
 			if (result != TriggerResult.Cancel) {
 				try {
-					result = swingArgs.attacker.On_BeforeSwing(swingArgs);
+					result = swingArgs.attacker.On_Swing(swingArgs);
 				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				if (result != TriggerResult.Cancel) {
-					result = swingArgs.defender.TryCancellableTrigger(beforeGetSwingTK, swingArgs);
+					result = swingArgs.defender.TryCancellableTrigger(getSwingTK, swingArgs);
 					if (result != TriggerResult.Cancel) {
 						try {
-							result = swingArgs.defender.On_BeforeGetSwing(swingArgs);
+							result = swingArgs.defender.On_GetSwing(swingArgs);
 						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 					}
 				}
@@ -687,7 +669,7 @@ namespace SteamEngine.CompiledScripts {
 			return result;
 		}
 
-		/// <summary>A blow that does nothing: dodged, or (#1411) cancelled in @hit/@getHit.</summary>
+		/// <summary>A blow that does nothing: dodged (swingArgs.Dodged; the attacker's @hit has already run).</summary>
 		private static void EndAsDodged(WeaponSwingArgs swingArgs) {
 			Character attacker = swingArgs.attacker, defender = swingArgs.defender;
 			swingArgs.InternalSetFinalDamage(0);
@@ -697,75 +679,43 @@ namespace SteamEngine.CompiledScripts {
 			Trigger_AfterSwing(swingArgs);
 		}
 
-		static TriggerKey swingLandingTK = TriggerKey.Acquire("swingLanding");
-		static TriggerKey getSwingLandingTK = TriggerKey.Acquire("getSwingLanding");
+		private static readonly TriggerKey hitTK = TriggerKey.Acquire("hit");
+		private static readonly TriggerKey getHitTK = TriggerKey.Acquire("getHit");
 
-		/// <summary>#1429 - Erebor's @AfterSwing of a player: a blow that's landing, before the dodge, after armour and the
-		/// monsters' own modifiers. Handlers change swingArgs.DamageAfterAC; nothing cancels here (@hit can). The warrior's
-		/// profession plugin answers it.</summary>
-		public static void Trigger_SwingLanding(WeaponSwingArgs swingArgs) {
-			if (!swingArgs.attacker.IsDeleted) { //a monster's own modifier before it may have taken it away
-				swingArgs.attacker.TryTrigger(swingLandingTK, swingArgs);
+		/// <summary>#1411, #1558 - the attacker's calculation after the dodge (absorbs @swingLanding): @hit and On_Hit, after the
+		/// monsters' modifiers, the thief's vigilance and the wraith's blow. Raised on a dodged blow too (swingArgs.Dodged,
+		/// as Erebor's @AfterSwing): handlers that spend a charge on any blow (the thief's throat slit, the ranger's spree,
+		/// the warrior's double swing) do so either way, and only DamageAfterAC of a landed blow is dealt. Not cancellable.</summary>
+		public static void Trigger_Hit(WeaponSwingArgs swingArgs) {
+			if (swingArgs.attacker.IsDeleted) {
+				return;
 			}
+			swingArgs.attacker.TryTrigger(hitTK, swingArgs);
+			try {
+				swingArgs.attacker.On_Hit(swingArgs);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		/// <summary>#1429 - Erebor's @aftergetswing of a player, at the same stage on the defender, after the attacker's
-		/// stolen talents and magic items. The profession plugins answer it (stance, shield block).</summary>
-		public static void Trigger_GetSwingLanding(WeaponSwingArgs swingArgs) {
-			if (!swingArgs.defender.IsDeleted) {
-				swingArgs.defender.TryTrigger(getSwingLandingTK, swingArgs);
+		/// <summary>#1411, #1558 - the defender's calculation after the dodge (absorbs @getSwingLanding): @getHit and On_GetHit,
+		/// after the attacker's @hit, only for a blow that landed (Erebor's @aftergetswing never ran on a dodged one). The
+		/// profession plugins answer it (stance, shield block). Not cancellable.</summary>
+		public static void Trigger_GetHit(WeaponSwingArgs swingArgs) {
+			if (swingArgs.defender.IsDeleted || swingArgs.Dodged) {
+				return;
 			}
+			swingArgs.defender.TryTrigger(getHitTK, swingArgs);
+			try {
+				swingArgs.defender.On_GetHit(swingArgs);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		static TriggerKey afterHitTK = TriggerKey.Acquire("afterHit");
-		static TriggerKey afterGetHitTK = TriggerKey.Acquire("afterGetHit");
+		private static readonly TriggerKey causeDamageTK = TriggerKey.Acquire("causeDamage");
+		private static readonly TriggerKey damageTK = TriggerKey.Acquire("damage");
 
-		/// <summary>#1445 - a landed blow's damage is dealt (args: the swing, the damage): @afterHit on the attacker, then
-		/// @afterGetHit on the defender. Raised in ProcessSwing after the damage, the monsters' stun, the knockback, the
-		/// bleeding and the leech (a magic item's freezing blow is a handler: MagicWearerPlugin, #1476), before the monsters' after-swing reactions; not on a dodged or
-		/// cancelled blow (those end in @afterSwing). The blood pact (PactPlugin) answers @afterGetHit; the profession
-		/// plugin's stun blow and the thief's shield strike answer @afterHit (#1459).</summary>
-		public static void Trigger_AfterHit(WeaponSwingArgs swingArgs, int damage) {
-			ScriptArgs args = new ScriptArgs(swingArgs, damage);
-			if (!swingArgs.attacker.IsDeleted) {
-				swingArgs.attacker.TryTrigger(afterHitTK, args);
-			}
-			if (!swingArgs.defender.IsDeleted) {
-				swingArgs.defender.TryTrigger(afterGetHitTK, args);
-			}
-		}
-
-		static TriggerKey hitTK = TriggerKey.Acquire("hit");
-		static TriggerKey getHitTK = TriggerKey.Acquire("getHit");
-
-		/// <summary>#1411 - Sphere's @hit on the attacker, then @getHit on the defender: a blow that wasn't dodged, before its
-		/// damage is applied. A handler may change swingArgs.DamageAfterAC (what CauseDamage gets) or cancel: the blow then
-		/// does nothing, as a dodged one, and @getHit isn't raised after a cancelled @hit. Unlike Sphere's: raised after the
-		/// dodge and the blow's own modifiers (armour, monster shields, class abilities); the damage stage (resists, shields,
-		/// minimum damage, reactive armour) follows in CauseDamage. Only for swings (a mystic's strike too; not spells nor
-		/// ability blows such as backstab or split shot), and SRC isn't set.</summary>
-		public static TriggerResult Trigger_Hit(WeaponSwingArgs swingArgs) {
-			var result = swingArgs.attacker.TryCancellableTrigger(hitTK, swingArgs);
-			if (result != TriggerResult.Cancel) {
-				try {
-					result = swingArgs.attacker.On_Hit(swingArgs);
-				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-				if ((result != TriggerResult.Cancel) && !swingArgs.defender.IsDeleted) {
-					result = swingArgs.defender.TryCancellableTrigger(getHitTK, swingArgs);
-					if (result != TriggerResult.Cancel) {
-						try {
-							result = swingArgs.defender.On_GetHit(swingArgs);
-						} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-					}
-				}
-			}
-			return result;
-		}
-
-		static TriggerKey causeDamageTK = TriggerKey.Acquire("causeDamage");
-		static TriggerKey damageTK = TriggerKey.Acquire("damage");
-
-		/// <summary>Happens before applying armor. If a script should want to negate or alter the damage, it should 'manually' alter Hits, and/or create a new damaging event altogether.</summary>
+		/// <summary>The damage calculation, for every kind of damage (swings, spells, abilities, poison, bombs): @causeDamage and
+		/// On_CauseDamage on the attacker, if any, then @damage and On_Damage on the defender, after the resists, the energy
+		/// shield, the minimum damage and the reactive armour. Handlers change damageArgs.damage (the mana shield); the
+		/// defender's @denyDamage came first.</summary>
 		public static void Trigger_Damage(DamageArgs damageArgs) {
 			if (damageArgs.attacker != null) { //#927 - a bomb has no attacker: Sphere's damage_noresponse
 				damageArgs.attacker.TryTrigger(causeDamageTK, damageArgs);
@@ -780,24 +730,60 @@ namespace SteamEngine.CompiledScripts {
 			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		static TriggerKey afterSwingTK = TriggerKey.Acquire("afterSwing");
-		static TriggerKey afterGetSwingTK = TriggerKey.Acquire("afterGetSwing");
+		private static readonly TriggerKey afterSwingTK = TriggerKey.Acquire("afterSwing");
+		private static readonly TriggerKey afterGetSwingTK = TriggerKey.Acquire("afterGetSwing");
 
-		/// <summary>Happens after applying armor, can be cancelled.</summary>
+		/// <summary>#1558 - the blow is over (absorbs @afterHit/@afterGetHit): @afterSwing and On_AfterSwing on the attacker,
+		/// then @afterGetSwing and On_AfterGetSwing on the defender, each only while it exists. Notifications: swingArgs.Dodged
+		/// tells a dodged blow, swingArgs.FinalDamage what a landed one dealt (0 when refused or fully absorbed, which still
+		/// landed). Raised after a dodge and after every landed blow whose damage was dealt, also when reactive armour or the
+		/// blow killed one of the two; not after a cancelled @swing.</summary>
 		public static void Trigger_AfterSwing(WeaponSwingArgs swingArgs) {
-			swingArgs.attacker.TryTrigger(afterSwingTK, swingArgs);
-
-			try {
-				swingArgs.attacker.On_AfterSwing(swingArgs);
-			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			if (!swingArgs.attacker.IsDeleted) {
+				swingArgs.attacker.TryTrigger(afterSwingTK, swingArgs);
+				try {
+					swingArgs.attacker.On_AfterSwing(swingArgs);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
 
 			if (!swingArgs.defender.IsDeleted) {
 				swingArgs.defender.TryTrigger(afterGetSwingTK, swingArgs);
-
 				try {
 					swingArgs.defender.On_AfterGetSwing(swingArgs);
 				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
+		}
+	}
+
+	/// <summary>#1558 - the defender's @denyDamage: argv[0] the result, then the attacker (may be null), the defender, the damage
+	/// type and the damage before the resists.</summary>
+	public class DenyDamageArgs : DenyTriggerArgs {
+		public readonly Character attacker, defender;
+		public readonly DamageType flags;
+		public readonly double damage;
+		public readonly bool isSwing, isSpell, isCustom;
+
+		public DenyDamageArgs(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, bool isCustom)
+			: base(DenyResultMessages.Allow, attacker, defender, flags, damage) {
+			this.attacker = attacker;
+			this.defender = defender;
+			this.flags = flags;
+			this.damage = damage;
+			this.isSwing = isSwing;
+			this.isSpell = isSpell;
+			this.isCustom = isCustom;
+		}
+	}
+
+	/// <summary>#1558 - the attacker's @denySwing, as a swing is drawn in reach: argv[0] the result, then the attacker and the
+	/// target. A deny means "not now": the stroke is tried again a second later (Sphere's @HitTry RETURN 1).</summary>
+	public class DenySwingArgs : DenyTriggerArgs {
+		public readonly Character attacker, target;
+
+		public DenySwingArgs(Character attacker, Character target)
+			: base(DenyResultMessages.Allow, attacker, target) {
+			this.attacker = attacker;
+			this.target = target;
 		}
 	}
 
@@ -839,7 +825,7 @@ namespace SteamEngine.CompiledScripts {
 		internal bool MysticSpecial, MysticLightning;
 
 		public WeaponSwingArgs(Character attacker, Character defender, double attack, double piercing, double armorClass, double damageAfterAC)
-			: base(attacker, defender, attack, piercing, armorClass, damageAfterAC, -1) {
+			: base(attacker, defender, attack, piercing, armorClass, damageAfterAC, -1, false) {
 			this.attacker = attacker;
 			this.defender = defender;
 			this.attack = attack;
@@ -865,6 +851,18 @@ namespace SteamEngine.CompiledScripts {
 		internal void InternalSetFinalDamage(int value) {
 			this.Argv[6] = value;
 			this.finalDamage = value;
+		}
+
+		/// <summary>#1558 - the blow was dodged (argv[7]): the attacker's @hit and both after-swing notifications still run,
+		/// the defender's @getHit doesn't.</summary>
+		public bool Dodged {
+			get {
+				return Convert.ToBoolean(this.Argv[7]);
+			}
+		}
+
+		internal void InternalSetDodged() {
+			this.Argv[7] = true;
 		}
 	}
 

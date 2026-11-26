@@ -151,7 +151,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>A blow at the ego brings the mystic home with half the hits.</summary>
-		public void On_GetSwingLanding(WeaponSwingArgs swing) {
+		public void On_GetHit(WeaponSwingArgs swing) {
 			if (this.mystic != null) {
 				this.mystic.SysMessage("Tvou mysl zalila rezava bolest");
 				MysticHypnosis.SwapBack(this.mystic, 2, false);
