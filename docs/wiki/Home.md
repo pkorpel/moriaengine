@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-11-18
 
-Server for the Moria/Erebor Ultima Online shard (SteamEngine, .NET 8). These pages
+Server for the Moria/Erebor Ultima Online shard (SteamEngine, .NET 10). These pages
 live in the code repo and change through the same pull requests as the code.
 
 ## Process

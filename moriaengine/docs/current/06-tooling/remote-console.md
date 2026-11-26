@@ -7,11 +7,11 @@ without a real UO game client.
 
 ## Build
 
-Since #29 it is an SDK-style project targeting `net8.0-windows` with `UseWindowsForms`, and
+Since #29 it is an SDK-style project targeting `net10.0-windows` (`net8.0-windows` until #1551) with `UseWindowsForms`, and
 it is in `SteamEngine.sln`, so `build.ps1` and CI compile it with everything else.
 `EnableWindowsTargeting` lets Linux and macOS compile it too (the Windows Desktop reference
 pack comes from NuGet on restore); it only *runs* on Windows. A Windows build puts
-`SteamEngine.RemoteConsole.exe` in `RemoteConsole/bin/<Configuration>/net8.0-windows/`; a
+`SteamEngine.RemoteConsole.exe` in `RemoteConsole/bin/<Configuration>/net10.0-windows/`; a
 Linux/macOS build makes no launcher (`UseAppHost` off there), only the dll, which runs on
 Windows as `dotnet SteamEngine.RemoteConsole.dll`.
 

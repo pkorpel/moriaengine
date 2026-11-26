@@ -6,7 +6,7 @@
 # idle workers and a compiler server of up to 1.8 GB: about 3.5 GB on a 5 GB box, and runs stopped for low memory.
 # Each variable is set only if unset or empty, so a run can choose otherwise.
 : "${MSBUILDDISABLENODEREUSE:=1}"          # worker nodes exit after each build
-: "${DOTNET_CLI_USE_MSBUILD_SERVER:=0}"    # no MSBuild server process (opt-in on SDK 8 anyway)
+: "${DOTNET_CLI_USE_MSBUILD_SERVER:=0}"    # no MSBuild server process, whatever the SDK's default
 # Workstation GC for the compiler and the build's tasks (1.7 -> 0.5 GB measured). It also fixes the GC mode of the
 # servers and the test host these scripts start, over their runtimeconfig: to measure server GC, export DOTNET_gcServer=1.
 : "${DOTNET_gcServer:=0}"

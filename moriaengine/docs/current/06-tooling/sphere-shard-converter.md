@@ -168,7 +168,7 @@ Without the file the converter warns and keeps the definitions' values.
 
 ## Current status
 
-Dormant between uses, but buildable - retargeted to SDK-style/net8.0 and added to
+Dormant between uses, but buildable - retargeted to SDK-style (net8.0 then, the solution's target framework since #1551) and added to
 `SteamEngine.sln` (#543) so it no longer silently bit-rots the way the original legacy
 .NET Framework 4.6.1 project did for years. `scripts/converted/` is ordinary (if
 imperfect) game content like any other `.def`/`.scp` file under `scripts/` - this tool

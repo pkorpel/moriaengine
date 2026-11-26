@@ -1,4 +1,4 @@
-# SDK-style project build output (per-project bin/obj from the net8.0 port).
+# SDK-style project build output (per-project bin/obj).
 # Note: the top-level /bin/ directory holds checked-in legacy vendor tool
 # binaries and must NOT be matched by this - these patterns require at
 # least one path segment before bin/obj, so top-level /bin/ is unaffected.

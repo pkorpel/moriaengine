@@ -1,7 +1,7 @@
 MoriaEngine / SteamEngine
 ==========================
 
-A SteamEngine/MoriaEngine server, ported to .NET 8 (cross-platform: Windows,
+A SteamEngine/MoriaEngine server, ported to modern .NET, now .NET 10 (cross-platform: Windows,
 macOS, Linux).
 
 The server consists of two processes:
@@ -13,9 +13,9 @@ The server consists of two processes:
 
 There's also a third, optional tool:
 
-  - RemoteConsole: a GUI remote-console client (WinForms, .NET 8). It builds
+  - RemoteConsole: a GUI remote-console client (WinForms, .NET 10). It builds
     with the rest of the solution everywhere but runs only on Windows:
-    RemoteConsole/bin/Debug/net8.0-windows/SteamEngine.RemoteConsole.exe
+    RemoteConsole/bin/Debug/net10.0-windows/SteamEngine.RemoteConsole.exe
     (a Windows build; a Linux/macOS build gives only the .dll, start it on
     Windows with `dotnet SteamEngine.RemoteConsole.dll`).
 
