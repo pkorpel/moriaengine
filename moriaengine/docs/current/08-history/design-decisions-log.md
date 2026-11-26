@@ -168,9 +168,8 @@ reference someone can read without archaeology through dozens of closed issues.
 `main`, its subject the PR title in the `area: what changed (#n)` form.
 
 **Why**: the maintainer's choice. On 2026-11-26 #1569 switched to merge commits, so that every branch commit
-reached `main`; the same day the maintainer went back to squash (#1580). The few PRs merged in between
-(#1567, #1568, #1571) keep their merge commits, so `main` mixes squash, rebase and merge-commit history up
-to that point.
+reached `main`; the same day the maintainer went back to squash (#1580). #1567, #1568 and #1571 landed as
+merge commits and stay that way, so older `main` history mixes squash, rebase and merge commits.
 
 ## .NET 10, one target-framework property, SDK pinned (#1551)
 
