@@ -165,11 +165,12 @@ reference someone can read without archaeology through dozens of closed issues.
 ## PRs are squash-merged onto `main` (#1580, reverses #1569)
 
 **Decision**: pull requests are squash-merged (`gh pr merge --squash`): each PR becomes one commit on
-`main`, its subject the PR title in the `area: what changed (#n)` form.
+`main`, its subject the PR title (`area: what changed (#n)`) with ` (#<PR>)` appended.
 
 **Why**: the maintainer's choice. On 2026-11-26 #1569 switched to merge commits, so that every branch commit
-reached `main`; the same day the maintainer went back to squash (#1580). #1567, #1568 and #1571 landed as
-merge commits and stay that way, so older `main` history mixes squash, rebase and merge commits.
+reached `main`; the same day the maintainer went back to squash (#1580). #1567, #1568 and #1571 (like most PRs
+before November) landed as merge commits and stay that way, so `main` history mixes squash, rebase and
+merge commits.
 
 ## .NET 10, one target-framework property, SDK pinned (#1551)
 

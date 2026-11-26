@@ -8,8 +8,9 @@ Last reviewed: 2026-11-26
 - Issue branches: `<n>-<slug>` (e.g. `12-poison-tick-damage`), made from
   `origin/main` in their own worktree `../moria-<n>` by `scripts/worktree-add.sh`
   (sparse: `archive/` is excluded; `uo-files/` stays for the build).
-- PRs are squash-merged (#1580): each becomes one commit on `main` whose subject is the PR title, so the
-  title follows the commit format below; the remote branch is deleted after merge.
+- PRs are squash-merged (#1580): each becomes one commit on `main` whose subject is the PR title with
+  ` (#<PR>)` appended, so the title follows the commit format below; the remote branch is deleted after
+  merge.
 
 ## The merge gate
 
