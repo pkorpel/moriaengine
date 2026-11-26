@@ -120,7 +120,7 @@ Since #1358 a boot doesn't compile the scripts when they haven't changed:
 - **A fingerprint of the project's inputs.**
   - `BuildFingerprint.Of` hashes the content of every `.cs`, `.resx`, `.csproj`, `.props` and `.targets` file below the project. The top-level `bin/` and `obj/` folders and hidden folders are left out, as the SDK's default globs do.
   - It also hashes any `Directory.Build.*` files above the project, the `SteamEngine.*.dll` files the running GameCore was started from, the build type and the assembly number.
-  - And the .NET runtime GameCore runs on (`RuntimeInformation.FrameworkDescription`, since #1551), so an SDK or runtime update builds again instead of loading what the previous one built.
+  - And the .NET runtime GameCore runs on (`RuntimeInformation.FrameworkDescription`, since #1551), so a runtime update builds again instead of loading what was built for the previous one.
   - `MsBuildLauncher.Compile` keeps it in `obj/<Configuration>/moria-build-stamp.<number>.txt`, next to the output's path, length and write time. While the stamp still matches, the output is loaded and `dotnet` doesn't run. That saves about 3 s per project even when MSBuild would find the project up to date.
   - A failed build deletes the stamp. An output rebuilt by anything else (an IDE, a plain `dotnet build`) no longer matches the stamp. A stamp pointing outside its project (a tree copied with its `obj/`) doesn't count. An in-game recompile has a new assembly number, so it always builds.
   - An input that can't be read, or a stamp that can't be written, only means a normal build.

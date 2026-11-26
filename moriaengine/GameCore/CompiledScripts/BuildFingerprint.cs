@@ -49,7 +49,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <param name="runtime">#1551: the .NET runtime this process runs on (".NET 10.0.15"): the scripts load into it, and
-		/// an SDK or runtime update must not reuse a build the previous one made.</param>
+		/// a runtime update must not reuse a build made for the previous one.</param>
 		internal static string OfFor(string runtime, string projectDir, string[] parts) {
 			projectDir = Path.GetFullPath(projectDir);
 			using (var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256)) {

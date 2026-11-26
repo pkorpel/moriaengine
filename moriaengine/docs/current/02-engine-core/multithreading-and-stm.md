@@ -103,6 +103,9 @@ Shielded 4.4.9 from NuGet, in the same 8-core container as the review.
 | `Dictionary` lookup (how tags are read today) | 4.2 ns | 0 |
 | `ShieldedDict` lookup inside a transaction | 28 ns | 5 B |
 
+Rerun on .NET 10 (#1551, the same container): a read inside a transaction 54 ns, a write 141 ns, one modelled think
+18.6 µs, and 134k thinks/s on 4 threads spread out. That's the same picture as the table.
+
 **One NPC think, modelled:** 30,000 NPCs; each think reads 4 fields of 50 neighbours (200 reads, about what `FindTarget`
 and the abilities read in a dense spot) and writes 3 of its own. The plain version is 0.1 µs per think, because the model
 does nothing but the accesses. The Shielded version is **19.3 µs**, so the bookkeeping alone costs about 95 ns per access.

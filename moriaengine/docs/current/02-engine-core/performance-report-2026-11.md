@@ -411,7 +411,7 @@ still missed; the rest are improvements.
 ## 8. On .NET 10 (#1551, 2026-11-26)
 
 The same harness and settings as section 2, on the day of the move to .NET 10. The machine was the same dev
-container, but **arm64**. **Two full runs on each runtime**: the .NET 8 runs on the same commit with the target
+container, an **arm64** (aarch64) one. **Two full runs on each runtime**: the .NET 8 runs on the same commit with the target
 switched back and SDK 8.0.425 pinned, and the .NET 10 runs on runtime 10.0.15 with SDK 10.0.404. All of them
 are new measurements, not the numbers from sections 3–5.
 
@@ -425,8 +425,9 @@ are new measurements, not the numbers from sections 3–5.
 | P4 dense dungeon | 4.7, 4.5 → 5.0, 3.9 % | 9.1, 6.8 → 13.5, 6.9 | 20, 21 → 14, 17 | 1.2/19, 1.3/16 → 1.0/11, 0.7/10 |
 | P5 stress 50k NPCs | 7.0, 6.9 → 6.5, 6.3 % | 7.5, 8.0 → 19.6, 7.4 | 39, 75 → 65, 50 | 1.1/15, 1.5/16 → 1.2/13, 1.0/9 |
 
-- **No regression in the steady numbers.** The game thread is as busy as before, or a little less under stress
-  (P5). Client step times are as good or better in every phase with players. The save at the end of each run
+- **No regression in the steady numbers.** Apart from the first .NET 10 run's P3 and P4 (the outlier below), the
+  game thread is as busy as before, or a little less under stress (P5). Client step times are as good or better
+  in every phase with players, except that run's P3 p99 (27.7 against 24.8 ms) and its 877 ms maximum. The save at the end of each run
   took 1535 and 1466 ms on .NET 8, and 1480 and 1347 ms on .NET 10.
 - **One outlier, not repeated.** In the first .NET 10 run, P3 had one **full blocking gen2** GC of 840 ms. The
   runtime chose it, not the harness: nothing calls `GC.Collect` during P3. Every other gen2 in all four runs was a
@@ -440,7 +441,8 @@ are new measurements, not the numbers from sections 3–5.
   - A world saved on .NET 10 took 10.3 s.
   - Boot-to-ready was 62 s on .NET 8 and 52 s on .NET 10. Both include a cold script build of 30–31 s, which
     varies with the build cache.
-- **Memory:** no change. The managed heap per phase is the same within 2 MB, and the working set (360 MB at P0, about
-  1.1 GB at P5) varies more between two runs on the same runtime than between the runtimes.
+- **Memory:** the managed heap per phase is the same within 2 MB. The working set (360 MB at P0, about 1.1 GB at
+  P5) is about 2 % higher on .NET 10 on average, 8–28 MB per phase. That is within .NET 8's own run-to-run spread
+  (up to 38 MB).
 - **Not measured:** x64. On x64, .NET 9+ also changed how a double converts to an int out of range. arm64
   already did it the new way, so this machine can't show that change.

@@ -175,8 +175,8 @@ subject and stands for a real step of the change.
 ## .NET 10, one target-framework property, SDK pinned (#1551)
 
 **Decision**: every project targets .NET 10 (`net10.0`, RemoteConsole `net10.0-windows`), set once as
-`SteamEngineTargetFramework` in `moriaengine/Directory.Build.props`. `global.json` pins SDK 10.0.1xx with
-`rollForward: latestFeature`. The code compiles as C# 14, the language .NET 10 defaults to, without a
+`SteamEngineTargetFramework` in `moriaengine/Directory.Build.props`. `global.json` pins SDK 10.0.1xx or a later 10.0
+band (`rollForward: latestFeature`). The code compiles as C# 14, the language .NET 10 defaults to, without a
 `LangVersion` pin. The source generators stay on `netstandard2.0` with Roslyn 4.11, so any compiler from VS
 2022 17.11 or SDK 8.0.4xx onwards can load them.
 

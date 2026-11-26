@@ -1,6 +1,6 @@
 # Local dev
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-11-26
 
 ## One-time setup
 
