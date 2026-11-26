@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using SteamEngine.DIExperiment;
 using SteamEngine.Common;
 using SteamEngine.Regions;
 
@@ -173,91 +174,91 @@ namespace SteamEngine {
 			}
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public static void Init() {
-			if (Globals.UseMultiItems) {
-				Console.WriteLine("Loading " + LogStr.File("Multi.mul") + " - multi items info.");
+		public int Count => this.parts.Count;
 
-				string mulFileP = Path.Combine(Globals.MulPath, "multi.mul");
-				string idxFileP = Path.Combine(Globals.MulPath, "multi.idx");
+		// DI experiment #1585: the legacy entry point cold-constructs the DI logger facade, which forwards to the static Logger.
+		public static void Init() =>
+			Init(Globals.MulPath, Globals.UseMultiItems, Globals.WriteMulDocsFiles, Globals.DocsPath, LoggerService.CreateLegacyFacade());
 
-				if (File.Exists(mulFileP) && File.Exists(idxFileP)) {
-					FileStream idxfs = new FileStream(idxFileP, FileMode.Open, FileAccess.Read);
-					FileStream mulfs = new FileStream(mulFileP, FileMode.Open, FileAccess.Read);
-					BinaryReader idxbr = new BinaryReader(idxfs);
-					BinaryReader mulbr = new BinaryReader(mulfs);
+		/// <summary>
+		/// Loads the catalog using the DI experiment's settings and logger. Missing files and read failures
+		/// propagate instead of being logged and ignored (#1585).
+		/// </summary>
+		internal static void Init(string mulPath, bool useMultiItems, bool writeMulDocsFiles, string docsPath, ILogger logger) {
+			// Clear old data even when the new configuration disables multis.
+			multiItems.Clear();
+			if (!useMultiItems) {
+				logger.WriteWarning("Ignoring multi.mul");
+				return;
+			}
+			logger.WriteLine("Loading " + LogStr.File("Multi.mul") + " - multi items info.");
 
-					int pos, length;
-					int slots = 0, items = 0;
-					MultiData listOfItems;
-					MultiComponentDescription part;
-
-					try {
-						while (true) {
-							if ((pos = idxbr.ReadInt32()) != -1) {
-								length = idxbr.ReadInt32();
-								idxbr.BaseStream.Seek(4, SeekOrigin.Current);
-
-								if (mulbr.BaseStream.Position != pos) {
-									mulbr.BaseStream.Seek(pos, SeekOrigin.Begin);
-								}
-								listOfItems = new MultiData(length / 12);
-								for (int i = 0; i < length / 12; i++) {
-									ushort id = mulbr.ReadUInt16();
-									short offsetX = mulbr.ReadInt16();
-									short offsetY = mulbr.ReadInt16();
-									short offsetZ = mulbr.ReadInt16();
-									int flags = mulbr.ReadInt32();
-
-									//s nulou jsou "stiny" ocekavanych dynamickych itemu, jako treba dveri.
-									if (flags > 0) {
-										part = new MultiComponentDescription(id, offsetX, offsetY, offsetZ, flags);
-										listOfItems.parts.Add(part);
-									}
-								}
-								multiItems[slots + 16384] = listOfItems;
-								items++;
-							} else {
-								idxbr.BaseStream.Seek(8, SeekOrigin.Current);
-							}
-							slots++;
-						}
-					} catch (EndOfStreamException) {
-					} catch (Exception e) {
-						Logger.WriteWarning("Exception while reading Multi.mul/idx", e);
-					} finally {
-						Logger.WriteDebug("Num of multiItem slots: " + slots);
-						Logger.WriteDebug("Num of multiItems: " + items);
-					}
-
-					Logger.WriteDebug("Finished loading multi.mul");
-					mulbr.Close();
-					idxbr.Close();
-
-					if (Globals.WriteMulDocsFiles) {
-						StreamWriter docsw = File.CreateText(Globals.GetMulDocPathFor("MultiItems.txt"));
-
-						foreach (KeyValuePair<int, MultiData> entry in multiItems) {
-							docsw.WriteLine("Item: " + entry.Key + "\t Num parts: " + entry.Value.parts.Count);
-							foreach (MultiComponentDescription p in entry.Value.parts) {
-								docsw.WriteLine("\t ItemId: " + p.ItemId);
-								docsw.WriteLine("\t Offset X: " + p.OffsetX);
-								docsw.WriteLine("\t Offset Y: " + p.OffsetY);
-								docsw.WriteLine("\t Offset Z: " + p.OffsetZ);
-								//docsw.WriteLine("\t Visible: "+p.flags);
-								docsw.WriteLine();
-							}
-							docsw.WriteLine();
-						}
-						docsw.Close();
-					}
-				} else {
-					Logger.WriteCritical("Unable to locate multi.idx or multi.mul. We're gonna crash soon ;)");
-				}
-			} else {
-				Logger.WriteWarning("Ignoring multi.mul");
+			string mulFileP = Path.Combine(mulPath, "multi.mul");
+			string idxFileP = Path.Combine(mulPath, "multi.idx");
+			if (!File.Exists(mulFileP) || !File.Exists(idxFileP)) {
+				throw new SEException($"Unable to locate '{idxFileP}' or '{mulFileP}'.");
 			}
 
+			int slots = 0, items = 0;
+			using (BinaryReader idxbr = new BinaryReader(File.OpenRead(idxFileP)))
+			using (BinaryReader mulbr = new BinaryReader(File.OpenRead(mulFileP))) {
+				Stream idx = idxbr.BaseStream;
+				// Each 12-byte index record identifies a model slot and its component data.
+				for (; idx.Position < idx.Length; slots++) {
+					int pos = idxbr.ReadInt32();
+					int length = idxbr.ReadInt32();
+					idxbr.ReadInt32(); //extra
+					if (pos == -1) {
+						continue;
+					}
+
+					mulbr.BaseStream.Seek(pos, SeekOrigin.Begin);
+					MultiData listOfItems = new MultiData(length / 12);
+					for (int i = 0; i < length / 12; i++) {
+						ushort id = mulbr.ReadUInt16();
+						short offsetX = mulbr.ReadInt16();
+						short offsetY = mulbr.ReadInt16();
+						short offsetZ = mulbr.ReadInt16();
+						int flags = mulbr.ReadInt32();
+
+						//s nulou jsou "stiny" ocekavanych dynamickych itemu, jako treba dveri.
+						if (flags > 0) {
+							listOfItems.parts.Add(new MultiComponentDescription(id, offsetX, offsetY, offsetZ, flags));
+						}
+					}
+					multiItems[slots + 16384] = listOfItems;
+					items++;
+				}
+			}
+			logger.WriteDebug("Num of multiItem slots: " + slots);
+			logger.WriteDebug("Num of multiItems: " + items);
+			logger.WriteDebug("Finished loading multi.mul");
+
+			// Generate the optional documentation only after the catalog has been read successfully.
+			if (writeMulDocsFiles) {
+				WriteDocs(docsPath);
+			}
+		}
+
+		// DI experiment #1585: the service releases the loaded data on dispose.
+		internal static void Clear() => multiItems.Clear();
+
+		private static void WriteDocs(string docsPath) {
+			string docsDirectory = Path.Combine(docsPath, "defaults");
+			Directory.CreateDirectory(docsDirectory);
+			using StreamWriter docsw = File.CreateText(Path.Combine(docsDirectory, "MultiItems.txt"));
+			foreach (KeyValuePair<int, MultiData> entry in multiItems) {
+				docsw.WriteLine("Item: " + entry.Key + "\t Num parts: " + entry.Value.parts.Count);
+				foreach (MultiComponentDescription p in entry.Value.parts) {
+					docsw.WriteLine("\t ItemId: " + p.ItemId);
+					docsw.WriteLine("\t Offset X: " + p.OffsetX);
+					docsw.WriteLine("\t Offset Y: " + p.OffsetY);
+					docsw.WriteLine("\t Offset Z: " + p.OffsetZ);
+					//docsw.WriteLine("\t Visible: "+p.flags);
+					docsw.WriteLine();
+				}
+				docsw.WriteLine();
+			}
 		}
 	}
 
