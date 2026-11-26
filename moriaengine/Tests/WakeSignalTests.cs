@@ -9,7 +9,7 @@ namespace SteamEngine.Tests {
 	/// while it goes to sleep is ever lost.</summary>
 	public class WakeSignalTests {
 		[Fact]
-		public void SetsTheEventOnlyWhileTheConsumerSleeps() {
+		public async Task SetsTheEventOnlyWhileTheConsumerSleeps() {
 			var signal = new WakeSignal();
 			signal.Signal(); //it starts asleep
 			Assert.Equal(1, signal.SetCount);
@@ -20,18 +20,20 @@ namespace SteamEngine.Tests {
 			Assert.Equal(1, signal.SetCount);
 
 			signal.Sleep(() => false);
-			Assert.False(Task.Run(signal.Wait).Wait(200), "Wait returned with nothing signalled");
+			Task waiting = Task.Run(signal.Wait);
+			Assert.NotSame(waiting, await Task.WhenAny(waiting, Task.Delay(200))); //Wait returned with nothing signalled
 			signal.Signal();
 			Assert.Equal(2, signal.SetCount);
 		}
 
 		[Fact]
-		public void SleepWithWorkWaitingDoesntSleep() {
+		public async Task SleepWithWorkWaitingDoesntSleep() {
 			var signal = new WakeSignal();
 			signal.Signal();
 			signal.Wait();
 			signal.Sleep(() => true); //work arrived before the reset: the next Wait returns at once
-			Assert.True(Task.Run(signal.Wait).Wait(2000), "Wait blocked although Sleep found work");
+			Task waiting = Task.Run(signal.Wait);
+			Assert.Same(waiting, await Task.WhenAny(waiting, Task.Delay(2000))); //Wait blocked although Sleep found work
 		}
 
 		/// <summary>A consumer that sleeps as soon as it has drained the queue, and a producer posting one item at a time, so

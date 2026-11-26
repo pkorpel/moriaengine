@@ -53,8 +53,8 @@ namespace SteamEngine.CompiledScripts {
 			return (ch != null) && (ch == this.Owner);
 		}
 
-		/// <summary>tag.gold: a number, not coins.</summary>
-		public long Gold {
+		/// <summary>tag.gold: a number, not coins. It hides Character.Gold (the coins carried) on purpose.</summary>
+		public new long Gold {
 			get { return (this.GetTag(goldTK) is long gold) ? gold : 0; }
 			set { this.SetTag(goldTK, value); }
 		}

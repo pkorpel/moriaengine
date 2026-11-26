@@ -11,6 +11,7 @@ repos:
       - id: check-merge-conflict
       - id: check-yaml
       - id: check-json
+        exclude: ^\.devcontainer/devcontainer\.json$  # JSON with comments, as the devcontainer spec allows
       - id: check-added-large-files
         args: [--maxkb=1024]
       - id: detect-private-key

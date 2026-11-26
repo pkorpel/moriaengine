@@ -19,6 +19,9 @@ set -eu
 root=$(cd "$(dirname "$0")/.." && pwd)
 . "$root/scripts/lean-build-env.sh"   # #1212: builds and test servers leave no idle MSBuild nodes or compiler server
 me="$root/moriaengine"
+# #1551: bin/<config>/<tfm>, the target framework from Directory.Build.props, where it is set once
+tfm=$(sed -n 's:.*<SteamEngineTargetFramework>\(.*\)</SteamEngineTargetFramework>.*:\1:p' "$me/Directory.Build.props")
+[ -n "$tfm" ] || { echo "run-local: no SteamEngineTargetFramework in $me/Directory.Build.props" >&2; exit 1; }
 logs="$me/logs"
 pids="$logs/run-local.pids"
 TIMEOUT="${START_TIMEOUT:-180}"
@@ -47,14 +50,14 @@ case "$cmd" in
     done
     alive && die "already running (status / stop)"
     listening 2593 || listening 2595 && die "port 2593 or 2595 is busy (a test run?)"
-    if [ "$build" -eq 1 ] || [ ! -f "$me/GameCore/bin/$config/net8.0/SteamEngine.GameCore.dll" ]; then
+    if [ "$build" -eq 1 ] || [ ! -f "$me/GameCore/bin/$config/$tfm/SteamEngine.GameCore.dll" ]; then
       (cd "$me" && pwsh ./build.ps1 -Configuration "$config" >/dev/null) || die "$config build failed, run scripts/test-fast.sh for the log"
     fi
     mkdir -p "$logs"; : > "$pids"
     cd "$me"
-    launch aux "AuxiliaryServer/bin/$config/net8.0/SteamEngine.AuxiliaryServer.dll"
+    launch aux "AuxiliaryServer/bin/$config/$tfm/SteamEngine.AuxiliaryServer.dll"
     sleep 3
-    launch gamecore "GameCore/bin/$config/net8.0/SteamEngine.GameCore.dll"
+    launch gamecore "GameCore/bin/$config/$tfm/SteamEngine.GameCore.dll"
     waited=0
     until listening 2593 && listening 2595; do
       [ "$waited" -ge "$TIMEOUT" ] && { tail -20 "$logs/gamecore.console.log" >&2; "$0" stop; die "ports not up after ${TIMEOUT}s"; }

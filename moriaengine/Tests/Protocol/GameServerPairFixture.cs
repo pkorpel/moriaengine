@@ -53,7 +53,7 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private GameServerPairFixture(bool preserveSaves) {
-			// Tests/bin/Debug/net8.0 -> up 4 levels -> the moriaengine/moriaengine repo root,
+			// Tests/bin/Debug/<tfm> -> up 4 levels -> the moriaengine/moriaengine repo root,
 			// regardless of whatever Environment.CurrentDirectory the fast-tier fixture (if it
 			// ran in this same process) already changed.
 			this.RepoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
@@ -93,8 +93,10 @@ namespace SteamEngine.Tests.Protocol {
 			//"Game server never appeared"/LoginDenied noise. The OS drops the lock with the process.
 			this.portLock = AcquirePortLock();
 
-			string auxDll = Path.Combine(this.RepoRoot, "AuxiliaryServer", "bin", (Environment.GetEnvironmentVariable("PERF_CONFIG") ?? "Debug"), "net8.0", "SteamEngine.AuxiliaryServer.dll");
-			string gameDll = Path.Combine(this.RepoRoot, "GameCore", "bin", (Environment.GetEnvironmentVariable("PERF_CONFIG") ?? "Debug"), "net8.0", "SteamEngine.GameCore.dll");
+			//#1551 - the servers are built for the same target framework as this test assembly, whose folder is named after it
+			string targetFramework = Path.GetFileName(Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory));
+			string auxDll = Path.Combine(this.RepoRoot, "AuxiliaryServer", "bin", (Environment.GetEnvironmentVariable("PERF_CONFIG") ?? "Debug"), targetFramework, "SteamEngine.AuxiliaryServer.dll");
+			string gameDll = Path.Combine(this.RepoRoot, "GameCore", "bin", (Environment.GetEnvironmentVariable("PERF_CONFIG") ?? "Debug"), targetFramework, "SteamEngine.GameCore.dll");
 
 			if (!File.Exists(auxDll)) {
 				this.ReleasePortLock();

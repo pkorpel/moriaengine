@@ -28,7 +28,7 @@ Analyzed at master `f7f69fa` (version 4.4.9, 2020-04-13), the last commit and th
 |---|---|
 | Kind | Software transactional memory, MVCC (multi-version concurrency control), "strict and mostly lock-free" |
 | License | MIT |
-| Targets | `netstandard2.0` and `net4` (runs on .NET 8 through .NET Standard; measured below) |
+| Targets | `netstandard2.0` and `net4` (runs on .NET 8 and 10 through .NET Standard; measured below) |
 | Size | about 5,400 lines in `Shielded/` |
 | Activity | first commit 2013; last release 4.4.9 in April 2020; no commits since; 247 stars, 20 forks, none of them active |
 | Sibling | [Shielded.Gossip](https://github.com/jbakic/Shielded.Gossip), a distributed key/value store built on it (last push 2022); for replicas across servers, not relevant here |
@@ -64,7 +64,7 @@ What turned up when looking for something newer:
 
 | Option | State | Notes |
 |---|---|---|
-| **Shielded** 4.4.9 | Unmaintained since 2020 | The only full STM for .NET with transactional collections. Still runs on .NET 8. |
+| **Shielded** 4.4.9 | Unmaintained since 2020 | The only full STM for .NET with transactional collections. Still runs on .NET 10 (benchmark rerun for #1551). |
 | **[LanguageExt](https://github.com/louthy/language-ext) STM** (`Ref<A>`, `Atom`, `atomic(…)`) | Active: v5 betas through October 2026, about 7,000 stars | The same MVCC model, with snapshot or serializable isolation and commute. Built for immutable values and a functional style ([docs](https://louthy.github.io/language-ext/LanguageExt.Core/Concurrency/STM)). Adopting it means rewriting state as immutable records, a bigger change than Shielded. No published benchmarks. |
 | **Microsoft STM.NET** | Dead, a 2009 experiment ([download page](https://www.microsoft.com/en-us/download/details.aspx?id=8317)) | Needed a modified .NET Framework 4 beta; never shipped. |
 | STM in other languages (Haskell `stm`, Clojure refs, Rust `stm`) | – | Not usable from C#. |
@@ -103,6 +103,9 @@ Shielded 4.4.9 from NuGet, in the same 8-core container as the review.
 | `Dictionary` lookup (how tags are read today) | 4.2 ns | 0 |
 | `ShieldedDict` lookup inside a transaction | 28 ns | 5 B |
 
+Rerun on .NET 10 (#1551, the same container): a read inside a transaction 54 ns, a write 141 ns, one modelled think
+18.6 µs, and 134k thinks/s on 4 threads spread out. That's the same picture as the table.
+
 **One NPC think, modelled:** 30,000 NPCs; each think reads 4 fields of 50 neighbours (200 reads, about what `FindTarget`
 and the abilities read in a dense spot) and writes 3 of its own. The plain version is 0.1 µs per think, because the model
 does nothing but the accesses. The Shielded version is **19.3 µs**, so the bookkeeping alone costs about 95 ns per access.
@@ -135,7 +138,7 @@ Shielded only protects state that lives in its containers. Making the game logic
 - **Every mutable field transactional.** About **3,000 mutable instance fields and 600 mutable static fields** across 999
   source files in GameCore, Common, Communication and scripts. On top of that come generated fields
   (`*.Generated.cs`) and the 515 `[SaveableData]` fields: positions, flags, stats, skills, tags, plugins,
-  timers, sector lists, region data, settings. Without ProxyGen on .NET 8, each one changes by hand or in the code
+  timers, sector lists, region data, settings. Without ProxyGen on modern .NET, each one changes by hand or in the code
   generators.
 - **Every collection replaced.** Tags are a `Hashtable` per `TagHolder`. Sectors hold intrusive lists, the timer queue is
   a heap, and `List`/`Dictionary` are everywhere. All of them would become `ShieldedDict`, `ShieldedSeq` or immutable

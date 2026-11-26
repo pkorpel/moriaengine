@@ -171,3 +171,18 @@ rebased. This replaced the earlier squash-merge rule on 2026-11-26.
 joined `main`; from now on `git log --first-parent main` gives one line per PR (older history mixes
 squash and rebase merges). janslav had already merged #1567 and #1568 this way. Because branch commits now reach `main` unchanged, each one carries a proper `area: what changed (#n)`
 subject and stands for a real step of the change.
+
+## .NET 10, one target-framework property, SDK pinned (#1551)
+
+**Decision**: every project targets .NET 10 (`net10.0`, RemoteConsole `net10.0-windows`), set once as
+`SteamEngineTargetFramework` in `moriaengine/Directory.Build.props`. `global.json` pins SDK 10.0.1xx or a later 10.0
+band (`rollForward: latestFeature`). The code compiles as C# 14, the language .NET 10 defaults to, without a
+`LangVersion` pin. The source generators stay on `netstandard2.0` with Roslyn 4.11, so any compiler from VS
+2022 17.11 or SDK 8.0.4xx onwards can load them.
+
+**Why**: .NET 8 support ended on 10 November 2026, and .NET 10 is the LTS supported until November 2028.
+.NET 9 was skipped because its support ends at the same time as 8's. Nothing had chosen 8 over a newer version:
+the port began on 8 because that was the SDK installed (PR #1). One property means the next upgrade changes
+one line, and the paths derived from it (`build.ps1`, `scripts/run-local.sh`, the protocol tests' fixture)
+follow. Without `global.json`, whatever SDK was newest on a machine built the solution, and also built the
+scripts at every boot. The upgrade was done in one PR at the maintainer's request.

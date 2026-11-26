@@ -124,7 +124,7 @@ The def class has a `Bootstrap()`, which `ClassManager.InitClasses` calls right 
 anything loads. A template-generated plugin def gets one with `RegisterPluginDef`; a hand-written plugin def writes the same
 (`TimerPluginDef`, `MagicChargePluginDef`); any other def class with such a field has an empty one, "to ensure calling the
 static initialiser" (`PartyDef`, `GuildDef`). The original code assumed a class's static field initializers had run by
-that call; .NET 8 (checked with a small program) runs them only when a field is first read, unless the class has a static
+that call; .NET 8 and .NET 10 (checked with a small program, again for #1551) run them only when a field is first read, unless the class has a static
 constructor of its own. #1163 found 11 code-made defs missing when a save loaded (combat queue and tracker, paralyze,
 discordance, warcry, magic charge, ignition, poisoned item, crafting, snooping, party): some on their def classes, missing
 for that reason, some on plugin classes, which nothing reads early on any runtime. #1163 ran every such class's static

@@ -1,6 +1,6 @@
 # moriaengine documentation
 
-This is the current, maintained documentation for moriaengine - a .NET 8 rewrite of
+This is the current, maintained documentation for moriaengine - a .NET 10 (ported from .NET Framework) rewrite of
 SteamEngine, itself a C# reimplementation of a Sphere-style Ultima Online server emulator,
 carrying the Czech "Erebor" shard's converted content and lore (Lord of the Rings themed:
 Gondor/Mordor realms, Carn Dûm, etc).

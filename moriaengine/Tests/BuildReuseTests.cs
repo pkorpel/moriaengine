@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using Xunit;
@@ -98,6 +99,18 @@ namespace SteamEngine.Tests {
 
 			this.Write("Strings.resx", "<root />");
 			Assert.NotEqual(renamed, BuildFingerprint.Of(this.dir, "Debug", "1"));
+		}
+
+		[Fact]
+		public void TheFingerprintFollowsTheRuntime() {
+			//#1551 - a build made on another .NET runtime (an SDK or runtime update) isn't reused
+			this.Write("A.cs", "class A {}");
+			string[] parts = { "Debug", "1" };
+			string onThisRuntime = BuildFingerprint.OfFor(".NET 10.0.15", this.dir, parts);
+
+			Assert.Equal(onThisRuntime, BuildFingerprint.OfFor(".NET 10.0.15", this.dir, parts));
+			Assert.NotEqual(onThisRuntime, BuildFingerprint.OfFor(".NET 10.0.16", this.dir, parts));
+			Assert.Equal(BuildFingerprint.OfFor(RuntimeInformation.FrameworkDescription, this.dir, parts), BuildFingerprint.Of(this.dir, "Debug", "1"));
 		}
 	}
 }

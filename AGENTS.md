@@ -1,6 +1,6 @@
 # MoriaEngine — instructions for every developer and coding agent
 
-MoriaEngine is SteamEngine, an Ultima Online server emulator in C# (.NET 8), being made into a faithful
+MoriaEngine is SteamEngine, an Ultima Online server emulator in C# (.NET 10), being made into a faithful
 port of the **Erebor** shard (Sphere 0.99z8 scripts). GitHub: `pkorpel/moriaengine`. Maintainer: pkorpel.
 
 This file is shared by people, Claude Code (through `CLAUDE.md`), GitHub Copilot and any other agent.

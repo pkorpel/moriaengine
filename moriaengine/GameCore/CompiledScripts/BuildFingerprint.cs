@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using SteamEngine.Common;
@@ -44,8 +45,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <param name="parts">Anything else the output depends on: build type, assembly number, an assembly's MVID.</param>
 		internal static string Of(string projectDir, params string[] parts) {
+			return OfFor(RuntimeInformation.FrameworkDescription, projectDir, parts);
+		}
+
+		/// <param name="runtime">#1551: the .NET runtime this process runs on (".NET 10.0.15"): the scripts load into it, and
+		/// a runtime update must not reuse a build made for the previous one.</param>
+		internal static string OfFor(string runtime, string projectDir, string[] parts) {
 			projectDir = Path.GetFullPath(projectDir);
 			using (var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256)) {
+				AddString(hash, runtime);
 				foreach (string part in parts) {
 					AddString(hash, part);
 				}

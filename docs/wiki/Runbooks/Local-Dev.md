@@ -1,10 +1,11 @@
 # Local dev
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-11-26
 
 ## One-time setup
 
-- .NET SDK 8.0.x (`global.json`, if present, pins it).
+- .NET SDK 10.0.x. `global.json` pins the 10.0.1xx band or a later one (`latestFeature`), and
+  `moriaengine/Directory.Build.props` sets the target framework for every project (#1551).
 - PowerShell 7 (`pwsh`): `build.ps1` needs it. macOS: `brew install powershell`.
 - `pre-commit` and `gitleaks` for the git hooks, then once per clone:
   `pre-commit install` (installs the pre-commit, commit-msg and pre-push hooks).

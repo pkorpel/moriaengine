@@ -1,6 +1,6 @@
 # Architecture overview
 
-moriaengine is a .NET 8 port of SteamEngine, a C# Ultima Online server emulator built on
+moriaengine is a .NET 10 port of SteamEngine, a C# Ultima Online server emulator built on
 the Sphere scripting model. This page is the 30,000-foot view; deeper detail lives in the
 pages linked from each section.
 
@@ -28,7 +28,7 @@ flow for every protocol test that needs a real character in the world. See
 level detail. The [component interaction diagram](../../wip/diagrams/component-interaction.md) shows the same picture.
 
 There's also a third, optional tool, **RemoteConsole** (`RemoteConsole/`) - a GUI client for
-the remote-console protocol on port 2594. It targets `net8.0-windows` (WinForms) and is in
+the remote-console protocol on port 2594. It targets `net10.0-windows` (WinForms) and is in
 `SteamEngine.sln` since #29, so it compiles in every build, Linux and CI included, but it
 only runs on Windows.
 
