@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -142,6 +143,8 @@ namespace SteamEngine.RemoteConsole {
 			}
 		}
 
+		//#1551 - WinForms 9+ requires saying how the designer serializes a public property (WFO1000)
+		[DefaultValue(null)]
 		public string DefaultTitle {
 			get {
 				return this.defaultTitle;
