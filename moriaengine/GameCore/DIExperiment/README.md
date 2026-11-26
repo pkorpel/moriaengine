@@ -1,28 +1,65 @@
-# Test-only core service lifecycle (prototype)
+# Core service lifecycle (prototype)
 
-Services are discovered, not registered: every non-abstract `ICoreService` in the scanned assemblies.
+An experiment in starting the engine's core systems as small, self-contained services instead of
+static singletons wired up by hand. Production startup does not use it yet.
+
+## Ideas
+
+- **Services are discovered, not registered.** Every non-abstract `ICoreService` in the scanned assemblies
+  takes part. Its single constructor says what it needs: its settings and the other services it depends on.
+- **Settings are plain objects.** Each service's settings are a class mapped to one INI section, with the
+  defaults written as property initializers. SharpConfig does the mapping; we add no converters or attributes
+  beyond the section name and a description per key.
+- **Configure everything before starting anything.** All settings are read and validated first, and every
+  error is reported at once. Missing keys get their defaults and the INI is written once, only if everything
+  succeeded. A missing INI is generated and startup stops so it can be reviewed.
+- **Then start in dependency order.** Each service is constructed with its validated settings and its
+  already-started dependencies, then `Init()` runs. If one fails, what has started is disposed in reverse.
+- **No I/O in constructors**, so services and the config store are easy to replace in tests
+  (`InMemoryConfigStore`, stub services).
+
+## A settings class
 
 ```csharp
-using var host = new CoreServiceOrchestrator(CoreServiceOrchestrator.Discover(typeof(LoggerService).Assembly));
-var result = host.Start(store); // IConfigStore supplied by the caller
+[IniSection("files")]
+internal sealed record LoggerConfiguration : ICoreSettings {
+	[Description("Path to the log files")]
+	public string LogPath { get; init; } = "./logs/";
+
+	[Description("Whether to log console output to a file")]
+	public bool LogToFiles { get; init; } = true;
+
+	// Checks the values alone, without needing any other service (simplified here).
+	public void Validate() {
+		if (LogToFiles && string.IsNullOrWhiteSpace(LogPath))
+			throw new InvalidDataException("LogPath is required when file logging is enabled.");
+	}
+}
 ```
 
-A service is self-contained: its single constructor declares everything it needs.
+Property names are the INI keys. A settings class may cover only part of a section.
 
-- **Settings**: a parameter of an `ICoreSettings` type (e.g. `LoggerConfiguration`). Its defaults come from
-  the type's all-defaults constructor; `Validate()` checks it without needing any other service.
-- **Dependencies**: another service type or an interface it implements. `LoggerService` implements `ILogger`,
-  so the orchestrator injects that same initialized service when `ExampleConsumer` asks for `ILogger`.
-  There are no per-consumer loggers yet.
+## A service
 
-`Start` runs two passes:
+```csharp
+internal sealed class ExampleCatalog(ExampleCatalogConfiguration settings, ILogger log) : ICoreService {
+	internal int EntryCount => settings.EntryCount;
 
-1. **Configure.** Read every service's settings first, before any service exists. Missing ones get defaults
-   written (all of them, so a first run produces a complete config) and the result is `DefaultsWritten`.
-   Invalid ones are logged and the result is `Failed`. Either way nothing is constructed.
-2. **Start.** Construct each service in dependency order with its validated settings and its already
-   initialized dependencies, then call `Init()`. A failure is logged, everything started so far is disposed
-   in reverse order, and the result is `Failed`.
+	public void Init() => log.WriteLine($"Example catalog: {EntryCount} entries.");
 
-Tests pick services by passing their own type list, and stub services by passing objects as `externals`,
-which take precedence over discovered services. There is no production startup, INI store or DI container yet.
+	public void Dispose() { }
+}
+```
+
+`ILogger` is satisfied by `LoggerService`, which implements it. Another service can depend on
+`ExampleCatalog` the same way.
+
+## Starting it
+
+```csharp
+var store = new SharpConfigStore("steamengine.ini");
+using var host = new CoreServiceOrchestrator(CoreServiceOrchestrator.Discover(typeof(LoggerService).Assembly));
+StartupResult result = host.Start(store); // Running, DefaultsWritten or Failed
+```
+
+More examples are in `Tests/DIExperiment/Examples/`.

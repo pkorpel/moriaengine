@@ -79,17 +79,40 @@ namespace SteamEngine.DIExperiment {
 			return ordered;
 		}
 
+		/// <summary>Completes configuration before startup; only a new INI or an error prevents initialization.</summary>
 		internal StartupResult Start(IConfigStore store) {
 			ArgumentNullException.ThrowIfNull(store);
 			ObjectDisposedException.ThrowIf(disposed, this);
 			if (started) throw new InvalidOperationException("The orchestrator has already started.");
 			started = true;
 
-			if (!ConfigureAll(store, out var result)) {
+			bool existingConfiguration;
+			try {
+				existingConfiguration = store.Load();
+			} catch (Exception ex) {
+				Logger.WriteError(ex);
 				Dispose();
-				return result;
+				return StartupResult.Failed;
 			}
 
+			// Read every settings type so a new or partial file receives all of this composition's defaults.
+			if (!ConfigureAll(store)) {
+				Dispose();
+				return StartupResult.Failed;
+			}
+			try {
+				store.Save();
+			} catch (Exception ex) {
+				Logger.WriteError(ex);
+				Dispose();
+				return StartupResult.Failed;
+			}
+			if (!existingConfiguration) {
+				Dispose();
+				return StartupResult.DefaultsWritten;
+			}
+
+			// An existing file may have gained defaults, but its validated consumers can start immediately.
 			Plan current = null;
 			string phase = null;
 			try {
@@ -111,37 +134,26 @@ namespace SteamEngine.DIExperiment {
 			}
 		}
 
-		// Reads every service's settings; writes defaults for all missing ones and validates the rest.
-		private bool ConfigureAll(IConfigStore store, out StartupResult result) {
+		/// <summary>Reads and validates every settings type, continuing after errors to report them all.</summary>
+		private bool ConfigureAll(IConfigStore store) {
 			var types = plans.SelectMany(p => p.Constructor.GetParameters()).Select(p => p.ParameterType)
 				.Where(IsSettings).Distinct();
-			bool defaultsWritten = false, invalid = false;
+			bool invalid = false;
 			foreach (var type in types) {
 				try {
-					var value = Invoke(store, nameof(IConfigStore.Read), type);
-					if (value == null) {
-						Invoke(store, nameof(IConfigStore.WriteDefaults), type, CreateDefaults(type));
-						defaultsWritten = true;
-					} else {
-						((ICoreSettings) value).Validate();
-						settings[type] = value;
-					}
+					// The store supplies missing defaults; the host owns domain validation and startup policy.
+					var value = store.Read(type);
+					((ICoreSettings) value).Validate();
+					settings[type] = value;
+				} catch (Exception ex) when (Unwrap(ex) is SEException see) {
+					Logger.WriteError(see);
+					invalid = true;
 				} catch (Exception ex) {
 					Logger.WriteError($"{type.Name}.{nameof(ICoreSettings.Validate)}", Unwrap(ex));
 					invalid = true;
 				}
 			}
-			result = invalid ? StartupResult.Failed : defaultsWritten ? StartupResult.DefaultsWritten : StartupResult.Running;
-			return result == StartupResult.Running;
-		}
-
-		private static object Invoke(IConfigStore store, string method, Type type, params object[] args) =>
-			typeof(IConfigStore).GetMethod(method).MakeGenericMethod(type).Invoke(store, args);
-
-		private static object CreateDefaults(Type type) {
-			var constructor = type.GetConstructors().FirstOrDefault(c => c.GetParameters().All(p => p.HasDefaultValue))
-				?? throw new InvalidOperationException($"{type} needs a public constructor whose parameters all have defaults.");
-			return constructor.Invoke(constructor.GetParameters().Select(p => p.DefaultValue).ToArray());
+			return !invalid;
 		}
 
 		private static Exception Unwrap(Exception ex) => ex is TargetInvocationException { InnerException: { } inner } ? inner : ex;

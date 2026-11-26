@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpConfig" Version="4.1.0" />
     <None Remove="LScript\generate.bat" />
     <None Remove="LScript\LScript_strict.grammar" />
   </ItemGroup>
