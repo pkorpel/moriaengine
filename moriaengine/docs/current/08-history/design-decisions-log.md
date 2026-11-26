@@ -168,6 +168,6 @@ reference someone can read without archaeology through dozens of closed issues.
 rebased. This replaced the earlier squash-merge rule on 2026-11-26.
 
 **Why**: the maintainer's choice. A merge commit keeps the branch's own commits and shows where each PR
-joined `main`; `git log --first-parent main` still gives one line per PR. janslav was already merging this
-way. Because branch commits now reach `main` unchanged, each one carries a proper `area: what changed (#n)`
+joined `main`; from now on `git log --first-parent main` gives one line per PR (older history mixes
+squash and rebase merges). janslav had already merged #1567 and #1568 this way. Because branch commits now reach `main` unchanged, each one carries a proper `area: what changed (#n)`
 subject and stands for a real step of the change.

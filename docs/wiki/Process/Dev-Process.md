@@ -1,6 +1,6 @@
 # Dev process
 
-Last reviewed: 2026-11-18
+Last reviewed: 2026-11-26
 
 ## Branches
 
@@ -9,7 +9,8 @@ Last reviewed: 2026-11-18
   `origin/main` in their own worktree `../moria-<n>` by `scripts/worktree-add.sh`
   (sparse: `archive/` is excluded; `uo-files/` stays for the build).
 - PRs are merged with a merge commit (#1569), so every branch commit lands on `main` and needs a proper
-  subject; the remote branch is deleted after merge.
+  subject (only the "Merge branch 'main'" commit from updating a branch is exempt); the remote branch is
+  deleted after merge.
 
 ## The merge gate
 
@@ -151,7 +152,7 @@ about live listeners that genuinely do).
 
 ## Commits
 
-`area: what changed`, imperative, ≤ 72 chars, no attribution of any kind. A body
+`area: what changed (#n)`, imperative, ≤ 72 chars, no attribution of any kind. A body
 only when the why isn't obvious. Areas follow the code: `combat:`, `skills:`,
 `login:`, `tests:`, `ci:`, `docs:`, `scripts:` …
 

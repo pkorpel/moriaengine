@@ -1,6 +1,6 @@
 # Tasks: issues, labels, done
 
-Last reviewed: 2026-11-18
+Last reviewed: 2026-11-26
 
 Every piece of work is a GitHub issue in `pkorpel/moriaengine`, raised before the work starts (#1559).
 
