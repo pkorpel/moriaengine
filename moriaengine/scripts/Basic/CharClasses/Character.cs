@@ -1478,14 +1478,38 @@ namespace SteamEngine.CompiledScripts {
 		private static TriggerKey killTK = TriggerKey.Acquire("kill"); //#1431
 		private static TriggerKey denyDeathTK = TriggerKey.Acquire("denyDeath"); //#1463
 
-		public void CauseDeath(Character killedBy) {
-			//#1463 - Sphere's @death RETURN 1, before anything of the death happens: the first handler to cancel keeps this
-			//character alive (and @death isn't raised). Only a living character asks. #1467 - a possessing mystic and its
-			//alter ego come home this way.
-			if (!this.Flag_Dead && (this.TryCancellableTrigger(denyDeathTK, new ScriptArgs(killedBy)) == TriggerResult.Cancel)) {
-				return;
+		/// <summary>#1463, #1558 - the death's deny (Sphere's @death RETURN 1), before anything of the death happens: the
+		/// handlers' @denyDeath, then On_DenyDeath. Stops at the first cancel or deny.</summary>
+		public DenyResult Trigger_DenyDeath(DenyDeathArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(denyDeathTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenyDeath(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		public virtual TriggerResult On_DenyDeath(DenyDeathArgs args) {
+			return TriggerResult.Continue;
+		}
+
+		public void CauseDeath(Character killedBy) {
 			if (!this.Flag_Dead) {
+				//#1463 - only a living character asks. #1558 - a refused death leaves it alive at 1 hit point, unless a handler
+				//set the hits itself (the Hits setter calls this instead of writing a value below 1, so they'd otherwise stay
+				//what they were before the blow, and .kill wouldn't touch them). #1467 - a possessing mystic and its alter ego
+				//refuse this way, and come home on their plugin's timer.
+				int hitsBefore = this.hitpoints;
+				if (!this.Trigger_DenyDeath(new DenyDeathArgs(killedBy)).Allow) {
+					if (!this.IsDeleted && !this.Flag_Dead && (this.hitpoints == hitsBefore)) {
+						this.Hits = 1;
+					}
+					return;
+				}
 
 				Notoriety.RegisterMurder(this, killedBy);
 				HouseEvents.OnDeath(this, killedBy);
@@ -1498,10 +1522,10 @@ namespace SteamEngine.CompiledScripts {
 				SecureTrade.CancelAllFor(this, "died");
 				SoundCalculator.PlayDeathSound(this);
 
-				this.Trigger_Death(killedBy);
+				this.Trigger_Death(killedBy); //an NPC's On_Death pays the fighters, raising their @killCredit before the killer's @kill
 				ClassAbilities.OnDeath(this); //#1017
 				if ((killedBy != null) && !killedBy.IsDeleted && (killedBy != this)) {
-					killedBy.TryTrigger(killTK, new ScriptArgs(this)); //#1431 - Sphere's @Kill: the ranger's spree charge (Erebor's @finalBlow)
+					killedBy.Trigger_Kill(this); //#1431
 				}
 
 				CharSyncQueue.AboutToChangeHitpoints(this);
@@ -1576,6 +1600,37 @@ namespace SteamEngine.CompiledScripts {
 			try {
 				this.On_Death(killedBy);
 			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		/// <summary>#1431, #1558 - Sphere's @Kill on the killer, a notification after the victim's @death (and so after the
+		/// fighters' @killCredit): the ranger's spree charge (Erebor's @finalBlow).</summary>
+		public void Trigger_Kill(Character victim) {
+			this.TryTrigger(killTK, new ScriptArgs(victim));
+			try {
+				this.On_Kill(victim);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_Kill(Character victim) {
+		}
+
+		private static readonly TriggerKey killCreditTK = TriggerKey.Acquire("killCredit");
+
+		/// <summary>#1416, #1558 - @killCredit, a notification on a fighter (player or NPC) credited with a death, from
+		/// LevelingSystem's share of it: Erebor's trigger_kill (@playerKill, @npckill). Raised inside the victim's On_Death,
+		/// so before the killer's @kill.</summary>
+		public void Trigger_KillCredit(Character victim, int share) {
+			if (this.IsDeleted) {
+				return;
+			}
+			KillCreditArgs args = new KillCreditArgs(victim, share);
+			this.TryTrigger(killCreditTK, args);
+			try {
+				this.On_KillCredit(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_KillCredit(KillCreditArgs args) {
 		}
 
 		/// <summary>Resne. Pokud je mrtva postava v blizkosti tela(max 1 policko), tak to lootne i telo</summary>

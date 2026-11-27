@@ -395,7 +395,7 @@ namespace SteamEngine.CompiledScripts {
 			if (reward == 0) { //#1416 - Erebor's loop credits a kill worth nothing too, with 0
 				foreach (Character fighter in fighters) {
 					if (!ShamanPacts.EarnsNoKillExp(fighter as Player)) { //#1417 - with its message, as Erebor's loop
-						LevelingTriggers.KillCredit(fighter, victim, 0);
+						fighter.Trigger_KillCredit(victim, 0);
 					}
 				}
 				return;
@@ -411,8 +411,8 @@ namespace SteamEngine.CompiledScripts {
 					continue;
 				}
 				AddExperience(fighter as Player, share);
-				LevelingTriggers.KillCredit(fighter, victim, share); //#1416 - Erebor's trigger_kill after the addexp
-				LevelingTriggers.KillCredit(ShamanPacts.ShareKillExp(fighter as Player, share), victim, share); //and on the blood pact's bearer
+				fighter.Trigger_KillCredit(victim, share); //#1416 - Erebor's trigger_kill after the addexp
+				ShamanPacts.ShareKillExp(fighter as Player, share)?.Trigger_KillCredit(victim, share); //and on the blood pact's bearer
 				Q017.OnKillCredit(fighter as Player, victim); //#1268 - Terlak's gate crystals
 			}
 		}
@@ -447,7 +447,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				int paid = (craftsman || ((fighter is Player) && (fighter.Realm == victim.Realm))) ? 0 : share; //own realm: player kills only, as Erebor
 				AddExperience(fighter as Player, paid);
-				LevelingTriggers.KillCredit(fighter, victim, paid);
+				fighter.Trigger_KillCredit(victim, paid);
 			}
 		}
 

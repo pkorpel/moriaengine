@@ -123,7 +123,7 @@ namespace SteamEngine.Tests.Protocol {
 						"guardsLetAMildBodyAlone", "guardsGoForAnEvilBody", "monstersGoForIt", "itShowsAsTheMonster", "theMenusRefuse", "noGuildInTheName",
 						"aGateRefusesIt", "unlessTheGateLetsHypnosisThrough", "noAbsorptionWhilePossessing", "aMonstersSpellIsAbsorbed", "noPointsNoAbsorption",
 						"aBlowOnTheEgoBringsItHome", "withHalfItsHits", "theGearIsBack", "theMonsterIsBack", "experienceIsPaid",
-						"dyingInTheBodyBringsItHome", "theEgosDeathBringsItHomeHurt" }) {
+						"dyingInTheBodyIsRefused", "dyingInTheBodyBringsItHome", "theEgosDeathIsRefused", "theEgosDeathBringsItHomeHurt" }) {
 					string marker = "CLASS_ABILITY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

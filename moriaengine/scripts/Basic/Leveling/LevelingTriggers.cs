@@ -48,16 +48,4 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 	}
-
-	public static class LevelingTriggers {
-		private static readonly TriggerKey killCreditTK = TriggerKey.Acquire("killCredit");
-
-		/// <summary>@killCredit on a fighter (its trigger groups and plugins), player or NPC.</summary>
-		public static void KillCredit(Character fighter, Character victim, int share) {
-			if ((fighter == null) || fighter.IsDeleted) {
-				return;
-			}
-			fighter.TryTrigger(killCreditTK, new KillCreditArgs(victim, share));
-		}
-	}
 }

@@ -136,8 +136,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>A possessing mystic's death in the body (PossessionPlugin's @denyDeath): the killers are paid as for the
-		/// monster, and the mystic comes home with a fifth of the hits.</summary>
+		/// <summary>A possessing mystic's refused death in the body (PossessionPlugin's @denyDeath, then its timer): the killers
+		/// are paid as for the monster, and the mystic comes home with a fifth of the hits.</summary>
 		internal static void DiedInTheBody(Player self, PossessionPlugin state, Character killedBy) {
 			if (state.monster != null) {
 				int attackers = Math.Max(1, LevelingSystem.FindFighters(self, killedBy, false).Count);

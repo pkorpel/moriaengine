@@ -238,7 +238,10 @@ namespace SteamEngine.CompiledScripts {
 				int newHits = (int) Math.Round(defender.Hits - damage);
 				Character.SetHitsBy(defender, (short) Math.Max(newHits, -1), attacker); //#1464 - a death names the attacker, not the last packet's sender; the floor keeps a huge blow from wrapping round into a heal
 
-				int actualDamage = previousHits - newHits;
+				//#1558 - what was really taken: a death leaves 0 hits, a refused one 1 (or what its handler set), so the blow
+				//no longer counts hits that were never there
+				bool survived = !defender.IsDeleted && !defender.Flag_Dead;
+				int actualDamage = Math.Max(0, previousHits - (survived ? defender.Hits : 0));
 				HpSight.ShowChange(defender, actualDamage, false); //#927
 				if (isSwing) {
 					WeeklyQuests.OnSwingDamage(attacker, defender, Math.Min(actualDamage, previousHits)); //#1090 - min(ubrano, hits)
@@ -252,7 +255,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				if (actualDamage > 0) {
 					//TODO create blood?
-					if (newHits > 0) {
+					if (survived) {
 						SoundCalculator.PlayHurtSound(defender);
 						AnimCalculator.PerformAnim(defender, GenericAnim.GetHit);
 					} //otherwise death sound+anim, is done elsewhere

@@ -316,12 +316,20 @@ namespace SteamEngine.CompiledScripts {
 
 			player.Hits = 100;
 			MysticHypnosis.Swap(player, body);
+			state = MysticHypnosis.Possession(player);
 			player.CauseDeath(null);
+			//#1558 - the deny only refuses (alive at 1 hit, still possessing); the plugin's timer, due at once, comes home
+			Report("dyingInTheBodyIsRefused", !player.Flag_Dead && MysticHypnosis.IsPossessing(player) && (player.Hits == 1)
+				&& (state.Timer > -0.5) && (state.Timer < 0.5)); //due now (a due timer reads a hair below 0)
+			state.On_Timer(); //what the due timer runs
 			Report("dyingInTheBodyBringsItHome", !player.Flag_Dead && !MysticHypnosis.IsPossessing(player) && (player.Hits == 20));
 
 			MysticHypnosis.Swap(player, body);
 			ego = MysticHypnosis.Possession(player).ego;
+			alterEgo = AlterEgoPlugin.Of(ego);
 			ego.CauseDeath(null);
+			Report("theEgosDeathIsRefused", !ego.IsDeleted && MysticHypnosis.IsPossessing(player) && (alterEgo.Timer > -0.5) && (alterEgo.Timer < 0.5));
+			alterEgo.On_Timer();
 			Report("theEgosDeathBringsItHomeHurt", !MysticHypnosis.IsPossessing(player) && (player.Hits == 1) && ego.IsDeleted);
 
 			player.Hits = 100; //#1467 - a spell on the ego, through its @spellEffect

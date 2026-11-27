@@ -130,13 +130,15 @@ cancel means the spell doesn't land there). `MagicWearerPlugin` is on a characte
 a magic mount) and answers both, plus `@hit` (slayers) and `@afterSwing` (the freezing blow). Leech isn't on it:
 class points and items count together, for every player, as a direct call.
 
-Before a death, `@denyDeath` (#1463, args: the killer) is raised on a living character at the top of
-`Character.CauseDeath`; a handler returning Cancel keeps it alive, and `@death` isn't raised then (see
+Before a death, `@denyDeath` (#1463, `DenyDeathArgs` since #1558) is raised on a living character at the top of
+`Character.CauseDeath`; a cancel or deny keeps it alive at 1 hit point, and `@death` isn't raised then (see
 [triggers-and-deny-chains.md](triggers-and-deny-chains.md)). A possessing mystic's `PossessionPlugin` and the alter
-ego's `AlterEgoPlugin` answer it (#1467).
+ego's `AlterEgoPlugin` answer it (#1467), refusing and coming home on their timer.
 
-A death raises `@kill` on the killer (#1431, Sphere's `@Kill`, args: the victim), in `Character.CauseDeath` after
-`@death`, unless there's no killer, it killed itself or it's deleted. The ranger's plugin charges its killing spree there.
+A death raises `@kill` on the killer (#1431, Sphere's `@Kill`, args: the victim; `Character.Trigger_Kill` and
+`On_Kill` since #1558), in `Character.CauseDeath` after `@death`, unless there's no killer, it killed itself or it's
+deleted. The ranger's plugin charges its killing spree there. A monster's fighters hear `@killCredit` before that,
+inside the victim's `NPC.On_Death`.
 
 A profession's behaviour lives on its profession plugin. This is the original code's own pattern: each profession .def
 names its `professionPluginDef`, and `ProfessionPlugin.InstallProfessionPlugin` puts that plugin on the player under

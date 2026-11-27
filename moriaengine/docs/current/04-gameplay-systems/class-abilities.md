@@ -147,16 +147,18 @@ so a GM who isn't a mystic has none.
 The body swap itself is in `MysticHypnosis.cs` (#1467):
 - **The mystic's `PossessionPlugin`** (Erebor's `i_hypno_delka`) holds everything needed to come home, and its timer ends
   the possession.
-  - At its `@denyDeath` the mystic doesn't die: the killers are paid as for the monster, and the mystic comes home with
-    a fifth of the hits.
+  - At its `@denyDeath` the mystic doesn't die: the deny refuses (the mystic is left at 1 hit), and the plugin's timer,
+    due at once (#1558), pays the killers as for the monster and brings the mystic home with a fifth of the hits. The
+    monster comes back with the 1 hit left (before #1558, with the hits from before the killing blow).
   - At its `@logout` the mystic comes home.
   - At its `@gainExperience` a gain only counts, its base before bonuses; it is paid, with its bonuses, at home.
 - **The alter ego's `AlterEgoPlugin`** rings the alarm pads every second.
   - A landed blow at it (`@getHit`) or a spell on it (`@spellEffect`, which then does nothing) brings the mystic home
     with half the hits.
-  - Its death (`@denyDeath`) brings the mystic home hurt, and the ego doesn't die.
-- **Asked twice:** a caller that sets `Hits = 0` and then calls `CauseDeath` again asks twice. The first ask brings the
-  mystic home, so the second meets them at home, as with the old direct call.
+  - Its death (`@denyDeath`) is refused, and its timer, due at once, brings the mystic home hurt; the ego doesn't die
+    (the swap back deletes it).
+- **Asked twice:** a caller that sets `Hits = 0` and then calls `CauseDeath` again asks twice. Both refuse; the plugin
+  notes only the first, and comes home once.
 
 While a mystic possesses a monster:
 
