@@ -151,9 +151,9 @@ nearest door with only the reach test skipped.
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1 | `@skillSelect` | skill handlers | calculation/implementation | regular | Skill target/selection phase | Validate selected target |
-| 2 | `@skillStart` | skill handlers | implementation/notification | cancellable | Skill starts | Allocate temporary skill state |
-| 3 | `@skillStroke` | skill handlers | notification/implementation | cancellable | Skill tick/pulse phase | Progress long-running skill |
+| 1 | `@skillSelect` | skill handlers | calculation/implementation | cancellable | Skill target/selection phase | Validate selected target |
+| 2 | `@skillStart` | skill handlers | implementation/notification | cancellable | Skill starts | Allocate temporary skill state; `HungerPlugin`: a starving attempt hurts and fails (#1558) |
+| 3 | `@skillStroke` | skill handlers | notification/implementation | cancellable | Skill tick/pulse phase | Progress long-running skill; `HungerPlugin`: a starving swing being drawn (#1558) |
 | 4a | `@skillSuccess` | skill handlers | notification | regular | Successful completion | Apply final rewards/effects |
 | 4b | `@skillFail` | skill handlers | notification | regular | Failed completion | Apply failure consequences |
 | 4c | `@skillAbort` | skill handlers | notification/deny | regular | Interrupted/cancelled completion | Roll back temporary state |
@@ -186,10 +186,11 @@ character while anything magic is worn and answers `@hit` (slayers), `@afterSwin
 
 ## 1.13 Chain: Spell cast (Magery)
 
-#1558 reworked the cast's start (`MagerySkillDef.On_Start`, `Character`). Old names: `@spellCastTry` is gone (hunger is a call
-at the same point, `PlayerHunger.HurtIfStarving`, and a starving cast fails); the casting rules (`SpellCastRules`) became `Character.On_DenySpellCast`,
+#1558 reworked the cast's start (`MagerySkillDef.On_Start`, `Character`). Old names: `@spellCastTry` is gone (hunger is
+`HungerPlugin`'s `@skillStart` handler, and a starving cast fails); the casting rules (`SpellCastRules`) became `Character.On_DenySpellCast`,
 after the `@denySpellCast` handlers instead of before them. Each step is `@X` on the participant, then its `On_X`. A cast
-starts with the skill chain (1.11): `@skillStart` comes first, then Magery's sight, mana and reagents, then hunger.
+starts with the skill chain (1.11): at `@skillStart` hunger charges a cast that would get past Magery's sight, mana and
+reagents (`MagerySkillDef.PassesOwnChecks`), then `On_Start` makes those checks with their messages.
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
@@ -347,7 +348,7 @@ in #941/PR #942; since #1558 a door is the dclick chain (1.10), with no triggers
 | `@denyMove`, `CheckCanMove`, `CheckCharacterObstacles` | `@denyStep` (`DenyStepArgs`) and `On_DenyStep` | Sphere checks freeze, stone and immobile before terrain and the push |
 | cancellable `@step` before the move, `@stepTaken` after it | `@step` after the move (direction, running, point left) | Sphere's `@Step`, after the move |
 | region `@enter` / `@exit`, cancellable | region `@denyEnter` / `@denyExit`, then `@enter` / `@exit` as notifications | Sphere's region `@Enter` / `@Exit` (a GM is never refused) |
-| `@spellCastTry` (hunger) | removed: hunger is `PlayerHunger.HurtIfStarving` at Erebor's points (hurts and fails) | Erebor's `e_allplayers` `@spellcast` / `@hittry` calling `hungryhurts` (hurt only) |
+| `@spellCastTry` (hunger) | removed: hunger is `HungerPlugin` on `@skillStart` / a swing's `@skillStroke`, past each skill's own checks (hurts and fails) | Erebor's `e_allplayers` `@spellcast` / `@hittry` calling `hungryhurts` (hurt only) |
 | `@denySpellCast` after the hard-coded casting rules | `@denySpellCast` (`DenySpellCastArgs`) before `Character.On_DenySpellCast` (the rules) | Sphere's `@SpellCast` RETURN 1, after its own checks |
 | `@denyItemDClick` for a character target | `@denyCharDClick` | |
 | `Trigger_DClickFromAfar` (skipped every deny) | `Trigger_DClick(clicker, true)`: `DenyClickArgs.SkipReachChecks` | Sphere's `Use_Obj` without the touch test |

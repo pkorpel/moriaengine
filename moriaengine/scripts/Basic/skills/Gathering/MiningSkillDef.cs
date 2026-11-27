@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			if (!Gathering.Begin(self, skillSeqArgs.Target1, SkillName.Mining)) {
+			if (!Gathering.Begin(self, skillSeqArgs.Target1)) {
 				return TriggerResult.Cancel;
 			}
 			(self.FindLayer(LayerNames.Hand1) as Destroyable ?? self.FindLayer(LayerNames.Hand2) as Destroyable)?.TakeWear(1, self); //Sphere's once a try
@@ -170,7 +170,9 @@ namespace SteamEngine.CompiledScripts {
 				return TargetResult.Done; //#391 - show the message once and stop, don't loop
 			}
 			skillSeq.Target1 = targetted;
-			skillSeq.PhaseStart();
+			if (Gathering.Prepare(self, SkillName.Mining)) { //#1558 - the wait, the saddle and the dark before the start's hunger
+				skillSeq.PhaseStart();
+			}
 			return TargetResult.Done;
 		}
 

@@ -66,10 +66,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing: true when it hurt, and the attempt then fails (#1558,
-		/// pkorpel's call; on Erebor it only hurt). Never a GM's. Asked where Erebor asked it: a swing drawn in reach
-		/// (WeaponSkillDef.On_Stroke, @hittry), a cast past Sphere's own checks (Magery.On_Start, @spellcast), mining and the other
-		/// gathering after the dark (Gathering.Begin, miningfix), taming (f_tamingstart), a craft-menu order (makestring_start) and
-		/// a lockpick try.</summary>
+		/// pkorpel's call; on Erebor it only hurt). Never a GM's. Asked by HungerPlugin on the skill chain (a swing drawn in reach,
+		/// a cast past Sphere's own checks, gathering past the dark, taming, a craft-menu order's first item), and by a lockpick
+		/// try, which isn't a skill start.</summary>
 		public static bool HurtIfStarving(Character ch) {
 			if ((ch is Player) && !ch.IsGM && (FoodOf(ch) < 1) && !ch.Flag_Dead) {
 				ch.SysMessage(Loc<HungerLoc>.Get(ch.Language).Dying);

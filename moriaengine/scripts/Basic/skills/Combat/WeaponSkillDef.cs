@@ -139,6 +139,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1558 - whether this stroke is a swing being drawn that On_Stroke would go on with: the target there, in
+		/// sight and not immune, standing still if the weapon needs it, in strike reach. HungerPlugin charges hunger only for
+		/// such a stroke (Erebor's @hittry); for any other one On_Stroke ends or retries the attack itself. Asks only.</summary>
+		public static bool IsSwingAttempt(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
+			Character target = skillSeqArgs.Target1 as Character;
+			if ((target == null) || target.IsDeleted || !self.CanInteractWith(target).Allow || target.IsImmuneToHostileEffects(self)) {
+				return false;
+			}
+			if (RequiresStandingStill(self) && self.Flag_Moving) {
+				return false;
+			}
+			return ((WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1) == WeaponSkillPhase.Drawing) &&
+				(StrikeDistance(self, target) <= self.WeaponStrikeStartRange);
+		}
+
 		/// <summary>#1558 - a swing @denySwing refused is tried again a second later.</summary>
 		public static void RetryStroke(SkillSequenceArgs skillSeqArgs) {
 			skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
@@ -195,15 +211,7 @@ namespace SteamEngine.CompiledScripts {
 			WeaponSkillPhase phase = (WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1);
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
-					//#976, #1396 - Erebor's @hittry hungryhurts came first. #1558 - a starving swing fails: the hurt again at the
-					//next swing, a weapon delay later (Erebor's once a swing), not at the 1 s retry of a refusal
-					if (PlayerHunger.HurtIfStarving(self)) {
-						if (!self.IsDeleted && !self.Flag_Dead) {
-							skillSeqArgs.DelaySpan = self.WeaponDelay;
-							skillSeqArgs.DelayStroke();
-						}
-						return TriggerResult.Cancel;
-					}
+					//#976, #1396 - Erebor's @hittry hungryhurts came first: #1558 - HungerPlugin's @skillStroke, for IsSwingAttempt
 					if (!self.Trigger_DenySwing(target).Allow) { //#1558 - was @hitTry; a deny is a retry a second later
 						RetryStroke(skillSeqArgs);
 						return TriggerResult.Cancel;

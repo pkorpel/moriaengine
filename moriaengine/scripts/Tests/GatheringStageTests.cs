@@ -18,7 +18,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestGatherBegin(Character self, ScriptArgs sa) {
 			int away = int.Parse(sa.Args.Trim('"'), CultureInfo.InvariantCulture);
-			bool began = Gathering.Begin(self, new Point3D((ushort) (self.X + away), self.Y, self.Z), SkillName.Mining);
+			bool began = Gathering.Prepare(self, SkillName.Mining) && Gathering.Begin(self, new Point3D((ushort) (self.X + away), self.Y, self.Z));
 			Console.WriteLine("GATHER_BEGAN: " + began + " hidden=" + self.Flag_Hidden);
 		}
 

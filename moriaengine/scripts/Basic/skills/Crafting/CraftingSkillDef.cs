@@ -127,6 +127,9 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
+			if (!CraftingProcessPlugin.BeginOrder(self)) { //#1558 - an order's first item: the light, past @skillStart's hunger
+				return TriggerResult.Cancel;
+			}
 			//todo: paralyzed state etc.
 			//some special requirements will be also checked (if present)
 			if (!this.CheckPrerequisities(skillSeqArgs) || !this.DoCheckSpecials(skillSeqArgs)) {

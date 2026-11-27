@@ -81,8 +81,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Begin(Player self, Item locked, int pick) {
+			//lockpicking.scp's src.hungryhurts. #1558 - a starving try fails, the pick kept. A try isn't a skill start (it runs by its
+			//own timer, and starting a skill would end tracking, taming or a crafting order), so it asks hunger itself: the one
+			//exception to HungerPlugin's hunger on the skill chain
 			if (PlayerHunger.HurtIfStarving(self)) {
-				return; //#1558 - a starving try fails, the pick kept
+				return;
 			}
 			HidingSkillDef.Reveal(self);
 			self.Sound(PickSound);

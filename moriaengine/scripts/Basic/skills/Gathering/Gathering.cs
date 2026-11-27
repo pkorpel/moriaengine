@@ -29,8 +29,10 @@ namespace SteamEngine.CompiledScripts {
 		private const double MoreForTheImpatient = 2;
 		private static readonly TagKey strokesTK = TagKey.Acquire("_gatherStrokes_");
 
-		/// <summary>False when it doesn't start.</summary>
-		internal static bool Begin(Character self, IPoint3D target, SkillName skill) {
+		/// <summary>What comes before the skill's start, on the target (f_tezba_pauza, resource_targon_ground's first lines): the
+		/// wait since the last try, the saddle and the dark. False when it doesn't start. #1558 - then the start's @skillStart,
+		/// where HungerPlugin charges hunger (miningfix: after the dark), then Begin.</summary>
+		internal static bool Prepare(Character self, SkillName skill) {
 			GatheringLoc texts = Loc<GatheringLoc>.Get(self.Language);
 			double delay = GatheringDelaySystem.GetDelaySeconds(self, skill);
 			BoundTimer waiting = self.GetTimer(GatherDelayTimer.Key);
@@ -44,12 +46,12 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(texts.FromTheSaddle);
 				self.Dismount();
 			}
-			if (!WorkLight.CheckWithMessage(self)) {
-				return false;
-			}
-			if (PlayerHunger.HurtIfStarving(self)) {
-				return false; //miningfix: after the dark; #1558 - a starving attempt fails
-			}
+			return WorkLight.CheckWithMessage(self);
+		}
+
+		/// <summary>The rest, in the skill's On_Start: reveal, the reach and the sight. False when it doesn't start.</summary>
+		internal static bool Begin(Character self, IPoint3D target) {
+			GatheringLoc texts = Loc<GatheringLoc>.Get(self.Language);
 			HidingSkillDef.Reveal(self);
 			if ((Point2D.GetSimpleDistance(self, target) > Reach) && !self.IsGM) {
 				self.SysMessage(texts.TooFar);

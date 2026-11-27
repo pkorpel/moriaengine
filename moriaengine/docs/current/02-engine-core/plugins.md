@@ -216,18 +216,28 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
   player's success fails), as Erebor's player event `e_allplayers` did.
-  - **#1558: a starving attempt hurts and fails.** Erebor's hungryhurts (`PlayerHunger.HurtIfStarving`) is asked where
-    Erebor asked it: a swing drawn in reach, past the stroke's own target, sight and stand-still checks
-    (`WeaponSkillDef.On_Stroke`, `@hittry`, before `@denySwing`); a cast past Sphere's own checks (sight, mana, reagents) and
-    before the casting rules (`Magery.On_Start`, where `@spellCastTry` was, #1401); mining, lumberjacking and fishing after
-    the dark (`Gathering.Begin`, miningfix); taming (f_tamingstart); a craft-menu order, once, before the light
-    (`CraftingProcessPlugin.StartCrafting`, makestring_start; cooking on a fire isn't one); a lockpick try. A starving player
-    (no food) takes 10 hits with "Umiras hlady..." **and the attempt fails** (pkorpel's call; on Erebor it only hurt): a
-    cast, taming, gathering or lockpick try doesn't start, an order doesn't start, and a swing stays drawn and is tried
-    again a weapon delay later (once a swing, as Erebor's). Never a GM.
-  - The #1558 plan put this on the skill chain's `@skillStart`/`@skillStroke`; the review moved it back to Erebor's points,
-    because the chain's attempt comes before checks Erebor ran first (a swing hurt every second at a target out of sight, a
-    cast hurt before its mana check), and fires for cooking and each item of an order. `@spellCastTry` stays removed.
+  - **#1558: a starving attempt hurts and fails, on the skill chain.** `HungerPlugin` also answers `@skillStart` and a
+    swing's `@skillStroke` with Erebor's hungryhurts (`PlayerHunger.HurtIfStarving`). A starving player (no food) takes 10
+    hits with "Umiras hlady..." **and the attempt fails** (pkorpel's call; on Erebor it only hurt): the handler cancels, so
+    the skill's `On_Start`/`On_Stroke` never runs. Never a GM. It charges only an attempt Erebor charged, at Erebor's point,
+    so each skill's own checks come first:
+    - **a swing**: only a stroke `WeaponSkillDef.IsSwingAttempt` passes, a swing being drawn with the target there, in sight,
+      not immune, in reach, standing still if the weapon needs it (Erebor's `@hittry`, before `@denySwing`). Any other
+      stroke goes to `On_Stroke` uncharged, which ends the attack at a lost target as before. A starving swing stays drawn
+      and is tried again a weapon delay later: once a swing, as Erebor's;
+    - **a cast**: only one past Sphere's own checks (sight, mana, reagents: `MagerySkillDef.PassesOwnChecks`), so before the
+      casting rules (#1401, where `@spellCastTry` was). Not a custom scroll (Erebor's customspellcast never ran
+      `@spellcast`);
+    - **mining, lumberjacking, fishing**: the wait, the saddle and the dark come before the start (`Gathering.Prepare`, on the
+      target), so hunger is after the dark (miningfix);
+    - **taming**: at the start; the targeting reveals first (f_tamingstart);
+    - **a craft-menu order**: once, at its first item's start (`CraftingProcessPlugin.IsOrdersFirstItem`); the order's
+      light and list come after, in that item's `On_Start` (`BeginOrder`), as makestring_start. A starving order stops.
+      Cooking on a fire is no order and costs nothing;
+    - **a lockpick try** is the one exception: it isn't a skill start (it runs by its own timer, and a skill start would
+      end tracking, taming or a crafting order), so `Targ_Lockpick` asks `PlayerHunger` itself.
+  - A starving attempt cancelled at `@skillStart` doesn't reach `Character.On_SkillStart`, so it doesn't stop the skills
+    and the crafting order a real start stops. `@spellCastTry` is gone.
   - A custom spell scroll's cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`). The bard skills,
     healing, the shaman's pacts and the custom scrolls' casting rule ask `PlayerHunger` about being hungry, which reads
     the plugin.

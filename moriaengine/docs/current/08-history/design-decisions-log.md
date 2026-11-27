@@ -219,11 +219,15 @@ cancellable `@X`). The convention is in `trigger-system-architecture.md` section
   same. A locked door refuses closing as well as opening, as Sphere's native `Use_Item`; Erebor's "closing is never
   refused" came from its custom door types.
 - **Q1, hunger:** a starving player takes Erebor's 10 hits **and the attempt fails**: pkorpel's deliberate change from
-  Erebor's `hungryhurts`, which only hurt. `@spellCastTry` is gone. The decision put hunger on the skill chain's attempt
-  (`@skillStart`/`@skillStroke`); the review of the implementation moved it back to Erebor's own points
-  (`PlayerHunger.HurtIfStarving` in the swing's stroke, the cast past mana and reagents, gathering after the dark, taming,
-  a craft-menu order, a lockpick try), because the chain's attempt fires before checks Erebor ran first and for cooking
-  and every item of an order. A failed swing is retried a weapon delay later, once a swing as Erebor's.
+  Erebor's `hungryhurts`, which only hurt. `@spellCastTry` is gone. Hunger is one handler on the skill chain's attempt,
+  `HungerPlugin` on `@skillStart` and a swing's `@skillStroke` (janslav's suggestion, pkorpel's call). The review found the
+  chain's attempt fires before checks Erebor ran first; a review fix moved hunger back to per-skill calls, and pkorpel put
+  it back on the chain, with each case handled there: a swing is charged only when `WeaponSkillDef.IsSwingAttempt` (target
+  there, in sight, in reach, standing still), and retried a weapon delay later, once a swing as Erebor's; a cast only past
+  Sphere's sight, mana and reagents (`MagerySkillDef.PassesOwnChecks`), before the casting rules; gathering's wait, saddle
+  and dark moved before the start (`Gathering.Prepare`); a craft-menu order once, at its first item, with its light check
+  moved after (`CraftingProcessPlugin.BeginOrder`); cooking on a fire is no order. Lockpicking isn't a skill start, so a
+  lockpick try asks `PlayerHunger` itself: the one exception.
 - **Q2:** the spell slayers keep their own step (`@beforeDoEffect`) before `@causeSpellEffect`, so plugin order can't
   change the result.
 - **Q3, GMs:** a GM never receives hostile skill, spell or ability effects: one predicate,

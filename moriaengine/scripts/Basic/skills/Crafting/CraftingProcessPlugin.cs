@@ -34,6 +34,11 @@ namespace SteamEngine.CompiledScripts {
 
 		private bool stopped;
 
+		/// <summary>#1558 - the order's first item has got past makestring_start (hunger, then the light): the next items don't
+		/// ask again.</summary>
+		[SaveableData, CopyableData]
+		public bool begun;
+
 		public static void UnInstallCraftingPlugin(Character self) {
 			CraftingProcessPlugin p = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
 			if (p != null) {
@@ -49,18 +54,36 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		/// <summary>makestring_start: hungryhurts first, once for the order (#1558 - a starving order fails), then the light.
-		/// Only a craft-menu order: cooking on a fire (Targ_CookOn) never came here.</summary>
+		/// <summary>A craft-menu order. #1558 - makestring_start (hungryhurts first, once for the order, then the light, then the list)
+		/// comes with the first item's start: its @skillStart is HungerPlugin's (a starving order fails and stops), then
+		/// BeginOrder in the item's On_Start. Only a craft-menu order: cooking on a fire (Targ_CookOn) never comes here.</summary>
 		public static void StartCrafting(Character self, CraftingOrder crOrd) {
-			if (PlayerHunger.HurtIfStarving(self)) {
-				return;
+			CraftingProcessPlugin p = InstallCraftingPlugin(self, crOrd);
+			p.begun = false;
+			p.StartCrafting();
+		}
+
+		/// <summary>#1558 - true while a craft-menu order's first item is starting: HungerPlugin charges hunger then.</summary>
+		public static bool IsOrdersFirstItem(Character self) {
+			CraftingProcessPlugin p = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
+			return (p != null) && (p.craftingOrder != null) && !p.begun;
+		}
+
+		/// <summary>#1558 - the rest of makestring_start, in the order's first item's On_Start, past its @skillStart (hunger): the
+		/// light, then the list of what's to be made. False, the order gone, in the dark. Nothing for later items, or for an item
+		/// made outside an order (cooking on a fire).</summary>
+		internal static bool BeginOrder(Character self) {
+			CraftingProcessPlugin p = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
+			if ((p == null) || (p.craftingOrder == null) || p.begun) {
+				return true;
 			}
 			if (!WorkLight.CheckWithMessage(self)) {
-				return;
+				p.Delete();
+				return false;
 			}
-			Announce(self, crOrd);
-			CraftingProcessPlugin p = InstallCraftingPlugin(self, crOrd);
-			p.StartCrafting();
+			p.begun = true;
+			Announce(self, p.craftingOrder);
+			return true;
 		}
 
 		private static void Announce(Character self, CraftingOrder order) {
