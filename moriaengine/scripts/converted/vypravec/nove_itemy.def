@@ -9698,7 +9698,7 @@ subsection = svetla
 DESCRIPTION = okno
 
 
-[ItemDef 0x241f]
+[DoorDef 0x241f]
 category = Vypravec
 subsection = dvere
 DESCRIPTION = vrata

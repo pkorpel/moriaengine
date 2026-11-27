@@ -1005,27 +1005,26 @@ namespace SteamEngine {
 		//fires the @itemDClick / @charDClick and @dclick triggers where this is the Thing being doubleclicked.
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void Trigger_DClick(AbstractCharacter dclicker) {
+			this.Trigger_DClick(dclicker, false);
+		}
+
+		/// <summary>#1558 - skipReachChecks: the whole deny chain runs, only the clicker's reach test is skipped
+		/// (DenyClickArgs.SkipReachChecks). Telekinesis, Sphere's Use_Obj without the touch test.</summary>
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public void Trigger_DClick(AbstractCharacter dclicker, bool skipReachChecks) {
 			this.ThrowIfDeleted();
 			if (dclicker == null)
 				return;
 
 			//deny triggers first
 			bool isItem = this.IsItem;
-			DenyResult result = this.Trigger_DenyDClick(dclicker, isItem);
+			DenyResult result = this.Trigger_DenyDClick(dclicker, isItem, skipReachChecks);
 
 			if (!result.Allow) {
 				result.SendDenyMessage(dclicker);
 
 			} else {//action triggers
 				this.RunDClick(dclicker, isItem);
-			}
-		}
-
-		/// <summary>#1001 - a double click that skips the deny triggers and their reach test, for Telekinesis.</summary>
-		public void Trigger_DClickFromAfar(AbstractCharacter dclicker) {
-			this.ThrowIfDeleted();
-			if (dclicker != null) {
-				this.RunDClick(dclicker, this.IsItem);
 			}
 		}
 
@@ -1057,8 +1056,8 @@ namespace SteamEngine {
 			}
 		}
 
-		private DenyResult Trigger_DenyDClick(AbstractCharacter dclicker, bool isItem) {
-			DenyClickArgs denyArgs = new DenyClickArgs(dclicker, this);
+		private DenyResult Trigger_DenyDClick(AbstractCharacter dclicker, bool isItem, bool skipReachChecks) {
+			DenyClickArgs denyArgs = new DenyClickArgs(dclicker, this, skipReachChecks);
 			TriggerResult result;
 
 			if (isItem) {
@@ -1069,7 +1068,7 @@ namespace SteamEngine {
 					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				}
 			} else {
-				result = dclicker.TryCancellableTrigger(TriggerKey.denyItemDClick, denyArgs);
+				result = dclicker.TryCancellableTrigger(TriggerKey.denyCharDClick, denyArgs); //#1558 - was @denyItemDClick, since 2dbc90b
 				if (result != TriggerResult.Cancel) {
 					try {
 						result = dclicker.On_DenyCharDClick(denyArgs);
@@ -1077,7 +1076,7 @@ namespace SteamEngine {
 				}
 			}
 
-			if (result != TriggerResult.Cancel) {
+			if ((result != TriggerResult.Cancel) && denyArgs.Result.Allow) {
 				result = this.TryCancellableTrigger(TriggerKey.denyDClick, denyArgs);
 				if (result != TriggerResult.Cancel) {
 					try {
@@ -1250,6 +1249,28 @@ namespace SteamEngine {
 
 		[CLSCompliant(false)]
 		public virtual void On_BuildContextMenu(ContextMenu menu, AbstractCharacter requester) {
+		}
+
+		/// <summary>#1558 - the requester picked entry `selectedIndex` of this Thing's context menu: @contextMenuSelect
+		/// (argv: requester, index), then On_ContextMenuSelect, both before the entry's action and able to cancel it (an
+		/// implementation trigger, section 8). The menu is rebuilt for the selection, as GetContextMenu says.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public void Trigger_ContextMenuSelect(AbstractCharacter requester, int selectedIndex) {
+			this.ThrowIfDeleted();
+			TriggerResult result = this.TryCancellableTrigger(TriggerKey.contextMenuSelect, new ScriptArgs(requester, selectedIndex));
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_ContextMenuSelect(requester, selectedIndex);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result != TriggerResult.Cancel) && !this.IsDeleted && !requester.IsDeleted) {
+				this.GetContextMenu(requester).InvokeSelected((ushort) selectedIndex, requester);
+			}
+		}
+
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		public virtual TriggerResult On_ContextMenuSelect(AbstractCharacter requester, int selectedIndex) {
+			return TriggerResult.Continue;
 		}
 
 		//public Gump Dialog(string gumpName) {
@@ -1816,13 +1837,26 @@ namespace SteamEngine {
 	public class DenyClickArgs : DenyTriggerArgs {
 		private readonly AbstractCharacter clickingChar;
 		private readonly Thing target;
+		private readonly bool skipReachChecks;
 
 
 		public DenyClickArgs(AbstractCharacter clickingChar, Thing target)
+			: this(clickingChar, target, false) {
+		}
+
+		public DenyClickArgs(AbstractCharacter clickingChar, Thing target, bool skipReachChecks)
 			: base(DenyResultMessages.Allow, clickingChar, target) {
 
 			this.clickingChar = clickingChar;
 			this.target = target;
+			this.skipReachChecks = skipReachChecks;
+		}
+
+		/// <summary>#1558 - the clicker's default reach test (its On_DenyItemDClick) is skipped; every other deny still runs.</summary>
+		public bool SkipReachChecks {
+			get {
+				return this.skipReachChecks;
+			}
 		}
 
 		public AbstractCharacter ClickingChar {

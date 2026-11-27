@@ -206,7 +206,7 @@ namespace SteamEngine.CompiledScripts {
 
 			Item apple = (Item) ((ItemDef) ThingDef.GetByDefname("i_fruit_apple")).Create(player.Backpack);
 			PlayerHunger.SetFood(player, 5);
-			apple.Trigger_DClickFromAfar(player);
+			apple.Trigger_DClick(player, true);
 			Report("aDoubleClickReachesIt", eat.Done == 1);
 			if (!apple.IsDeleted) {
 				apple.Delete();

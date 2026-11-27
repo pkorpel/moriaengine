@@ -19,7 +19,7 @@ using SteamEngine.Generators.Abstractions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1023, #1409 - Erebor's i_looter_immobilizer: every pick at another's body holds the looter for a while (each
-	/// pick adds to what's left), refusing steps in @denyMove until its timer runs out.</summary>
+	/// pick adds to what's left), refusing steps in @denyStep (#1558) until its timer runs out.</summary>
 	[PluginTemplate]
 	public partial class LootHoldPlugin : TimerPlugin {
 		public static readonly PluginKey key = PluginKey.Acquire("_lootHold_");
@@ -40,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 			hold.Timer = System.Math.Max(hold.Timer, 0) + seconds;
 		}
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			return TriggerResult.Cancel;
 		}
 

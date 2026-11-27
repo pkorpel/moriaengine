@@ -5,7 +5,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1476 (#1399's #13) - on a character while something magic is worn (MagicItems.IsUnderMagic: items or a
 	/// magic mount), the wearer's side of Erebor's magic item events. The sums stay the wearer's tags (MagicItems.WearerValue);
 	/// this answers the triggers that read them, as Erebor's events did: the slayers on a blow (@AfterSwing = our
-	/// @swingLanding) and on a spell (@BeforeDoEffect), the freezing blow (after the hit), the reflex and the block
+	/// @hit) and on a spell (@BeforeDoEffect), the freezing blow (after the hit), the reflex and the block
 	/// (@BeforeGetEffect). Installed and removed with the worn count (MagicItems.Sync), so a load brings it back as saved.
 	/// Leech isn't here: it's class points + 2 x the items' (MagicCombat.LeechSum), whoever wears nothing.</summary>
 	[DeepCopyableClass]
@@ -37,14 +37,16 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>The slayers on the wearer's own blow.</summary>
-		public void On_SwingLanding(WeaponSwingArgs swing) {
+		/// <summary>The slayers on the wearer's own blow (#1558: @hit, after the dodge).</summary>
+		public void On_Hit(WeaponSwingArgs swing) {
 			MagicCombat.ModifyBlow(swing.attacker, swing.defender, swing);
 		}
 
-		/// <summary>e_paralysing: a landed blow may freeze.</summary>
-		public void On_AfterHit(WeaponSwingArgs swing, int damage) {
-			MagicCombat.TryFreeze(swing.attacker, swing.defender, damage);
+		/// <summary>e_paralysing: a landed blow may freeze (#1558: @afterSwing, was @afterHit).</summary>
+		public void On_AfterSwing(WeaponSwingArgs swing) {
+			if (!swing.Dodged && !swing.defender.IsDeleted) {
+				MagicCombat.TryFreeze(swing.attacker, swing.defender, swing.FinalDamage);
+			}
 		}
 
 		/// <summary>The slayers on the wearer's spell, after the target's defense.</summary>

@@ -95,10 +95,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//f_tamingstart
+		//f_tamingstart. #1558 - its reveal came first, then hungryhurts: Targ_Tame reveals before the start, whose @skillStart is
+		//HungerPlugin's (a starving attempt fails there)
 		private static void Start(Character self, Character target) {
 			HidingSkillDef.Reveal(self);
-			PlayerHunger.HurtIfStarving(self);
 			TamingTimer running = self.GetTimer(TamingTimer.Key) as TamingTimer;
 			if (running != null) {
 				running.interrupted = false;
@@ -213,7 +213,7 @@ namespace SteamEngine.CompiledScripts {
 		//memory_ispawned goes: the spawn counts it as gone and makes another
 		private static void LeaveSpawn(NPC npc) {
 			if (SpawnOf(npc) != null) {
-				npc.TryTrigger(TriggerKey.Acquire("leaveSpawn"), new ScriptArgs());
+				npc.Trigger_LeaveSpawn();
 				npc.RemoveTag(spawnGemTK);
 				npc.RemoveTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char"));
 			}
@@ -224,6 +224,7 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
 			skillSeq.Target1 = targetted;
+			HidingSkillDef.Reveal(self); //f_tamingstart's first line, before its hungryhurts (#1558: at the start's @skillStart)
 			skillSeq.PhaseStart();
 			return TargetResult.Done;
 		}

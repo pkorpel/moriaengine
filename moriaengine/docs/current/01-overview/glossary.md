@@ -57,7 +57,7 @@ subtype backing a placed house or ship. See [Regions](../02-engine-core/regions.
 handlers (scripted or compiled) get a chance to object" pattern used for nearly every
 state-changing action in the engine (pickup, drop, trade, equip, door open/close, ...). A
 "deny" trigger specifically produces a `DenyResult` that can block the action and carry a
-reason message. See [Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md).
+reason message. See [Deny results and the default check](../02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check).
 
 **SteamFunction** - the `[SteamFunction]` attribute marking a static method as a real
 chat/console command, dispatched by name through the generated command table (see

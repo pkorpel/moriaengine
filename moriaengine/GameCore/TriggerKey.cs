@@ -61,8 +61,10 @@ namespace SteamEngine {
 		public static readonly TriggerKey openLoadStream = Acquire("openLoadStream");
 		public static readonly TriggerKey afterLoad = Acquire("afterLoad");
 
-		public static readonly TriggerKey step = Acquire("step");
-		public static readonly TriggerKey stepTaken = Acquire("stepTaken"); //#1414
+		public static readonly TriggerKey step = Acquire("step"); //#1558 - a character's: after the move (was @stepTaken, #1414)
+		public static readonly TriggerKey denyStep = Acquire("denyStep"); //#1558 - was @denyMove, CheckCanMove, CheckCharacterObstacles
+		public static readonly TriggerKey denyEnter = Acquire("denyEnter"); //#1558 - a region's, for a step
+		public static readonly TriggerKey denyExit = Acquire("denyExit"); //#1558
 		public static readonly TriggerKey itemStep = Acquire("itemStep");
 		public static readonly TriggerKey pickingUp = Acquire("pickingUp"); //#1426
 
@@ -129,7 +131,7 @@ namespace SteamEngine {
 		public static readonly TriggerKey charDClick = Acquire("charDClick");
 		public static readonly TriggerKey itemDClick = Acquire("itemDClick");
 		public static readonly TriggerKey dClick = Acquire("DClick");
-		//public static readonly TriggerKey denyCharDClick = Get("denyCharDClick");
+		public static readonly TriggerKey denyCharDClick = Acquire("denyCharDClick"); //#1558
 		public static readonly TriggerKey denyItemDClick = Acquire("denyItemDClick");
 		public static readonly TriggerKey denyDClick = Acquire("denyDClick");
 

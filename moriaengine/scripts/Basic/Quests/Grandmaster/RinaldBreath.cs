@@ -82,7 +82,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Character.On_StepTaken.</summary>
+		/// <summary>Character.On_Step.</summary>
 		internal static void CheckStep(Character stepping) {
 			if (tiles.Count == 0) {
 				return;

@@ -60,9 +60,6 @@ namespace SteamEngine.CompiledScripts {
 		// print on every single hit instead of once per engagement.
 		static TagKey lastAttackedTargetTK = TagKey.Acquire("_combatMessagesLastTarget_");
 
-		/// <summary>#1396 - Erebor's @hittry on a player starting a swing (not GMs), as the swing is drawn.</summary>
-		private static readonly TriggerKey tkHitTry = TriggerKey.Acquire("hitTry");
-
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
@@ -142,6 +139,28 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1558 - whether this stroke is a swing being drawn that On_Stroke would go on with: the target there, in
+		/// sight and not immune, standing still if the weapon needs it, in strike reach. HungerPlugin charges hunger only for
+		/// such a stroke (Erebor's @hittry); for any other one On_Stroke ends or retries the attack itself. Asks only.</summary>
+		public static bool IsSwingAttempt(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
+			Character target = skillSeqArgs.Target1 as Character;
+			if ((target == null) || target.IsDeleted || !self.CanInteractWith(target).Allow || target.IsImmuneToHostileEffects(self)) {
+				return false;
+			}
+			if (RequiresStandingStill(self) && self.Flag_Moving) {
+				return false;
+			}
+			return ((WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1) == WeaponSkillPhase.Drawing) &&
+				(StrikeDistance(self, target) <= self.WeaponStrikeStartRange);
+		}
+
+		/// <summary>#1558 - a swing @denySwing refused is tried again a second later.</summary>
+		public static void RetryStroke(SkillSequenceArgs skillSeqArgs) {
+			skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
+			skillSeqArgs.DelayStroke();
+		}
+
 		/// <summary>#1148 - Sphere's GetTopDist3D for a swing: the flat distance, or the height difference in half character
 		/// heights (8) when that's more. A monster on the street under a player on a house floor 45 up was at distance 0 and
 		/// hit them through the floor.</summary>
@@ -170,6 +189,13 @@ namespace SteamEngine.CompiledScripts {
 				self.AbortSkill();
 				return TriggerResult.Cancel;
 			}
+			//#1558 - no swing at one immune to hostile effects (a GM): the attack ends, as a Sphere NPC gives up on an
+			//invulnerable target, rather than being retried
+			if (target.IsImmuneToHostileEffects(self)) {
+				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
+				self.AbortSkill();
+				return TriggerResult.Cancel;
+			}
 
 			// #512 - a stand-still weapon just fails this stroke while the attacker is moving
 			// (no teleport) - falls through to the same "retry in 1s" tail this method already
@@ -185,13 +211,10 @@ namespace SteamEngine.CompiledScripts {
 			WeaponSkillPhase phase = (WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1);
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
-					if ((self is Player) && !self.IsGM) { //#976 - Erebor's @hittry
-						self.TryTrigger(tkHitTry, skillSeqArgs.scriptArgs); //#1396 - hunger answers it (HungerPlugin.On_HitTry)
-						if (!WorkLight.CheckWithMessage(self)) {
-							skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
-							skillSeqArgs.DelayStroke();
-							return TriggerResult.Cancel;
-						}
+					//#976, #1396 - Erebor's @hittry hungryhurts came first: #1558 - HungerPlugin's @skillStroke, for IsSwingAttempt
+					if (!self.Trigger_DenySwing(target).Allow) { //#1558 - was @hitTry; a deny is a retry a second later
+						RetryStroke(skillSeqArgs);
+						return TriggerResult.Cancel;
 					}
 					skillSeqArgs.Param1 = WeaponSkillPhase.Striking;
 					TimeSpan delay = self.WeaponDelay;

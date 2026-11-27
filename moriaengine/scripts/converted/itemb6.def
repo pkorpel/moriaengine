@@ -2375,7 +2375,7 @@ DUPEITEM = i_moongate_gray
 [ItemDef 0x1feb]
 DUPEITEM = i_moongate_gray
 
-[ItemDef 0x1fed]
+[DoorDef 0x1fed]
 CATEGORY = Buildings - Doors
 SUBSECTION = Barred Metal Door 2
 DESCRIPTION = @ (n / sw)
@@ -2386,79 +2386,79 @@ WEIGHT = 10
 RESOURCES = 10 i_ingot_iron
 DEFNAME = i_door_metal_bar_2
 
-[ItemDef 0x1fee]
+[DoorDef 0x1fee]
 DESCRIPTION = @
 
 TYPE = T_DOOR_OPEN
 DupeList = 0x1ff0,0x1ff2,0x1ff4,0x1ff6,0x1ff8,0x1ffa,0x1ffc
 DEFNAME = i_door_metal_bar_2_o
 
-[ItemDef 0x1fef]
+[DoorDef 0x1fef]
 DESCRIPTION = @ (n / se)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ff0]
+[DoorDef 0x1ff0]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o
 
-[ItemDef 0x1ff1]
+[DoorDef 0x1ff1]
 DESCRIPTION = @ (n / nw)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ff2]
+[DoorDef 0x1ff2]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o
 
-[ItemDef 0x1ff3]
+[DoorDef 0x1ff3]
 DESCRIPTION = @ (n / ne)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ff4]
+[DoorDef 0x1ff4]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o
 
-[ItemDef 0x1ff5]
+[DoorDef 0x1ff5]
 DESCRIPTION = @ (w / se)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ff6]
+[DoorDef 0x1ff6]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o
 
-[ItemDef 0x1ff7]
+[DoorDef 0x1ff7]
 DESCRIPTION = @ (w / ne)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ff8]
+[DoorDef 0x1ff8]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o
 
-[ItemDef 0x1ff9]
+[DoorDef 0x1ff9]
 DESCRIPTION = @ (w / sw)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ffa]
+[DoorDef 0x1ffa]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o
 
-[ItemDef 0x1ffb]
+[DoorDef 0x1ffb]
 DESCRIPTION = @ (w / nw)
 
 DUPEITEM = i_door_metal_bar_2
 
-[ItemDef 0x1ffc]
+[DoorDef 0x1ffc]
 DESCRIPTION = @
 
 DUPEITEM = i_door_metal_bar_2_o

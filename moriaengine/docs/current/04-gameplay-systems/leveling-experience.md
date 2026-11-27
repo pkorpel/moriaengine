@@ -153,7 +153,8 @@ realm, or for killing a craftsman. The level never goes down.
   bonuses take their percent of. `Amount` is what will be added, and a handler may change it. A cancel adds nothing.
   - A gain diverted by a hypnosis is paid later and raises it then, possibly negative.
   - Compiled handlers only: a scripted one sees the numbers but can't change `Amount`.
-- `@killCredit` (`KillCreditArgs`: `victim`, `share`) is raised on each fighter credited with a death. It is
+- `@killCredit` (`KillCreditArgs`: `victim`, `share`; `Character.Trigger_KillCredit` and `On_KillCredit` since #1558)
+  is raised on each fighter credited with a death: from a monster's death inside its `NPC.On_Death`, from a player's death inside `Player.On_Death` (`LevelingSystem.ApplyDeathExperienceLoss`), and from a possessing mystic's refused death on `PossessionPlugin`'s timer. A death's comes before the killer's `@kill`. It is
   Erebor's `trigger_kill` (`@playerKill` on a player, `@npckill` on an NPC; here one trigger for both):
   - on a monster's death, after the fighter's own experience, and on the blood pact's bearer who earns through it.
     A blood-pact giver earns nothing and gets no credit. A monster worth nothing still credits its fighters with 0.

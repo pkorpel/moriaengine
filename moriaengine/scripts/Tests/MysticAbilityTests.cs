@@ -85,7 +85,7 @@ namespace SteamEngine.CompiledScripts {
 			CaughtPlugin caught = CaughtPlugin.Of(near); //e_catchedInField
 			Report("theFieldHoldsThoseAround", (field != null) && field.held.Contains(near) && (caught != null) && (caught.mystic == player) && ParalyzeEffectPluginDef.IsParalyzed(near));
 			Report("theFieldIsTheMysticsPlugin", (MysticProfessionPlugin.Of(player) is MysticProfessionPlugin mystic) && (mystic.nextCatchField > Globals.TimeInSeconds + 3000));
-			DamageManager.Trigger_GetSwingLanding(DamageManager.GetWeaponSwingArgs(player, near)); //#1455 - a blow at it, as ProcessSwing raises it
+			DamageManager.Trigger_GetHit(DamageManager.GetWeaponSwingArgs(player, near)); //#1455 - a blow at it, as ProcessSwing raises it
 			Report("aBlowFreesOne", (CaughtPlugin.Of(near) == null) && (field != null) && !field.held.Contains(near) && MysticMind.CheckCanMove(near) && !ParalyzeEffectPluginDef.IsParalyzed(near));
 			MysticMind.CatchField(player);
 			Report("theFieldEndsAgain", (CatchFieldPlugin.Of(player) == null) && MysticMind.CheckCanMove(player));
@@ -136,7 +136,7 @@ namespace SteamEngine.CompiledScripts {
 			int cutBlow = 0; //#1457 - e_npcChangeDmg's @AfterSwing: the robbed monster's blow loses its cut
 			WeaponSwingArgs monsterBlow = DamageManager.GetWeaponSwingArgs(robbed, player);
 			monsterBlow.DamageAfterAC = 100;
-			DamageManager.Trigger_SwingLanding(monsterBlow);
+			DamageManager.Trigger_Hit(monsterBlow);
 			cutBlow = (int) monsterBlow.DamageAfterAC;
 			Report("theRobbedMonsterHitsLess", cutBlow == 80);
 
@@ -153,9 +153,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			WeaponSwingArgs mysticBlow = DamageManager.GetWeaponSwingArgs(player, robbed);
 			mysticBlow.DamageAfterAC = 100;
-			DamageManager.Trigger_SwingLanding(mysticBlow);
+			DamageManager.Trigger_Hit(mysticBlow);
 			SpellPowerArgs power = new SpellPowerArgs(player, (SpellDef) SpellDef.GetByDefname("s_magic_arrow"), robbed, robbed, 1000);
-			player.TryTrigger(TriggerKey.Acquire("spellPower"), new ScriptArgs(power));
+			player.Trigger_SpellPower(power); //#1558
 			Report("aStolenAttackAddsToBlowsAndSpells", ((int) mysticBlow.DamageAfterAC == 105) && (power.SpellPower == 1050));
 
 			if (stealing != null) { //#1457 - e_mystik's @death consumes i_buffSteal; a held Strength goes back
@@ -239,11 +239,11 @@ namespace SteamEngine.CompiledScripts {
 			MysticHypnosis.Targeted(player, body);
 			ConcentrationPlugin concentration = ConcentrationPlugin.Of(player); //#1461 - i_hypno_timer
 			Report("concentrationStarts", (concentration != null) && (concentration.monster == body) && (concentration.Timer > 0)); //1 to 14 s, read a moment after it's set
-			player.TryTrigger(TriggerKey.stepTaken, new ScriptArgs(false)); //@stepTaken, as a real step raises it
+			player.TryTrigger(TriggerKey.step, new ScriptArgs(player.Direction, false, new Point4D(player.P()))); //@step (#1558; was @stepTaken), as a real step raises it
 			Report("aStepBreaksIt", ConcentrationPlugin.Of(player) == null);
 			MysticHypnosis.Targeted(player, body);
 			ConcentrationPlugin second = ConcentrationPlugin.Of(player);
-			DamageManager.Trigger_GetSwingLanding(DamageManager.GetWeaponSwingArgs(body, player)); //a blow at the mystic
+			DamageManager.Trigger_GetHit(DamageManager.GetWeaponSwingArgs(body, player)); //a blow at the mystic
 			Report("aBlowBreaksIt", (second != null) && (ConcentrationPlugin.Of(player) == null));
 			int bodyExp = body.ExperienceReward;
 			body.ExperienceReward = 0;
@@ -307,7 +307,7 @@ namespace SteamEngine.CompiledScripts {
 			Report("noAbsorptionWhilePossessing", !ClassAbilities.TryAbsorbSpell(player, body));
 			ClassAbilities.SetPoints(player, "speldodge", 0);
 
-			DamageManager.Trigger_GetSwingLanding(DamageManager.GetWeaponSwingArgs(player, ego)); //#1467 - its @getSwingLanding
+			DamageManager.Trigger_GetHit(DamageManager.GetWeaponSwingArgs(player, ego)); //#1467 - its @getHit
 			Report("aBlowOnTheEgoBringsItHome", !MysticHypnosis.IsPossessing(player) && (player.Model == model) && (player.X == x) && (player.Name == name) && ego.IsDeleted);
 			Report("withHalfItsHits", player.Hits == 90);
 			Report("theGearIsBack", shirt.Cont == player);
@@ -316,12 +316,20 @@ namespace SteamEngine.CompiledScripts {
 
 			player.Hits = 100;
 			MysticHypnosis.Swap(player, body);
+			state = MysticHypnosis.Possession(player);
 			player.CauseDeath(null);
+			//#1558 - the deny only refuses (alive at 1 hit, still possessing); the plugin's timer, due at once, comes home
+			Report("dyingInTheBodyIsRefused", !player.Flag_Dead && MysticHypnosis.IsPossessing(player) && (player.Hits == 1)
+				&& (state.Timer > -0.5) && (state.Timer < 0.5)); //due now (a due timer reads a hair below 0)
+			state.On_Timer(); //what the due timer runs
 			Report("dyingInTheBodyBringsItHome", !player.Flag_Dead && !MysticHypnosis.IsPossessing(player) && (player.Hits == 20));
 
 			MysticHypnosis.Swap(player, body);
 			ego = MysticHypnosis.Possession(player).ego;
+			alterEgo = AlterEgoPlugin.Of(ego);
 			ego.CauseDeath(null);
+			Report("theEgosDeathIsRefused", !ego.IsDeleted && MysticHypnosis.IsPossessing(player) && (alterEgo.Timer > -0.5) && (alterEgo.Timer < 0.5));
+			alterEgo.On_Timer();
 			Report("theEgosDeathBringsItHomeHurt", !MysticHypnosis.IsPossessing(player) && (player.Hits == 1) && ego.IsDeleted);
 
 			player.Hits = 100; //#1467 - a spell on the ego, through its @spellEffect

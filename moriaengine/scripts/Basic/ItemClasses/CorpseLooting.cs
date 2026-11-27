@@ -20,7 +20,7 @@ namespace SteamEngine.CompiledScripts {
 				return "Z tohoto tela jeste nemuzes nic brat.";
 			}
 			double now = Globals.TimeInSeconds;
-			LootHoldPlugin.Extend(looter, settings.lootHoldSeconds); //#1409 - the hold refuses steps in its @denyMove
+			LootHoldPlugin.Extend(looter, settings.lootHoldSeconds); //#1409 - the hold refuses steps in its @denyStep (#1558)
 			if ((looter != owner) && (looter is Player player) && (player.SkillRank < SkillRank.Grandmaster) && LevelingSystem.IsRecentlyDead(player)) {
 				return "Jeste nemuzes obirat cizi mrtvoly.";
 			}

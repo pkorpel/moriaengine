@@ -103,7 +103,7 @@ Plugins attach **trigger-driven behaviour and per-holder state** to existing obj
 one counts a character's completed steps. Two generators work together:
 
 - **Thing and Plugin classes** generates the plugin/def pair and persistence/copy support.
-- **Plugin trigger dispatch** connects `On_StepTaken` to `@stepTaken`
+- **Plugin trigger dispatch** connects `On_Step` to `@step`
   by generating the plugin's `Run(TriggerKey, ScriptArgs)` override at build time.
 
 ```csharp
@@ -112,7 +112,7 @@ public partial class StepCounterPlugin : Plugin {
     [SaveableData, CopyableData]
     private int steps = 0;
 
-    public void On_StepTaken(bool running) {
+    public void On_Step(Direction direction, bool running) {
         this.steps++;
     }
 }
@@ -136,9 +136,10 @@ character.AddNewPlugin(
     PluginDef.GetByDefname("p_step_counter"));
 ```
 
-The character's `@stepTaken` now reaches the plugin's handler. Its `running` argument comes
-from the event payload; this example counts walking and running alike. The event represents
-completed steps, not teleports, and is not raised for GMs. Each installed plugin keeps its own
+The character's `@step` now reaches the plugin's handler. Its `direction` and `running` arguments
+come from the event payload (`Argv` 0 and 1; the third, the point left, isn't taken here); this
+example counts walking and running alike. The event represents completed steps, not teleports
+(#1558: raised after the move, GMs included). Each installed plugin keeps its own
 counter, saved with its holder and copied through the marked field.
 
 The template generator does not attach the plugin, and the dispatch generator does not invent

@@ -186,3 +186,63 @@ the port began on 8 because that was the SDK installed (PR #1). One property mea
 one line, and the paths derived from it (`build.ps1`, `scripts/run-local.sh`, the protocol tests' fixture)
 follow. Without `global.json`, whatever SDK was newest on a machine built the solution, and also built the
 scripts at every boot. The upgrade was done in one PR at the maintainer's request.
+
+## Trigger convention and rework (#1558)
+
+**Decision** (pkorpel and janslav on #1558, 2026-11-26): the AI-era triggers were reworked to janslav's
+architecture page, core chains first as the template for the scripted ones, and every trigger is named by its
+semantic type: `@denyX` (deny args, every participant, default check in `On_DenyX`, handlers only decide), `@X`
+(cancellable implementation, or a plain notification when nothing can be cancelled), `@afterX` (notification after a
+cancellable `@X`). The convention is in `trigger-system-architecture.md` section 9; the old names and Sphere's are in
+`trigger-catalog.md` section 5.
+
+- **D1, renames:** pkorpel chose renaming over keeping names, so the convention is visible in the keys (`@hitTry` →
+  `@denySwing`, `@beforeSwing` → `@swing`, `@stepTaken` → `@step`, `@denyMove` → `@denyStep`, ...). The differences
+  from Sphere's and Erebor's names are listed rather than avoided.
+- **D2, D3, combat:** `@swingLanding` merged into `@hit`/`@getHit` after the dodge; the attacker's `@hit` also comes on a
+  dodged blow (`Dodged`), the defender's `@getHit` only on a landed one, as Erebor's `@AfterSwing`/`@AfterGetSwing`.
+  `@afterHit` merged into `@afterSwing`, whose handlers check `!Dodged`. The hard-coded damage refusals became
+  `@denyDamage`.
+- **D7:** `@hitTry` became `@denySwing`, raised for every attacker; a deny is Sphere's "retry in a second".
+- **D4, death:** `@denyDeath` has deny args, and a refused death is defined: alive at 1 hit point (or what a handler
+  set), and the blow counts only the hits really taken. The hypnosis plugins only refuse and act on their own timer.
+- **D6, movement:** `@denyStep` (holds, then `On_DenyStep`: terrain in core, stamina and collision in scripts), region
+  `@denyExit`/`@denyEnter`, the move, then `@step` as a notification. Region `@enter`/`@exit` are notifications.
+- **D5, spells:** the casting rules became `Character.On_DenySpellCast`, after the `@denySpellCast` handlers.
+  `@monsterSpellPower` and `@beforeGetEffect` stayed separate stages instead of the planned merges: the first is a term
+  of the multiplier needed before there is a power, and merging the second into `@spellEffect` would re-run the
+  caster's `@causeSpellEffect` on a reflected spell.
+- **D8, doors:** no door triggers. A `Door : Item` class (assigned by the converter to `t_door*` defs) asks for its key in
+  `Door.On_DenyDClick` and swings in `Door.On_DClick`; quests are `@denyDClick` handlers. Door code is never on `Item`
+  (janslav). The client's OpenDoor macro runs the dclick chain with only the reach test skipped, although 0.99z8's
+  bypassed `@UserDClick` (`Use_Item(false)`): janslav called skipping denies dangerous, and native doors behave the
+  same. A locked door refuses closing as well as opening, as Sphere's native `Use_Item`; Erebor's "closing is never
+  refused" came from its custom door types.
+- **Q1, hunger:** a starving player takes Erebor's 10 hits **and the attempt fails**: pkorpel's deliberate change from
+  Erebor's `hungryhurts`, which only hurt. `@spellCastTry` is gone. Hunger is one handler on the skill chain's attempt,
+  `HungerPlugin` on `@skillStart` and a swing's `@skillStroke` (janslav's suggestion, pkorpel's call). The review found the
+  chain's attempt fires before checks Erebor ran first; a review fix moved hunger back to per-skill calls, and pkorpel put
+  it back on the chain, with each case handled there: a swing is charged only when `WeaponSkillDef.IsSwingAttempt` (target
+  there, in sight, in reach, standing still), and retried a weapon delay later, once a swing as Erebor's; a cast only past
+  Sphere's sight, mana and reagents (`MagerySkillDef.PassesOwnChecks`), before the casting rules; gathering's wait, saddle
+  and dark moved before the start (`Gathering.Prepare`); a craft-menu order once, at its first item, with its light check
+  moved after (`CraftingProcessPlugin.BeginOrder`); cooking on a fire is no order. Lockpicking isn't a skill start, so a
+  lockpick try asks `PlayerHunger` itself: the one exception.
+- **Q2:** the spell slayers keep their own step (`@beforeDoEffect`) before `@causeSpellEffect`, so plugin order can't
+  change the result.
+- **Q3, GMs:** a GM never receives hostile skill, spell or ability effects: one predicate,
+  `Character.IsImmuneToHostileEffects`, asked where those effects come through, so holding plugins need no GM checks.
+  `.freeze` is a GM tool and still holds GMs. A GM's "allow all" otherwise lives in the script `On_DenyX` overrides.
+  The GM flag itself is #1582.
+- **After review:** a swing at a GM ends (no retry every second) and NPC AI doesn't pick a GM, as Sphere's NPCs give up on
+  an invulnerable target; a GM drops things on the ground anywhere (`Character.On_DenyPutItemOnGround`), which #1579's
+  reach check would otherwise have taken away. The OpenDoor and potion macros are whole double clicks, so like any item
+  use they end the presser's cast (Sphere's item use does for macro clicks too) and break their own paralysis (a real
+  click already did).
+- **`SkipReachChecks`:** Telekinesis, the OpenDoor macro and the potion macro run the whole dclick deny chain with only
+  the reach test skipped (janslav asked for a name that says what it does).
+
+**Why**: the triggers added after the original engine had been placed ad hoc, often without a `Trigger_X`/`On_X`, with
+deny names but no deny shape, and with duplicates. janslav reviews core and wanted one convention, proven on the core
+chains, that scripters can read from the key. The region deny walks stopping at the first region (#1579) were fixed in
+the same PR.

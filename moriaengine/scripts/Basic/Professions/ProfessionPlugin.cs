@@ -163,17 +163,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#1429 - a blow landing on the player, before the dodge (Erebor's @aftergetswing): the shield block,
-		/// which six classes may learn. A profession's own plugin adds its part and calls this.</summary>
-		public virtual void On_GetSwingLanding(WeaponSwingArgs swing) {
+		/// <summary>#1429, #1558 - a blow landing on the player, after the dodge (Erebor's @aftergetswing; @getHit): the shield
+		/// block, which six classes may learn. A profession's own plugin adds its part and calls this.</summary>
+		public virtual void On_GetHit(WeaponSwingArgs swing) {
 			WarriorAbilities.ShieldBlock((Character) this.Cont, swing);
 		}
 
 		/// <summary>#1459 - the stun blow (omraceni: warriors, priests, craftsmen) lands once a blow's damage is dealt; its
-		/// readiness and window are this plugin's (Erebor's tag.zmrazeni, tag.omraceni_next).</summary>
-		public virtual void On_AfterHit(WeaponSwingArgs swing, int damage) {
-			if ((this.Cont is Player self) && (swing.defender is NPC target) && !target.IsDeleted) {
-				WarriorAbilities.TryStun(self, this, target, damage);
+		/// readiness and window are this plugin's (Erebor's tag.zmrazeni, tag.omraceni_next). #1558 - @afterSwing, was
+		/// @afterHit: a landed blow only.</summary>
+		public virtual void On_AfterSwing(WeaponSwingArgs swing) {
+			if (!swing.Dodged && (this.Cont is Player self) && (swing.defender is NPC target) && !target.IsDeleted) {
+				WarriorAbilities.TryStun(self, this, target, swing.FinalDamage);
 			}
 		}
 

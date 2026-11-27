@@ -672,25 +672,20 @@ namespace SteamEngine.CompiledScripts {
 			return multiplier * vsMonster;
 		}
 
-		private static readonly TriggerKey tkMonsterSpellPower = TriggerKey.Acquire("monsterSpellPower");
-
 		/// <summary>#1386 - asks the caster (its plugins: Standcast) what to add to the multiplier of this spell on a
-		/// monster, at the point Erebor's magie.scp adds tag.standcast's level bonus.</summary>
+		/// monster, at the point Erebor's magie.scp adds tag.standcast's level bonus (Character.Trigger_MonsterSpellPower).</summary>
 		internal double MonsterLevelBonus(Character caster, Character target) {
 			MonsterSpellPowerArgs args = new MonsterSpellPowerArgs(caster, this, target);
-			caster.TryTrigger(tkMonsterSpellPower, new ScriptArgs(args));
+			caster.Trigger_MonsterSpellPower(args);
 			return args.LevelBonus;
 		}
 
-		private static readonly TriggerKey tkSpellPower = TriggerKey.Acquire("spellPower");
-		private static readonly TriggerKey tkBeforeDoEffect = TriggerKey.Acquire("beforeDoEffect");
-		private static readonly TriggerKey tkBeforeGetEffect = TriggerKey.Acquire("beforeGetEffect");
-
 		/// <summary>#1476 - Sphere's @BeforeDoEffect on the caster: after the target's defense (or the resist roll), the power a
-		/// handler may still change (MagicWearerPlugin's slayers).</summary>
+		/// handler may still change (MagicWearerPlugin's slayers). #1558 - kept its own stage, so the slayers come before
+		/// @causeSpellEffect's talents whatever the plugins' order (pkorpel's call).</summary>
 		private int TriggerBeforeDoEffect(Character caster, IPoint3D mainTarget, IPoint3D target, int spellPower) {
 			SpellPowerArgs args = new SpellPowerArgs(caster, this, mainTarget, target, spellPower);
-			caster.TryTrigger(tkBeforeDoEffect, new ScriptArgs(args));
+			caster.Trigger_BeforeDoEffect(args);
 			return args.SpellPower;
 		}
 
@@ -706,7 +701,7 @@ namespace SteamEngine.CompiledScripts {
 		/// it reaches (after its friend/foe filter since #1518): a once-per-cast handler compares Target with MainTarget.</summary>
 		private int TriggerSpellPower(Character caster, IPoint3D mainTarget, IPoint3D target, int spellPower) {
 			SpellPowerArgs args = new SpellPowerArgs(caster, this, mainTarget, target, spellPower);
-			caster.TryTrigger(tkSpellPower, new ScriptArgs(args));
+			caster.Trigger_SpellPower(args);
 			return args.SpellPower;
 		}
 
@@ -858,7 +853,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			MonsterSpecialAttacks.TryStartRegeneration(target); //#1022
-			if (target.TryCancellableTrigger(tkBeforeGetEffect, spellEffectArgs.scriptArgs) == TriggerResult.Cancel) { //#1476 - Sphere's @BeforeGetEffect: the items' reflex and block
+			if (target.Trigger_BeforeGetEffect(spellEffectArgs) == TriggerResult.Cancel) { //#1476 - Sphere's @BeforeGetEffect: the items' reflex and block
 				return;
 			}
 			this.RunEffectChar(target, spellEffectArgs);

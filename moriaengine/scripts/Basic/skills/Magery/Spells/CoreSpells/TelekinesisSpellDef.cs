@@ -10,11 +10,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
-			target.Trigger_DClickFromAfar(spellEffectArgs.Caster);
+			target.Trigger_DClick(spellEffectArgs.Caster, true); //#1558 - the whole deny chain, only the reach test skipped
 		}
 
 		protected override void On_EffectItem(Item target, SpellEffectArgs spellEffectArgs) {
-			target.Trigger_DClickFromAfar(spellEffectArgs.Caster);
+			target.Trigger_DClick(spellEffectArgs.Caster, true); //#1558 - the whole deny chain, only the reach test skipped
 		}
 	}
 }

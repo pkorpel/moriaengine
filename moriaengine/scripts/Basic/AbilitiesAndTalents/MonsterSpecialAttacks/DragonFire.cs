@@ -134,7 +134,7 @@ namespace SteamEngine.CompiledScripts {
 			dragonTiles[HazardKey(x, y, m)] = tile;
 		}
 
-		/// <summary>Character.On_StepTaken: a player walking onto live dragon fire.</summary>
+		/// <summary>Character.On_Step: a player walking onto live dragon fire.</summary>
 		internal static void CheckDragonTileStep(Character stepping) {
 			if (dragonTiles.Count == 0) {
 				return;

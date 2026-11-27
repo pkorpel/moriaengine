@@ -66,11 +66,11 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGIC_DONE");
 		}
 
-		/// <summary>#1476 - a blow of 100 through @swingLanding, as ProcessSwing raises it.</summary>
+		/// <summary>#1476 - a blow of 100 through @hit, as ProcessSwing raises it.</summary>
 		private static double SlayedBlow(Player player, NPC target) {
 			WeaponSwingArgs swing = DamageManager.GetWeaponSwingArgs(player, target);
 			swing.DamageAfterAC = 100;
-			DamageManager.Trigger_SwingLanding(swing);
+			DamageManager.Trigger_Hit(swing);
 			return swing.DamageAfterAC;
 		}
 
@@ -92,7 +92,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCDef def = (NPCDef) rabbit.Def;
 			string type = def.MonsterType;
 			def.MonsterType = "animal,60";
-			//#1476 - the slayers through the triggers: a blow's @swingLanding and a spell's @beforeDoEffect, without and with
+			//#1476 - the slayers through the triggers: a blow's @hit and a spell's @beforeDoEffect, without and with
 			double blowBare = SlayedBlow(player, rabbit);
 			rabbit.AddTriggerGroup(SingletonScript<E_SpellPowerProbe>.Instance);
 			int spellBare = SlayedSpell(player, rabbit);
@@ -111,7 +111,7 @@ namespace SteamEngine.CompiledScripts {
 			def.MonsterType = type;
 			player.Hits = 10;
 			MagicCombat.Leech(player, rabbit, 100);
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, rabbit), 100); //the freezing blow is the plugin's
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(player, rabbit), 100); //the freezing blow is the plugin's
 			Report("leechHealsByTheFormula", player.Hits == 10 + MagicCombat.Leech(100, 20, ClassAbilitySettings.instance));
 			Report("freezingParalyses", ParalyzeEffectPluginDef.IsParalyzed(rabbit));
 			ring.Delete();

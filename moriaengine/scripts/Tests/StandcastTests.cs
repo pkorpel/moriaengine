@@ -45,7 +45,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool StepRefused(Character self) {
-			return !self.CheckCanMove(false);
+			return self.IsHeld(false);
 		}
 
 		/// <summary>Switches it on, casts at a monster, checks the freeze, the bonus and the recast times, then an area
@@ -257,7 +257,7 @@ namespace SteamEngine.CompiledScripts {
 			rune.MoreP = new Point4D(self.X + 10, self.Y, self.Z, self.M);
 			CastGate(self, rune);
 			CastFreezePlugin freeze = self.GetPlugin(CastFreezePlugin.key) as CastFreezePlugin;
-			Check("gateFreezes", (freeze != null) && Near(freeze.Timer, gateSeconds - 1.0) && !self.CheckCanMove(false));
+			Check("gateFreezes", (freeze != null) && Near(freeze.Timer, gateSeconds - 1.0) && self.IsHeld(false));
 			if (freeze != null) {
 				freeze.Timer = 1.0;
 				CastFreezePlugin.FreezeForGate(self);

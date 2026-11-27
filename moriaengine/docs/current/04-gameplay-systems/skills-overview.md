@@ -29,7 +29,7 @@ flag) carrying one skill attempt through 5 named phases, each firing a double tr
 
 Each phase's trigger pair can be cancelled at either the character level or the `SkillDef`
 level - cancelling at any point short-circuits the rest of that phase (see
-[triggers-and-deny-chains.md](../02-engine-core/triggers-and-deny-chains.md) for the general
+[trigger-system-architecture.md](../02-engine-core/trigger-system-architecture.md) for the general
 pattern `TryCancellableTrigger` implements).
 
 ## Delay/scheduling
@@ -117,7 +117,7 @@ Sphere's food stat with Erebor's use of it, `scripts/Basic/Hunger`. A player hol
 
 Double clicking `t_food` or `t_fruit` eats one piece, adding its weight in stones, at least 1. The food line is always on `.boosts`, under Stav.
 
-At 0 food hits don't regenerate, and a blow, a spell or starting to craft costs 10 hits with "Umiras hlady...". Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll. Skills Erebor scripts on its own timers skip it, as their native skill is cancelled and its success never runs: Hiding among them (#1095), whose `i_hiding_timer` only rolls Hiding against `rand(1025)`.
+At 0 food hits don't regenerate, and drawing a blow, starting a spell, taming, lockpicking, gathering or a craft-menu order costs 10 hits with "Umiras hlady..." and fails (#1558, pkorpel's call: on Erebor it only hurt). It's `HungerPlugin`'s handler on the skill chain (`@skillStart`, a swing's `@skillStroke`), charging each at Erebor's own point: a blow only when it would really be drawn in reach and in sight, a spell past its sight, mana and reagents, gathering past the dark, an order once at its first item, before its light. Lockpicking, which isn't a skill start, asks itself. The blow is tried again a weapon delay later; cooking on a fire costs nothing. Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll. Skills Erebor scripts on its own timers skip it, as their native skill is cancelled and its success never runs: Hiding among them (#1095), whose `i_hiding_timer` only rolls Hiding against `rand(1025)`.
 
 Not ported: the food box (`systems/foodbox.scp`). Darkness stopping blows and spells (`nolightfizz` on `@hittry` and `@spellcast`) is ported (#995, `WorkLight`).
 
@@ -157,7 +157,7 @@ Erebor's `systems/skills/hiding.scp` and Sphere's reveal rules.
 
 Hiding takes 3 to 1.5 s, then Hiding against a roll of 0 to 102.4. Starting any other skill in between spoils it. Stealth's button does the same; the skill does nothing else on its own.
 
-A hidden step rolls Stealth, plus 10.0 per point of darkness, against 0 to 104. Running always reveals, and so does any step while magically invisible. (#1478: a `HiddenPlugin` is on the character exactly while hidden or invisible, added and removed by those flags, and this is its own `@stepTaken`; the other reveals stay at their places, as Sphere reveals per skill and a blow's reveal comes after a backstab's bonus.) You're also revealed by attacking, a physical hit, picking something up, speaking, teleporting, and pressing a skill button with nothing else going on.
+A hidden step rolls Stealth, plus 10.0 per point of darkness, against 0 to 104. Running always reveals, and so does any step while magically invisible. (#1478: a `HiddenPlugin` is on the character exactly while hidden or invisible, added and removed by those flags, and this is its own `@step`, after the move; the other reveals stay at their places, as Sphere reveals per skill and a blow's reveal comes after a backstab's bonus.) You're also revealed by attacking, a physical hit, picking something up, speaking, teleporting, and pressing a skill button with nothing else going on.
 
 Detect Hidden: 2 s of looking, then everyone unseen within 25 tiles is tried, not GMs, the invulnerable or the dead. It's Detect minus their Hiding, plus 100.0, minus 5.0 a tile, against a roll of their Hiding, plus twice what's over 100.0. A found person is simply revealed. The same person can't be tried again by you for 7 s, and you can't search again for 8 to 4 s.
 
@@ -217,7 +217,7 @@ As Sphere, with no gain by use. Begging is a roll against the target's Int that 
 
 ## Gathering stages (#962)
 
-Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hunger hurts; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing at the skill's 1.0 s, about 2 s a try, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
+Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza: on the target (`Gathering.Prepare`), a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse. Then the skill's start: hunger (`HungerPlugin` at `@skillStart`, miningfix: a starving try hurts and fails, #1558); then `Gathering.Begin`: hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing at the skill's 1.0 s, about 2 s a try, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
 
 A pick or hatchet try takes about 2 s (#1001, from the user's memory of Erebor): `leastStrokes` and `mostStrokes` default to 1 extra swing at the skill's 1.0 s. Sphere's own numbers would be 2 and 6, so 3 to 7 s. Both are on `.settings`; a save that already holds them keeps its values.
 

@@ -255,9 +255,8 @@ namespace SteamEngine.CompiledScripts {
 				if (item.IsDeleted) {
 					continue;
 				}
-				if (item.IsDoor) {
-					item.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door");
-					item.LockUid = 0;
+				if (item is Door door) {
+					door.TakeOffLock();
 				} else {
 					item.SetAttribute(ItemAttributes.attr_move_never, false);
 					item.Cont = things;

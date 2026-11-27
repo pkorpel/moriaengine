@@ -190,7 +190,10 @@ namespace SteamEngine.CompiledScripts {
 
 				WeaponSkillTargetQueuePlugin.AcquireCombatPlugin(sheep);
 				WeaponSkillTargetTrackerPlugin.InstallTargetTracker(self, sheep);
+				byte plevel = self.Account.PLevel;
+				self.Account.PLevel = 1; //#1558 - a GM is immune to paralysis, and test accounts start as GMs
 				ParalyzeEffectPluginDef.Paralyze(self, paralyzeKey, TimeSpan.FromHours(2));
+				self.Account.PLevel = plevel;
 
 				sheep.SetTag(preStatsTK, Stats(sheep));
 				DiscordanceEffectPlugin discord = (DiscordanceEffectPlugin) DiscordanceEffectPluginDef.instance.Create();

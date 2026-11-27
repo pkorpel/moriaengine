@@ -65,12 +65,17 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing.</summary>
-		public static void HurtIfStarving(Character ch) {
-			if ((ch is Player) && (FoodOf(ch) < 1) && !ch.Flag_Dead) {
+		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing: true when it hurt, and the attempt then fails (#1558,
+		/// pkorpel's call; on Erebor it only hurt). Never a GM's. Asked by HungerPlugin on the skill chain (a swing drawn in reach,
+		/// a cast past Sphere's own checks, gathering past the dark, taming, a craft-menu order's first item), and by a lockpick
+		/// try, which isn't a skill start.</summary>
+		public static bool HurtIfStarving(Character ch) {
+			if ((ch is Player) && !ch.IsGM && (FoodOf(ch) < 1) && !ch.Flag_Dead) {
 				ch.SysMessage(Loc<HungerLoc>.Get(ch.Language).Dying);
 				DamageManager.CauseDamage(ch, ch, DamageType.Irresistable, HungerSettings.instance.starvingDamage);
+				return true;
 			}
+			return false;
 		}
 
 		/// <summary>Sphere's Use_Eat of one piece: it fills by its weight in stones, at least 1, and may overfill.</summary>

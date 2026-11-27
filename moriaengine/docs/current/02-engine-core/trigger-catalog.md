@@ -1,9 +1,12 @@
 # Trigger catalog (core + scripts)
 
 This is a reference for the current trigger system, including core and script-defined triggers. May not be complete as scripts can define their own triggers.
-Documents the state as of 2026, before AI changes. 
+It documents the code after the #1558 rework: the chains follow the naming convention in
+[Trigger system architecture](trigger-system-architecture.md) section 9, and section 5 below lists the old names and
+Sphere's/Erebor's.
 
-For architectural background, see [Trigger system architecture](trigger-system-architecture.md).
+For architectural background (who hears a step in what order, deny results, GMs), see
+[Trigger system architecture](trigger-system-architecture.md).
 
 Table columns:
 - **Step**: trigger order within a chain (`-` when not an ordered chain)
@@ -20,13 +23,15 @@ Table columns:
 
 ## 1.1 Chain: Item pickup
 
-This is the full pickup flow: deny gates first, then transfer notifications.
+This is the full pickup flow: deny gates first, then transfer notifications. The engine's default check, `CanReach`,
+comes after the deny gates unless one of them cancelled while allowing (architecture section 10).
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
 | 1 | `@denyPickupItem` | character (picker) | deny | cancellable | Picker decides whether pickup is allowed | Block pickup while stunned or overloaded |
 | 2 | `@denyPickup` | item (picked item) | deny | cancellable | Item decides whether it can be picked | Make item immovable unless unlocked |
-| 3 | `@denyPickupItemFrom` | source holder (item/char/region hierarchy) | deny | cancellable | Source holder/region may veto removing the item | Protected container/region denies taking items |
+| 3 | `@denyPickupItemFrom` | source holder (item/char, or on the ground every region up to the world region, #1579) | deny | cancellable | Source holder/region may veto removing the item | Protected container/region denies taking items |
+| 3a | `@pickingUp` | character (picker) | notification | regular | The pickup is certain; the item still lies where it was (#1426, `Trigger_PickingUp`, argv: item, amount) | Weekly quests count a monster's loot |
 | 4* | `@splitFromStack` | item (picked stack part) | implementation/notification | regular | Stack split happened before transfer | Recompute per-stack metadata (e.g., poison doses) |
 | 5a | `@leaveItem` | item | notification | regular | Item leaves source container item | Cleanup when leaving container |
 | 5b | `@itemLeave` | source container item | notification | regular | Source container sees item leaving | Update UI, counters, bookkeeping |
@@ -44,7 +49,7 @@ This is the full pickup flow: deny gates first, then transfer notifications.
 |---|---|---|---|---|---|---|
 | 1 | `@denyPutItemOnGround` | character (actor) | deny | cancellable | Actor decides whether ground drop is allowed | Prevent dropping in restricted states |
 | 2 | `@denyPutOnGround` | item (dragged) | deny | cancellable | Item decides whether it may be dropped on ground | Bound item refuses ground placement |
-| 3 | `@denyPutItemOn` | target region hierarchy | deny | cancellable | Region(s) may veto placement at target point | Safe-zone or house floor restrictions |
+| 3 | `@denyPutItemOn` | target region hierarchy (every region up to the world region, #1579) | deny | cancellable | Region(s) may veto placement at target point; the default check after them is `CanReachCoordinates` | Safe-zone or house floor restrictions |
 | 4 | `@enterRegion` | item | notification | regular | Item is placed on ground | Initialize on-ground behavior |
 | 5 | `@itemEnter` (child -> parent) | region hierarchy | notification | regular | Region chain observes ground entry | Region effects, zoning counters |
 
@@ -93,13 +98,24 @@ This is the implementation chain used when dropping one item onto another item.
 
 \* Step 0 is conditional (only when slot replacement is required).
 
-## 1.7 Chain: Region transition (character)
+## 1.7 Chain: Step (character), with the region transition
+
+Since #1558 (until then: `CheckCanMove` with `@denyMove`, `CheckCharacterObstacles`, a cancellable `@step` before the
+move, cancellable region `@exit`/`@enter`, and `@stepTaken` after the move, not for GMs).
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1 | `@exit` (old branch, child -> parent) | region hierarchy | deny/implementation | cancellable | Old regions are asked to allow leaving | Keep player inside event area until finished |
-| 2 | `@enter` (new branch, parent -> child) | region hierarchy | deny/implementation | cancellable | New regions are asked to allow entry | Entry checks by zone hierarchy |
-| 3 | `@exit` / `@enter` forced notifications | region hierarchy | notification | regular | Committed transition notifications | Arrival/departure announcements |
+| 1 | `@denyStep` (`DenyStepArgs`) | moving character | deny | cancellable | Holds refuse the step before anything is worked out | Paralysis, freeze, a vine |
+| 2 | `On_DenyStep` | moving character | deny | (method) | Core: terrain, finds `args.Destination`; scripts: stamina, doorstep, collision | Override for movement rules |
+| 3 | `@denyExit` (old branch, child -> parent) | region hierarchy | deny | cancellable | Old regions may refuse leaving (not for GM-plevel players) | Keep player inside event area until finished |
+| 4 | `@denyEnter` (new branch, parent -> child) | region hierarchy | deny | cancellable | New regions may refuse entry (not for GM-plevel players) | Entry checks by zone hierarchy |
+| 5 | `@exit` / `@enter` (`argv[1]`: 1 teleport, 0 step) | region hierarchy | notification | regular | Committed transition, also for teleports | Arrival/departure announcements |
+| 6 | `@newPosition`, then the items' `@itemStep`/`@step` | character, items underfoot | notification | regular | The character is on the new tile | Traps, teleport pads |
+| 7 | `@step` (direction, running, point left) | character | notification | regular | A step was taken (not a teleport); also for GMs | Step-based effects, stamina drain |
+
+In steps 1-4 a cancel always refuses the step, with or without a refusing `Result` (unlike the other deny chains, see
+the architecture page's section 10): the holds answer with a bare cancel. Step 5 runs just before the character's
+position changes, as before #1558; steps 6 and 7 after.
 
 ## 1.8 Chain: Item stack merge
 
@@ -119,32 +135,92 @@ This is the implementation chain used when dropping one item onto another item.
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1 | `@denyItemDClick` (character-side) | dclicking character | deny | cancellable | Character-side gate before target dclick logic | Block use while frozen / restricted |
+| 1 | `@denyItemDClick` / `@denyCharDClick` (character-side, by target kind; #1558 - a character target raised `@denyItemDClick` until then) | dclicking character | deny | cancellable | Character-side gate before target dclick logic; the reach test is `Character.On_DenyItemDClick`, skipped for `DenyClickArgs.SkipReachChecks` (Telekinesis) | Block use while frozen / restricted |
 | 2 | `@denyDClick` | clicked thing | deny | cancellable | Target object gate for dclick | Item/target denies activation |
-| 3 | `@itemDClick` or `@charDClick` | dclicking character | implementation | regular | Character-side dclick handling by target kind | Route use action by target type |
-| 4 | `@dClick` | clicked thing | implementation | regular | Target object executes/consumes use behavior | Open/equip/activate object behavior |
+| 3 | `@itemDClick` or `@charDClick` | dclicking character | notification | regular | Character-side dclick handling by target kind (not cancellable, as in 2dbc90b) | Route use action by target type |
+| 4 | `@dClick` | clicked thing | implementation | cancellable (#509) | Target object executes/consumes use behavior; a cancel skips `On_DClick` | Open/equip/activate object behavior; a banker's def trigger group replacing `On_DClick` |
+
+A cancel in step 1 that leaves the result allowed skips step 2 too. `SkipReachChecks` is set by Telekinesis, the OpenDoor
+macro and the potion macro (`Trigger_DClick(clicker, true)`).
+
+A door is asked the same way (#1558): a locked one wants its key in `Door.On_DenyDClick`, a quest's `@denyDClick` handler on it can
+refuse or allow and cancel (no key asked), and it swings in `Door.On_DClick`. The client's OpenDoor macro runs this chain on the
+nearest door with only the reach test skipped.
 
 ## 1.11 Chain: Skill flow
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1 | `@skillSelect` | skill handlers | calculation/implementation | regular | Skill target/selection phase | Validate selected target |
-| 2 | `@skillStart` | skill handlers | implementation/notification | regular | Skill starts | Allocate temporary skill state |
-| 3 | `@skillStroke` | skill handlers | notification/implementation | regular | Skill tick/pulse phase | Progress long-running skill |
+| 1 | `@skillSelect` | skill handlers | calculation/implementation | cancellable | Skill target/selection phase | Validate selected target |
+| 2 | `@skillStart` | skill handlers | implementation/notification | cancellable | Skill starts | Allocate temporary skill state; `HungerPlugin`: a starving attempt hurts and fails (#1558) |
+| 3 | `@skillStroke` | skill handlers | notification/implementation | cancellable | Skill tick/pulse phase | Progress long-running skill; `HungerPlugin`: a starving swing being drawn (#1558) |
 | 4a | `@skillSuccess` | skill handlers | notification | regular | Successful completion | Apply final rewards/effects |
 | 4b | `@skillFail` | skill handlers | notification | regular | Failed completion | Apply failure consequences |
 | 4c | `@skillAbort` | skill handlers | notification/deny | regular | Interrupted/cancelled completion | Roll back temporary state |
 
 ## 1.12 Chain: Combat resolution
 
+#1558 reworked this chain (`DamageManager`, `WeaponSkillDef`, `Character`). Old names: `@hitTry` became `@denySwing`;
+`@beforeSwing`/`@beforeGetSwing` became `@swing`/`@getSwing`; `@swingLanding`/`@getSwingLanding` merged into
+`@hit`/`@getHit`; `@afterHit`/`@afterGetHit` merged into `@afterSwing`/`@afterGetSwing`; the hard-coded refusals at the
+top of `CauseDamage` became `@denyDamage`. Each step is `@X` on the participant, then its `On_X`.
+
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| 1a | `@beforeSwing` | attacker | deny/implementation | cancellable | Pre-hit phase on attacker | Alter/deny pending hit |
-| 1b | `@beforeGetSwing` | defender | deny/implementation | cancellable | Pre-hit phase on defender | Defensive pre-hit logic |
-| 2a | `@causeDamage` | attacker | implementation/calculation | regular | Outgoing damage adjustment | Scale or transform outgoing damage |
-| 2b | `@damage` | defender | implementation/calculation | regular | Incoming damage adjustment | Absorb/redirect/modify incoming damage |
-| 3a | `@afterSwing` | attacker | notification | regular | Post-hit phase attacker side | Trigger on-hit aftermath |
-| 3b | `@afterGetSwing` | defender | notification | regular | Post-hit phase defender side | Trigger post-hit defensive effects |
+| 0 | `@denySwing` | attacker | deny | cancellable (`DenySwingArgs`) | A swing being drawn in reach (`WeaponSkillDef`), every attacker; a deny is a retry a second later (Sphere's `@HitTry` RETURN 1) | `Player.On_DenySwing`: too dark to fight (GMs pass) |
+| 1a | `@swing` | attacker | calculation | cancellable | After armour, before the monsters' modifiers and the dodge; `DamageAfterAC` mutable; a cancel stops the whole swing | Whirlwind, weapon-skill bonus, `kick.scp` |
+| 1b | `@getSwing` | defender | calculation | cancellable | Same stage on the defender | |
+| 2a | `@hit` | attacker | calculation | regular | After the dodge; also on a dodged blow (`Dodged`), as Erebor's `@AfterSwing` | Class abilities, slayers, stolen talents |
+| 2b | `@getHit` | defender | calculation | regular | After the attacker's `@hit`, a landed blow only (Erebor's `@aftergetswing`) | Stance, shield block, hypnosis breaking |
+| 3 | `@denyDamage` | defender | deny | cancellable (`DenyDamageArgs`) | Every kind of damage, before the resists; refused damage does nothing | `Character.On_DenyDamage`: invulnerability, Rinald, guard spawns |
+| 4a | `@causeDamage` | attacker | calculation | regular | After resists, energy shield, minimum damage, reactive armour; every kind of damage | Scale or transform outgoing damage |
+| 4b | `@damage` | defender | calculation | regular | Same stage on the defender | Mana shield |
+| 5a | `@afterSwing` | attacker | notification | regular | The blow is over: after a dodge, or once a landed blow's damage was dealt (`FinalDamage`, 0 when refused or absorbed); not after a cancelled `@swing` | Stun blow, freezing blow, bleeding strike, poisoned weapon |
+| 5b | `@afterGetSwing` | defender | notification | regular | Same, on the defender; also when reactive armour killed the attacker | Blood pact, waking the NPC's AI |
+
+Steps 0-2 and 5 are for swings only (a mystic's strike too), not for spells or ability blows such as backstab or split
+shot; SRC isn't set. `@denyDamage`, `@causeDamage` and `@damage` come for every kind of damage. Handlers that need a
+landed blow check `!Dodged`, not `FinalDamage > 0` (a fully absorbed blow still landed). `MagicWearerPlugin` is on a
+character while anything magic is worn and answers `@hit` (slayers), `@afterSwing` (the freezing blow),
+`@beforeDoEffect` and `@beforeGetEffect`.
+
+## 1.13 Chain: Spell cast (Magery)
+
+#1558 reworked the cast's start (`MagerySkillDef.On_Start`, `Character`). Old names: `@spellCastTry` is gone (hunger is
+`HungerPlugin`'s `@skillStart` handler, and a starving cast fails); the casting rules (`SpellCastRules`) became `Character.On_DenySpellCast`,
+after the `@denySpellCast` handlers instead of before them. Each step is `@X` on the participant, then its `On_X`. A cast
+starts with the skill chain (1.11): at `@skillStart` hunger charges a cast that would get past Magery's sight, mana and
+reagents (`MagerySkillDef.PassesOwnChecks`), then `On_Start` makes those checks with their messages.
+
+| Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
+|---|---|---|---|---|---|---|
+| 1 | `@denySpellCast` | caster | deny | cancellable (`DenySpellCastArgs`) | Before the cast gets under way; `On_DenySpellCast` is the casting rules; `Fizzle` says whether Magery shows a refusal as a fizzle | Energy shield and voodoo refusing Recall, shock refusing any cast |
+| 2 | `@start` | spell def | implementation | cancellable | The spell's own start (summons pay, etc.) | |
+| 3 | `@spellCast` | caster | notification | regular | The cast is under way (custom scrolls too; not NPC casts through `NPCAiTimer.TryCastSpell`) | Standcast's freeze and boost |
+| 4 | `@monsterSpellPower` | caster | calculation | regular (`MonsterSpellPowerArgs`) | Per monster target: a term of the multiplier (`LevelBonus`), before there is a power | Standcast |
+| 5 | `@spellPower` | caster | calculation | regular (`SpellPowerArgs`) | Per target, after the multipliers, charge and Koncentrace, before the target's defense | A mystic's stolen talent |
+| 6 | `@beforeDoEffect` | caster | calculation | regular (`SpellPowerArgs`) | Per character target, after the defense: its own stage, so the slayers come before `@causeSpellEffect` whatever the plugins' order | Magic items' slayers |
+| 7 | `@beforeGetEffect` | target | implementation | cancellable (`SpellEffectArgs`) | Before anything of the effect runs on that target; a cancel turns it back or away | Magic items' reflex and block |
+| 8a | `@causeSpellEffect` | caster | calculation/implementation | cancellable | The effect leaves the caster; power changes and acts | Power talents, silence, ignition |
+| 8b | `@spellEffect` | target | implementation | cancellable | The effect reaches the target | Magic reflection, spelldodge |
+| 9 | `@spellSuccess` | caster | notification | regular (`SpellSuccessArgs`) | After a successful Magery cast, its effect and the after-cast work | The profession plugin's mana back |
+
+## 1.14 Chain: Death
+
+#1558 gave `@denyDeath` deny args and a defined outcome, and `@kill`/`@killCredit` their `Trigger_X` + `On_X`
+(`Character.CauseDeath`).
+
+| Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
+|---|---|---|---|---|---|---|
+| 1 | `@denyDeath` | dying character | deny | cancellable (`DenyDeathArgs`: argv[0] result, argv[1] killer) | Before anything of the death, only for a living character (Sphere's `@Death` RETURN 1). A refusal leaves it alive at 1 hit point, or what a handler set; the blow counts only the hits really taken | A possessing mystic and the alter ego refuse, then come home on their plugin's timer |
+| 2 | `@death` | dying character | notification | regular (argv: killer) | Partway through the death, after the murder count, `@hostileAction`, the disruption and the dismount | Cleanup of plugins and pacts |
+| 2a | `@killCredit` | each credited fighter | notification | regular (`KillCreditArgs`: victim, share) | The experience share: from a monster's death inside its `NPC.On_Death`, from a player's death inside `Player.On_Death` (`LevelingSystem.ApplyDeathExperienceLoss`), and from a possessing mystic's refused death on `PossessionPlugin`'s timer; a death's comes before `@kill` | Weekly quests count kills |
+| 3 | `@kill` | killer | notification | regular (argv: victim) | After `@death`; not when there's no killer, it killed itself, or it was deleted | The ranger's killing spree (Erebor's `@finalBlow`) |
+
+The killer is `Globals.SrcCharacter` for a death through the `Hits` setter (every blow, spell, poison, bleed): on a
+timer that is whoever last sent a packet, or null (#1464). Some callers set `Hits = 0` and call `CauseDeath` again with
+the right killer, so a `@denyDeath` handler can be asked twice for one death and must answer the same. A handler must
+not hurt or kill its own holder.
 
 ---
 
@@ -171,7 +247,7 @@ This is the implementation chain used when dropping one item onto another item.
 |---|---|---|---|---|---|---|
 | - | `@login` | character | notification | regular | Character login event | Initialize per-character systems |
 | - | `@logout` | character | notification | regular | Character logout event | Persist temporary state |
-| - | `@step` | character | notification | regular | Character stepped | Step-based effects |
+| - | `@step` | character | notification | regular | Character stepped (chain 1.7) | Step-based effects |
 | - | `@newPosition` | character | notification | regular | Position changed | Re-evaluate positional mechanics |
 | - | `@say` | character | notification | regular | Character says text | Speech command parsing |
 | - | `@hear` | character | notification | regular | Character hears text | NPC/reactive conversation logic |
@@ -189,7 +265,7 @@ This is the implementation chain used when dropping one item onto another item.
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
-| - | `@itemStep` | item | notification | regular | Item-related step hook | Floor trap/item step effects |
+| - | `@itemStep` | character stepping onto an item | notification | regular | Raised on the character for each item underfoot, before the item's own `@step` (chain 1.7) | Arena, quest pads |
 | - | `@containerOpen` | item/container | implementation/notification | regular | Container opening action | Audit/open restrictions UI behavior |
 | - | `@buildAosToolTips` | item | calculation/notification | regular | Tooltip content construction | Add custom tooltip lines |
 
@@ -215,7 +291,7 @@ This is the implementation chain used when dropping one item onto another item.
 | - | `@activateAbility` / `@activate` | ability/talent handlers | implementation | regular | Ability activation action | Start ability effect plugin |
 | - | `@denyActivateAbility` / `@denyActivate` | ability/talent handlers | deny | cancellable | Ability activation gate | Block on cooldown/resource checks |
 | - | `@valueChanged` / `@abilityValueChanged` | ability/talent handlers | notification | regular | Ability-related value changed | Refresh dependent values/UI |
-| - | `@causespelleffect` / `@spelleffect` | spell/effect handlers | implementation | regular | Spell/effect application pipeline | Inject effect modifiers |
+| - | `@causeSpellEffect` / `@spellEffect` | caster / target | calculation / implementation | cancellable | Spell/effect application (chain 1.13) | Power talents; magic reflection |
 | - | `@effectchar` / `@effectitem` / `@effectground` | spell/effect handlers | implementation | regular | Effect target specialization | Target-type-specific behavior |
 | - | `@dispell` | effect handlers | deny/implementation | regular | Dispel/removal flow | Allow/block dispel, then cleanup |
 | - | `@timer` | plugin handlers | implementation | regular | Plugin timer callback | Periodic logic or self-expiration |
@@ -227,19 +303,24 @@ This is the implementation chain used when dropping one item onto another item.
 | - | `@coupledWithWeapon` | combat/item handlers | notification/calculation | regular | Attack associated with weapon | Attach weapon-driven effects |
 | - | `@warModeChange` | character handlers | notification/calculation | regular | War mode toggled | Start/stop combat plugins |
 | - | `@visibilityChange` | character handlers | notification | regular | Visibility changed | React to hide/reveal |
-| - | `@death` | character handlers | notification | regular | Death event | Cleanup/respawn flow |
-| - | `@disruption` | character handlers | notification | regular | Action disrupted | Abort cast/channel/action |
-| - | `@hostileAction` | character handlers | notification/calculation | regular | Hostile act happened | PvP flagging/reaction logic |
+| - | `@death` | character handlers | notification | regular | Death event (chain 1.14) | Cleanup/respawn flow |
+| - | `@disruption` | character | notification | regular (`DisruptionArgs`: argv[0] `InterruptCasting`) | Action disrupted (`Character.Trigger_Disrupt`); a soft disruption breaks paralysis and the like but not casting (#860) | Abort cast/channel/action |
+| - | `@hostileAction` | character | notification | regular (argv: enemy) | Hostile act happened; never with a null enemy (#1558) | PvP flagging/reaction logic |
+| - | `@personalSpace` | character pushed past | notification | regular (argv: pusher) | Someone shoved past it (#767) | A strangler vine grabs them |
+| - | `@contextMenuSelect` | thing | implementation | cancellable (argv: requester, index) | An entry of its context menu was picked; before the entry's action, which a cancel skips (`Thing.Trigger_ContextMenuSelect`) | Replace a menu entry's action |
+| - | `@gainExperience` | player | calculation | cancellable (`GainExperienceArgs`: argv[0] base amount, argv[1] amount) | About to gain or lose experience (`Player.Trigger_GainExperience`); a handler may change `Amount` (LScript: `argv[1]`) or cancel | RP-rank and world-event bonuses |
+| - | `@npcRefuseItem` | NPC | implementation | cancellable (argv: giver, item) | It turns down a given item; a cancel skips the default "They don't appear to want the item" (`NPC.Trigger_NpcRefuseItem`) | Erebor's guards: "you can't bribe me" |
+| - | `@leaveSpawn` | NPC | notification | regular | It stops counting for its spawn (`NPC.Trigger_LeaveSpawn`) | `spawn.scp`'s `e_spawned_char` makes another |
 
-## 3.4 Social / organization / door group
+## 3.4 Social / organization group
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
 | - | `@MemberAdded` / `@MemberRemoved` | social/guild/role handlers | notification | regular | Membership changed | Grant/revoke role effects |
 | - | `@DenyAddMember` / `@DenyRemoveMember` | social/guild/role handlers | deny | cancellable | Membership change gate | Permission checks |
-| - | `@open` / `@close` | doors/containers | implementation | regular | Open/close action | Animate and state update |
-| - | `@denyOpen` / `@denyOpenDoor` | doors/containers | deny | cancellable | Gate opening action | Lock/key/ownership checks |
-| - | `@denyClose` / `@denyCloseDoor` | doors/containers | deny | cancellable | Gate closing action | Prevent close in blocked states |
+
+The original engine's door triggers (`@denyOpenDoor`, `@denyOpen`, `@open` and the close ones, on a `Door` class no def used) went
+in #941/PR #942; since #1558 a door is the dclick chain (1.10), with no triggers of its own.
 
 ---
 
@@ -253,3 +334,47 @@ This is the implementation chain used when dropping one item onto another item.
 | - | `@itemEnter`, `@itemLeave`, `@denyPutItemIn`, `@denyPickupItemFrom`, `@containerOpen` | container item | mixed | mixed | receiving/removing items and containment policy | inventory/container rules |
 | - | `@enter`, `@exit`, `@itemEnter`, `@itemLeave`, `@denyPutItemOn`, `@denyPickupItemFrom` | region | mixed | mixed | area entry/exit and ground item policy | zone restrictions/effects |
 
+---
+
+## 5) Renames and Sphere's names (#1558)
+
+| Before #1558 | Now | Sphere 0.99z8 / Erebor |
+|---|---|---|
+| `@hitTry` (players only, not GMs) | `@denySwing` (`DenySwingArgs`, every attacker; a deny retries a second later) | Sphere's `@HitTry` (RETURN 1: stay ready, retry) |
+| `@beforeSwing` / `@beforeGetSwing` | `@swing` / `@getSwing` | Erebor's custom `@BeforeSwing` / `@BeforeGetSwing` (`combat.scp`, `damage_final`) |
+| `@swingLanding` / `@getSwingLanding` | merged into `@hit` / `@getHit` (after the dodge; the attacker's also on a dodged blow) | Erebor's `@AfterSwing` (also on a dodged blow) / `@AfterGetSwing` (landed only); Sphere's `@Hit`/`@GetHit` |
+| `@afterHit` / `@afterGetHit` | merged into `@afterSwing` / `@afterGetSwing` (`FinalDamage`, `Dodged`) | none: Erebor's `@AfterSwing` is the earlier stage above |
+| hard-coded refusals in `CauseDamage` | `@denyDamage` (`DenyDamageArgs`), defaults in `Character.On_DenyDamage` | Erebor's `@GetHit` RETURN 1 (invulnerable NPCs) |
+| `@denyMove`, `CheckCanMove`, `CheckCharacterObstacles` | `@denyStep` (`DenyStepArgs`) and `On_DenyStep` | Sphere checks freeze, stone and immobile before terrain and the push |
+| cancellable `@step` before the move, `@stepTaken` after it | `@step` after the move (direction, running, point left) | Sphere's `@Step`, after the move |
+| region `@enter` / `@exit`, cancellable | region `@denyEnter` / `@denyExit`, then `@enter` / `@exit` as notifications | Sphere's region `@Enter` / `@Exit` (a GM is never refused) |
+| `@spellCastTry` (hunger) | removed: hunger is `HungerPlugin` on `@skillStart` / a swing's `@skillStroke`, past each skill's own checks (hurts and fails) | Erebor's `e_allplayers` `@spellcast` / `@hittry` calling `hungryhurts` (hurt only) |
+| `@denySpellCast` after the hard-coded casting rules | `@denySpellCast` (`DenySpellCastArgs`) before `Character.On_DenySpellCast` (the rules) | Sphere's `@SpellCast` RETURN 1, after its own checks |
+| `@denyItemDClick` for a character target | `@denyCharDClick` | |
+| `Trigger_DClickFromAfar` (skipped every deny) | `Trigger_DClick(clicker, true)`: `DenyClickArgs.SkipReachChecks` | Sphere's `Use_Obj` without the touch test |
+| `@denyDeath` (`ScriptArgs`) | `@denyDeath` (`DenyDeathArgs`), refused = alive at 1 hit point | Sphere's `@Death` RETURN 1 (stays at 0 or below, fires again each tick) |
+| `@kill`, `@killCredit` (bare raises) | the same keys, with `Trigger_X` + `On_X` | Erebor's `@finalBlow`; `@playerKill` / `@npckill` (`trigger_kill`) |
+| `@disruption` with a private flag | `@disruption` with `DisruptionArgs` | |
+| `@denyOpenDoor`, `@denyOpen`, `@open` (2dbc90b, unused) | none: a `Door` is the dclick chain (1.10) | Sphere's `Use_Item` for `t_door*` |
+
+Kept as they were: `@spellPower`, `@monsterSpellPower`, `@beforeDoEffect` (Erebor's custom `@BeforeDoEffect`),
+`@beforeGetEffect` (Erebor's custom `@BeforeGetEffect`), `@causeSpellEffect`, `@spellEffect`, `@spellCast`,
+`@spellSuccess`, the skill chain.
+
+## 6) How SE's triggers relate to Sphere's
+
+- **0.99z8 has trigger tables:** 56 character, 20 item, 5 region and 7 skill triggers, and no spell triggers. Erebor's
+  `@BeforeSwing`, `@AfterSwing`, `@finalBlow`, `@BeforeDoEffect`, `@BeforeGetEffect` and others are *custom* triggers
+  that Erebor fires itself with `trigger(@X)`, mostly from `damage_final` in `combat.scp` and from `magie.scp`.
+- **Erebor's swing order** (`damage_final`): the defender's `@beforeGetSwing`, the attacker's `@beforeSwing`; resists;
+  the dodge roll; the attacker's `@afterSwing`, also on a dodged blow; the defender's `@afterGetSwing`, landed blows
+  only; shields, armour, then the damage. SE's `@hit`/`@getHit` are that `@afterSwing`/`@afterGetSwing` stage; SE's
+  `@afterSwing`/`@afterGetSwing` come at the very end.
+- **Sphere's `@GetHit`** fires for every damage with a source, spells and scripts included. SE's `@getHit` is for swings
+  only; the all-damage triggers are `@denyDamage` and `@damage`.
+- **Death:** Sphere's `@Death` fires first and RETURN 1 keeps the character alive; that is SE's `@denyDeath`. 0.99z8 has
+  no `@Kill`.
+- **Casting:** Sphere fires `@SpellCast` after its own checks, and RETURN 1 cancels the cast. Erebor's `e_allplayers`
+  charged hunger, then applied its casting rules, inside it (`sphereevents.scp`).
+- **The converter maps no trigger names.** It keeps `@Create` (as fields), `@NPCRestock` (as loot), the `[SPEECH]` lines
+  and a few hard-coded bodies (`@npcRefuseItem`, one `@dclick`). Every other `ON=` body was dropped and hand-ported to C#.

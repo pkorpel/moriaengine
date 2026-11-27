@@ -8,6 +8,13 @@ namespace SteamEngine.CompiledScripts {
 	public static class Q008Tests {
 		private static readonly TagKey npcsTK = TagKey.Acquire("_q008test_npcs_");
 
+		/// <summary>The gate double clicked by the hero wherever they stand: true when it swings.</summary>
+		private static bool UseGate(Item gate, Player player) {
+			int model = gate.Model;
+			gate.Trigger_DClick(player, true);
+			return gate.Model != model;
+		}
+
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("Q008_CHECK: " + name + "=" + ok);
 		}
@@ -114,22 +121,21 @@ namespace SteamEngine.CompiledScripts {
 			//the corral: the outside pad unlocks the gate, the inside one locks it behind them; out only once the mustang is tamed
 			Item gate = (Item) ThingDef.GetByDefname(Q008.GateDef).Create(player.X + 5, player.Y + 3, player.Z, player.M);
 			gate.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance);
-			gate.LockUid = gate.Uid;
 			Item padOut = (Item) ThingDef.GetByDefname(Q008.PadOutsideDef).Create(gate.X, gate.Y - 1, gate.Z, gate.M);
 			Item padIn = (Item) ThingDef.GetByDefname(Q008.PadInsideDef).Create(gate.X, gate.Y + 1, gate.Z, gate.M);
 			E_Q008Pad pads = SingletonScript<E_Q008Pad>.Instance;
-			bool lockedFirst = !Q008.UseGate(gate, player) && !gate.IsDoorOpen;
+			bool lockedFirst = !UseGate(gate, player) && !((Door) gate).IsOpen;
 			bool notTheirsYet = Q008.RefusesTaming(player, mustang);
 			pads.On_Step(padOut, player);
-			bool opens = Q008.UseGate(gate, player) && gate.IsDoorOpen;
+			bool opens = UseGate(gate, player) && ((Door) gate).IsOpen;
 			int before = player.Experience;
 			pads.On_Step(padIn, player);
-			bool lockedBehind = (Q008.GetStage(player) == 3) && !gate.IsDoorOpen && (player.Experience - before == Q008.CorralExp) && !Q008.UseGate(gate, player);
+			bool lockedBehind = (Q008.GetStage(player) == 3) && !((Door) gate).IsOpen && (player.Experience - before == Q008.CorralExp) && !UseGate(gate, player);
 			bool nowTheirs = !Q008.RefusesTaming(player, mustang);
 			mustang.ControlMaster = player; //tamed
-			bool wayOut = Q008.UseGate(gate, player) && gate.IsDoorOpen;
+			bool wayOut = UseGate(gate, player) && ((Door) gate).IsOpen;
 			pads.On_Step(padOut, player);
-			bool done = (Q008.GetStage(player) == 4) && !gate.IsDoorOpen && Q008.Journal.IsDone(player) && !Q008.UseGate(gate, player);
+			bool done = (Q008.GetStage(player) == 4) && !((Door) gate).IsOpen && Q008.Journal.IsDone(player) && !UseGate(gate, player);
 			Report("theCorral", lockedFirst && notTheirsYet && opens && lockedBehind && nowTheirs && wayOut && done);
 
 			//the gate: the outside pad's unlock lasts a minute and only for a hero at stage 2; no key opens it (the open-door macro)
@@ -137,12 +143,12 @@ namespace SteamEngine.CompiledScripts {
 			Q008.SetStage(player, 2);
 			pads.On_Step(padOut, player);
 			Q008.SetStage(player, 0);
-			bool notForOthers = !Q008.UseGate(gate, player);
+			bool notForOthers = !UseGate(gate, player);
 			Q008.SetStage(player, 2);
 			gate.SetTag(Q008.UnlockedTK, Globals.TimeInSeconds - Q008.UnlockSeconds - 1);
-			bool expires = !Q008.UseGate(gate, player);
+			bool expires = !UseGate(gate, player);
 			Item key = (Item) ThingDef.GetByDefname("i_key_copper").Create(player.Backpack);
-			bool noKey = !gate.TryUseDoor(player) && !gate.IsDoorOpen;
+			bool noKey = !UseGate(gate, player) && !((Door) gate).IsOpen; //#1558 - a key changes nothing, by click or macro
 			key.Delete();
 			mustang.ControlMaster = player;
 			Q008.SetStage(player, 4);

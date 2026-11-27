@@ -49,9 +49,9 @@ namespace SteamEngine.CompiledScripts {
 			return (ch == null) ? null : ch.GetPlugin(Key) as EmpathyPlugin;
 		}
 
-		/// <summary>e_getphysresists' @AfterSwing, which Erebor ran for a dodged blow and a landed one alike, as
-		/// @swingLanding runs before the dodge.</summary>
-		public void On_SwingLanding(WeaponSwingArgs swing) {
+		/// <summary>e_getphysresists' @AfterSwing, which Erebor ran for a dodged blow and a landed one alike, as @hit runs
+		/// for both (#1558).</summary>
+		public void On_Hit(WeaponSwingArgs swing) {
 			if ((this.Cont is Player self) && !swing.defender.IsDeleted) {
 				ShamanPacts.ReadPhysical(self, swing.defender);
 			}

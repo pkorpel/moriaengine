@@ -244,6 +244,11 @@ namespace SteamEngine.Converter {
 					def.headerType = "CorpseDef";
 					def.isEquippable = true;
 					break;
+				case "t_door":
+				case "t_door_open":
+				case "t_door_locked":
+					def.headerType = "DoorDef"; //#1558 - a door is a Door, not door code on every Item
+					break;
 				case "t_light_lit":
 				case "t_light_out":
 				case "t_wand":

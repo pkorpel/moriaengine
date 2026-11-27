@@ -38,8 +38,8 @@ namespace SteamEngine.CompiledScripts {
 			TimeSpan duration = TimeSpan.FromSeconds(ab.Def.EffectDuration);
 
 			foreach (Player target in chr.GetMap().GetPlayersInRange(chr.X, chr.Y, (ushort) this.ComputeRange(chr))) {
-				if (chr == target) {
-					continue; //dont do selfwarcry ;)
+				if ((chr == target) || target.IsImmuneToHostileEffects(chr)) {
+					continue; //dont do selfwarcry ;) #1558 - nor a GM
 				}
 
 				WarcryEffectPlugin warcryEffect = (WarcryEffectPlugin) WarcryEffectPluginDef.instance.Create();

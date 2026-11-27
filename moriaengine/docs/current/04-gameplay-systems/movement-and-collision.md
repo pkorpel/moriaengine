@@ -4,27 +4,41 @@ Every step a character takes goes through `AbstractCharacter.WalkRunOrFly`
 (`GameCore/AbstractCharacter.cs`), whether it's a player's move-request packet
 (`MovementState.Movement`), an NPC AI step (`NPCAiTimer.TryStep`) or an AStar walk. The order is:
 
-1. `CheckCanMove` - can the character take a step at all: the character's `@denyMove` (a plugin
-   returning Cancel holds it still: paralysis, a cast under Standcast #1386, and since #1409 a GM's
-   `.freeze` `GmFreezePlugin`, Sphere's flag_immobile `ImmobilePlugin`, a looter's hold
-   `LootHoldPlugin`, a strangler vine's `EntangledPlugin`/`VineHoldPlugin`; with several, the newest
-   answers first and its line shows), then too exhausted, too overloaded (#778/#779, below). GM players
-   skip it, so paralysis no longer holds a GM (it refused at `@step` before #1386, after the
-   collision below had already shoved).
-2. `Map.CheckMovement` - terrain, statics, items, climb height. Characters are not considered here.
-3. `CheckCharacterObstacles` - other characters on the destination tile (#767, below). GM players skip it.
-4. `@step` / `On_Step`, then region exit/enter.
-5. The actual move and the 0x77 broadcast, then `@stepTaken` (#1414, with `running`; trigger groups and plugins
-   hear it) and `On_StepTaken` (#779's stamina drain and the other hard-coded after-step calls). Both come after
-   `@newPosition` and the destination items' `@step` (a trap's work is done), only for a real step by a non-GM, never
-   for a teleport, and not for a character that step deleted (an NPC killed by a trap).
+A step is a deny chain, then the move, then notifications (#1558, the `@denyX` / `@X` convention of
+[the trigger architecture](../02-engine-core/trigger-system-architecture.md)):
+
+1. `@denyStep` on the mover (`DenyStepArgs`: direction, running, `CanMoveEverywhere`). Its handlers are the holds, plugins
+   that refuse: paralysis, a cast under Standcast (#1386), a GM's `.freeze` `GmFreezePlugin`, Sphere's flag_immobile
+   `ImmobilePlugin`, a looter's hold `LootHoldPlugin`, a strangler vine's `EntangledPlugin`/`VineHoldPlugin` (#1409; was
+   `@denyMove`). With several, the newest answers first and its line shows. As in Sphere they come before the terrain,
+   so a held character never shoves anyone. They are asked for GMs too, but the hostile ones (paralysis, the vine) never
+   land on a GM: `Character.IsImmuneToHostileEffects` refuses them where they are applied (#1558). A GM's own `.freeze`
+   and a GM looter (no loot hold) are not hostile effects; `.freeze` holds whoever a GM freezes, another GM included.
+2. The mover's `On_DenyStep`. The core's (`AbstractCharacter`) is the terrain check, `Map.CheckMovement` (terrain,
+   statics, items, climb height; characters aren't considered), which finds the destination (`args.Destination`).
+   `Character.On_DenyStep` wraps it: too exhausted or too overloaded first (#778/#779, below), then the terrain, then
+   what stands on the destination - a house's doorstep, a dragon's fire cage, other characters (#767, below). A GM
+   player (`CanMoveEverywhere`, plevel of GM) skips the terrain rules and everything else here, as before.
+3. `@denyExit` on each region left, then `@denyEnter` on each region entered, with the same args (skipped for
+   `CanMoveEverywhere`). The first cancel or deny anywhere refuses the step.
+4. The regions' `@exit`/`@enter` and `On_Exit`/`On_Enter`, now pure notifications (the same for a walk and a teleport;
+   `argv[1]`/`teleported` tells them apart).
+5. The actual move and the 0x77 broadcast, then `@newPosition` and the destination items' `@step`/`@itemStep`.
+6. `@step` on the mover, with (direction, running, the point left), and `On_Step` (#1558; was `@stepTaken`, #1414): for a
+   real step only, never a teleport, and not for a character that step deleted (an NPC killed by a trap). It is raised for
+   GMs too, but `Character.On_Step`'s after-step calls (#779's stamina drain, hazards, dismounting...) and the hiding and
+   mystic plugins skip a `CanMoveEverywhere` mover, as `@stepTaken` did; a voodoo curse never lands on a GM. `Player.On_Step` records the tracking
+   footprint on the tile left (it ran before the move until #1558).
+7. `On_RegionChanged` when the region changed.
+
+`Character.IsHeld(running)` asks only the `@denyStep` handlers, without taking a step (what a hold check needs).
 
 A refused player step sends the move-rejection packet (0x21), so the client snaps back.
 
 ## Character collision (#767)
 
 Before #767 nothing checked characters, so players and NPCs walked straight through each other.
-Now `Character.CheckCharacterObstacles` hands off to `CharacterCollision.CheckStep`
+Now `Character.On_DenyStep` hands off to `CharacterCollision.CheckStep`
 (`scripts/Basic/Movement/CharacterCollision.cs`), a port of Sphere 0.99z8's rules as reconstructed in
 EreborNext (`CChar.Movement.Pushing.cs`, `CheckMoveWalkDir`).
 
@@ -174,7 +188,7 @@ NPC stamina and carried weight aren't kept Sphere-accurate here.
 `scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks/StranglerVine.cs`), ported from
 Erebor's `e_ovinovac` (`systems/new_events.scp`). A player who shoves past the monster
 (`NPC.On_PersonalSpace`) is entangled: "Byl jsi omotan a nemuzes se hnout!". Neither of
-them can step (`CheckCanMove`), and the vine attacks. The grip loosens ("Sevreni povolilo...")
+them can step (their `@denyStep`, #1558), and the vine attacks. The grip loosens ("Sevreni povolilo...")
 once the vine has taken `vineHitsToBreak` (6) hits, when either one dies, or when they
 no longer share a tile (e.g. the victim is teleported or knocked back). Erebor checked the
 last two with a 2s timer item; here they're checked when the victim tries to move. One victim

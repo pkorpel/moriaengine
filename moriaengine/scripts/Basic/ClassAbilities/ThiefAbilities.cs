@@ -136,7 +136,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>e_thief's @AfterSwing with fencing on a monster: from behind, then the throat slit (the thief's
-		/// @swingLanding, #1433).</summary>
+		/// @hit, #1433, #1558).</summary>
 		internal static void ModifyOwnBlow(ThiefProfessionPlugin thief, WeaponSwingArgs swing) {
 			Player self = (Player) thief.Cont;
 			Character target = swing.defender;
@@ -223,7 +223,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>f_thief_shieldStrike, after a blow lands: from the thief's plugin's @afterHit (#1459), after the shared
+		/// <summary>f_thief_shieldStrike, after a blow lands: from the thief's plugin's @afterSwing (#1459, #1558), after the shared
 		/// stun blow as before; its state is the plugin's (#1433).</summary>
 		internal static void TryShieldStrike(Player self, NPC target) {
 			ThiefProfessionPlugin thief = ThiefProfessionPlugin.Of(self);

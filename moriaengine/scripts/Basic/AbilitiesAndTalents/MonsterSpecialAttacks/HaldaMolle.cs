@@ -299,7 +299,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Character.On_StepTaken: a frost tile still cold.</summary>
+		/// <summary>Character.On_Step: a frost tile still cold.</summary>
 		internal static void CheckFrostStep(Character stepping) {
 			if ((frostTiles.Count > 0) && frostTiles.TryGetValue(HazardKey(stepping.X, stepping.Y, stepping.M), out FrostTile tile)) {
 				if (tile.expiresAt < Globals.TimeInSeconds) {
@@ -348,7 +348,7 @@ namespace SteamEngine.CompiledScripts {
 			return egg;
 		}
 
-		/// <summary>Character.On_StepTaken: stomping an egg.</summary>
+		/// <summary>Character.On_Step: stomping an egg.</summary>
 		internal static void CheckEggStep(Character stepping) {
 			if ((warniakEggs.Count == 0) || !(stepping is Player player) || player.IsGM) {
 				return;

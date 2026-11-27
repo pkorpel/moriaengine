@@ -1,0 +1,4 @@
+//#1558 - Tests/Protocol/TriggerShapeTests.cs: a scripted @gainExperience changes the amount through argv[1]
+[triggergroup e_shape_gainexp]
+on=@gainExperience
+argv[1] = argv[1] + 5

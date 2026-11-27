@@ -22,8 +22,8 @@ files, and typed def fields over tags.
 |---|---|
 | Things, defs, def names, containment, stacking, deletion | `02-engine-core/thing-model.md` |
 | Triggers: how they work, adding one, TriggerGroup vs plugin | `02-engine-core/trigger-system-architecture.md` |
-| Which triggers exist | `02-engine-core/trigger-catalog.md` (lists the state before the AI-added triggers, #1558) |
-| Plugin details (declaring, saving, deleting) | `02-engine-core/plugins.md`. It and `triggers-and-deny-chains.md` are disputed (PR #1532, #1558): where they disagree with the two pages above, those win |
+| Which triggers exist | `02-engine-core/trigger-catalog.md` (every chain, old and Sphere names) |
+| Plugin details (declaring, saving, deleting) | `02-engine-core/plugins.md` |
 | Timers, tags, lock order | `02-engine-core/tags-and-timers.md` |
 | Saving, loading, code-made defs | `02-engine-core/persistence-and-saving.md` |
 | Generated code (Roslyn generators, compile time) | `02-engine-core/scripting-pipeline.md`, `02-engine-core/code generators/scripting-generators.md` |
@@ -36,11 +36,14 @@ files, and typed def fields over tags.
 
 ## Adding a trigger
 
-Check `trigger-catalog.md` for an existing one first. A new trigger is agreed on its issue before it's added:
-the naming and chaining convention is still open (#1558), and earlier AI-added triggers were criticised as
-ad-hoc. Build it as `trigger-system-architecture.md` section 8 says: pick the semantic type (notification, deny,
-implementation, calculation), and write a `Trigger_X` method that raises `@X` with the matching dispatch and
-then calls `On_X`. Never drop a bare `TryTrigger` call into gameplay code.
+Check `trigger-catalog.md` for an existing one first. A new trigger is agreed on its issue before it's added
+(earlier AI-added triggers were ad-hoc and #1558 reworked them). Build it as `trigger-system-architecture.md`
+section 8 says: pick the semantic type (notification, deny, implementation, calculation), and write a `Trigger_X`
+method that raises `@X` with the matching dispatch and then calls `On_X` under the exception pattern. Name it by the
+convention in section 9: `@denyX` (deny args, every participant, default check in `On_DenyX`, handlers only decide),
+`@X` (cancellable implementation, or a plain notification), `@afterX` (notification after a cancellable `@X`).
+A GM's pass goes in the script's `On_DenyX`, never in whether the trigger is raised (section 11). Never drop a bare
+`TryTrigger` call into gameplay code.
 
 ## Rules whose breakage is silent
 

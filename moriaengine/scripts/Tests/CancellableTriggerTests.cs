@@ -123,9 +123,9 @@ namespace SteamEngine.CompiledScripts {
 		internal static int denied, died, hostile;
 		internal static Character killer;
 
-		public TriggerResult On_DenyDeath(Character self, Character killedBy) {
+		public TriggerResult On_DenyDeath(Character self, DenyDeathArgs args) {
 			denied++;
-			killer = killedBy;
+			killer = args.killedBy;
 			return TriggerResult.Cancel;
 		}
 
@@ -146,7 +146,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static Character innerKiller;
 		internal static bool ran;
 
-		public TriggerResult On_DenyDeath(Character self, Character killedBy) {
+		public TriggerResult On_DenyDeath(Character self, DenyDeathArgs args) {
 			ran = true;
 			E_DenyDeathProbe.killer = null;
 			inner.Hits = 0;

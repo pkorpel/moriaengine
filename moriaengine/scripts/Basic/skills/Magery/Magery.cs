@@ -27,10 +27,6 @@ namespace SteamEngine.CompiledScripts {
 		//skillParam1: SpellDef instance
 		//skillParam2: spell param (summoned creature def?)
 
-		private static readonly TriggerKey tkSpellCast = TriggerKey.Acquire("spellCast");
-		private static readonly TriggerKey tkSpellCastTry = TriggerKey.Acquire("spellCastTry");
-		private static readonly TriggerKey tkDenySpellCast = TriggerKey.Acquire("denySpellCast");
-
 		public static void TryCastSpellFromBook(Character ch, int spellid) {
 			SpellDef sd = SpellDef.GetById(spellid);
 			if (sd != null) {
@@ -114,6 +110,34 @@ namespace SteamEngine.CompiledScripts {
 			throw new SEException("Casting without book or scroll not implemented yet."); //would apply for NPCs perhaps?
 		}
 
+		/// <summary>#1558 - whether a cast gets past Sphere's own checks in On_Start: the target in reach and sight, the mana, and for a
+		/// book the reagents and other requirements. Asks only, with no message (On_Start says why). Not a custom scroll: Erebor's
+		/// customspellcast never ran e_allplayers' @spellcast. HungerPlugin charges a cast at @skillStart only when this holds,
+		/// so hunger comes where Erebor's @spellcast hungryhurts came: past these, before the casting rules (#1401).</summary>
+		public static bool PassesOwnChecks(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
+			SpellDef spell = skillSeqArgs.Param1 as SpellDef;
+			if ((spell == null) || spell.IsCustom || !self.CanInteractWith(skillSeqArgs.Target1).Allow) {
+				return false;
+			}
+			bool isFromScroll = skillSeqArgs.Tool is SpellScroll;
+			if ((self.Mana < ApplyConcentrationDiscount(self, spell.GetManaUse(isFromScroll))) && !self.IsGM) {
+				return false;
+			}
+			if (!isFromScroll && !self.IsGM) {
+				IResourceListEntry missingItem;
+				ResourcesList req = spell.Requirements;
+				if ((req != null) && !req.HasResourcesPresent(self, ResourcesLocality.BackpackAndLayers, out missingItem)) {
+					return false;
+				}
+				ResourcesList res = spell.Resources;
+				if ((res != null) && !res.HasResourcesPresent(self, ResourcesLocality.Backpack, out missingItem)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		//checking and consuming resources
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
@@ -140,19 +164,15 @@ namespace SteamEngine.CompiledScripts {
 						}
 					}
 
-					//#1401 - Erebor's @spellcast in two: its first lines (hungryhurts) ran before its own refusals (SpellCastRules)
-					self.TryTrigger(tkSpellCastTry, skillSeqArgs.scriptArgs);
-					if (self.Flag_Dead) {
-						return TriggerResult.Cancel; //starved to death by it
-					}
-					if (!SpellCastRules.Allow(self, spell, skillSeqArgs.Target1, out bool fizzle)) {
-						if (fizzle) {
+					//#1401 - Erebor's @spellcast fired past Sphere's own checks above, its hungryhurts first, before its refusals:
+					//#1558 - HungerPlugin's, at @skillStart, for a cast that PassesOwnChecks
+					//#1558 - @denySpellCast: the caster's handlers (the energy shield's Recall), then the casting rules in
+					//Character.On_DenySpellCast
+					DenySpellCastArgs denyArgs = new DenySpellCastArgs(skillSeqArgs);
+					if (!self.Trigger_DenySpellCast(denyArgs).Allow) {
+						if (denyArgs.Fizzle) {
 							Fizzle(self);
 						}
-						return TriggerResult.Cancel;
-					}
-					//#1401 - the refusals of a caster's other events (the energy shield's Recall), after Erebor's e_allplayers
-					if (TriggerResult.Cancel == self.TryCancellableTrigger(tkDenySpellCast, skillSeqArgs.scriptArgs)) {
 						return TriggerResult.Cancel;
 					}
 					if (skillSeqArgs.Param2 is NPCDef) {
@@ -162,7 +182,7 @@ namespace SteamEngine.CompiledScripts {
 					if (TriggerResult.Cancel == spell.Trigger_Start(skillSeqArgs)) {
 						return TriggerResult.Cancel;
 					}
-					self.TryTrigger(tkSpellCast, skillSeqArgs.scriptArgs); //#1386 - Sphere's @spellCast, the cast is under way
+					self.Trigger_SpellCast(skillSeqArgs); //#1386 - Sphere's @spellCast, the cast is under way
 					if (self.Flag_Dead) {
 						return TriggerResult.Cancel;
 					}
@@ -270,11 +290,9 @@ namespace SteamEngine.CompiledScripts {
 				MagicChargePlugin.AfterCast(caster, spell, skillSeqArgs.Target1 as Character); //#1017
 			}
 			if (!self.IsDeleted) { //#1419 - @spellSuccess, after the effect and the inline after-cast work; the profession plugin's mana back (#1440)
-				self.TryTrigger(tkSpellSuccess, new ScriptArgs(new SpellSuccessArgs(self, spell, skillSeqArgs.Target1, skillSeqArgs.Tool is SpellScroll)));
+				self.Trigger_SpellSuccess(new SpellSuccessArgs(self, spell, skillSeqArgs.Target1, skillSeqArgs.Tool is SpellScroll));
 			}
 		}
-
-		private static readonly TriggerKey tkSpellSuccess = TriggerKey.Acquire("spellSuccess");
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Fizzle(skillSeqArgs.Self);

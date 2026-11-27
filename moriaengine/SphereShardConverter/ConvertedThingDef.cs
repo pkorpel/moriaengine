@@ -243,6 +243,9 @@ namespace SteamEngine.Converter {
 					ConvertedThingDef dupeItemDef;
 					if (this.byModel.TryGetValue(dupeItemNum, out dupeItemDef)) {
 						this.Set(this.dupeItemLine.Name, dupeItemDef.PrettyDefname, this.dupeItemLine.Comment);
+						if ((dupeItemDef.headerType == "DoorDef") && (this.headerType == "ItemDef")) {
+							this.headerType = "DoorDef"; //#1558 - a door's other models are dupes, and made from one it must be a Door too
+						}
 						dupeItemSet = true;
 						//Info(dupeItemLine.line, "DupeItem Written as "+dupeItemDef.PrettyDefname);
 					}

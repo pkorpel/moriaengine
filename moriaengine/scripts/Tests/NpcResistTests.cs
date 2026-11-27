@@ -56,6 +56,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#868 - a real monster's blow on a player under Reactive Armor.</summary>
 		[SteamFunction]
 		public static void TestReactiveArmorReport(Character self) {
+			byte plevel = self.Account.PLevel;
+			self.Account.PLevel = 1; //#1558 - a GM is immune to hostile effects, and test accounts start as GMs
 			NPC monster = (NPC) ThingDef.GetByDefname("c_titan").Create(self.X + 1, self.Y, self.Z, self.M);
 			self.MaxHits = 5000;
 			self.Hits = 5000;
@@ -71,6 +73,7 @@ namespace SteamEngine.CompiledScripts {
 			int with = 5000 - self.Hits;
 			int returned = monsterHits - monster.Hits;
 			monster.Delete();
+			self.Account.PLevel = plevel;
 			Console.WriteLine("REACTIVE_ARMOR: active=" + active + " without=" + without + " returnedWithout=" + returnedWithout + " with=" + with + " returned=" + returned);
 		}
 

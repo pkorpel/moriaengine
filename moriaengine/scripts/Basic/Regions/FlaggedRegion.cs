@@ -320,18 +320,16 @@ namespace SteamEngine.Regions {
 			get { return this.HasInheritedFlag(RegionFlags.NoDecay); }
 		}
 
-		public override TriggerResult On_Enter(AbstractCharacter ch, bool forced) {
+		public override void On_Enter(AbstractCharacter ch, bool teleported) {
 			Player asPlayer = ch as Player;
 			if (asPlayer != null) {
 				asPlayer.SendGlobalLightLevel(LightAndWeather.GetLightIn(this));
 				Reputation.OnEnterCity(asPlayer, this); //#1243 - a suspect is watched
 				Deeds.OnEnterCity(asPlayer, this.City); //#1296 - the explorer's deed
 			}
-
-			return TriggerResult.Continue;//if forced is true, the return value is irrelevant
 		}
 
-		public override TriggerResult On_Exit(AbstractCharacter ch, bool forced) {
+		public override void On_Exit(AbstractCharacter ch, bool teleported) {
 			Player asPlayer = ch as Player;
 			if (asPlayer != null) {
 				//we're exiting this one, hence "re-entering" the parent
@@ -340,8 +338,6 @@ namespace SteamEngine.Regions {
 					asPlayer.SendGlobalLightLevel(LightAndWeather.GetLightIn(parentAsFlagged));
 				}
 			}
-
-			return TriggerResult.Continue;//if forced is true, the return value is irrelevant
 		}
 
 		#region Persistence

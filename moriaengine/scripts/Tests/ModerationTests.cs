@@ -274,7 +274,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestGmToolsState(Character self) {
 			Console.WriteLine("GMTOOLS_STATE: wolfAtGm=" + (Point2D.GetSimpleDistance(wolf, self) <= 1) + " wolfHome=" + (Point2D.GetSimpleDistance(wolf, wolfHome) <= 1) +
-				" frozen=" + GmTools.IsFrozen(wolf) + " canMove=" + wolf.CheckCanMove(false) + " gmAtWolf=" + (Point2D.GetSimpleDistance(wolf, self) <= 1) + " |");
+				" frozen=" + GmTools.IsFrozen(wolf) + " canMove=" + !wolf.IsHeld(false) + " gmAtWolf=" + (Point2D.GetSimpleDistance(wolf, self) <= 1) + " |");
 		}
 
 		[SteamFunction]

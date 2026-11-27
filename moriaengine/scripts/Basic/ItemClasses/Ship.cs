@@ -353,22 +353,16 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public override TriggerResult On_Enter(AbstractCharacter ch, bool forced) {
-			var result = base.On_Enter(ch, forced);
-			if (result != TriggerResult.Cancel || forced) {
-				this.Ship.AddThing(ch);
-				ch.AddTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
-			}
-			return result;
+		public override void On_Enter(AbstractCharacter ch, bool teleported) {
+			base.On_Enter(ch, teleported);
+			this.Ship.AddThing(ch); //#1558 - a notification: the regions were asked in the step's deny chain
+			ch.AddTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
 		}
 
-		public override TriggerResult On_Exit(AbstractCharacter ch, bool forced) {
-			var result = base.On_Exit(ch, forced);
-			if (result != TriggerResult.Cancel || forced) {
-				this.Ship.RemoveThing(ch);
-				ch.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
-			}
-			return result;
+		public override void On_Exit(AbstractCharacter ch, bool teleported) {
+			base.On_Exit(ch, teleported);
+			this.Ship.RemoveThing(ch);
+			ch.RemoveTriggerGroup(SingletonScript<E_BeingOnShip>.Instance);
 		}
 	}
 

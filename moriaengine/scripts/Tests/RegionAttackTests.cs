@@ -70,6 +70,8 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestRegionDamage(Character self, ScriptArgs sa) {
 			Character other = (Character) Thing.UidGetCharacter(uint.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture));
 			NPC rabbit = (NPC) self.GetTag(monsterTK);
+			byte plevel = self.Account.PLevel;
+			self.Account.PLevel = 1; //#1558 - a GM is immune to hostile effects and NPCs skip GMs, and test accounts start as GMs
 			int monster = Lost(self, rabbit, DamageType.Physical, 20);
 			int player = Lost(self, other, DamageType.Physical, 20);
 			int god = Lost(self, rabbit, DamageType.Irresistable, 5);
@@ -82,6 +84,7 @@ namespace SteamEngine.CompiledScripts {
 			bool casts = (bool) typeof(NPCAiTimer).GetMethod("TryCastSpell", any).Invoke(NPCAiTimer.GetFor(lich), new object[] { lich, self });
 			lich.Delete();
 			self.Hits = self.MaxHits;
+			self.Account.PLevel = plevel;
 			Console.WriteLine("REGION_DAMAGE: monsterHurts=" + (monster > 0) + " playerHurts=" + (player > 0) + " god=" + god + " targets=" + targets + " casts=" + casts + " end");
 		}
 

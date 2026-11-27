@@ -262,7 +262,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((!bearsBlood && !givesBlood) || pact.bloodOff || (damage <= 0)) {
 				return;
 			}
-			if (attacker.IsPlayer) {
+			if (!attacker.IsDeleted && attacker.IsPlayer) { //#1558 - an NPC attacker reactive armour killed still shares
 				pact.bloodOff = true;
 				return;
 			}
@@ -273,7 +273,7 @@ namespace SteamEngine.CompiledScripts {
 			int share = Math.Min((damage * ClassAbilitySettings.instance.bloodPactPercent) / 100, 20);
 			hit.Hits = (short) Math.Min(hit.MaxHits, hit.Hits + share);
 			if (other.Hits - share <= 0) {
-				Character.SetHitsBy(other, 0, attacker); //#1464 - one death, by the attacker
+				Character.SetHitsBy(other, 0, attacker.IsDeleted ? null : attacker); //#1464 - one death, by the attacker
 			} else {
 				other.Hits = (short) (other.Hits - share);
 			}

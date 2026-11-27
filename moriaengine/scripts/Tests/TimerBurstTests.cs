@@ -8,7 +8,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class TimerBurstTests {
 		[SteamFunction]
 		public static void TestTimerBurst(Character self) {
-			Item probe = (Item) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
+			Door probe = (Door) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
 			for (int i = 0; i < 20000; i++) {
 				probe.AddTimer(DoorCloseTimer.Key, new DoorCloseTimer()).DueInSeconds = 60;
 				probe.DeleteTimer(DoorCloseTimer.Key);
@@ -20,11 +20,11 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The timer thread is alive if a timer still fires after the burst.</summary>
 		[SteamFunction]
 		public static void TestTimerAfterBurst(Character self) {
-			Item probe = (Item) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
-			probe.UseDoor();
+			Door probe = (Door) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
+			probe.Swing();
 			probe.GetTimer(DoorCloseTimer.Key).DueInSeconds = 1;
 			lastProbe = probe;
-			Console.WriteLine("TIMER_ARMED: open=" + probe.IsDoorOpen);
+			Console.WriteLine("TIMER_ARMED: open=" + probe.IsOpen);
 		}
 
 		/// <summary>Every Thing enumerated after each new one, past where the array of all Things grows.</summary>
@@ -49,11 +49,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static Item lastProbe;
+		private static Door lastProbe;
 
 		[SteamFunction]
 		public static void TestTimerFired(Character self) {
-			Console.WriteLine("TIMER_FIRED: open=" + lastProbe.IsDoorOpen);
+			Console.WriteLine("TIMER_FIRED: open=" + lastProbe.IsOpen);
 		}
 
 		/// <summary>#1187 - an open door whose close timer is due in the given seconds, saved with the world: a recompile saves it
@@ -61,10 +61,10 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestTimerArmSaved(Character self, ScriptArgs sa) {
 			int seconds = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
-			Item probe = (Item) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
-			probe.UseDoor();
+			Door probe = (Door) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
+			probe.Swing();
 			probe.GetTimer(DoorCloseTimer.Key).DueInSeconds = seconds;
-			Console.WriteLine("TIMER_SAVED: uid=" + probe.Uid + " open=" + probe.IsDoorOpen + " |");
+			Console.WriteLine("TIMER_SAVED: uid=" + probe.Uid + " open=" + probe.IsOpen + " |");
 		}
 
 		/// <summary>#1188 - many timers on Globals firing every tenth of a second, saved with it, so the timer thread is busy
@@ -134,8 +134,8 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestTimerDoorAt(Character self, ScriptArgs sa) {
 			int uid = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
-			Item door = Thing.UidGetThing(uid) as Item;
-			Console.WriteLine("TIMER_DOOR: found=" + (door != null) + " open=" + ((door != null) && door.IsDoorOpen) + " |");
+			Door door = Thing.UidGetThing(uid) as Door;
+			Console.WriteLine("TIMER_DOOR: found=" + (door != null) + " open=" + ((door != null) && door.IsOpen) + " |");
 		}
 	}
 

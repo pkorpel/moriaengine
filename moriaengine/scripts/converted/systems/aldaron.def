@@ -24,7 +24,7 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-[ItemDef i_ztracene_mesto_dvere]
+[DoorDef i_ztracene_mesto_dvere]
 Name = "Dvere"
 Type = t_door_locked
 model = i_door_metal
@@ -151,7 +151,7 @@ TYPE = t_normal
 model = 0x285e
 Color = 00
 
-[ItemDef i_ocs_dvere_qtag]
+[DoorDef i_ocs_dvere_qtag]
 Name = "Dvere"
 Type = t_door_locked
 model = i_door_metal

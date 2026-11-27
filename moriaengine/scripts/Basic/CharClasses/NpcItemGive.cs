@@ -15,8 +15,6 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
-using SteamEngine.Networking;
-
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
@@ -37,7 +35,6 @@ namespace SteamEngine.CompiledScripts {
 	/// A refused or eaten item bounces back to the giver (what's left of it).
 	/// </summary>
 	public static class NpcItemGive {
-		private static readonly TriggerKey npcRefuseItemTK = TriggerKey.Acquire("npcRefuseItem");
 
 		/// <summary>Continue = the item goes into the NPC's pack (TryPutItemOnChar's default path);
 		/// Cancel = handled here, the item (if anything is left of it) goes back to the giver.</summary>
@@ -72,18 +69,8 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
-			Refuse(npc, giver, item);
+			npc.Trigger_NpcRefuseItem(giver, item); //#1558 - NPC.Trigger_NpcRefuseItem, its default message in On_NpcRefuseItem
 			return TriggerResult.Cancel;
-		}
-
-		private static void Refuse(NPC npc, Character giver, AbstractItem item) {
-			if (npc.TryCancellableTrigger(npcRefuseItemTK, new ScriptArgs(giver, item)) == TriggerResult.Cancel) {
-				return; //the NPC's own @NPCRefuseItem said its line
-			}
-			GameState state = giver.GameState;
-			if (state != null) {
-				PacketSequences.SendOverheadMessageFrom(state.Conn, npc, "They don't appear to want the item.", 0);
-			}
 		}
 	}
 }

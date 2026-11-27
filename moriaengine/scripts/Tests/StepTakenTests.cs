@@ -3,7 +3,8 @@ using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1414 - @stepTaken after a real step: a trigger group and a plugin on the player each hear it once per step,
-	/// with `running`; a teleport and a GM's step raise nothing. Protocol side: Tests/Protocol/MovementHoldsTests.cs.</summary>
+	/// with `running`; a teleport raises nothing. #1558 - it is the character's @step now (direction, running, the point
+	/// left), raised for a GM's step too. Protocol side: Tests/Protocol/MovementHoldsTests.cs.</summary>
 	public static class StepTakenTests {
 		private static readonly PluginKey probeKey = PluginKey.Acquire("_stepTakenProbe_");
 		internal static int groupHeard;
@@ -33,9 +34,10 @@ namespace SteamEngine.CompiledScripts {
 				self.P(self.X - 2, self.Y, self.Z); //a teleport isn't a step
 				Check("teleportNotAStep", (groupHeard == 2) && (probe.heard == 2));
 
-				self.Account.PLevel = (byte) Globals.PlevelOfGM; //a GM moves anywhere, as before the trigger: nothing raised
+				self.Account.PLevel = (byte) Globals.PlevelOfGM; //#1558 - a GM's step is a step too: the handlers decide what a GM skips
+				Point4D beforeGm = new Point4D(self.P());
 				bool gmStepped = Step(self, Direction.East, false);
-				Check("gmStepNotRaised", gmStepped && (groupHeard == 2) && (probe.heard == 2));
+				Check("gmStepRaised", gmStepped && (groupHeard == 3) && (probe.heard == 3) && beforeGm.Equals(probe.left));
 
 				DeletedByItsStep(self);
 				Console.WriteLine("HOLDS_STEP: group=" + groupHeard + " plugin=" + probe.heard + " walked=" + walked + " ran=" + ran + " gm=" + gmStepped);
@@ -85,7 +87,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public partial class E_StepTakenProbe : CompiledTriggerGroup {
-		public void On_StepTaken(Character self, bool running) {
+		public void On_Step(Character self, Direction direction, bool running) {
 			StepTakenTests.groupHeard++;
 			StepTakenTests.groupRunning = running;
 		}
@@ -120,12 +122,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>Counts @stepTaken and keeps its `running`. Never saved.</summary>
+	/// <summary>Counts the character's @step (#1558; was @stepTaken) and keeps its `running` and the point left. Never saved.</summary>
 	[DeepCopyableClass]
 	[SaveableClass]
 	public partial class StepTakenProbePlugin : Plugin {
 		internal int heard;
 		internal bool running;
+		internal Point4D left;
 
 		[DeepCopyImplementation]
 		public StepTakenProbePlugin(StepTakenProbePlugin copyFrom)
@@ -136,9 +139,10 @@ namespace SteamEngine.CompiledScripts {
 		public StepTakenProbePlugin() {
 		}
 
-		public void On_StepTaken(bool running) {
+		public void On_Step(Direction direction, bool running, Point4D oldPoint) {
 			this.heard++;
 			this.running = running;
+			this.left = oldPoint;
 		}
 	}
 }

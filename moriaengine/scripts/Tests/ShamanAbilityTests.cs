@@ -162,13 +162,13 @@ namespace SteamEngine.CompiledScripts {
 			TestBloodInASwing(player, partner); //#1445
 			partner.Hits = 50;
 			shamanHits = player.Hits;
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(monster, partner), 100); //#1445 - as ProcessSwing raises it
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(monster, partner), 100); //#1445 - as ProcessSwing raises it
 			Report("aMonstersBlowIsShared", (partner.Hits == 65) && (player.Hits == shamanHits - 15));
 			Report("theGiverEarnsThroughTheBearer", ShamanPacts.EarnsNoKillExp(player) && !ShamanPacts.EarnsNoKillExp(partner));
 			TestGiverAtAPlayersDeath(player, partner); //#1417
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(player, partner), 100);
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(player, partner), 100);
 			partner.Hits = 50;
-			DamageManager.Trigger_AfterHit(DamageManager.GetWeaponSwingArgs(monster, partner), 100);
+			TriggerChainCombatTests.AfterLandedBlow(DamageManager.GetWeaponSwingArgs(monster, partner), 100);
 			Report("aPlayersBlowSwitchesItOff", partner.Hits == 50);
 			ShamanPacts.CancelPact(player);
 			Report("cancellingEndsBothSides", (PactPlugin.Of(player) == null) && (PactPlugin.Of(partner) == null));
@@ -318,7 +318,7 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SHAMAN_DONE");
 		}
 
-		/// <summary>#1447 - the elixir reads a monster through the shaman's own @swingLanding (the client hears the lines and
+		/// <summary>#1447 - the elixir reads a monster through the shaman's own @hit (the client hears the lines and
 		/// then the elixir's end); the partner gets a life pact whose soul ends in a second, and a ghost in an arena (instant
 		/// resurrection) rises from it at once.</summary>
 		[SteamFunction]
@@ -340,7 +340,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.Freeze(orc, 300);
 			try {
 				for (int i = 0; i < 10; i++) { //Arms Lore 100.0 against 1.0 to 120.0
-					DamageManager.Trigger_SwingLanding(DamageManager.GetWeaponSwingArgs(player, orc));
+					DamageManager.Trigger_Hit(DamageManager.GetWeaponSwingArgs(player, orc));
 				}
 				player.TryTrigger(TriggerKey.Acquire("death"), new ScriptArgs((Character) null)); //@death alone, nobody dies
 				Report("theElixirStaysThroughDeath", EmpathyPlugin.Of(player) != null);
@@ -401,10 +401,10 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SHAMAN_SOUL_DONE");
 		}
 
-		/// <summary>#1450 - @denySpellCast as Magery raises it after the rules: does the caster's own event refuse?</summary>
+		/// <summary>#1450 - the caster's @denySpellCast handlers alone (#1558: before the casting rules): does its own event refuse?</summary>
 		private static bool DeniesCast(Player self, string spell) {
 			SkillSequenceArgs args = SkillSequenceArgs.Acquire(self, SkillName.Magery, null, null, null, SpellDef.GetByDefname(spell), null);
-			return self.TryCancellableTrigger(TriggerKey.Acquire("denySpellCast"), args.scriptArgs) == TriggerResult.Cancel;
+			return self.TryCancellableTrigger(TriggerKey.Acquire("denySpellCast"), new DenySpellCastArgs(args)) == TriggerResult.Cancel;
 		}
 
 		/// <summary>#1450 - mounted on a new horse, one real step: true when the step threw the rider.</summary>

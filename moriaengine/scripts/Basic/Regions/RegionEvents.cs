@@ -188,7 +188,7 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>e_nohorse/e_nohorsehigh, from Character.On_StepTaken (never called for GMs):
+		/// <summary>e_nohorse/e_nohorsehigh, from Character.On_Step (never called for GMs):
 		/// a rider stepping in the mines, or above the high-floor limit on anything but an
 		/// ostard, gets off.</summary>
 		public static void OnStepTaken(Character ch) {

@@ -53,7 +53,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestLockReport(Character self) {
 			Console.WriteLine("LOCK_REPORT: bag=" + bag.LockLevel + "/" + (bag.LockedTo != null) + "/" + bag.Flag_NonMovable
 				+ " person=" + ((bag.LockPerson == null) ? "none" : bag.LockPerson.Name) + " list=" + house.LockedItems.Count
-				+ " ingot=" + (ingot.LockedTo != null) + " door=" + door.Type.Defname + "/" + door.IsDoorOpen
+				+ " ingot=" + (ingot.LockedTo != null) + " door=" + door.Type.Defname + "/" + ((Door) door).IsOpen
 				+ " coinIn=" + (coin.Cont == bag) + " bagGround=" + bag.IsOnGround + " color=" + bag.Color);
 		}
 
@@ -70,8 +70,8 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestLockCloseDoor(Character self) {
-			if (door.IsDoorOpen) {
-				door.UseDoor();
+			if (((Door) door).IsOpen) {
+				((Door) door).Swing();
 			}
 			Console.WriteLine("LOCK_DOOR: closed");
 		}

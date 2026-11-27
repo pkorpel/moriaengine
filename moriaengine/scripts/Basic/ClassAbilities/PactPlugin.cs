@@ -135,10 +135,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>e_bloodpact's @gethit, after the damage (@afterGetHit).</summary>
-		public void On_AfterGetHit(WeaponSwingArgs swing, int damage) {
-			if (this.Cont is Character hit) {
-				ShamanPacts.ShareBlood(swing.attacker, hit, damage);
+		/// <summary>e_bloodpact's @gethit, after a landed blow's damage (#1558: @afterGetSwing, was @afterGetHit).</summary>
+		public void On_AfterGetSwing(WeaponSwingArgs swing) {
+			if (!swing.Dodged && (this.Cont is Character hit)) {
+				ShamanPacts.ShareBlood(swing.attacker, hit, swing.FinalDamage);
 			}
 		}
 	}

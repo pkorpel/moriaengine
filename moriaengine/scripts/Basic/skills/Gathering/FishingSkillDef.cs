@@ -62,7 +62,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			if (!Gathering.Begin(self, skillSeqArgs.Target1, SkillName.Fishing)) {
+			if (!Gathering.Begin(self, skillSeqArgs.Target1)) {
 				return TriggerResult.Cancel;
 			}
 			self.Sound(SplashSound);
@@ -149,7 +149,9 @@ namespace SteamEngine.CompiledScripts {
 				return TargetResult.Done; //#391 - show the message once and stop, don't loop
 			}
 			skillSeq.Target1 = targetted;
-			skillSeq.PhaseStart();
+			if (Gathering.Prepare(self, SkillName.Fishing)) { //#1558 - the wait, the saddle and the dark before the start's hunger
+				skillSeq.PhaseStart();
+			}
 			return TargetResult.Done;
 		}
 

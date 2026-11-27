@@ -48,6 +48,23 @@ Example: put item into container:
 
 The order is not random, and is part of the API contract for scripters.
 
+### Who hears one step, in what order
+
+One step of a chain is the participant's dynamic handlers, then its compiled `On_*` method. For a thing,
+`TryCancellableTrigger` (`Thing.cs`, `AbstractItem.cs`) runs, in this order:
+
+1. the server-wide registered trigger groups (items', then all things');
+2. the thing's own trigger groups (`EVENTS`);
+3. its plugins, **newest first** (`AddPlugin` puts a plugin at the front; save/load and dupe keep the order);
+4. its def's trigger groups: the def section's own `on=@x` lines and its `TEVENTS`;
+5. for an item, its `TYPE`.
+
+Then the core calls the virtual `On_*` method. So a script handler always comes before the class's own default, and
+in a deny chain a handler can only be skipped by an earlier cancel, never by the `On_*` method. Plugin order is when
+each plugin was added, not a contract: where the order of two changes matters (a multiplier before an addition), give
+them separate steps or call one at a fixed point (the spell slayers have their own step, `@beforeDoEffect`, for that).
+Plugin details: [plugins.md](plugins.md).
+
 ---
 
 ## 4) Trigger semantic taxonomy
@@ -61,7 +78,7 @@ The vocabulary used in this guide is:
 
 2. **Deny**
    - Permission gate.
-   - Default action exists and proceeds unless denied (by setting `Allow = false` on the `DenyTriggerArgs.Result` object / `argv[0]` in LScript).
+   - Default action exists and proceeds unless denied (by setting `DenyTriggerArgs.Result` / `argv[0]` in LScript to a refusing `DenyResult`, see section 10).
    - Example: `@denyPickup*`, `@denyPut*`, `@denyEquip*`.
 
 3. **Implementation**
@@ -84,7 +101,7 @@ Shape is separate from semantics:
 
 - **Regular**: `Trigger` / `TryTrigger` - doesn't short-circuit chain on return value
 - **Cancellable**: `CancellableTrigger` / `TryCancellableTrigger` - short-circuits chain on return value 1 / cancel
-- **Deny**: Cancellable trigger with `DenyTriggerArgs` object (`Result` = `argv[0]` in LScript) to set `Allow = false` 
+- **Deny**: Cancellable trigger with `DenyTriggerArgs` object (`Result` = `argv[0]` in LScript), set to a refusing `DenyResult` to deny 
   (all deny triggers are cancellable; not all cancellable triggers are deny)
 
 ---
@@ -178,10 +195,11 @@ For core `On_*` method calls, follow the existing pattern:
 ```csharp
 try {
 	result = this.On_Something(args);
-} catch (FatalException) { throw; }
-catch (TransException) { throw; }
-catch (Exception e) { Logger.WriteError(e); }
+} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 ```
+
+(`FatalException` must stop the server; everything else is logged and the chain goes on. There is no other exception
+type to let through.)
 
 Use the same pattern for each participant in a chain.
 
@@ -246,3 +264,130 @@ var finalDamage = damageArgs.damage;
   - semantic result (`args.Result.Allow`, computed value, etc.).
 
 
+---
+
+## 9) Naming convention (#1558)
+
+Trigger names say the semantic type (section 4), so a scripter can tell from the key what a handler may do.
+
+- **`@denyX`**: a deny, with a `DenyTriggerArgs` subclass (`argv[0]` is the `DenyResult`). It runs on every participant
+  in the documented order; each participant's default check is its `On_DenyX`, so it can be overridden. Deny handlers
+  only decide. Whatever a refusal leads to happens elsewhere (the hypnosis plugins note a refused death and act on their
+  own timer).
+- **`@X`**: the implementation, cancellable. Where there is nothing to cancel, `@X` is a plain notification instead,
+  and there is no separate `@afterX` (a character's `@step` comes after the move).
+- **`@afterX`**: a notification after an implementation that can be cancelled (`@afterSwing` after `@swing`).
+- **Calculation triggers** carry the mutable value in their args and mostly have a noun name (`@hit`, `@damage`,
+  `@spellPower`).
+
+Examples, from the code:
+
+| Chain | deny | implementation / calculation | notification |
+|---|---|---|---|
+| Double click | `@denyItemDClick`/`@denyCharDClick`, `@denyDClick` | `@dClick` | |
+| Step | `@denyStep`, region `@denyExit`/`@denyEnter` | | `@step`, region `@exit`/`@enter` |
+| Swing | `@denySwing`, `@denyDamage` | `@swing`/`@getSwing`, `@hit`/`@getHit`, `@causeDamage`/`@damage` | `@afterSwing`/`@afterGetSwing` |
+| Death | `@denyDeath` | | `@death`, `@killCredit`, `@kill` |
+| Spell cast | `@denySpellCast` | the spell's `@start`, `@spellPower`, `@causeSpellEffect`, `@spellEffect` | `@spellCast`, `@spellSuccess` |
+
+**Exceptions, kept on purpose:**
+
+- `@swing`/`@getSwing` are calculations with a verb name: they can still cancel the whole swing (`kick.scp`).
+- `@causeSpellEffect` is an original key that already works as a calculation.
+- `@monsterSpellPower`, `@beforeDoEffect` and `@beforeGetEffect` keep their separate stages:
+  - `@monsterSpellPower` is a term of the multiplier, needed before there is any power to change;
+  - `@beforeDoEffect` keeps the slayers in their own step, before `@causeSpellEffect`'s talents whatever the plugins'
+    order (section 3);
+  - `@beforeGetEffect` merged into `@spellEffect` would re-run the caster's `@causeSpellEffect` on a reflected spell.
+- **The skill chain keeps its names** (`@skillSelect`, `@skillStart`, `@skillStroke`, `@skillSuccess`/`@skillFail`,
+  `@skillAbort`). It is original and named by stage, and the other chains hang off it.
+- **Single-stage triggers keep their names:** `@death`, `@kill`, `@killCredit`, `@disruption`, `@hostileAction`,
+  `@npcRefuseItem`, `@gainExperience`, `@leaveSpawn`, `@pickingUp`, `@contextMenuSelect`.
+
+Old names, and Sphere's and Erebor's, are in [trigger-catalog.md](trigger-catalog.md) section 5.
+
+---
+
+## 10) Deny results and the default check
+
+`DenyResult` (`GameCore/DenyResult.cs`) has an `Allow` bool and `SendDenyMessage`. The subclasses say how the player
+is told: `DenyResult_StringSysMessage` (a string), `DenyResult_ClilocSysMessage` (a cliloc the client renders),
+`DenyResult_Allow` and `DenyResult_NoMessage`. `DenyResultMessages` (same file) holds the shared instances
+(`Deny_ThatIsTooFarAway`, `Deny_ContainerClosed`, `Deny_ThatDoesNotBelongToYou`, `Deny_YouCannotPickThatUp`,
+`Deny_ThatIsLocked`, ...): look there before adding a new message.
+
+A step **denies** by setting `args.Result` to a refusing `DenyResult`, and usually cancels too. A step that **cancels
+while leaving `args.Result` allowed** lets the action through without the later steps, including the default check.
+The caller reads `args.Result` at the end.
+
+**The exception is the step chain** (`AbstractCharacter.Trigger_DenyStep`, the regions' `@denyExit`/`@denyEnter`): there
+a cancel always refuses the step, with or without a refusing `Result`, because the holds (paralysis, the vine, the GM
+freeze) answer `@denyStep` with a bare cancel. A handler can't let someone through the later steps of a step by allowing
+and cancelling.
+
+**Permission first, then reach.** The deny chain decides whether this character may do it at all (ownership, locks,
+flags, scripts). The engine's default check comes after it and decides whether they can from where they stand:
+
+```csharp
+public DenyResult CanPickup(AbstractItem item) {
+	TriggerResult triggerResult;
+	DenyResult denyResult = this.Trigger_DenyPickupItem(item, out triggerResult);
+	//default implementation, can be skipped by returning true (cancelling)
+	if (triggerResult != TriggerResult.Cancel && (denyResult.Allow)) {
+		return this.CanReach(item);
+	}
+	return denyResult;
+}
+```
+
+`CanReach` (`GameCore/CanSeeImplementation.cs`) checks sight, distance, line of sight, and for an item in a container
+that the container is open. A ground drop's default is `CanReachCoordinates`. In a pickup, the cancels that count are
+the picker's `@denyPickupItem`/`On_DenyPickupItem`, the item's `@denyPickup`/`On_DenyPickup`, the container's or
+holder's `@denyPickupItemFrom` trigger, and each region's `@denyPickupItemFrom`/`On_DenyPickupItemFrom` (every region up
+to the world region, #1579). The container's and holder's `On_DenyPickupItemFrom` return nothing, so they can only deny.
+A double click's reach test is the clicker's `On_DenyItemDClick`, skipped when `DenyClickArgs.SkipReachChecks` is set
+(Telekinesis, the OpenDoor macro, the potion macro); every other deny still applies. A macro's click is a whole double
+click, so the clicker's `On_ItemDClick` runs too: like any item use it ends the clicker's current skill (a cast), as
+Sphere's item use starts its idle skill for macro clicks too (`Cmd_Use_Item`, `Skill_Start(121)`). Its disruption also
+breaks the clicker's own paralysis, which a real double click already did before #1558; the macros now do it as well.
+
+A test of a deny rule checks both sides from the same spot: refused for the character the rule refuses, allowed for
+one it allows. The allowed case proves the character is in reach, so the refusal is the rule's.
+
+**The one path that skips the chain:** `SecureTrade.AddItem` (`scripts/Basic/Trading/SecureTrade.cs`) puts items into
+the trade box with `PutItemInItem(box, 0, 0, false)`, as the trade parties were checked when the trade started. A rule
+that must hold there (`attr_nodroptrade`) is an explicit check in `AddItem`. Taking items out of a trade box does go
+through the chain.
+
+---
+
+## 11) GMs
+
+**Core has no GM concept** beyond `AbstractCharacter.CanMoveEverywhere` (a player of `Globals.PlevelOfGM` or more): it
+skips the terrain check, as it did in 2dbc90b, and the regions' step denies (#1558, as Sphere never refuses a GM).
+
+**Scripts:**
+
+- A GM's "allow all" sits in the script's `On_DenyX` override (allow, and skip or cancel the rest), never in whether
+  the trigger is raised. Notifications fire for GMs too; a handler that must spare a GM checks itself
+  (`Character.On_Step`'s after-step calls, the hiding, mystic and voodoo plugins).
+- **Hostile effects never land on a GM** (pkorpel, #1558): `Character.IsImmuneToHostileEffects(source)` is true for a GM
+  and any source but themselves, a missing source (a trap, lava) included. It is asked where hostile effects come
+  through:
+  - `Character.On_DenyDamage`: every kind of damage;
+  - the swing: `WeaponSkillDef.On_Stroke` ends a swing drawn at a GM (no retry), and `DamageManager.ProcessSwing` lands no
+    blow on one, so nothing a blow carries lands (a GM swinging at another GM included); NPC AI doesn't pick a GM as a
+    target, as Sphere's NPCs give up on an invulnerable one;
+  - `Character.On_SpellEffect`: no harmful spell;
+  - `ParalyzeEffectPluginDef.Paralyze`: every paralysis or stun;
+  - the effects applied directly: the vine hold, warcry, voodoo curses.
+
+  So the holding plugins need no GM checks of their own. `.freeze` is a GM tool, not a hostile effect, and holds
+  whoever a GM freezes.
+- A GM drops things on the ground anywhere: `Character.On_DenyPutItemOnGround` allows and cancels for a GM, so no item,
+  region or reach check follows. #1579 made that reach check real for everyone; before it, a region's cancel skipped it.
+  A GM's pickups were reach-checked before and still are.
+- Core's `CanMoveEverywhere` is plevel 4 or more, scripts' `IsGM` plevel above 1: the step's GM passes
+  (`Character.On_DenyStep`, `Character.On_Step`) use the first, the immunity and the swing's work light the second, so a
+  counselor gets some passes and not others until #1582.
+- "GM" in scripts is `Character.IsGM` (account plevel above 1, toggled by `.gm`) until #1582 makes it a flag.

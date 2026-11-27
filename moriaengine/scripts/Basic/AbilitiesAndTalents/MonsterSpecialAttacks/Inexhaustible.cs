@@ -52,7 +52,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Character.On_StepTaken - every step a character really takes: hazard tiles
+		/// <summary>Character.On_Step - every step a character really takes: hazard tiles
 		/// it walks onto, and e_inexhaustible's stamina.</summary>
 		internal static void OnStepTaken(Character stepping) {
 			CheckHazardTileStep(stepping);

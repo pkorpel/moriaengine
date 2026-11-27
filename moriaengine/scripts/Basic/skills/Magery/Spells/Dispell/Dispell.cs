@@ -15,6 +15,8 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -32,22 +34,30 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectChar(target, spellEffectArgs);
-			this.Trigger_Dispell(target, spellEffectArgs);
+			Trigger_Dispell(target, spellEffectArgs);
 		}
 
 		protected override void On_EffectItem(Item target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectItem(target, spellEffectArgs);
-			this.Trigger_Dispell(target, spellEffectArgs);
+			Trigger_Dispell(target, spellEffectArgs);
 		}
 
-		private void Trigger_Dispell(Item target, SpellEffectArgs spellEffectArgs) {
+		/// <summary>@dispell on the item (its trigger groups and plugins), then its On_Dispell. #1558 - the one dispel path:
+		/// the spell and the dispel bomb both come here.</summary>
+		public static void Trigger_Dispell(Item target, SpellEffectArgs spellEffectArgs) {
 			target.TryTrigger(dispellTK, spellEffectArgs.scriptArgs);
-			target.On_Dispell(spellEffectArgs);
+			try {
+				target.On_Dispell(spellEffectArgs);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		private void Trigger_Dispell(Character target, SpellEffectArgs spellEffectArgs) {
+		/// <summary>@dispell on the character (its trigger groups and plugins: each dispellable EffectDurationPlugin ends
+		/// there), then its On_Dispell.</summary>
+		public static void Trigger_Dispell(Character target, SpellEffectArgs spellEffectArgs) {
 			target.TryTrigger(dispellTK, spellEffectArgs.scriptArgs);
-			target.On_Dispell(spellEffectArgs);
+			try {
+				target.On_Dispell(spellEffectArgs);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		public static ScriptHolder F_dispellEffect_char {

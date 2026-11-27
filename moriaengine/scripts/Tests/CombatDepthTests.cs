@@ -56,6 +56,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestHostileAggro(Character self) {
+			self.Account.PLevel = 1; //#1558 - NPCs leave GMs alone (immune to hostile effects), and test accounts start as GMs
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef titanDef = ThingDef.GetByDefname("c_titan") as NPCDef;
 			NPC titan = (NPC) titanDef.Create(self.X + 1, self.Y, self.Z, self.M);
@@ -245,6 +246,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestLowHealthFlee(Character self) {
+			self.Account.PLevel = 1; //#1558 - NPCs leave GMs alone (immune to hostile effects), and test accounts start as GMs
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef titanDef = ThingDef.GetByDefname("c_titan") as NPCDef;
 			NPC titan = (NPC) titanDef.Create(self.X + 1, self.Y, self.Z, self.M);

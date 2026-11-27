@@ -1478,14 +1478,40 @@ namespace SteamEngine.CompiledScripts {
 		private static TriggerKey killTK = TriggerKey.Acquire("kill"); //#1431
 		private static TriggerKey denyDeathTK = TriggerKey.Acquire("denyDeath"); //#1463
 
-		public void CauseDeath(Character killedBy) {
-			//#1463 - Sphere's @death RETURN 1, before anything of the death happens: the first handler to cancel keeps this
-			//character alive (and @death isn't raised). Only a living character asks. #1467 - a possessing mystic and its
-			//alter ego come home this way.
-			if (!this.Flag_Dead && (this.TryCancellableTrigger(denyDeathTK, new ScriptArgs(killedBy)) == TriggerResult.Cancel)) {
-				return;
+		/// <summary>#1463, #1558 - the death's deny (Sphere's @death RETURN 1), before anything of the death happens: the
+		/// handlers' @denyDeath, then On_DenyDeath. Stops at the first cancel or deny.</summary>
+		public DenyResult Trigger_DenyDeath(DenyDeathArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(denyDeathTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenyDeath(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		public virtual TriggerResult On_DenyDeath(DenyDeathArgs args) {
+			return TriggerResult.Continue;
+		}
+
+		public void CauseDeath(Character killedBy) {
 			if (!this.Flag_Dead) {
+				//#1463 - only a living character asks. #1558 - a refused death leaves it alive at 1 hit point, unless a handler
+				//set the hits itself (the Hits setter calls this instead of writing a value below 1, so they'd otherwise stay
+				//what they were before the blow, and .kill wouldn't touch them). #1467 - a possessing mystic and its alter ego
+				//refuse this way, and come home on their plugin's timer.
+				//"A handler set the hits" is told by the hits having changed, so one that sets them to what they already were
+				//(full, say) still ends at 1.
+				int hitsBefore = this.hitpoints;
+				if (!this.Trigger_DenyDeath(new DenyDeathArgs(killedBy)).Allow) {
+					if (!this.IsDeleted && !this.Flag_Dead && (this.hitpoints == hitsBefore)) {
+						this.Hits = 1;
+					}
+					return;
+				}
 
 				Notoriety.RegisterMurder(this, killedBy);
 				HouseEvents.OnDeath(this, killedBy);
@@ -1498,10 +1524,10 @@ namespace SteamEngine.CompiledScripts {
 				SecureTrade.CancelAllFor(this, "died");
 				SoundCalculator.PlayDeathSound(this);
 
-				this.Trigger_Death(killedBy);
+				this.Trigger_Death(killedBy); //an NPC's On_Death pays the fighters, raising their @killCredit before the killer's @kill
 				ClassAbilities.OnDeath(this); //#1017
 				if ((killedBy != null) && !killedBy.IsDeleted && (killedBy != this)) {
-					killedBy.TryTrigger(killTK, new ScriptArgs(this)); //#1431 - Sphere's @Kill: the ranger's spree charge (Erebor's @finalBlow)
+					killedBy.Trigger_Kill(this); //#1431
 				}
 
 				CharSyncQueue.AboutToChangeHitpoints(this);
@@ -1576,6 +1602,38 @@ namespace SteamEngine.CompiledScripts {
 			try {
 				this.On_Death(killedBy);
 			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		/// <summary>#1431, #1558 - Sphere's @Kill on the killer, a notification after the victim's @death (and so after the
+		/// fighters' @killCredit): the ranger's spree charge (Erebor's @finalBlow).</summary>
+		public void Trigger_Kill(Character victim) {
+			this.TryTrigger(killTK, new ScriptArgs(victim));
+			try {
+				this.On_Kill(victim);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_Kill(Character victim) {
+		}
+
+		private static readonly TriggerKey killCreditTK = TriggerKey.Acquire("killCredit");
+
+		/// <summary>#1416, #1558 - @killCredit, a notification on a fighter (player or NPC) credited with a death, from
+		/// LevelingSystem's share of it: Erebor's trigger_kill (@playerKill, @npckill). Raised inside the victim's On_Death
+		/// (NPC.On_Death, or Player.On_Death's ApplyDeathExperienceLoss), so before the killer's @kill; and on a possessing
+		/// mystic's refused death, from PossessionPlugin's timer.</summary>
+		public void Trigger_KillCredit(Character victim, int share) {
+			if (this.IsDeleted) {
+				return;
+			}
+			KillCreditArgs args = new KillCreditArgs(victim, share);
+			this.TryTrigger(killCreditTK, args);
+			try {
+				this.On_KillCredit(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_KillCredit(KillCreditArgs args) {
 		}
 
 		/// <summary>Resne. Pokud je mrtva postava v blizkosti tela(max 1 policko), tak to lootne i telo</summary>
@@ -2046,6 +2104,122 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue; //#1396 - hunger's failure is HungerPlugin.On_SkillSuccess
 		}
 
+		private static readonly TriggerKey denySpellCastTK = TriggerKey.Acquire("denySpellCast");
+
+		/// <summary>#1558 - Magery's deny before a cast gets under way (after the mana and reagents): the caster's @denySpellCast
+		/// (trigger groups, plugins: the energy shield's and voodoo's Recall), then On_DenySpellCast (the casting rules). Stops at the
+		/// first cancel or deny. Was @spellCastTry (hunger, now a call just before this in Magery.On_Start), the rules, then @denySpellCast (#1401).</summary>
+		public DenyResult Trigger_DenySpellCast(DenySpellCastArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(denySpellCastTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenySpellCast(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the casting rules, Erebor's e_allplayers @spellcast refusals (SpellCastRules): a refusal sends its own
+		/// message, and args.Fizzle says whether Magery shows it as a fizzle.</summary>
+		public virtual TriggerResult On_DenySpellCast(DenySpellCastArgs args) {
+			if (!SpellCastRules.Allow(this, args.Spell, args.Target, out bool fizzle)) {
+				args.Fizzle = fizzle;
+				return TriggerResult.Cancel;
+			}
+			return TriggerResult.Continue;
+		}
+
+		private static readonly TriggerKey spellCastTK = TriggerKey.Acquire("spellCast");
+
+		/// <summary>#1386, #1558 - Sphere's @spellCast, a notification: the cast is under way (after the spell's own @start).</summary>
+		public void Trigger_SpellCast(SkillSequenceArgs mageryArgs) {
+			this.TryTrigger(spellCastTK, mageryArgs.scriptArgs);
+			try {
+				this.On_SpellCast(mageryArgs);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_SpellCast(SkillSequenceArgs mageryArgs) {
+		}
+
+		private static readonly TriggerKey spellSuccessTK = TriggerKey.Acquire("spellSuccess");
+
+		/// <summary>#1419, #1558 - a notification after a successful Magery cast, its effect and the after-cast work done (which
+		/// @skillSuccess comes before). The profession plugin gives mana back here (#1440).</summary>
+		public void Trigger_SpellSuccess(SpellSuccessArgs args) {
+			this.TryTrigger(spellSuccessTK, new ScriptArgs(args));
+			try {
+				this.On_SpellSuccess(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_SpellSuccess(SpellSuccessArgs args) {
+		}
+
+		private static readonly TriggerKey monsterSpellPowerTK = TriggerKey.Acquire("monsterSpellPower");
+
+		/// <summary>#1386, #1558 - a calculation on the caster: what to add to the level bonus of a spell's multiplier on a
+		/// monster (Standcast), at the point Erebor's magie.scp adds it. Not part of @spellPower: the bonus is a term of the
+		/// multiplier, needed before there is a power to change.</summary>
+		public void Trigger_MonsterSpellPower(MonsterSpellPowerArgs args) {
+			this.TryTrigger(monsterSpellPowerTK, new ScriptArgs(args));
+			try {
+				this.On_MonsterSpellPower(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_MonsterSpellPower(MonsterSpellPowerArgs args) {
+		}
+
+		private static readonly TriggerKey spellPowerTK = TriggerKey.Acquire("spellPower");
+
+		/// <summary>#1419, #1558 - a calculation on the caster: the spell's power on one target, after the multipliers and the inline
+		/// modifiers (charge, Koncentrace), before the target's defense.</summary>
+		public void Trigger_SpellPower(SpellPowerArgs args) {
+			this.TryTrigger(spellPowerTK, new ScriptArgs(args));
+			try {
+				this.On_SpellPower(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_SpellPower(SpellPowerArgs args) {
+		}
+
+		private static readonly TriggerKey beforeDoEffectTK = TriggerKey.Acquire("beforeDoEffect");
+
+		/// <summary>#1476, #1558 - a calculation on the caster: the power after the target's defense (the slayers), before the
+		/// caster's @causeSpellEffect.</summary>
+		public void Trigger_BeforeDoEffect(SpellPowerArgs args) {
+			this.TryTrigger(beforeDoEffectTK, new ScriptArgs(args));
+			try {
+				this.On_BeforeDoEffect(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_BeforeDoEffect(SpellPowerArgs args) {
+		}
+
+		private static readonly TriggerKey beforeGetEffectTK = TriggerKey.Acquire("beforeGetEffect");
+
+		/// <summary>#1476, #1558 - cancellable, on a spell's target before anything of the effect runs (the caster's @causeSpellEffect
+		/// included): the items' reflex and block turn the spell back or away here.</summary>
+		public TriggerResult Trigger_BeforeGetEffect(SpellEffectArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(beforeGetEffectTK, args.scriptArgs);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_BeforeGetEffect(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			return result;
+		}
+
+		public virtual TriggerResult On_BeforeGetEffect(SpellEffectArgs args) {
+			return TriggerResult.Continue;
+		}
+
 		//public virtual bool On_SkillGain(int id, object arg) {
 		//	return false;
 		//}
@@ -2169,6 +2343,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SpellEffect(SpellEffectArgs spellEffectArgs) {
+			if (((spellEffectArgs.EffectFlag & EffectFlag.HarmfulEffect) == EffectFlag.HarmfulEffect)
+					&& this.IsImmuneToHostileEffects(spellEffectArgs.Caster)) { //#1558 - no harmful spell lands on a GM but their own
+				return TriggerResult.Cancel;
+			}
 			if (PriestAbilities.TooSoonToRise(this, spellEffectArgs.SpellDef)) { //#1070 - 5 s after a death
 				return TriggerResult.Cancel;
 			}
@@ -2240,59 +2418,75 @@ namespace SteamEngine.CompiledScripts {
 			this.Stam = (short) Math.Max(0, Math.Min(this.MaxStam, newCount));
 		}
 
-		private static TriggerKey disruptionTK = TriggerKey.Acquire("disruption");
-		public void Trigger_Disrupt() {
-			this.TryTrigger(disruptionTK, null);
-			this.On_Disruption();
-		}
+		private static readonly TriggerKey disruptionTK = TriggerKey.Acquire("disruption");
 
-		private bool keepCastingWhenDisrupted;
-
-		/// <summary>#860 - a blow breaks paralysis and the like, but casting only if it's hard enough.</summary>
-		public void Trigger_Disrupt(bool interruptCasting) {
-			this.keepCastingWhenDisrupted = !interruptCasting;
+		/// <summary>@disruption, a notification: something (a blow, a spell, a death, a warcry) disrupted this character.
+		/// It breaks paralysis and the like; #860 - casting only when args.InterruptCasting (a blow hard enough).</summary>
+		public void Trigger_Disrupt(bool interruptCasting = true) {
+			DisruptionArgs args = new DisruptionArgs(interruptCasting);
+			this.TryTrigger(disruptionTK, args);
 			try {
-				this.Trigger_Disrupt();
-			} finally {
-				this.keepCastingWhenDisrupted = false;
-			}
+				this.On_Disruption(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		public virtual void On_Disruption() {
-			if ((this.CurrentSkillName == SkillName.Magery) && !this.keepCastingWhenDisrupted) {
+		public virtual void On_Disruption(DisruptionArgs args) {
+			if ((this.CurrentSkillName == SkillName.Magery) && args.InterruptCasting) {
 				this.AbortSkill();
 			}
 		}
 
-		private static TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
+		private static readonly TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
+
+		/// <summary>@hostileAction, a notification: `enemy` attacked this character. #1558 - not raised without an enemy
+		/// (a death with no killer), which 2dbc90b did.</summary>
 		public void Trigger_HostileAction(Character enemy) {
-			if (enemy != null) { //a death can have no killer
-				HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
+			if (enemy == null) {
+				return;
 			}
+			HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
 			Notoriety.OnHostileAction(this, enemy);
 			FightMemory.Record(this, enemy); //#826
 			NPCAiTimer.AlertGuardiansOf(this, enemy);
 			NPCAiTimer.AlertPetsOf(enemy, this); //#768 - before On_HostileAction, so a pet hit by its own owner is still recognized as theirs
 			ScriptArgs sa = new ScriptArgs(enemy);
 			this.TryTrigger(hostileActionTK, sa);
-			this.On_HostileAction(enemy);
+			try {
+				this.On_HostileAction(enemy);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		public virtual void On_HostileAction(Character enemy) {
 
 		}
 
-		public override bool CheckCharacterObstacles(Map map, int x, int y, int z) {
-			if (HouseDoorstep.Refuses(this, map, x, y, z)) { //a house's doorstep tile, i_duch_dlazba
+		/// <summary>#1558 - the step's default checks, after the @denyStep handlers (the holds: freeze, paralysis, vine...):
+		/// #779 Sphere's fatigue/overload refusal, then the terrain (base, which finds the destination), then what stands
+		/// on the destination - a house's doorstep, a dragon's fire cage, #767 another character (Sphere's shove for players,
+		/// a hard block for NPCs). A GM (CanMoveEverywhere) gets the terrain's z and nothing else, as before.</summary>
+		public override TriggerResult On_DenyStep(DenyStepArgs args) {
+			if (!args.CanMoveEverywhere && !MovementStamina.CheckCanMove(this)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			TriggerResult result = base.On_DenyStep(args);
+			if ((result == TriggerResult.Cancel) || !args.Result.Allow || args.CanMoveEverywhere) {
+				return result;
+			}
+			Map map = this.GetMap();
+			Point4D to = args.Destination;
+			if (HouseDoorstep.Refuses(this, map, to.X, to.Y, to.Z)) { //a house's doorstep tile, i_duch_dlazba
 				if (this is Player) {
 					this.SysMessage(HouseDoorstep.Refused);
 				}
-				return false;
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
 			}
-			if (DragonCage.Refuses(this, x, y, this.M)) { //#1022 a dragon's fire cage
-				return false;
+			if (DragonCage.Refuses(this, to.X, to.Y, this.M) || !CharacterCollision.CheckStep(this, map, to.X, to.Y, to.Z)) { //#1022 a dragon's fire cage
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
 			}
-			return CharacterCollision.CheckStep(this, map, x, y, z);
+			return TriggerResult.Continue;
 		}
 
 		//#918 looting a corpse can be a crime
@@ -2315,20 +2509,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
-		private static readonly TriggerKey tkDenyMove = TriggerKey.Acquire("denyMove");
-
-		/// <summary>#1386 - @denyMove: whatever holds a character still (a plugin returning Cancel: a cast's freeze,
-		/// paralysis) refuses here, before any step is worked out - as Sphere's immobile flags, so a refused step doesn't
-		/// shove anyone first (#767's collision comes after this and before @step). #1409 - the GM's freeze, flag_immobile,
-		/// a looter's hold and a strangler vine are plugins answering it too; only the stamina rule, for everyone, stays
-		/// here.</summary>
-		public override bool CheckCanMove(bool running) {
-			return (this.TryCancellableTrigger(tkDenyMove, new ScriptArgs(running)) != TriggerResult.Cancel) && MovementStamina.CheckCanMove(this);
+		/// <summary>#1558 - whether something holds this character in place: its @denyStep handlers (the plugins and trigger
+		/// groups - a GM's freeze, paralysis, a vine, a looter's hold...) refuse a step, asked without taking one. The
+		/// step's own checks (stamina, terrain, collision, regions) aren't asked.</summary>
+		public bool IsHeld(bool running) {
+			DenyStepArgs args = new DenyStepArgs(this, this.Direction, running);
+			return (this.TryCancellableTrigger(TriggerKey.denyStep, args) == TriggerResult.Cancel) || !args.Result.Allow;
 		}
 
-		//#779 walking stamina drain
-		public override void On_StepTaken(bool running) {
+		/// <summary>#1558 - after a step was taken (was On_StepTaken, #1414). #779 walking stamina drain and the rest; not
+		/// for a GM (CanMoveEverywhere), as before.</summary>
+		public override void On_Step(Direction direction, bool running, Point4D oldPoint) {
+			base.On_Step(direction, running, oldPoint);
+			if (this.CanMoveEverywhere) {
+				return;
+			}
 			if (this.GetTag(EreborVendor.SessionTK) != null) {
 				EreborVendors.EndSession(this); //#1017 - e_vendor_check: a step ends dealing with a vendor
 			}
@@ -2364,10 +2559,12 @@ namespace SteamEngine.CompiledScripts {
 
 		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere
 		//0.99z8, it fires after the pusher paid the stamina and its return value is ignored.
-		private static TriggerKey personalSpaceTK = TriggerKey.Acquire("personalSpace");
+		private static readonly TriggerKey personalSpaceTK = TriggerKey.Acquire("personalSpace");
 		public void Trigger_PersonalSpace(Character pusher) {
 			this.TryTrigger(personalSpaceTK, new ScriptArgs(pusher));
-			this.On_PersonalSpace(pusher);
+			try {
+				this.On_PersonalSpace(pusher);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
 		public virtual void On_PersonalSpace(Character pusher) {
@@ -2522,6 +2719,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1558 - the one rule for GMs and hostile effects (pkorpel's decision): a GM never receives a hostile skill,
+		/// spell or ability effect from anyone but themselves. Asked where such effects land - all damage (On_DenyDamage), a
+		/// swing at them (On_DenySwing), a harmful spell's effect (On_SpellEffect), paralysis
+		/// (ParalyzeEffectPluginDef.Paralyze), the strangler vine's hold, a warcry and a voodoo curse - so those effects need
+		/// no GM checks of their own. "GM" is IsGM until a real GM-mode flag exists (#1582).</summary>
+		public virtual bool IsImmuneToHostileEffects(Thing source) {
+			return this.IsGM && !ReferenceEquals(source, this);
+		}
+
 		//method: On_DClick
 		//Character`s implementation of @Dclick trigger, 
 		//basic implementation = paperdoll sending and horse mounting
@@ -2546,6 +2752,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override TriggerResult On_DenyItemDClick(DenyClickArgs args) {
+			if (args.SkipReachChecks) {
+				return TriggerResult.Continue; //#1558 - Telekinesis: every other deny still runs
+			}
 			DenyResult dr = this.CanReach(args.Target);
 			args.Result = dr;
 			return dr.Allow ? TriggerResult.Continue : TriggerResult.Cancel;
@@ -3036,20 +3245,108 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public TriggerResult On_BeforeSwing(WeaponSwingArgs args) {
+		private static readonly TriggerKey denySwingTK = TriggerKey.Acquire("denySwing");
+
+		/// <summary>#1558 - Erebor's @hittry as a deny (was @hitTry): @denySwing on the attacker, then On_DenySwing, as a swing
+		/// is drawn in reach (WeaponSkillDef), for every attacker. A deny means "not now": WeaponSkillDef tries the stroke again
+		/// a second later. Handlers only decide; the deny's message, if any, is theirs to send.</summary>
+		public DenyResult Trigger_DenySwing(Character target) {
+			DenySwingArgs args = new DenySwingArgs(this, target);
+			TriggerResult result = this.TryCancellableTrigger(denySwingTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenySwing(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the default swing check: nothing here; Player adds the work light. A swing at one immune to hostile
+		/// effects (a GM) never gets this far: WeaponSkillDef.On_Stroke ends it, and DamageManager.ProcessSwing lands no blow.</summary>
+		public virtual TriggerResult On_DenySwing(DenySwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		public TriggerResult On_BeforeGetSwing(WeaponSwingArgs args) {
+		/// <summary>#1558 - the GM pass for a drop on the ground (allow and cancel: no item, region or reach check after it). #1579
+		/// made the reach check real for everyone; before it, a region's cancel skipped it for all.</summary>
+		public override TriggerResult On_DenyPutItemOnGround(DenyPutOnGroundArgs args) {
+			if (this.IsGM) {
+				return TriggerResult.Cancel;
+			}
+			return base.On_DenyPutItemOnGround(args);
+		}
+
+		public virtual TriggerResult On_Swing(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>#1411 - a landed blow, before its damage; can be cancelled (DamageManager.Trigger_Hit).</summary>
-		public TriggerResult On_Hit(WeaponSwingArgs args) {
+		public virtual TriggerResult On_GetSwing(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		public TriggerResult On_GetHit(WeaponSwingArgs args) {
+		/// <summary>#1411, #1558 - the attacker's calculation after the dodge (DamageManager.Trigger_Hit); args.Dodged on a
+		/// dodged blow.</summary>
+		public virtual void On_Hit(WeaponSwingArgs args) {
+		}
+
+		/// <summary>#1411, #1558 - the defender's calculation after the dodge, a landed blow only (DamageManager.Trigger_GetHit).</summary>
+		public virtual void On_GetHit(WeaponSwingArgs args) {
+		}
+
+		private static readonly TriggerKey denyDamageTK = TriggerKey.Acquire("denyDamage");
+
+		/// <summary>#1558 - may this character be hurt by this damage at all: @denyDamage, then On_DenyDamage, first thing in
+		/// DamageManager.CauseDamage, for every kind of damage. Refused damage does nothing; a swing's blow still ends in
+		/// @afterSwing/@afterGetSwing with FinalDamage 0.</summary>
+		public DenyResult Trigger_DenyDamage(DenyDamageArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(denyDamageTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenyDamage(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the default refusals (were hard-coded at the top of CauseDamage): Rinald, the copy guard, a guard
+		/// spawn's monster, invulnerability on either side, and a creature hurting its own master.</summary>
+		public virtual TriggerResult On_DenyDamage(DenyDamageArgs args) {
+			Character attacker = args.attacker;
+			if (this.IsImmuneToHostileEffects(attacker)) { //#1558 - a GM takes no damage but their own
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			if (MonsterSpecialAttacks.TryRinald(attacker, this) //#1022 e_rinald: only players hurt him, his invulnerability answers too
+					|| MonsterSpecialAttacks.CopyGuardRefuses(attacker, this, args.flags) //#1022 e_rozdeleni: nothing hurts it while its copy lives
+					|| GuardBoss.Refuses(attacker, this)) { //#1234 a guard spawn's monster still lives
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			if (this.Flag_Invulnerable) {
+				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
+				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
+				//in this codebase, and this one is already an established "your attack had no effect"
+				//visual language here, so reuse it rather than invent a new effect id.
+				EffectFactory.StationaryEffect(this, 0x37B9, 10, 5);
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			//#267: symmetric with the check above - an invulnerable character deals no damage either, not just takes none.
+			//No extra visual cue here (the normal swing/cast animation already plays regardless of the resulting damage).
+			//Defense in depth: a creature can never damage its own current owner/commander, however the attack got
+			//triggered - target selection (NPC.ShouldAggroOn, NPCAiTimer.IsValidTarget) already keeps this from happening,
+			//but this is the one choke point everything routes through. A legitimate "rebel" (owner attacks pet first)
+			//clears ControlMaster/FollowTarget before this could ever trigger - see NPC.On_HostileAction.
+			if ((attacker != null) && (attacker.Flag_Invulnerable || (this == (attacker.FollowTarget ?? attacker.ControlMaster)))) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -3068,7 +3365,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_AfterGetSwing(WeaponSwingArgs args) {
-			NPCAiTimer.MaybeTurnOn(this as NPC, args.attacker); //#1022
+			if (!args.attacker.IsDeleted) { //#1558 - raised also after reactive armour killed the attacker
+				NPCAiTimer.MaybeTurnOn(this as NPC, args.attacker); //#1022
+			}
 		}
 
 		/// <summary>hodi zbran do batohu</summary>
@@ -3146,12 +3445,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#941 - Sphere's macro: the first door within 4 tiles, open ones too.</summary>
+		/// <summary>#941 - Sphere's macro: the first door within 4 tiles, open ones too, used without a touch test. #1558 - used
+		/// by a double click like any other (only the reach test skipped), so a door's denies (its key, a quest's handler) apply.
+		/// 0.99z8's macro bypassed the item's @UserDClick, but there a scripted door was another type, which the macro skipped.</summary>
 		public override void On_OpenDoorMacro() {
 			foreach (AbstractItem found in this.GetMap().GetItemsInRange(this.X, this.Y, 4)) {
-				Item item = found as Item;
-				if ((item != null) && item.IsMacroDoor) {
-					item.TryUseDoor(this);
+				Door door = found as Door;
+				if ((door != null) && door.IsMacroDoor) {
+					door.Trigger_DClick(this, true);
 					return;
 				}
 			}
@@ -3174,16 +3475,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#483/#486 - was an empty no-op, so casting Dispel/Mass Dispel directly on a
-		/// character never actually removed any of their buffs/debuffs (only WallSpellItem's own
-		/// override, for fields, and EffectDurationPlugin.On_Dispell itself, which nothing ever
-		/// called since a plugin can't be a spell's direct target) did anything. Now removes
-		/// every dispellable EffectDurationPlugin the character is carrying - book-sourced spell
-		/// effects (EffectDurationPlugin.Dispellable is keyed off EffectFlag.FromBook), not
-		/// potion effects, matching that property's own existing, pre-established rule. Snapshots
-		/// the dispellable plugins into a list BEFORE calling On_Dispell on each - On_Dispell
-		/// deletes the plugin, and GetAllPlugins() enumerates the live backing tags dictionary,
-		/// so deleting while still iterating it directly would throw.</summary>
+		/// <summary>#483/#486 - the character's part of a dispel: a summoned creature goes whole. Its dispellable effects
+		/// (book-sourced, EffectDurationPlugin.Dispellable; not potion effects) end in their own On_Dispell, which the
+		/// @dispell raised just before this reaches (#1558 - this used to call them a second time).</summary>
 		public virtual void On_Dispell(SpellEffectArgs spellEffectArgs) {
 			// #485's own summon-pet infrastructure tags its creatures specifically so this check
 			// could be added once this method actually did something - dispelling a summoned
@@ -3193,16 +3487,8 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			List<EffectDurationPlugin> dispellablePlugins = new List<EffectDurationPlugin>();
-			foreach (Plugin plugin in this.GetAllPlugins()) {
-				EffectDurationPlugin durationPlugin = plugin as EffectDurationPlugin;
-				if ((durationPlugin != null) && durationPlugin.Dispellable) {
-					dispellablePlugins.Add(durationPlugin);
-				}
-			}
-			foreach (EffectDurationPlugin durationPlugin in dispellablePlugins) {
-				durationPlugin.On_Dispell(spellEffectArgs);
-			}
+			//#1558 - the dispellable effects themselves end through @dispell, which DispellDef.Trigger_Dispell raises on this
+			//character before this: it reaches each EffectDurationPlugin's own On_Dispell
 		}
 	}
 

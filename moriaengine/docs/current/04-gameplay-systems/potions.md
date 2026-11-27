@@ -8,7 +8,10 @@ one line there.
 
 ## Drinking
 
-A double click, or a macro like `.potionheal`, which takes the strongest one carried.
+A double click, or a macro like `.potionheal`, which takes the strongest one carried. Since #1558 the macro is a whole double
+click (Erebor's `findid(...).dclick`) with only the reach test skipped, so a closed backpack doesn't matter. Like any item use
+it ends the drinker's current skill (a cast; Sphere's item use does that for macro clicks too) and breaks their own
+paralysis.
 
 - One wait between all potions: 5 seconds after most, 20 after heal, refresh, invisibility, reflection and reactive. Too
   soon and nothing happens but a sound. The wait shows under Cooldowny on `.boosts`.

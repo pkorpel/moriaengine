@@ -105,7 +105,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		internal void LockTo(House house, HouseRank level, Character person) {
+		internal virtual void LockTo(House house, HouseRank level, Character person) {
 			this.SetTag(lockedToTK, house);
 			this.SetTag(lockLevelTK, (int) level);
 			if (person != null) {
@@ -115,12 +115,9 @@ namespace SteamEngine.CompiledScripts {
 			this.SetAttribute(ItemAttributes.attr_move_always, false);
 			this.SetAttribute(ItemAttributes.attr_move_never, true);
 			this.SetAttribute(ItemAttributes.attr_decay, false);
-			if (this.TypeName == "t_door") {
-				this.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door_locked");
-			}
 		}
 
-		internal void Unlock() {
+		internal virtual void Unlock() {
 			object attributes = this.GetTag(lockStoredAttrTK);
 			this.RemoveTag(lockedToTK);
 			this.RemoveTag(lockLevelTK);
@@ -132,9 +129,6 @@ namespace SteamEngine.CompiledScripts {
 				foreach (ItemAttributes flag in new[] { ItemAttributes.attr_move_always, ItemAttributes.attr_move_never, ItemAttributes.attr_decay }) {
 					this.SetAttribute(flag, (stored & flag) != 0);
 				}
-			}
-			if (this.TypeName == "t_door_locked") {
-				this.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door");
 			}
 		}
 
@@ -178,9 +172,16 @@ namespace SteamEngine.CompiledScripts {
 			return (ch == this.LockPerson) || (rank >= this.LockRankFor(house));
 		}
 
+		/// <summary>Whether a house lock refuses a double click on it ("Nemas na to pravo."). A door asks for its key instead.</summary>
+		protected virtual bool HouseLockRefusesDClick {
+			get {
+				return true;
+			}
+		}
+
 		public override void On_DenyDClick(DenyClickArgs args) {
 			Character ch = args.ClickingChar as Character;
-			if ((ch != null) && !this.IsDoor && this.IsLockedAgainst(ch)) {
+			if ((ch != null) && this.HouseLockRefusesDClick && this.IsLockedAgainst(ch)) {
 				args.Result = new DenyResult_StringSysMessage("Nemas na to pravo.");
 				return;
 			}

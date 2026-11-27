@@ -92,7 +92,7 @@ here as a scope choice, not an oversight, in case stricter scope is wanted later
 A correctly-**allowed** pickup and a pickup denied for an unrelated reason (too far
 away, container not open) produce the **identical** "nothing happened" observable
 symptom from outside - `CanReach` runs strictly after the full deny-trigger chain
-passes. See [Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md) for
+passes. See [Deny results and the default check](../02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check) for
 the general mechanism. Two concrete instances hit while building this feature's tests:
 
 1. Every fresh test character spawns at its own far-away default position - fixed by

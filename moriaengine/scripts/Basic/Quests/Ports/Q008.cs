@@ -259,26 +259,21 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static void CloseGate(Item gate) {
 			gate.RemoveTag(UnlockedTK);
-			if (gate.IsDoorOpen) {
-				gate.UseDoor();
+			Door door = gate as Door;
+			if ((door != null) && door.IsOpen) {
+				door.Swing();
 			}
 		}
 
 		/// <summary>i_q008_vrata_1's @UserDClick: in for a hero at stage 2 the outside pad has just let in, out for one locked in whose
-		/// mustang is tamed (or gone, as Erebor's). Anyone else finds it shut. True when it swings.</summary>
-		internal static bool UseGate(Item gate, Player player) {
+		/// mustang is tamed (or gone, as Erebor's). Anyone else finds it shut. #1558 - the gate's @denyDClick (E_Q008Gate).</summary>
+		internal static bool MayUseGate(Item gate, Player player) {
 			int stage = GetStage(player);
-			bool allowed = player.IsGM || ((stage == 2) && IsUnlocked(gate)) || ((stage == 3) && (HasTamed(player, gate) || !MustangThere(gate)));
-			if (!allowed) {
-				player.SysMessage("Dvere jsou pevne zavrene.");
-				return false;
-			}
-			gate.UseDoor();
-			return true;
+			return player.IsGM || ((stage == 2) && IsUnlocked(gate)) || ((stage == 3) && (HasTamed(player, gate) || !MustangThere(gate)));
 		}
 
 		/// <summary>i_q008_pad_closeDoor_inside's @step: it locks the gate behind a hero coming in for the mustang. Erebor's also unlocked
-		/// it once the mustang was gone; here the way out is UseGate's own rule.</summary>
+		/// it once the mustang was gone; here the way out is MayUseGate's own rule.</summary>
 		internal static void StepInside(Item pad, Player player) {
 			Item gate = GateNear(pad);
 			if (player.IsGM || player.Flag_Dead || (gate == null)) {
@@ -485,12 +480,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1274 - the corral gate, i_q008_vrata_1: a trigger group on the gate itself (setup adds it), so it runs before its
-	/// locked door's own and no key is asked for.</summary>
+	/// <summary>#1274 - the corral gate, i_q008_vrata_1 (a locked door): a trigger group on the gate itself (setup adds it). #1558 -
+	/// its @denyDClick: the quest's rule decides, and an allowed hero's cancel skips the door's own key check (Door.On_DenyDClick).</summary>
 	public partial class E_Q008Gate : CompiledTriggerGroup {
-		public TriggerResult On_DClick(Item self, Character clicker) {
-			if (clicker is Player player) {
-				Q008.UseGate(self, player);
+		public TriggerResult On_DenyDClick(Item self, DenyClickArgs args) {
+			Player player = args.ClickingChar as Player;
+			if ((player == null) || !Q008.MayUseGate(self, player)) {
+				args.Result = new DenyResult_StringSysMessage("Dvere jsou pevne zavrene.");
 			}
 			return TriggerResult.Cancel;
 		}

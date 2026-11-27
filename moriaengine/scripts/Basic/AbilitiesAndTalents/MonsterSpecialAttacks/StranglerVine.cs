@@ -29,7 +29,7 @@ namespace SteamEngine.CompiledScripts {
 	/// past the vine (#767's @personalSpace) gets entangled: neither of them can move and the vine
 	/// attacks. The grip loosens once the vine has taken HitsToBreak landed hits, when it dies, or
 	/// when the two no longer share a tile. Erebor checked the last two with a 2s timer item on the
-	/// victim; here they're checked whenever the victim tries to step (CheckCanMove), which is the
+	/// victim; here they're checked whenever the victim tries to step (@denyStep, #1558), which is the
 	/// only time the hold matters. One victim at a time; invulnerable characters aren't grabbed.
 	/// </summary>
 	[ViewableClass]
@@ -73,7 +73,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((vine.GetPlugin(VineHoldPlugin.key) is VineHoldPlugin holding) && holding.IsIntact()) {
 				return; //already holding someone
 			}
-			VineHoldPlugin.Hold(vine, pusher, (int) def.HitsToBreak);
+			if (!VineHoldPlugin.Hold(vine, pusher, (int) def.HitsToBreak)) {
+				return; //#1558 - a GM isn't held, so neither told so nor attacked
+			}
 			pusher.RedMessage("Byl jsi omotan a nemuzes se hnout!"); //#1412 - Erebor's e_ovinovac
 			NPCAiTimer timer = NPCAiTimer.GetFor(vine);
 			if (timer != null) {
@@ -103,7 +105,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public static readonly PluginKey key = PluginKey.Acquire("_entangled_");
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			Character self = (Character) this.Cont;
 			if ((this.vine != null) && (this.vine.GetPlugin(VineHoldPlugin.key) is VineHoldPlugin hold) && (hold.Victim == self) && hold.IsIntact()) {
 				self.SysMessage("You are entangled and cannot move!");
@@ -141,7 +143,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		internal static void Hold(Character vine, Character victim, int hitsToBreak) {
+		/// <summary>False when the victim can't be held (#1558: a GM, immune to hostile effects).</summary>
+		internal static bool Hold(Character vine, Character victim, int hitsToBreak) {
+			if (victim.IsImmuneToHostileEffects(vine)) { //#1558 - a GM is never held
+				return false;
+			}
 			VineHoldPlugin hold = (VineHoldPlugin) VineHoldPluginDef.instance.Create();
 			hold.victim = victim;
 			hold.hitsLeft = hitsToBreak;
@@ -149,6 +155,7 @@ namespace SteamEngine.CompiledScripts {
 			EntangledPlugin entangled = (EntangledPlugin) EntangledPluginDef.instance.Create();
 			entangled.vine = vine;
 			victim.AddPlugin(EntangledPlugin.key, entangled);
+			return true;
 		}
 
 		internal bool IsIntact() {
@@ -175,7 +182,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public TriggerResult On_DenyMove(bool running) {
+		public TriggerResult On_DenyStep(DenyStepArgs args) {
 			if (this.IsIntact()) {
 				return TriggerResult.Cancel; //the vine holds on, it doesn't walk off
 			}

@@ -141,7 +141,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>A player's @AfterSwing on a blow that's landing: the critical blow, from the counter the classes share.
-		/// Each class's own part follows in its profession plugin's @swingLanding (warrior #1429, ranger #1431, thief #1433).</summary>
+		/// Each class's own part follows in its profession plugin's @hit (warrior #1429, ranger #1431, thief #1433).</summary>
 		internal static void ModifyOwnBlow(Player self, Character target, WeaponSwingArgs swing) {
 			if (CounterFires(self)) {
 				if (RangerAbilities.IsShooting(self)) {

@@ -128,8 +128,7 @@ namespace SteamEngine.CompiledScripts {
 			if (ancam != null) {
 				Item gate = PlaceItem(pieces, gm, "q008/gate", Q008.GateDef, new Point4D(ancam[0] + 6, ancam[1], 0, 0), false);
 				if (gate != null) {
-					gate.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance); //before its locked door's own handler
-					gate.LockUid = gate.Uid; //a lock no key fits: the open-door macro asks for one and skips the trigger group
+					gate.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance); //the quest's rule instead of a key, #1558 - the macro asks it too
 					//i_gate_wood_3 stands in an east-west fence: walked through north to south
 					PlaceItem(pieces, gm, "q008/padOutside", Q008.PadOutsideDef, new Point4D(gate.X, gate.Y - 1, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
 					PlaceItem(pieces, gm, "q008/padInside", Q008.PadInsideDef, new Point4D(gate.X, gate.Y + 1, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);

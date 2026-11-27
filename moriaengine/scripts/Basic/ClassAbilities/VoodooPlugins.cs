@@ -10,7 +10,7 @@ namespace SteamEngine.CompiledScripts {
 	/// new memory for each (newitemsafe), so they stack: a blessing beside a curse, a curse thrown back beside one already
 	/// there. Each has a key of its own. A curse comes back every 30 s, "Jsi pod prokletim voodoo.", until its owner is
 	/// blessed (the Bless spell) or dead; a blessing goes at its first tick. The curse's events are its own triggers:
-	/// e_warcry_effect and e_noport at @denySpellCast, e_nohorse at @stepTaken. .boosts shows each, as Erebor's boosty_menu.</summary>
+	/// e_warcry_effect and e_noport at @denySpellCast, e_nohorse at @step. .boosts shows each, as Erebor's boosty_menu.</summary>
 	[Dialogs.ViewableClass]
 	[PluginTemplate]
 	public partial class VoodooEffectPlugin : TimerPlugin, IEffectDescriber {
@@ -54,6 +54,9 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>[Function woodooeffect]: on now, then every 30 s, beside whatever voodoo is there already.</summary>
 		internal static void Apply(Character ch, int kind, Character shaman) {
+			if ((kind < 10) && ch.IsImmuneToHostileEffects(shaman)) { //#1558 - no curse lands on a GM; blessings do
+				return;
+			}
 			VoodooEffectPlugin effect = (VoodooEffectPlugin) VoodooEffectPluginDef.instance.Create();
 			effect.kind = kind;
 			effect.shaman = shaman;
@@ -94,26 +97,29 @@ namespace SteamEngine.CompiledScripts {
 			ShamanVoodoo.On(ch, this.kind, this.shaman);
 		}
 
-		/// <summary>e_warcry_effect's and e_noport's @spellcast, after e_allplayers' rules. A scroll's custom spell never
-		/// reached them (customspellcast skips @spellcast).</summary>
-		public TriggerResult On_DenySpellCast(SkillSequenceArgs mageryArgs) {
-			if (!(mageryArgs.Param1 is SpellDef spell) || spell.IsCustom) {
+		/// <summary>e_warcry_effect's and e_noport's @spellcast. #1558 - a @denySpellCast handler, so before the casting rules
+		/// (Character.On_DenySpellCast); Erebor ran them after e_allplayers' rules. A scroll's custom spell never reached them
+		/// (customspellcast skips @spellcast).</summary>
+		public TriggerResult On_DenySpellCast(DenySpellCastArgs args) {
+			SpellDef spell = args.Spell;
+			if ((spell == null) || spell.IsCustom) {
 				return TriggerResult.Continue;
 			}
 			if (this.kind == ShamanVoodoo.Shock) {
-				mageryArgs.Self.SysMessage("Jsi v soku, nemuzes kouzlit!");
+				args.Caster.SysMessage("Jsi v soku, nemuzes kouzlit!");
 				return TriggerResult.Cancel;
 			}
 			if ((this.kind == ShamanVoodoo.NoPort) && (spell.Id == recallSpellId)) {
-				mageryArgs.Self.SysMessage("Nelze cestovat kouzlem.");
+				args.Caster.SysMessage("Nelze cestovat kouzlem.");
 				return TriggerResult.Cancel;
 			}
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>e_nohorse's @step: a rider (no GM) gets off.</summary>
-		public void On_StepTaken(bool running) {
-			if ((this.kind == ShamanVoodoo.NoHorse) && (this.Cont is Character ch) && ch.Flag_Riding && !ch.IsGM) {
+		/// <summary>e_nohorse's @step: a rider gets off. #1558 - @step after the move (was @stepTaken); the curse never lands on
+		/// a GM (Character.IsImmuneToHostileEffects), so it needs no GM check of its own.</summary>
+		public void On_Step(Direction direction, bool running) {
+			if ((this.kind == ShamanVoodoo.NoHorse) && (this.Cont is Character ch) && ch.Flag_Riding) {
 				ch.Dismount();
 				ch.SysMessage(Loc<RegionEventsLoc>.Get(ch.Language).mountRefuses);
 			}

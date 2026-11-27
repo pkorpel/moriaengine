@@ -141,7 +141,7 @@ In order:
    [minimum damage](#swing-formulas-860) rules apply.
 4. `Trigger_Damage` fires `@causeDamage`/`@damage` (attacker/defender respectively) - this is
    the generic deny/observe point other systems hook (see
-   [triggers-and-deny-chains.md](../02-engine-core/triggers-and-deny-chains.md)).
+   [trigger-system-architecture.md](../02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check)).
 5. HP is reduced, and if actual damage was dealt, a hurt sound/anim plays (or nothing, if the
    `Hits` setter's own synchronous `CauseDeath` call already deleted a non-player defender -
    see the `IsDeleted` guard at line 132, same ordering gotcha as the re-entrancy guard
@@ -152,11 +152,12 @@ In order:
 `ProcessSwing` (line 149) is what `WeaponSkillDef.On_Success` actually calls - plays the
 attack sound and a swing animation picked by weapon type (`GetSwingAnim`, line 167; this
 animation call didn't exist before a documented fix - previously an attacker only made a
-sound, never visibly swung), then runs the deny-able `@beforeSwing`/`@beforeGetSwing`
-trigger pair before calling `CauseDamage` with the pre-computed `DamageAfterAC`. A blow that
-gets past the dodge raises `@hit` on the attacker and `@getHit` on the defender (#1411) just
-before `CauseDamage`: a handler may change `DamageAfterAC` or cancel, which ends the blow as a
-dodged one (see [plugins.md](../02-engine-core/plugins.md)).
+sound, never visibly swung), then runs the cancellable `@swing`/`@getSwing` calculation pair
+before calling `CauseDamage` with the pre-computed `DamageAfterAC`. After the dodge it raises
+`@hit` on the attacker (a dodged blow too, flagged `Dodged`) and, for a landed blow, `@getHit`
+on the defender (#1411, #1558); `CauseDamage` asks the defender's `@denyDamage` first. The blow
+ends in `@afterSwing`/`@afterGetSwing`. The drawn swing's deny is `@denySwing` (was `@hitTry`).
+The whole chain is in [trigger-catalog.md](../02-engine-core/trigger-catalog.md) section 1.12.
 
 ## Fixed bug: NPC spellcasting ignored walls made of real placed items
 

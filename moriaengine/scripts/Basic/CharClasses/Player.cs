@@ -111,6 +111,29 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TriggerKey gainExperienceTK = TriggerKey.Acquire("gainExperience");
+
+		/// <summary>#1416 - @gainExperience, a calculation that can cancel: this player is about to gain (or lose) `amount`
+		/// experience (LevelingSystem.AddExperience; `baseAmount` is it before the bonuses). The handlers, then
+		/// On_GainExperience, may change args.Amount or cancel. Returns the amount to add, or null when cancelled.</summary>
+		public int? Trigger_GainExperience(int baseAmount, int amount) {
+			GainExperienceArgs args = new GainExperienceArgs(baseAmount, amount);
+			TriggerResult result = this.TryCancellableTrigger(gainExperienceTK, args);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_GainExperience(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if (result == TriggerResult.Cancel) {
+				return null;
+			}
+			return args.Amount;
+		}
+
+		public virtual TriggerResult On_GainExperience(GainExperienceArgs args) {
+			return TriggerResult.Continue;
+		}
+
 		/// <summary>How much total experience is needed to reach the next level - see LevelingSystem.AddExperience for the formula this mirrors.</summary>
 		public int NextLevelExperienceThreshold {
 			get {
@@ -430,10 +453,24 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion Race
 
-		/// <summary>Every step is monitored by the ScriptSector system</summary>
-		public override TriggerResult On_Step(Direction direction, bool running) {
-			ScriptSector.AddTrackingStep(this, direction);
-			return base.On_Step(direction, running);
+		/// <summary>Every step is monitored by the ScriptSector system (#1558 - after the step now: the footprint is on the
+		/// tile left)</summary>
+		public override void On_Step(Direction direction, bool running, Point4D oldPoint) {
+			ScriptSector.AddTrackingStep(this, oldPoint, direction);
+			base.On_Step(direction, running, oldPoint);
+		}
+
+		/// <summary>#1558 - a player's swing (Erebor's e_allplayers @hittry): a GM swings anyway; otherwise nolightfizz, too
+		/// dark to fight is a retry a second later (WorkLight).</summary>
+		public override TriggerResult On_DenySwing(DenySwingArgs args) {
+			if (this.IsGM) {
+				return TriggerResult.Continue;
+			}
+			if (!WorkLight.CheckWithMessage(this)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
+			return base.On_DenySwing(args);
 		}
 
 		/// <summary>Classic UO-style logout delay (#261) - the character stays fully standing/

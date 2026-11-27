@@ -195,9 +195,8 @@ namespace SteamEngine.CompiledScripts {
 				foreach (AbstractItem found in new List<AbstractItem>(map.GetItemsInRectangle(rectangle))) {
 					Item item = found as Item;
 					if ((item != null) && item.IsOnGround && (map.GetRegionFor(item) == area) && this.TakesWhenEmptied(item)) {
-						if (item.IsDoor) {
-							item.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door");
-							item.LockUid = 0;
+						if (item is Door door) {
+							door.TakeOffLock();
 						} else {
 							item.SetAttribute(ItemAttributes.attr_move_never, false);
 							item.Cont = things;

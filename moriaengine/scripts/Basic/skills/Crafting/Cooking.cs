@@ -55,6 +55,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			if (!CraftingProcessPlugin.BeginOrder(skillSeqArgs.Self)) { //#1558 - a cooking order's first item: the light
+				return TriggerResult.Cancel;
+			}
 			int difficulty = Globals.dice.Next(MostDifficulty);
 			skillSeqArgs.Param2 = difficulty;
 			skillSeqArgs.Success = (difficulty <= 0) || this.CheckSuccess(skillSeqArgs.Self, difficulty);

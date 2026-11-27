@@ -6,7 +6,10 @@ namespace SteamEngine.CompiledScripts {
 			foreach (string defname in bestFirst) {
 				foreach (Item item in VarGate.Carried(self)) {
 					if ((item is Potion potion) && VarGate.Matches(potion, defname, false)) {
-						potion.On_DClick(self);
+						//#1558 - the whole double click, its denies included, not just On_DClick, as Erebor's findid().dclick. The
+						//potion is carried, and Sphere's touch test passes for anything in one's own pack, open or not; our reach
+						//test wants the pack open, so it's skipped (only it)
+						potion.Trigger_DClick(self, true);
 						return;
 					}
 				}

@@ -2724,7 +2724,7 @@ DEFNAME = i_MODEL_SHIP
 [ItemDef 0x14f4]
 DUPEITEM = i_MODEL_SHIP
 
-[ItemDef 0x190e]
+[DoorDef 0x190e]
 CATEGORY = Decoration - Furniture
 SUBSECTION = Bar
 DESCRIPTION = Bar Door
@@ -2737,7 +2737,7 @@ RESOURCES2 = 5 i_board, 1 i_nails
 SKILLMAKE = 900 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_bar_door_ne
 
-[ItemDef 0x190f]
+[DoorDef 0x190f]
 DUPEITEM = i_bar_door_ne
 DEFNAME = i_bar_door_nw
 

@@ -50,7 +50,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			if (!Gathering.Begin(skillSeqArgs.Self, skillSeqArgs.Target1, SkillName.Lumberjacking)) {
+			if (!Gathering.Begin(skillSeqArgs.Self, skillSeqArgs.Target1)) {
 				return TriggerResult.Cancel;
 			}
 			Gathering.RollStrokes(skillSeqArgs.Self);
@@ -133,7 +133,9 @@ namespace SteamEngine.CompiledScripts {
 				return TargetResult.Done; //#391 - show the message once and stop, don't loop
 			}
 			skillSeq.Target1 = targetted;
-			skillSeq.PhaseStart();
+			if (Gathering.Prepare(self, SkillName.Lumberjacking)) { //#1558 - the wait, the saddle and the dark before the start's hunger
+				skillSeq.PhaseStart();
+			}
 			return TargetResult.Done;
 		}
 

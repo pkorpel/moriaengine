@@ -62,7 +62,7 @@ ON=*vykoupeni*
 //endif
 //endif
 
-[ItemDef i_door_predchod]
+[DoorDef i_door_predchod]
 CATEGORY = questy
 SUBSECTION = prechod
 DESCRIPTION = brana zamcena na klic
