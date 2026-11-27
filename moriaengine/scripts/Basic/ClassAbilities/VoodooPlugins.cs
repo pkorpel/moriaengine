@@ -54,6 +54,9 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>[Function woodooeffect]: on now, then every 30 s, beside whatever voodoo is there already.</summary>
 		internal static void Apply(Character ch, int kind, Character shaman) {
+			if ((kind < 10) && ch.IsImmuneToHostileEffects(shaman)) { //#1558 - no curse lands on a GM; blessings do
+				return;
+			}
 			VoodooEffectPlugin effect = (VoodooEffectPlugin) VoodooEffectPluginDef.instance.Create();
 			effect.kind = kind;
 			effect.shaman = shaman;
@@ -113,10 +116,10 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>e_nohorse's @step: a rider (no GM) gets off. #1558 - @step after the move (was @stepTaken), now raised for
-		/// GMs too: CanMoveEverywhere keeps them out, as @stepTaken did.</summary>
+		/// <summary>e_nohorse's @step: a rider gets off. #1558 - @step after the move (was @stepTaken); the curse never lands on
+		/// a GM (Character.IsImmuneToHostileEffects), so it needs no GM check of its own.</summary>
 		public void On_Step(Direction direction, bool running) {
-			if ((this.kind == ShamanVoodoo.NoHorse) && (this.Cont is Character ch) && !ch.CanMoveEverywhere && ch.Flag_Riding && !ch.IsGM) {
+			if ((this.kind == ShamanVoodoo.NoHorse) && (this.Cont is Character ch) && ch.Flag_Riding) {
 				ch.Dismount();
 				ch.SysMessage(Loc<RegionEventsLoc>.Get(ch.Language).mountRefuses);
 			}

@@ -142,6 +142,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void Hold(Character vine, Character victim, int hitsToBreak) {
+			if (victim.IsImmuneToHostileEffects(vine)) { //#1558 - a GM is never held
+				return;
+			}
 			VineHoldPlugin hold = (VineHoldPlugin) VineHoldPluginDef.instance.Create();
 			hold.victim = victim;
 			hold.hitsLeft = hitsToBreak;

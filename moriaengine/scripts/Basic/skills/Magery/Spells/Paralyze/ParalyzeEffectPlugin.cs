@@ -104,6 +104,9 @@ namespace SteamEngine.CompiledScripts {
 
 		//paralyze method for general usage
 		public static void Paralyze(Character target, PluginKey key, TimeSpan duration, Thing source, EffectFlag type) {
+			if (target.IsImmuneToHostileEffects(source)) { //#1558 - a GM is never paralysed (a trap or a monster's freeze has no source)
+				return;
+			}
 			type |= EffectFlag.HarmfulEffect;
 			ParalyzeEffectPlugin plugin = (ParalyzeEffectPlugin) instance.Create();
 			plugin.Init(source, type, 1, duration, ParalyzeSpellDef);

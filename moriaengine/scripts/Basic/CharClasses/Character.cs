@@ -2340,6 +2340,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SpellEffect(SpellEffectArgs spellEffectArgs) {
+			if (((spellEffectArgs.EffectFlag & EffectFlag.HarmfulEffect) == EffectFlag.HarmfulEffect)
+					&& this.IsImmuneToHostileEffects(spellEffectArgs.Caster)) { //#1558 - no harmful spell lands on a GM but their own
+				return TriggerResult.Cancel;
+			}
 			if (PriestAbilities.TooSoonToRise(this, spellEffectArgs.SpellDef)) { //#1070 - 5 s after a death
 				return TriggerResult.Cancel;
 			}
@@ -2710,6 +2714,15 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return false;
 			}
+		}
+
+		/// <summary>#1558 - the one rule for GMs and hostile effects (pkorpel's decision): a GM never receives a hostile skill,
+		/// spell or ability effect from anyone but themselves. Asked where such effects land - all damage (On_DenyDamage), a
+		/// swing at them (On_DenySwing), a harmful spell's effect (On_SpellEffect), paralysis
+		/// (ParalyzeEffectPluginDef.Paralyze), the strangler vine's hold, a warcry and a voodoo curse - so those effects need
+		/// no GM checks of their own. "GM" is IsGM until a real GM-mode flag exists (#1582).</summary>
+		public virtual bool IsImmuneToHostileEffects(Thing source) {
+			return this.IsGM && !ReferenceEquals(source, this);
 		}
 
 		//method: On_DClick
@@ -3248,8 +3261,13 @@ namespace SteamEngine.CompiledScripts {
 			return args.Result;
 		}
 
-		/// <summary>#1558 - the default swing check: none (Player adds the work light).</summary>
+		/// <summary>#1558 - the default swing check: no swing at a GM (IsImmuneToHostileEffects), so nothing a blow carries
+		/// reaches one. Player adds the work light.</summary>
 		public virtual TriggerResult On_DenySwing(DenySwingArgs args) {
+			if ((args.target != null) && args.target.IsImmuneToHostileEffects(this)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -3292,6 +3310,10 @@ namespace SteamEngine.CompiledScripts {
 		/// spawn's monster, invulnerability on either side, and a creature hurting its own master.</summary>
 		public virtual TriggerResult On_DenyDamage(DenyDamageArgs args) {
 			Character attacker = args.attacker;
+			if (this.IsImmuneToHostileEffects(attacker)) { //#1558 - a GM takes no damage but their own
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return TriggerResult.Cancel;
+			}
 			if (MonsterSpecialAttacks.TryRinald(attacker, this) //#1022 e_rinald: only players hurt him, his invulnerability answers too
 					|| MonsterSpecialAttacks.CopyGuardRefuses(attacker, this, args.flags) //#1022 e_rozdeleni: nothing hurts it while its copy lives
 					|| GuardBoss.Refuses(attacker, this)) { //#1234 a guard spawn's monster still lives

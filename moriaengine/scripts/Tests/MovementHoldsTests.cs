@@ -116,5 +116,59 @@ namespace SteamEngine.CompiledScripts {
 			vine.Delete();
 			Console.WriteLine("HOLDS_DONE");
 		}
+
+		private static readonly PluginKey gmTestParalysisPK = PluginKey.Acquire("_gmTestParalysis_");
+
+		/// <summary>#1558 - the one GM rule (Character.IsImmuneToHostileEffects): a GM is never paralysed, held by a vine, hurt,
+		/// swung at or reached by a harmful spell, so the holds asked for GMs now never stop one; the same effects still land
+		/// on a player.</summary>
+		[SteamFunction]
+		public static void TestHoldsGmImmune(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			NPC foe = (NPC) ((NPCDef) ThingDef.GetByDefname("c_sheep_woolly")).Create(self.X + 1, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(foe, 300);
+			self.Account.PLevel = 4;
+			self.Hits = self.MaxHits;
+
+			ParalyzeEffectPluginDef.Paralyze(self, gmTestParalysisPK, TimeSpan.FromSeconds(30), foe, EffectFlag.FromAbility);
+			ParalyzeEffectPluginDef.Paralyze(self, gmTestParalysisPK, TimeSpan.FromSeconds(30)); //a trap or a monster's freeze: no source
+			Check("gmNotParalysed", !ParalyzeEffectPluginDef.IsParalyzed(self) && !self.IsHeld(false));
+
+			StranglerVineAbilityDef def = (StranglerVineAbilityDef) AbstractScript.GetByDefname("a_tevent_e_ovinovac");
+			NPC gmVine = (NPC) ((NPCDef) ThingDef.GetByDefname("c_sheep_woolly")).Create(self.X, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(gmVine, 300);
+			gmVine.SetRealAbilityPoints(def, 1);
+			MonsterSpecialAttacks.TryEntangle(gmVine, self);
+			Check("gmNotEntangled", (self.GetPlugin(EntangledPlugin.key) == null) && (gmVine.GetPlugin(VineHoldPlugin.key) == null));
+			gmVine.Delete();
+
+			int hits = self.Hits;
+			int dealt = DamageManager.CauseDamage(foe, self, DamageType.Physical, 50);
+			int dealtByNobody = DamageManager.CauseDamage(null, self, DamageType.Physical, 50); //lava, a trap
+			Check("gmTakesNoDamage", (dealt == 0) && (dealtByNobody == 0) && (self.Hits == hits));
+			Check("noSwingAtAGm", !foe.Trigger_DenySwing(self).Allow);
+
+			int pluginsBefore = CountPlugins(self);
+			((SpellDef) SpellDef.GetByDefname("s_weaken")).ApplyEffectChar(foe, self, 1000, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
+			Check("gmNoHarmfulSpell", CountPlugins(self) == pluginsBefore);
+
+			self.Account.PLevel = 1; //the same effects on a player
+			ParalyzeEffectPluginDef.Paralyze(self, gmTestParalysisPK, TimeSpan.FromSeconds(30), foe, EffectFlag.FromAbility);
+			Check("playerParalysed", ParalyzeEffectPluginDef.IsParalyzed(self) && self.IsHeld(false));
+			self.DeletePlugin(gmTestParalysisPK);
+			Check("playerSwungAt", foe.Trigger_DenySwing(self).Allow);
+			foe.Delete();
+			self.Hits = self.MaxHits;
+			Console.WriteLine("HOLDS_GM_DONE");
+		}
+
+		private static int CountPlugins(Character ch) {
+			int n = 0;
+			foreach (Plugin p in ch.GetAllPlugins()) {
+				n++;
+			}
+			return n;
+		}
 	}
 }

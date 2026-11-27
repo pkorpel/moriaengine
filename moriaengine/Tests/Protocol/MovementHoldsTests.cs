@@ -44,6 +44,16 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("stepTakenWalk", "stepTakenRun", "teleportNotAStep", "gmStepRaised", "deletedByItsStep");
 			}
 		}
+
+		/// <summary>#1558 - a GM never receives a hostile effect (one rule, Character.IsImmuneToHostileEffects); a player does.</summary>
+		[Fact]
+		public void AGmIsImmuneToHostileEffects() {
+			using (TestGameClient game = this.Login("Nedotknutelny")) {
+				this.Run(game, ".TestHoldsGmImmune", "HOLDS_GM_DONE");
+				this.AssertChecks("gmNotParalysed", "gmNotEntangled", "gmTakesNoDamage", "noSwingAtAGm", "gmNoHarmfulSpell",
+					"playerParalysed", "playerSwungAt");
+			}
+		}
 	}
 
 	[CollectionDefinition(Name)]

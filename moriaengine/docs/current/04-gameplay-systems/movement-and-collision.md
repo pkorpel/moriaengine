@@ -11,7 +11,9 @@ A step is a deny chain, then the move, then notifications (#1558, the `@denyX` /
    that refuse: paralysis, a cast under Standcast (#1386), a GM's `.freeze` `GmFreezePlugin`, Sphere's flag_immobile
    `ImmobilePlugin`, a looter's hold `LootHoldPlugin`, a strangler vine's `EntangledPlugin`/`VineHoldPlugin` (#1409; was
    `@denyMove`). With several, the newest answers first and its line shows. As in Sphere they come before the terrain,
-   so a held character never shoves anyone. They are asked for GMs too.
+   so a held character never shoves anyone. They are asked for GMs too, but the hostile ones (paralysis, the vine) never
+   land on a GM: `Character.IsImmuneToHostileEffects` refuses them where they are applied (#1558). A GM's own `.freeze`
+   and a GM looter (no loot hold) are not hostile effects; `.freeze` holds whoever a GM freezes, another GM included.
 2. The mover's `On_DenyStep`. The core's (`AbstractCharacter`) is the terrain check, `Map.CheckMovement` (terrain,
    statics, items, climb height; characters aren't considered), which finds the destination (`args.Destination`).
    `Character.On_DenyStep` wraps it: too exhausted or too overloaded first (#778/#779, below), then the terrain, then
@@ -24,8 +26,8 @@ A step is a deny chain, then the move, then notifications (#1558, the `@denyX` /
 5. The actual move and the 0x77 broadcast, then `@newPosition` and the destination items' `@step`/`@itemStep`.
 6. `@step` on the mover, with (direction, running, the point left), and `On_Step` (#1558; was `@stepTaken`, #1414): for a
    real step only, never a teleport, and not for a character that step deleted (an NPC killed by a trap). It is raised for
-   GMs too, but `Character.On_Step`'s after-step calls (#779's stamina drain, hazards, dismounting...) and the hiding,
-   mystic and voodoo plugins skip a `CanMoveEverywhere` mover, as `@stepTaken` did. `Player.On_Step` records the tracking
+   GMs too, but `Character.On_Step`'s after-step calls (#779's stamina drain, hazards, dismounting...) and the hiding and
+   mystic plugins skip a `CanMoveEverywhere` mover, as `@stepTaken` did; a voodoo curse never lands on a GM. `Player.On_Step` records the tracking
    footprint on the tile left (it ran before the move until #1558).
 7. `On_RegionChanged` when the region changed.
 
