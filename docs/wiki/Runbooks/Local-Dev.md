@@ -1,6 +1,6 @@
 # Local dev
 
-Last reviewed: 2026-11-26
+Last reviewed: 2026-11-27
 
 ## One-time setup
 
@@ -24,6 +24,13 @@ scripts/test-fast.sh "FullyQualifiedName~RaceTests"  # filter the fast tier; all
 scripts/test-full.sh                      # whole suite, class by class (one run at a time)
 scripts/test-full.sh "FullyQualifiedName~LevelingTests"
 ```
+
+All of these build through `moriaengine/build.ps1`. Before building, it deletes what the old code generators left
+in older clones (#1592). The `*.Generated.cs` files under `scripts/` (the old `.ct` template output) are
+gitignored, so a pull keeps them, and they break the build with thousands of SEGEN905/SEGEN012 errors. The dead
+`Generated/` folder goes too. A build that bypasses `build.ps1` doesn't clean them: an IDE, a bare `dotnet build`,
+or a GameCore boot that compiles the scripts itself (`run-local.sh start` without `--build`). After pulling into an
+old clone, run `build.ps1` once.
 
 ## Run the shard
 
