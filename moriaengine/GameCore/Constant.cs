@@ -342,6 +342,10 @@ namespace SteamEngine {
 		}
 
 		private sealed class TemporaryValue : ConstantValue {
+			//#1587 - the constants this thread is resolving now
+			[ThreadStatic]
+			private static HashSet<TemporaryValue> resolving;
+
 			internal string str;
 			private Constant holder;
 
@@ -350,9 +354,19 @@ namespace SteamEngine {
 				this.str = str;
 			}
 
+			//#1587 - a constant read while it resolves gives its own text, as Sphere's text substitution does: Erebor's
+			//"br <br>" makes <br> in a text stay <br>, and re-resolving it recursed until the server died of a stack overflow
 			internal override object Value {
 				get {
-					this.holder.ResolveValueFromScript(this.str);
+					resolving = resolving ?? new HashSet<TemporaryValue>();
+					if (!resolving.Add(this)) {
+						return this.str;
+					}
+					try {
+						this.holder.ResolveValueFromScript(this.str);
+					} finally {
+						resolving.Remove(this);
+					}
 					return this.holder.Value;
 				}
 			}

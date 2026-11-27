@@ -41,9 +41,24 @@ namespace SteamEngine.Converter {
 
 		public Dictionary<string, ConvertedThingDef> byDefname = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 		public Dictionary<int, ConvertedThingDef> byModel = new Dictionary<int, ConvertedThingDef>();
+		//#1587 - every def by the number in its archive header, dupes too: the id Sphere means by a def's name in a {a b} range
+		protected Dictionary<int, ConvertedThingDef> byHeaderNumber;
 		//#937 - the numbers used as a header so far, and which of the engine's own scripts' defs to keep
 		protected Dictionary<string, ConvertedThingDef> byHeader;
 		protected HashSet<string> handWritten;
+
+		/// <summary>#1587 - the number in the archive's header, -1 if it had a name there.</summary>
+		public int ArchiveHeaderNumber { get; private set; } = -1;
+
+		/// <summary>#1587 - a name the engine knows this def by: its DEFNAME, or i_0x... for a numbered header.</summary>
+		public string EngineDefname {
+			get {
+				if (this.defname1 != null) {
+					return this.defname1.Value;
+				}
+				return this.headerName.StartsWith("0x", StringComparison.Ordinal) ? "i_" + this.headerName : this.headerName;
+			}
+		}
 
 		public int Model {
 			get {
@@ -149,6 +164,16 @@ namespace SteamEngine.Converter {
 			base.FirstStage();
 
 			this.dupeItemLine = this.origData.TryPopPropsLine("dupeitem");
+			if (this.byHeaderNumber != null) {
+				try {
+					if (ConvertTools.TryParseInt32(this.headerName, out int archiveNum)) {
+						this.byHeaderNumber[archiveNum] = this;
+						this.ArchiveHeaderNumber = archiveNum;
+					}
+				} catch (OverflowException) {
+					//a header beyond int (0A2000EB0): the code below fails on it as before and the def is commented out
+				}
+			}
 			if (this.dupeItemLine != null) {
 				int headerNum;
 				if (ConvertTools.TryParseInt32(this.headerName, out headerNum)) {

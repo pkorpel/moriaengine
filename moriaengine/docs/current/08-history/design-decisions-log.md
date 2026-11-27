@@ -186,3 +186,30 @@ the port began on 8 because that was the SDK installed (PR #1). One property mea
 one line, and the paths derived from it (`build.ps1`, `scripts/run-local.sh`, the protocol tests' fixture)
 follow. Without `global.json`, whatever SDK was newest on a machine built the solution, and also built the
 scripts at every boot. The upgrade was done in one PR at the maintainer's request.
+
+## Erebor's broken brace values are converted to what they meant (#1587, for the maintainer to confirm)
+
+**Decision** (mine, made in #1587; the maintainer can still ask for Erebor's real outcome): three archive values
+that never worked on Erebor are written as what their authors meant.
+- **`COLOR=08000|RAND{COLOR_DYE_HIGH}`** (seven ratman defs) becomes `08000|{0, (COLOR_DYE_HIGH - 1)}`, a random
+  dye colour as Sphere's `RAND(x)` gives. Like every random def value here, it's rolled once per def per boot for
+  now (#1590).
+- **`{ i_sash 1 }`, `{ i_cape 1 }`, `{ i_spellbook 1 }`** (`random_belts`, `random_cloaks`, `random_spellbooks`)
+  become the item.
+- **`color_npc_saur_hat`** gets its missing opening brace (erebor-sphere-archive PR #8), so its whole weighted list
+  of colour ranges counts.
+
+**Why**:
+- **What Erebor really did:**
+  - Sphere's `RAND` needs parentheses, so `RAND{...}` was an undefined name worth 0, and every ratman's shirt was
+    `08000`.
+  - A two-entry list is always a range in Sphere, so `{i_sash 1}` ran from i_sash's resource id to 1 and gave nothing
+    useful.
+  - The saur hat value lacked its opening brace, unlike its two sibling lines, so Sphere read only `{051a 051d}`.
+- **Here,** LScript couldn't read any of them:
+  - the ratmen and saur-hat NPCs failed to be created;
+  - the three constants threw wherever a template or loot line rolled them.
+- **The intent is clear in each:** the `// shirt color` comment, the shape of a weighted list, and the sibling lines.
+
+This is fixing clear Erebor bugs (`erebor-port.md`), not mirroring. Mirroring would write `08000`, drop the three
+lists, and keep only the first saur hat range.

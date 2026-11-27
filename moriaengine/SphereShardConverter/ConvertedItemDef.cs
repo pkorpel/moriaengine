@@ -28,6 +28,7 @@ namespace SteamEngine.Converter {
 		public static Dictionary<string, ConvertedThingDef> itemsByDefname = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 		public static Dictionary<int, ConvertedThingDef> itemsByModel = new Dictionary<int, ConvertedThingDef>();
 		private static readonly Dictionary<string, ConvertedThingDef> itemsByHeader = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
+		public static Dictionary<int, ConvertedThingDef> itemsByHeaderNumber = new Dictionary<int, ConvertedThingDef>();
 
 		string type;
 
@@ -92,6 +93,7 @@ namespace SteamEngine.Converter {
 			this.byModel = itemsByModel;
 			this.byDefname = itemsByDefname;
 			this.byHeader = itemsByHeader;
+			this.byHeaderNumber = itemsByHeaderNumber;
 			this.handWritten = HandWrittenScripts.Items;
 
 			this.firstStageImplementations.Add(firstStageImpl);
