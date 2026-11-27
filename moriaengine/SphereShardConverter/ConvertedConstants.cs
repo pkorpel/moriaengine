@@ -59,6 +59,16 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		//#1587 - a two-entry list's meaning depends on whether its names are item defs, known once every file's first stage ran
+		public override void SecondStage() {
+			base.SecondStage();
+			for (int i = 0; i < this.writtenData.Count; i++) {
+				if (!this.writtenData[i].TrimStart().StartsWith("//", StringComparison.Ordinal)) {
+					this.writtenData[i] = ConvertedTemplateDef.FixTwoEntryLists(this.writtenData[i]);
+				}
+			}
+		}
+
 		//a name alone is an empty string in Sphere
 		private static string WithValue(string line, string name) {
 			int nameEnd = line.IndexOf(name, StringComparison.Ordinal) + name.Length;

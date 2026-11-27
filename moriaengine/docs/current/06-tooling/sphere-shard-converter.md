@@ -153,6 +153,48 @@ list) was already applied to templates and constants. It now also covers `Color`
 since #775 it understands Sphere's weighted pick (`Equip = {i_bardiche 1 i_halberd 1}`, spaces
 or commas, weights optional) and rolls one item per spawn (`StartingEquipmentEntry.PickDefname`).
 
+**Short brace lists and `RAND{}` (#1587).** These are brace lists that LScript reads otherwise than Sphere did, or
+can't read at all.
+
+`FixRandomExpression` rewrites the forms that mean the same in Sphere whatever the names are (`FixShortRandomLists`):
+
+| Archive | Written | Why |
+|---|---|---|
+| `{ i_arrow }` | `i_arrow` | Sphere's `{x}` is `x`; LScript can't parse one element |
+| `{ ... };` | `{ ... }` | Sphere stops at `;` |
+| `08000\|RAND{COLOR_DYE_HIGH}` | `08000\|{0, (COLOR_DYE_HIGH - 1)}` | see below |
+
+Every two-entry list is a range in Sphere, so its meaning depends on whether the names are item defs.
+`FixTwoEntryLists` therefore runs in the second stage, once every item def is known, on template item lists and
+constants:
+
+| Archive | Written | Why |
+|---|---|---|
+| `{i_rock_plain i_rock_plain_x}` | `{i_rock_plain, 1, i_0x1364, 1, …, i_rock_plain_x, 1}` | a range of item ids: every item def with an archive header number between the two (0x1363-0x136d, the rocks) |
+| `{ i_sash 1 }` | `i_sash` | see below |
+
+- **`{item n}`:** in Sphere this was a range from the item's resource id to `n`, which created nothing useful, so
+  Erebor's `random_belts`, `random_cloaks` and `random_spellbooks` never gave their item. They're written as the
+  weighted list of one entry that was meant.
+- **`RAND{x}`:** Sphere's `RAND` takes parentheses, so it was an undefined name (0), and Erebor's ratmen got
+  colour `08000`. The `// shirt color` comment and `RAND(x)`'s meaning (0 to x - 1) make the intent clear, so it's
+  written as that: a random dye colour. Like every random def value here, it's rolled once per def per boot, not
+  per ratman (#1590).
+- **Both of these fix Erebor bugs.** They're logged in the design decisions log for the maintainer to confirm.
+- **Other names are left as they are:** a constant, which can be a number, and quoted text. So are number ranges
+  (`{953, 956}`) and longer weighted lists.
+- **Item ids in item lists:** in template `ITEM`/`ITEMNEWBIE`/`BUY`/`SELL` lists, a bare id in a value's place
+  (`013cf` in `RANDOM_LEATHER_ARMOR`) is written as that item def's name, `i_0x13cf` (`ItemIdsAsDefnames`). Sphere
+  read it as the item; LScript reads a number.
+- **The guard test:** `DefValuesResolveTests` reads every constant and def field, creates every NPCDef, and runs
+  every TemplateDef and every NPC loot line 50 times (about 80 seconds). It fails on:
+  - any value or loot line with braces that doesn't resolve;
+  - any NPC, template or loot line that can't be made, other than those listed in
+    `Tests/Protocol/Data/DefValuesKnownFailures.txt`;
+  - a listed entry that works now.
+
+  Those listed have other causes, tracked in #1589: a missing model or item def, an undefined TriggerGroup.
+
 **Still genuinely unsupported** (need real new subsystems before a mapping would mean
 anything, confirmed unchanged by this pass): `moverate`, `resources` (loot), `bloodcolor`,
 `foodtype`, `desires`, `aversions`, `shelter`, `reslevel`.

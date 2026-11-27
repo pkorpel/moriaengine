@@ -36,6 +36,22 @@ in `LScript_strict.grammar`). The parser reads `colors_white = 9, color_gray_lt,
 element, and the rule needs at least two. Write `{ colors_white, 9, color_gray_lt, 1 }`. See
 `Tests/RandomExpressionParseTests.cs`.
 
+**Sphere brace forms that LScript reads differently (#1587).**
+- In Sphere, `{x}` is just `x`, and every two-entry list is a range: of numbers, or of the ids of the item defs
+  named. `{i_rock_plain i_rock_plain_x}` is any item from 0x1363 to 0x136d.
+- LScript can't parse `{x}`, and it can roll a two-entry range only of numbers, so a list of names throws.
+- `RAND{x}` isn't anything in either language: Sphere's `RAND` needs parentheses.
+
+The converter rewrites these (see the converter page's "Short brace lists and `RAND{}`"). In hand-written content,
+write `x`, list the items (`{a, 1, b, 1}`), and use `{0, (x - 1)}` for `RAND(x)`.
+
+**A constant that names itself resolves to its own text (#1587).** Erebor's `br <br>` and `center <CENTER>` exist so
+that `<br>` in a text evaluates to the literal `<br>` again. A constant read while it is being resolved now returns
+its script text (`Constant.TemporaryValue`); before, it re-resolved until the server died of a stack overflow,
+which any quoted text with `<br>` in it set off. A real cycle through several constants ends the same way: the
+constant that comes round again gives its text, and the others keep the value built from it, so the result depends
+on which constant was read first.
+
 ## Parser quirks found while building content this session
 
 - **The local variable/argument name `info` is reserved/conflicting in LScript's grammar.**

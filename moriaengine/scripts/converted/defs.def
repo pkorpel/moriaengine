@@ -173,7 +173,7 @@ random_all_items  { random_weapons, 3, random_armor, 3, random_scroll, 3, random
 [Constants ITEMS_RANDOM_ARMOR]
 random_all_armor           { random_body_armor, 1, random_extra_armor, 1, random_helms, 1, random_coifs, 1 }
 random_armor               { random_body_armor, 1, random_extra_armor, 1 }
-random_extra_armor         { random_shields }
+random_extra_armor         random_shields
 random_body_armor          { random_chest_armor, 1, random_leg_armor, 1, random_arm_armor, 1, random_neck_armor, 1, random_head_armor, 1, random_hand_armor, 1 }
 random_chest_armor         { random_chest_armor_male, 2, random_chest_armor_female, 1 }
 random_leg_armor           { random_leg_armor_male, 2, random_leg_armor_female, 1 }
@@ -206,21 +206,21 @@ random_swords              { i_sword_broad, 4, i_sword_long, 4, i_scimitar, 4, i
 random_pole_arms           { i_bardiche, 2, i_spear, 8, i_spear_short, 4, i_axe_two_hand, 2, i_war_fork, 1, i_halberd, 3 }
 random_daggers             { i_dagger, 12, i_kryss, 4 }
 random_ranged_weapons      { i_crossbow, 2, i_crossbow_heavy, 1, i_bow, 2 }
-random_missiles            { i_arrow }
+random_missiles            i_arrow
 
 //*****************************************************************
 // items - wearables
 
 [Constants ITEMS_RANDOM_WEARABLES]
-random_cloaks              { i_cape, 1 }
+random_cloaks              i_cape
 random_boots               { i_boots_thigh, 1, i_boots_calf, 1 }
 random_hats                { i_hat_wide_brim, 1, i_cap, 1, i_hat_straw_tall, 1, i_hat_straw, 1, i_hat_wizards, 1, i_bonnet, 1, i_hat_feather, 1, i_hat_tricorne, 1, i_hat_jester, 1 }
-random_belts               { i_sash, 1 }
+random_belts               i_sash
 random_bracelets           { i_bracelet_gold, 1, i_bracelet_silver, 1 }
 random_rings               { i_ring_gold, 1, i_ring_silver, 1  }
 random_earrings			   { i_earrings_gold, 1, i_earrings_silver, 1 }
 
-random_wearables           { random_clothing, 1, random_jewelry, 1 };
+random_wearables           { random_clothing, 1, random_jewelry, 1 }
 random_clothing            { random_male_tops, 1, random_female_tops, 1, random_male_pants, 1, random_female_pants, 1, random_cloaks, 1, random_boots, 1, random_hats, 1, random_belts, 1 }
 random_jewelry             { random_necklace, 1, random_bracelets, 1, random_earrings, 1, random_rings, 1 }
 
@@ -230,7 +230,7 @@ random_jewelry             { random_necklace, 1, random_bracelets, 1, random_ear
 [Constants ITEMS_RANDOM_MAGIC]
 random_reagents            { i_reag_black_pearl, 1, i_reag_blood_moss, 1, i_reag_garlic, 1, i_reag_ginseng, 1, i_reag_mandrake_root, 1, i_reag_nightshade, 1, i_reag_sulfur_ash, 1, i_reag_spider_silk, 1 }
 random_reagents_necro      { i_reag_blood_vial, 1, i_reag_daemon_bone, 1, i_reag_dragon_blood, 1 }
-random_spellbooks          { i_spellbook, 1 }
+random_spellbooks          i_spellbook
 random_unknown_scrolls     { i_scroll_x_red, 1, i_scroll_x_blue, 1, i_scroll_x_green, 1, i_scroll_x_teal, 1, i_scroll_x_brown, 1, i_scroll_x_purp, 1 }
 random_potions             { i_bottle_black, 1, i_bottle_orange, 1, i_bottle_blue, 1, i_bottle_white, 1, i_bottle_green, 1, i_bottle_red, 1, i_bottle_yellow, 1, i_bottle_purple, 1 }
 random_wands               { i_wand_1, 1, i_wand_2, 1, i_wand_3, 1, i_wand_4, 1 }
