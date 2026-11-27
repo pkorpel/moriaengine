@@ -65,13 +65,15 @@ namespace SteamEngine.Tests.Protocol {
 
 			string swing = this.Ask(client, ".TestHungerSwing", "HUNGER_SWING:");
 			Assert.Contains("lost=10 ", swing); //drawing the blow
+			Assert.Contains("failed=True", swing); //#1558 - and the starving swing fails (pkorpel's call), tried again later
 			Assert.Contains("landedLost=0", swing); //#1396 - not again when it lands
-			//#1396 - a plugin on the player, and a starving cast hurts through its @spellCast
+			//#1396 - a plugin on the player; #1558 a starving cast hurts at @skillStart and fails
 			string plugin = this.Ask(client, ".TestHungerPlugin", "HUNGER_PLUGIN:");
 			Assert.Contains("onPlugin=True", plugin);
 			Assert.Contains("castLost=10", plugin);
-			Assert.Contains("refused=True", plugin); //#1401 - refused by the casting rules
-			Assert.Contains("refusedLost=10", plugin); //and still hurt, as Erebor's hungryhurts came first
+			Assert.Contains("castFailed=True", plugin);
+			Assert.Contains("refused=True", plugin); //#1401 - a cast the casting rules would refuse
+			Assert.Contains("refusedLost=10", plugin); //still hurts, as Erebor's hungryhurts came first
 
 			//the clock, and what it says under 40%
 			this.Ask(client, ".TestHungerFood \"6\"", "HUNGER_FOOD:");

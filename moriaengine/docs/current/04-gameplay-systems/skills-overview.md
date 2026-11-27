@@ -117,7 +117,7 @@ Sphere's food stat with Erebor's use of it, `scripts/Basic/Hunger`. A player hol
 
 Double clicking `t_food` or `t_fruit` eats one piece, adding its weight in stones, at least 1. The food line is always on `.boosts`, under Stav.
 
-At 0 food hits don't regenerate, and a blow, a spell or starting to craft costs 10 hits with "Umiras hlady...". Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll. Skills Erebor scripts on its own timers skip it, as their native skill is cancelled and its success never runs: Hiding among them (#1095), whose `i_hiding_timer` only rolls Hiding against `rand(1025)`.
+At 0 food hits don't regenerate, and drawing a blow, starting a spell, taming, lockpicking, gathering or crafting costs 10 hits with "Umiras hlady..." and fails (#1558, pkorpel's call: on Erebor it only hurt). The blow is tried again a second later, a crafting order stops. Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll. Skills Erebor scripts on its own timers skip it, as their native skill is cancelled and its success never runs: Hiding among them (#1095), whose `i_hiding_timer` only rolls Hiding against `rand(1025)`.
 
 Not ported: the food box (`systems/foodbox.scp`). Darkness stopping blows and spells (`nolightfizz` on `@hittry` and `@spellcast`) is ported (#995, `WorkLight`).
 
@@ -217,7 +217,7 @@ As Sphere, with no gain by use. Begging is a roll against the target's Int that 
 
 ## Gathering stages (#962)
 
-Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hunger hurts; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing at the skill's 1.0 s, about 2 s a try, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
+Mining, Lumberjacking and Fishing start with hunger (a starving try hurts and fails, #1558), then Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing at the skill's 1.0 s, about 2 s a try, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
 
 A pick or hatchet try takes about 2 s (#1001, from the user's memory of Erebor): `leastStrokes` and `mostStrokes` default to 1 extra swing at the skill's 1.0 s. Sphere's own numbers would be 2 and 6, so 3 to 7 s. Both are on `.settings`; a save that already holds them keeps its values.
 

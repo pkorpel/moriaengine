@@ -27,10 +27,6 @@ namespace SteamEngine.CompiledScripts {
 		//skillParam1: SpellDef instance
 		//skillParam2: spell param (summoned creature def?)
 
-		private static readonly TriggerKey tkSpellCast = TriggerKey.Acquire("spellCast");
-		private static readonly TriggerKey tkSpellCastTry = TriggerKey.Acquire("spellCastTry");
-		private static readonly TriggerKey tkDenySpellCast = TriggerKey.Acquire("denySpellCast");
-
 		public static void TryCastSpellFromBook(Character ch, int spellid) {
 			SpellDef sd = SpellDef.GetById(spellid);
 			if (sd != null) {
@@ -140,19 +136,13 @@ namespace SteamEngine.CompiledScripts {
 						}
 					}
 
-					//#1401 - Erebor's @spellcast in two: its first lines (hungryhurts) ran before its own refusals (SpellCastRules)
-					self.TryTrigger(tkSpellCastTry, skillSeqArgs.scriptArgs);
-					if (self.Flag_Dead) {
-						return TriggerResult.Cancel; //starved to death by it
-					}
-					if (!SpellCastRules.Allow(self, spell, skillSeqArgs.Target1, out bool fizzle)) {
-						if (fizzle) {
+					//#1558 - @denySpellCast: the caster's handlers (the energy shield's Recall), then the casting rules in
+					//Character.On_DenySpellCast. Hunger came before, at @skillStart (HungerPlugin, #1401's order kept)
+					DenySpellCastArgs denyArgs = new DenySpellCastArgs(skillSeqArgs);
+					if (!self.Trigger_DenySpellCast(denyArgs).Allow) {
+						if (denyArgs.Fizzle) {
 							Fizzle(self);
 						}
-						return TriggerResult.Cancel;
-					}
-					//#1401 - the refusals of a caster's other events (the energy shield's Recall), after Erebor's e_allplayers
-					if (TriggerResult.Cancel == self.TryCancellableTrigger(tkDenySpellCast, skillSeqArgs.scriptArgs)) {
 						return TriggerResult.Cancel;
 					}
 					if (skillSeqArgs.Param2 is NPCDef) {
@@ -162,7 +152,7 @@ namespace SteamEngine.CompiledScripts {
 					if (TriggerResult.Cancel == spell.Trigger_Start(skillSeqArgs)) {
 						return TriggerResult.Cancel;
 					}
-					self.TryTrigger(tkSpellCast, skillSeqArgs.scriptArgs); //#1386 - Sphere's @spellCast, the cast is under way
+					self.Trigger_SpellCast(skillSeqArgs); //#1386 - Sphere's @spellCast, the cast is under way
 					if (self.Flag_Dead) {
 						return TriggerResult.Cancel;
 					}
@@ -270,11 +260,9 @@ namespace SteamEngine.CompiledScripts {
 				MagicChargePlugin.AfterCast(caster, spell, skillSeqArgs.Target1 as Character); //#1017
 			}
 			if (!self.IsDeleted) { //#1419 - @spellSuccess, after the effect and the inline after-cast work; the profession plugin's mana back (#1440)
-				self.TryTrigger(tkSpellSuccess, new ScriptArgs(new SpellSuccessArgs(self, spell, skillSeqArgs.Target1, skillSeqArgs.Tool is SpellScroll)));
+				self.Trigger_SpellSuccess(new SpellSuccessArgs(self, spell, skillSeqArgs.Target1, skillSeqArgs.Tool is SpellScroll));
 			}
 		}
-
-		private static readonly TriggerKey tkSpellSuccess = TriggerKey.Acquire("spellSuccess");
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Fizzle(skillSeqArgs.Self);

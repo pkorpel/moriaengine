@@ -79,8 +79,9 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HUNGER_HITS: hits=" + self.Hits);
 		}
 
-		/// <summary>A blow tried on nothing in the stomach costs 10, as the swing is drawn (Erebor's @hittry: WeaponSkillDef's
-		/// hunger call before @denySwing, #1558); the landed blow costs nothing more (#1396: it cost another 10 since #995).</summary>
+		/// <summary>A blow tried on nothing in the stomach costs 10, as the swing is drawn (Erebor's @hittry; #1558 HungerPlugin at
+		/// the stroke's @skillStroke, before @denySwing), and fails: the swing stays drawn, tried again a second later (pkorpel's
+		/// call). The landed blow costs nothing more (#1396: it cost another 10 since #995).</summary>
 		[SteamFunction]
 		public static void TestHungerSwing(Character self) {
 			NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);
@@ -90,8 +91,11 @@ namespace SteamEngine.CompiledScripts {
 			PlayerHunger.SetFood(self, 0);
 			self.Hits = self.MaxHits;
 			int before = self.Hits;
-			SkillSequenceArgs.Acquire(self, SkillName.Wrestling, rabbit, null, null, WeaponSkillDef.WeaponSkillPhase.Drawing, null).PhaseStroke();
+			SkillSequenceArgs drawn = SkillSequenceArgs.Acquire(self, SkillName.Wrestling, rabbit, null, null, WeaponSkillDef.WeaponSkillPhase.Drawing, null);
+			drawn.PhaseStroke();
 			int drawLost = before - self.Hits;
+			bool failed = ((WeaponSkillDef.WeaponSkillPhase) Convert.ToInt64(drawn.Param1) == WeaponSkillDef.WeaponSkillPhase.Drawing) &&
+				(self.CurrentSkillArgs == drawn);
 			self.AbortSkill();
 			self.Hits = self.MaxHits;
 			before = self.Hits;
@@ -100,12 +104,12 @@ namespace SteamEngine.CompiledScripts {
 			self.Account.PLevel = plevel;
 			rabbit.Delete();
 			PlayerHunger.SetFood(self, 10);
-			Console.WriteLine("HUNGER_SWING: lost=" + drawLost + " landedLost=" + landedLost);
+			Console.WriteLine("HUNGER_SWING: lost=" + drawLost + " failed=" + failed + " landedLost=" + landedLost);
 		}
 
 		/// <summary>#1396 - the hunger is a plugin on the logged-in player, its food on it, no tag; a spell cast on
-		/// nothing in the stomach costs 10 through its @spellCastTry; #1401 - so does one the casting rules refuse (reactive
-		/// armor on another, for a mage), as Erebor's hungryhurts came before them.</summary>
+		/// nothing in the stomach costs 10 (#1558: at @skillStart) and fails; #1401 - so does one the casting rules would refuse
+		/// (reactive armor on another, for a mage), as Erebor's hungryhurts came before them.</summary>
 		[SteamFunction]
 		public static void TestHungerPlugin(Character self) {
 			HungerPlugin hunger = HungerPlugin.Of(self);
@@ -131,6 +135,7 @@ namespace SteamEngine.CompiledScripts {
 			PlayerHunger.SetFood(self, 0);
 			SkillSequenceArgs.Acquire(self, SkillName.Magery, rabbit, null, book, SpellDef.GetByDefname("s_magic_arrow"), null).PhaseSelect();
 			int lost = before - self.Hits;
+			bool castFailed = self.CurrentSkillName != SkillName.Magery;
 			self.AbortSkill();
 			self.Hits = self.MaxHits;
 			before = self.Hits;
@@ -141,7 +146,7 @@ namespace SteamEngine.CompiledScripts {
 			rabbit.Delete();
 			book.Delete();
 			PlayerHunger.SetFood(self, 10);
-			Console.WriteLine("HUNGER_PLUGIN: onPlugin=" + onPlugin + " castLost=" + lost + " refused=" + refused + " refusedLost=" + refusedLost);
+			Console.WriteLine("HUNGER_PLUGIN: onPlugin=" + onPlugin + " castLost=" + lost + " castFailed=" + castFailed + " refused=" + refused + " refusedLost=" + refusedLost);
 		}
 
 		/// <summary>The clock at 1 s a point, as the settings page would set it.</summary>

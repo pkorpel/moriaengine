@@ -65,12 +65,15 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing. Never a GM's (#1558: the swing's own GM skip went).</summary>
-		public static void HurtIfStarving(Character ch) {
+		/// <summary>hungryhurts, trying a blow, a spell or a job on nothing: true when it hurt (the attempt then fails, #1558).
+		/// Never a GM's. Called from HungerPlugin at the skill chain's attempt.</summary>
+		public static bool HurtIfStarving(Character ch) {
 			if ((ch is Player) && !ch.IsGM && (FoodOf(ch) < 1) && !ch.Flag_Dead) {
 				ch.SysMessage(Loc<HungerLoc>.Get(ch.Language).Dying);
 				DamageManager.CauseDamage(ch, ch, DamageType.Irresistable, HungerSettings.instance.starvingDamage);
+				return true;
 			}
+			return false;
 		}
 
 		/// <summary>Sphere's Use_Eat of one piece: it fills by its weight in stones, at least 1, and may overfill.</summary>

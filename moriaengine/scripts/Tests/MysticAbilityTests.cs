@@ -155,7 +155,7 @@ namespace SteamEngine.CompiledScripts {
 			mysticBlow.DamageAfterAC = 100;
 			DamageManager.Trigger_Hit(mysticBlow);
 			SpellPowerArgs power = new SpellPowerArgs(player, (SpellDef) SpellDef.GetByDefname("s_magic_arrow"), robbed, robbed, 1000);
-			player.TryTrigger(TriggerKey.Acquire("spellPower"), new ScriptArgs(power));
+			player.Trigger_SpellPower(power); //#1558
 			Report("aStolenAttackAddsToBlowsAndSpells", ((int) mysticBlow.DamageAfterAC == 105) && (power.SpellPower == 1050));
 
 			if (stealing != null) { //#1457 - e_mystik's @death consumes i_buffSteal; a held Strength goes back

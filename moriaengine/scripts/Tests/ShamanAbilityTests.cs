@@ -401,10 +401,10 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SHAMAN_SOUL_DONE");
 		}
 
-		/// <summary>#1450 - @denySpellCast as Magery raises it after the rules: does the caster's own event refuse?</summary>
+		/// <summary>#1450 - the caster's @denySpellCast handlers alone (#1558: before the casting rules): does its own event refuse?</summary>
 		private static bool DeniesCast(Player self, string spell) {
 			SkillSequenceArgs args = SkillSequenceArgs.Acquire(self, SkillName.Magery, null, null, null, SpellDef.GetByDefname(spell), null);
-			return self.TryCancellableTrigger(TriggerKey.Acquire("denySpellCast"), args.scriptArgs) == TriggerResult.Cancel;
+			return self.TryCancellableTrigger(TriggerKey.Acquire("denySpellCast"), new DenySpellCastArgs(args)) == TriggerResult.Cancel;
 		}
 
 		/// <summary>#1450 - mounted on a new horse, one real step: true when the step threw the rider.</summary>

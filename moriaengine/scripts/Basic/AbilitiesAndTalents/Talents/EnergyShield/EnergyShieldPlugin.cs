@@ -210,10 +210,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>e_energy_shield's @spellcast: `argn==32 || argn==32`, so Recall is refused and Gate isn't (Erebor's
-		/// typo, kept as it ran). After the casting rules, as e_energy_shield ran after e_allplayers.</summary>
-		public TriggerResult On_DenySpellCast(SkillSequenceArgs mageryArgs) {
-			if (!this.resting && (mageryArgs.Param1 is SpellDef spell) && (spell.Id == recallSpellId)) {
-				mageryArgs.Self.SysMessage("Nelze cestovat kouzlem.");
+		/// typo, kept as it ran). #1558 - a @denySpellCast handler, so before the casting rules (Character.On_DenySpellCast);
+		/// e_energy_shield ran after e_allplayers' rules.</summary>
+		public TriggerResult On_DenySpellCast(DenySpellCastArgs args) {
+			if (!this.resting && (args.Spell != null) && (args.Spell.Id == recallSpellId)) {
+				args.Caster.SysMessage("Nelze cestovat kouzlem.");
 				return TriggerResult.Cancel;
 			}
 			return TriggerResult.Continue;

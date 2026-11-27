@@ -136,8 +136,8 @@ move, cancellable region `@exit`/`@enter`, and `@stepTaken` after the move, not 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
 | 1 | `@skillSelect` | skill handlers | calculation/implementation | regular | Skill target/selection phase | Validate selected target |
-| 2 | `@skillStart` | skill handlers | implementation/notification | regular | Skill starts | Allocate temporary skill state |
-| 3 | `@skillStroke` | skill handlers | notification/implementation | regular | Skill tick/pulse phase | Progress long-running skill |
+| 2 | `@skillStart` | skill handlers | implementation/notification | regular | Skill starts | Allocate temporary skill state; `HungerPlugin`: a starving attempt hurts and fails (#1558) |
+| 3 | `@skillStroke` | skill handlers | notification/implementation | regular | Skill tick/pulse phase | Progress long-running skill; `HungerPlugin`: a starving swing being drawn hurts and fails (#1558) |
 | 4a | `@skillSuccess` | skill handlers | notification | regular | Successful completion | Apply final rewards/effects |
 | 4b | `@skillFail` | skill handlers | notification | regular | Failed completion | Apply failure consequences |
 | 4c | `@skillAbort` | skill handlers | notification/deny | regular | Interrupted/cancelled completion | Roll back temporary state |
@@ -161,6 +161,26 @@ top of `CauseDamage` became `@denyDamage`. Each step is `@X` on the participant,
 | 4b | `@damage` | defender | calculation | regular | Same stage on the defender | Mana shield |
 | 5a | `@afterSwing` | attacker | notification | regular | The blow is over: after a dodge, or once a landed blow's damage was dealt (`FinalDamage`, 0 when refused or absorbed); not after a cancelled `@swing` | Stun blow, freezing blow, bleeding strike, poisoned weapon |
 | 5b | `@afterGetSwing` | defender | notification | regular | Same, on the defender; also when reactive armour killed the attacker | Blood pact, waking the NPC's AI |
+
+## 1.13 Chain: Spell cast (Magery)
+
+#1558 reworked the cast's start (`MagerySkillDef.On_Start`, `Character`). Old names: `@spellCastTry` is gone (hunger moved
+to the skill chain's `@skillStart`, `HungerPlugin`); the casting rules (`SpellCastRules`) became `Character.On_DenySpellCast`,
+after the `@denySpellCast` handlers instead of before them. Each step is `@X` on the participant, then its `On_X`. A cast
+starts with the skill chain (1.11): `@skillStart` comes first, then Magery's mana and reagents.
+
+| Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
+|---|---|---|---|---|---|---|
+| 1 | `@denySpellCast` | caster | deny | cancellable (`DenySpellCastArgs`) | Before the cast gets under way; `On_DenySpellCast` is the casting rules; `Fizzle` says whether Magery shows a refusal as a fizzle | Energy shield and voodoo refusing Recall, shock refusing any cast |
+| 2 | `@start` | spell def | implementation | cancellable | The spell's own start (summons pay, etc.) | |
+| 3 | `@spellCast` | caster | notification | regular | The cast is under way (custom scrolls too; not NPC casts through `NPCAiTimer.TryCastSpell`) | Standcast's freeze and boost |
+| 4 | `@monsterSpellPower` | caster | calculation | regular (`MonsterSpellPowerArgs`) | Per monster target: a term of the multiplier (`LevelBonus`), before there is a power | Standcast |
+| 5 | `@spellPower` | caster | calculation | regular (`SpellPowerArgs`) | Per target, after the multipliers, charge and Koncentrace, before the target's defense | A mystic's stolen talent |
+| 6 | `@beforeDoEffect` | caster | calculation | regular (`SpellPowerArgs`) | Per character target, after the defense: its own stage, so the slayers come before `@causeSpellEffect` whatever the plugins' order | Magic items' slayers |
+| 7 | `@beforeGetEffect` | target | implementation | cancellable (`SpellEffectArgs`) | Before anything of the effect runs on that target; a cancel turns it back or away | Magic items' reflex and block |
+| 8a | `@causeSpellEffect` | caster | calculation/implementation | cancellable | The effect leaves the caster; power changes and acts | Power talents, silence, ignition |
+| 8b | `@spellEffect` | target | implementation | cancellable | The effect reaches the target | Magic reflection, spelldodge |
+| 9 | `@spellSuccess` | caster | notification | regular (`SpellSuccessArgs`) | After a successful Magery cast, its effect and the after-cast work | The profession plugin's mana back |
 
 ---
 

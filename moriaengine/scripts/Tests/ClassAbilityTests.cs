@@ -743,7 +743,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Magery's @spellSuccess after a cast, without the cast.</summary>
 		private static void CastDone(Player player, SpellDef spell, bool fromScroll) {
-			player.TryTrigger(TriggerKey.Acquire("spellSuccess"), new ScriptArgs(new SpellSuccessArgs(player, spell, null, fromScroll)));
+			player.Trigger_SpellSuccess(new SpellSuccessArgs(player, spell, null, fromScroll)); //#1558
 		}
 
 		internal static NPC Dummy(Character self, int offset) {

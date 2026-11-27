@@ -94,18 +94,20 @@ namespace SteamEngine.CompiledScripts {
 			ShamanVoodoo.On(ch, this.kind, this.shaman);
 		}
 
-		/// <summary>e_warcry_effect's and e_noport's @spellcast, after e_allplayers' rules. A scroll's custom spell never
-		/// reached them (customspellcast skips @spellcast).</summary>
-		public TriggerResult On_DenySpellCast(SkillSequenceArgs mageryArgs) {
-			if (!(mageryArgs.Param1 is SpellDef spell) || spell.IsCustom) {
+		/// <summary>e_warcry_effect's and e_noport's @spellcast. #1558 - a @denySpellCast handler, so before the casting rules
+		/// (Character.On_DenySpellCast); Erebor ran them after e_allplayers' rules. A scroll's custom spell never reached them
+		/// (customspellcast skips @spellcast).</summary>
+		public TriggerResult On_DenySpellCast(DenySpellCastArgs args) {
+			SpellDef spell = args.Spell;
+			if ((spell == null) || spell.IsCustom) {
 				return TriggerResult.Continue;
 			}
 			if (this.kind == ShamanVoodoo.Shock) {
-				mageryArgs.Self.SysMessage("Jsi v soku, nemuzes kouzlit!");
+				args.Caster.SysMessage("Jsi v soku, nemuzes kouzlit!");
 				return TriggerResult.Cancel;
 			}
 			if ((this.kind == ShamanVoodoo.NoPort) && (spell.Id == recallSpellId)) {
-				mageryArgs.Self.SysMessage("Nelze cestovat kouzlem.");
+				args.Caster.SysMessage("Nelze cestovat kouzlem.");
 				return TriggerResult.Cancel;
 			}
 			return TriggerResult.Continue;

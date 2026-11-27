@@ -8,7 +8,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - Erebor's systems/skills/lockpicking.scp. A lock is the container's type, t_container_locked, and how hard
 	/// it is its tag.lockpick. A pick is used up per try, or wears from 3 tries to 2 to 1, and the answer comes 2 s later. It runs
-	/// by its own timer, not as a skill stroke, so on Erebor nothing else in between stops it. The skill list has no button for it.</summary>
+	/// by its own timer, not as a skill stroke, so on Erebor nothing else in between stops it. The skill list has no button for it.
+	/// #1558 - a try is the skill's start (@skillStart, then On_Start), so hunger charges it as the other skills.</summary>
 	[ViewableClass]
 	public class LockpickSkillDef : SkillDef {
 		public LockpickSkillDef(string defname, string filename, int headerLine)
@@ -20,7 +21,10 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Cancel;
 		}
 
+		/// <summary>A try on Target1 with the pick Param1 (an index into Targ_Lockpick's picks): the pick goes, the timer answers.
+		/// Cancels, so no stroke follows and nothing under way is aborted.</summary>
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			Targ_Lockpick.Begin(skillSeqArgs.Self, (Item) skillSeqArgs.Target1, (int) skillSeqArgs.Param1);
 			return TriggerResult.Cancel;
 		}
 
@@ -72,7 +76,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(texts.tooFar);
 			} else if (WorkLight.CheckWithMessage(self)) {
 				if (CraftingSkillDef.IsOfType(targetted, "t_container_locked", "t_ship_hold_lock")) {
-					this.Begin(self, targetted, pick);
+					SkillSequenceArgs.Acquire(self, SkillName.Lockpicking, targetted, null, null, pick, null).PhaseStart(); //#1558
 				} else {
 					self.SysMessage(texts.cantUseLockpick);
 				}
@@ -80,9 +84,8 @@ namespace SteamEngine.CompiledScripts {
 			return TargetResult.Done;
 		}
 
-		private void Begin(Player self, Item locked, int pick) {
-			PlayerHunger.HurtIfStarving(self);
-			HidingSkillDef.Reveal(self);
+		internal static void Begin(Character self, Item locked, int pick) {
+			HidingSkillDef.Reveal(self); //#1558 - lockpicking.scp's src.hungryhurts is HungerPlugin's, at @skillStart
 			self.Sound(PickSound);
 			IResourceListEntry missing;
 			ResourcesListParser.Parse("1 " + picks[pick]).ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);

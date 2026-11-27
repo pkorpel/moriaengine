@@ -91,8 +91,8 @@ How these are held (#1450):
   - `.boosts` shows each as "Voodoo" with its kind, as Erebor's boosts menu did.
   - A shaman with either can't curse ("Prokleti ti brani proklinat nekoho jinyho."), and someone with either throws a
     curse back.
-  - A curse's events are the plugin's own triggers: no casting and no Recall at `@denySpellCast`, after the casting
-    rules, as Erebor's events ran after e_allplayers. No riding is at `@step` (after the move, #1558).
+  - A curse's events are the plugin's own triggers: no casting and no Recall at `@denySpellCast`, before the casting
+    rules since #1558 (Erebor's events ran after e_allplayers). No riding is at `@step` (after the move, #1558).
   - The travel stone and the ferry still ask the curse directly, as nothing there raises a trigger.
 - **Not ported:** the extra `i_warcry_effect` Erebor's woodooeffect gave a curse. Its time reads `var(warcry_src)`, a
   global left by whoever last used a warcry anywhere. Also e_noport's telepad refusal (`t_telepad2` does nothing here).
@@ -202,8 +202,8 @@ and exactly 60 does nothing, as Erebor's.
   covered share: a nearly empty shield made the last hit many times stronger (100 damage on 10 energy hit for 790).
 - When it ends, by time, emptied or by `.cancelenergyshield`, "Stit se vycerpal." and 180 s of rest, then "Nyni muzes
   pouzit stit znovu.". It stays through death, as Erebor's memory item.
-- While it's up: Recall is refused ("Nelze cestovat kouzlem.", the caster's `@denySpellCast`, after the casting
-  rules); Gate isn't, Erebor's `argn==32 || argn==32` typo, kept as it ran. No knockback, eye drain, monster bleeding or wraith curse (q026). Standcast can't be switched on, and
+- While it's up: Recall is refused ("Nelze cestovat kouzlem.", the caster's `@denySpellCast`, before the casting
+  rules since #1558); Gate isn't, Erebor's `argn==32 || argn==32` typo, kept as it ran. No knockback, eye drain, monster bleeding or wraith curse (q026). Standcast can't be switched on, and
   raising the shield switches it off. Moving is allowed: Erebor's `flag_immobile` line was commented out (ours used to
   drop the shield on a step or any travel spell).
 

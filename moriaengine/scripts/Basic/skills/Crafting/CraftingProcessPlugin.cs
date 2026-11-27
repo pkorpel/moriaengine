@@ -49,8 +49,8 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
+		/// <summary>makestring_start. #1558 - its hungryhurts is HungerPlugin's, at the first item's @skillStart.</summary>
 		public static void StartCrafting(Character self, CraftingOrder crOrd) {
-			PlayerHunger.HurtIfStarving(self);
 			if (!WorkLight.CheckWithMessage(self)) {
 				return;
 			}

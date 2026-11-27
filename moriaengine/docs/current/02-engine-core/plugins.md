@@ -71,13 +71,14 @@ character by `SkillDef`'s `Trigger_Select`, `Trigger_Start`, `Trigger_Stroke`,
 `DamageArgs` whose `damage` a handler may lower (the mana shield does, #1401) and whose `isSwing`/`isSpell` say where
 it came from. Plugins hear a trigger newest first, so where the order of two changes matters (Erebor's damage_final:
 energy shield, then mana shield) the first is called at a fixed point instead (`EnergyShieldPlugin.Absorb`). Magery
-adds four of its own: `@spellCastTry` (#1401) after mana and reagents and before the casting rules
-(`SpellCastRules`), the cancellable `@denySpellCast` (#1401) right after the rules (the energy shield refuses Recall
-there, the shaman's voodoo curses casting or Recall, #1450), and (#1386) `@spellCast` once a player's cast is under way (`MagerySkillDef.On_Start`, after mana,
-reagents, the casting rules and the spell's own `@start`; custom spell scrolls raise it too, NPC
-casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
+adds its own (the chain is in `trigger-catalog.md` 1.13): the deny `@denySpellCast` (#1401, #1558: `DenySpellCastArgs`)
+after mana and reagents, whose handlers come before the casting rules in `Character.On_DenySpellCast` (the energy shield
+refuses Recall there, the shaman's voodoo curses casting or Recall, #1450), and (#1386) `@spellCast` once a player's cast
+is under way (`MagerySkillDef.On_Start`, after the deny and the spell's own `@start`; custom spell scrolls raise it
+too, NPC casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
 spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `MonsterSpellPowerArgs`
-whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. A character's
+whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. `@spellCastTry` (#1401) went in #1558: hunger
+is charged at the skill chain's `@skillStart`. A character's
 `@denyStep` (#1558; was `@denyMove`, #1386) asks whether it may move at all, before the step
 is worked out: a plugin returning Cancel holds it still (`CastFreezePlugin`, the paralysis
 plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `EntangledPlugin`
@@ -284,17 +285,21 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
   was neither a potion, a book nor a scroll; an ability or a rune now uses the spell's key.
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
-  player's success fails) and `@spellCastTry` (starving hurts), as Erebor's player
-  event `e_allplayers` did. Its `@hittry` part is `WeaponSkillDef`'s `PlayerHunger.HurtIfStarving`
-  call as a swing is drawn, before `@denySwing` (#1558; it was the plugin's `@hitTry`), and never
-  hurts a GM. Before, those were calls from `Character.On_SkillSuccess`, `Magery.On_Start`
-  and `WeaponSkillDef`, the food a tag and the tick a separate timer; and a landed blow hurt a
-  second time from `DamageManager.ProcessSwing`, a leftover since #995. A custom spell scroll's
-  cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`), and a cast whose caster
-  dies of it ends there. The skills whose own Erebor scripts ask about hunger
-  (lockpicking, crafting, gathering, taming, the bard skills, healing, the shaman's pacts, the
-  custom scrolls' casting rule) still call `PlayerHunger`, which reads the plugin. A cast the
-  casting rules refuse still hurts (#1401): Erebor's hungryhurts was its `@spellcast`'s first line.
+  player's success fails), as Erebor's player event `e_allplayers` did.
+  - **#1558: Erebor's hungryhurts is one handler on the skill chain's attempt.** `@skillStart` covers a cast, taming,
+    lockpicking, mining, lumberjacking, fishing and each item of a crafting order; `@skillStroke` covers a swing being
+    drawn in reach (`WeaponSkillDef.IsSwingAttempt`), Erebor's `@hittry`. A starving player (no food) takes 10 hits with
+    "Umiras hlady..." **and the attempt fails** (pkorpel's call; on Erebor it only hurt): a cast or a skill doesn't
+    start, a crafting order stops, a swing stays drawn and is tried again a second later. Never a GM.
+  - It comes before each skill's own checks, as #1401 kept for casts: a cast the casting rules would refuse still
+    hurts. It now also comes before a cast's mana and reagents check, and before gathering's delay, dark and reach
+    checks (before #1558 the calls sat after them).
+  - Before #1558 those were `@spellCastTry` (#1401), a call in `WeaponSkillDef` before `@denySwing`, and calls in
+    `Taming`, `Lockpicking`, `CraftingProcessPlugin.StartCrafting` (once per order) and `Gathering.Begin`. Lockpicking
+    now starts through the skill chain (`SkillSequenceArgs.PhaseStart`), so a try is a skill start like the others.
+  - A custom spell scroll's cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`). The bard skills,
+    healing, the shaman's pacts and the custom scrolls' casting rule ask `PlayerHunger` about being hungry, which reads
+    the plugin.
 - **Hiding's step reveal** (#1478): `HiddenPlugin` (`p_hidden`) is on a character while it is hidden or
   invisible by magic; `Character.Trigger_VisibilityChange` adds and removes it. Its `@step` (after the move, #1558) runs
   `HidingSkillDef.OnStep` (Stealth's roll, the reveal), which `Character.On_StepTaken` used to call for every step of

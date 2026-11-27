@@ -5,8 +5,8 @@ using SteamEngine.Persistence;
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#924, #1396 - a player's hunger, on every player from login. It does its work in its holder's triggers,
 	/// as Erebor's player event e_allplayers does (sphereevents.scp): its timer is Sphere's food tick, @skillSuccess
-	/// (ishungrymsg: a hungry player's success is a failure) and @spellCastTry (hungryhurts, Erebor's @spellcast; its @hittry
-	/// is WeaponSkillDef's call, #1558). The skills that ask about hunger themselves in Erebor's scripts call PlayerHunger, which reads this.</summary>
+	/// (ishungrymsg: a hungry player's success is a failure), and #1558 the skill chain's attempt, @skillStart and a swing's
+	/// @skillStroke (hungryhurts: Erebor's @hittry, @spellcast, mining, taming, makestring_start and lockpicking).</summary>
 	[ViewableClass]
 	[PluginTemplate]
 	public partial class HungerPlugin : TimerPlugin {
@@ -59,12 +59,50 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
-		/// <summary>Erebor's @spellcast: hungryhurts. Not for a custom spell scroll: Erebor's customspellcast never ran
-		/// e_allplayers' @spellcast. #1401 - @spellCastTry, before the casting rules (SpellCastRules): hungryhurts was
-		/// @spellcast's first line, so a cast those rules refuse still hurts, as on Erebor (the user's call).</summary>
-		public void On_SpellCastTry(SkillSequenceArgs mageryArgs) {
-			if (!((SpellDef) mageryArgs.Param1).IsCustom) {
-				PlayerHunger.HurtIfStarving((Character) this.Cont);
+		/// <summary>#1558 - hungryhurts at the attempt of the skills Erebor charged it on: a starving player is hurt, and the attempt
+		/// fails (pkorpel's call; on Erebor it only hurt). Before the skill's own checks: #1401's order, a cast the casting rules
+		/// refuse still hurts. Not for a custom spell scroll: Erebor's customspellcast never ran e_allplayers' @spellcast. A
+		/// crafting order that fails here stops, as one its menu refuses.</summary>
+		public TriggerResult On_SkillStart(SkillSequenceArgs skillSeqArgs) {
+			if (HurtsAtStart(skillSeqArgs) && PlayerHunger.HurtIfStarving((Character) this.Cont)) {
+				if (skillSeqArgs.SkillDef is CraftingSkillDef) {
+					CraftingProcessPlugin.UnInstallCraftingPlugin((Character) this.Cont);
+				}
+				return TriggerResult.Cancel;
+			}
+			return TriggerResult.Continue;
+		}
+
+		/// <summary>#1558 - Erebor's @hittry: hungryhurts when a swing is drawn, in reach. A starving swing fails and is tried
+		/// again a second later, as a refused one (@denySwing).</summary>
+		public TriggerResult On_SkillStroke(SkillSequenceArgs skillSeqArgs) {
+			if ((skillSeqArgs.SkillDef is WeaponSkillDef) && WeaponSkillDef.IsSwingAttempt(skillSeqArgs) &&
+					PlayerHunger.HurtIfStarving((Character) this.Cont)) {
+				Character self = (Character) this.Cont;
+				if (!self.IsDeleted && !self.Flag_Dead) {
+					WeaponSkillDef.RetryStroke(skillSeqArgs);
+				}
+				return TriggerResult.Cancel;
+			}
+			return TriggerResult.Continue;
+		}
+
+		private static bool HurtsAtStart(SkillSequenceArgs skillSeqArgs) {
+			SkillDef skill = skillSeqArgs.SkillDef;
+			if (skill is CraftingSkillDef) {
+				return true; //makestring_start
+			}
+			switch ((SkillName) skill.Id) {
+				case SkillName.Magery:
+					return (skillSeqArgs.Param1 is SpellDef spell) && !spell.IsCustom;
+				case SkillName.AnimalTaming:
+				case SkillName.Lockpicking:
+				case SkillName.Mining: //miningfix; fishing and lumberjacking share its Gathering.Begin, as before #1558
+				case SkillName.Fishing:
+				case SkillName.Lumberjacking:
+					return true;
+				default:
+					return false;
 			}
 		}
 

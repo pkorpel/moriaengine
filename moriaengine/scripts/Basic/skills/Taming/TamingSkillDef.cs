@@ -95,10 +95,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//f_tamingstart
+		//f_tamingstart. #1558 - its hungryhurts is HungerPlugin's, at @skillStart
 		private static void Start(Character self, Character target) {
 			HidingSkillDef.Reveal(self);
-			PlayerHunger.HurtIfStarving(self);
 			TamingTimer running = self.GetTimer(TamingTimer.Key) as TamingTimer;
 			if (running != null) {
 				running.interrupted = false;

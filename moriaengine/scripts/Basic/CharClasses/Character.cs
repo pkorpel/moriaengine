@@ -2101,6 +2101,122 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue; //#1396 - hunger's failure is HungerPlugin.On_SkillSuccess
 		}
 
+		private static readonly TriggerKey denySpellCastTK = TriggerKey.Acquire("denySpellCast");
+
+		/// <summary>#1558 - Magery's deny before a cast gets under way (after the mana and reagents): the caster's @denySpellCast
+		/// (trigger groups, plugins: the energy shield's and voodoo's Recall), then On_DenySpellCast (the casting rules). Stops at the
+		/// first cancel or deny. Was @spellCastTry (hunger, now at @skillStart), the rules, then @denySpellCast (#1401).</summary>
+		public DenyResult Trigger_DenySpellCast(DenySpellCastArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(denySpellCastTK, args);
+			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
+				try {
+					result = this.On_DenySpellCast(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			if ((result == TriggerResult.Cancel) && args.Result.Allow) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+			}
+			return args.Result;
+		}
+
+		/// <summary>#1558 - the casting rules, Erebor's e_allplayers @spellcast refusals (SpellCastRules): a refusal sends its own
+		/// message, and args.Fizzle says whether Magery shows it as a fizzle.</summary>
+		public virtual TriggerResult On_DenySpellCast(DenySpellCastArgs args) {
+			if (!SpellCastRules.Allow(this, args.Spell, args.Target, out bool fizzle)) {
+				args.Fizzle = fizzle;
+				return TriggerResult.Cancel;
+			}
+			return TriggerResult.Continue;
+		}
+
+		private static readonly TriggerKey spellCastTK = TriggerKey.Acquire("spellCast");
+
+		/// <summary>#1386, #1558 - Sphere's @spellCast, a notification: the cast is under way (after the spell's own @start).</summary>
+		public void Trigger_SpellCast(SkillSequenceArgs mageryArgs) {
+			this.TryTrigger(spellCastTK, mageryArgs.scriptArgs);
+			try {
+				this.On_SpellCast(mageryArgs);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_SpellCast(SkillSequenceArgs mageryArgs) {
+		}
+
+		private static readonly TriggerKey spellSuccessTK = TriggerKey.Acquire("spellSuccess");
+
+		/// <summary>#1419, #1558 - a notification after a successful Magery cast, its effect and the after-cast work done (which
+		/// @skillSuccess comes before). The profession plugin gives mana back here (#1440).</summary>
+		public void Trigger_SpellSuccess(SpellSuccessArgs args) {
+			this.TryTrigger(spellSuccessTK, new ScriptArgs(args));
+			try {
+				this.On_SpellSuccess(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_SpellSuccess(SpellSuccessArgs args) {
+		}
+
+		private static readonly TriggerKey monsterSpellPowerTK = TriggerKey.Acquire("monsterSpellPower");
+
+		/// <summary>#1386, #1558 - a calculation on the caster: what to add to the level bonus of a spell's multiplier on a
+		/// monster (Standcast), at the point Erebor's magie.scp adds it. Not part of @spellPower: the bonus is a term of the
+		/// multiplier, needed before there is a power to change.</summary>
+		public void Trigger_MonsterSpellPower(MonsterSpellPowerArgs args) {
+			this.TryTrigger(monsterSpellPowerTK, new ScriptArgs(args));
+			try {
+				this.On_MonsterSpellPower(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_MonsterSpellPower(MonsterSpellPowerArgs args) {
+		}
+
+		private static readonly TriggerKey spellPowerTK = TriggerKey.Acquire("spellPower");
+
+		/// <summary>#1419, #1558 - a calculation on the caster: the spell's power on one target, after the multipliers and the inline
+		/// modifiers (charge, Koncentrace), before the target's defense.</summary>
+		public void Trigger_SpellPower(SpellPowerArgs args) {
+			this.TryTrigger(spellPowerTK, new ScriptArgs(args));
+			try {
+				this.On_SpellPower(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_SpellPower(SpellPowerArgs args) {
+		}
+
+		private static readonly TriggerKey beforeDoEffectTK = TriggerKey.Acquire("beforeDoEffect");
+
+		/// <summary>#1476, #1558 - a calculation on the caster: the power after the target's defense (the slayers), before the
+		/// caster's @causeSpellEffect.</summary>
+		public void Trigger_BeforeDoEffect(SpellPowerArgs args) {
+			this.TryTrigger(beforeDoEffectTK, new ScriptArgs(args));
+			try {
+				this.On_BeforeDoEffect(args);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+		}
+
+		public virtual void On_BeforeDoEffect(SpellPowerArgs args) {
+		}
+
+		private static readonly TriggerKey beforeGetEffectTK = TriggerKey.Acquire("beforeGetEffect");
+
+		/// <summary>#1476, #1558 - cancellable, on a spell's target before anything of the effect runs (the caster's @causeSpellEffect
+		/// included): the items' reflex and block turn the spell back or away here.</summary>
+		public TriggerResult Trigger_BeforeGetEffect(SpellEffectArgs args) {
+			TriggerResult result = this.TryCancellableTrigger(beforeGetEffectTK, args.scriptArgs);
+			if (result != TriggerResult.Cancel) {
+				try {
+					result = this.On_BeforeGetEffect(args);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+			return result;
+		}
+
+		public virtual TriggerResult On_BeforeGetEffect(SpellEffectArgs args) {
+			return TriggerResult.Continue;
+		}
+
 		//public virtual bool On_SkillGain(int id, object arg) {
 		//	return false;
 		//}
