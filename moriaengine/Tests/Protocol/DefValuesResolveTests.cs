@@ -70,6 +70,20 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.True(unexpected.Length == 0, line + "\n" + unexpected);
 			Assert.True(expected.Count == 0, "Listed in DefValuesKnownFailures.txt but made fine now, take them out: " + string.Join(", ", expected));
 		}
+	}
+
+	[CollectionDefinition(Name)]
+	public class DefValuesResolveCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "DefValuesResolve";
+	}
+
+	/// <summary>Its own boot: EveryScriptedValueResolves leaves items in limbo from the creations listed in
+	/// DefValuesKnownFailures.txt, and their sync errors would land in this test's output.</summary>
+	[Collection(AddBraceNpcsCollection.Name)]
+	public class AddBraceNpcsTests : LivingWorldTestBase {
+		public AddBraceNpcsTests(GameServerPairFixture servers)
+			: base(servers, "pridavac", "PRIDAVAC") {
+		}
 
 		/// <summary>The GM's ".add" of the NPCs whose creation failed on braces (pkorpel's report on PR #1591:
 		/// c_saur_hat_thief, DESCRIPTION = Thief {male}; it was its colour constant), through the real command and target.</summary>
@@ -87,16 +101,18 @@ namespace SteamEngine.Tests.Protocol {
 					game.SendTargetGround(x + 2, y, z);
 					System.Threading.Thread.Sleep(1000);
 					this.Run(game, ".TestCountAddedNpcs \"" + def + "\"", "DEFVALUES_ADDED: def=" + def);
-					string output = this.fixture.GameOutputSnapshot();
-					Assert.True(this.LastLine("DEFVALUES_ADDED: def=" + def).Contains(" count=1 "),
-						".add " + def + " made no NPC. Game output since:\n" + output.Substring(mark));
+					string output = this.fixture.GameOutputSnapshot().Substring(mark);
+					string added = this.LastLine("DEFVALUES_ADDED: def=" + def);
+					Assert.True(added.Contains(" count=1 "), ".add " + def + ": " + added + ". Game output since:\n" + output);
+					//a failure in @create or the equipment leaves the NPC standing and is only logged
+					Assert.False(output.Contains("ERROR:"), ".add " + def + " logged an error:\n" + output);
 				}
 			}
 		}
 	}
 
 	[CollectionDefinition(Name)]
-	public class DefValuesResolveCollection : ICollectionFixture<GameServerPairFixture> {
-		public const string Name = "DefValuesResolve";
+	public class AddBraceNpcsCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "AddBraceNpcs";
 	}
 }
