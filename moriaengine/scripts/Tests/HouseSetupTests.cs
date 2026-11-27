@@ -104,13 +104,17 @@ namespace SteamEngine.CompiledScripts {
 				ItemDef def = (ItemDef) ThingDef.GetByDefname(defname);
 				bool ok = true;
 				for (int offset = 0; offset < 16; offset += 2) {
-					Item door = (Item) def.Create(self.X, self.Y, self.Z, self.M);
+					Door door = def.Create(self.X, self.Y, self.Z, self.M) as Door;
+					if (door == null) {
+						ok = false;
+						break;
+					}
 					door.Model = def.Model + offset;
 					int model = door.Model;
-					ok = ok && door.IsDoor && (ThingDef.FindItemDef(model) != null) && !door.IsDoorOpen;
-					door.UseDoor();
-					ok = ok && door.IsDoorOpen;
-					door.UseDoor();
+					ok = ok && (ThingDef.FindItemDef(model) != null) && !door.IsOpen;
+					door.Swing();
+					ok = ok && door.IsOpen;
+					door.Swing();
 					ok = ok && (door.Model == model);
 					door.Delete();
 				}
@@ -200,7 +204,7 @@ namespace SteamEngine.CompiledScripts {
 			int doors = 0, doorsOutside = 0;
 			foreach (Thing thing in Thing.AllThings) {
 				Item item = thing as Item;
-				if ((item != null) && item.IsDoor && item.IsOnGround && (item.M == sign.M) && (Point2D.GetSimpleDistance(item.X, item.Y, sign.X, sign.Y) < 20) && item.Flag_NonMovable) {
+				if ((item != null) && (item is Door) && item.IsOnGround && (item.M == sign.M) && (Point2D.GetSimpleDistance(item.X, item.Y, sign.X, sign.Y) < 20) && item.Flag_NonMovable) {
 					if (item.GetMap().GetRegionFor(item) == Area) {
 						doors++;
 					} else {
@@ -212,14 +216,14 @@ namespace SteamEngine.CompiledScripts {
 			int fourthRattan = ThingDef.GetByDefname("i_door_rattan").Model + 6;
 			foreach (Thing thing in Thing.AllThings) {
 				Item item = thing as Item;
-				if ((item != null) && item.IsDoor && (item.Model == fourthRattan) && item.Flag_NonMovable && (item.GetMap().GetRegionFor(item) == Area)) {
+				if ((item != null) && (item is Door) && (item.Model == fourthRattan) && item.Flag_NonMovable && (item.GetMap().GetRegionFor(item) == Area)) {
 					fourthRattans++;
 				}
 			}
 			int padded = 0, bare = 0;
 			foreach (Thing thing in Thing.AllThings) {
 				Item door = thing as Item;
-				if ((door != null) && door.IsDoor && door.IsOnGround && (door.M == sign.M) && (Point2D.GetSimpleDistance(door.X, door.Y, sign.X, sign.Y) < 20) && door.Flag_NonMovable) {
+				if ((door != null) && (door is Door) && door.IsOnGround && (door.M == sign.M) && (Point2D.GetSimpleDistance(door.X, door.Y, sign.X, sign.Y) < 20) && door.Flag_NonMovable) {
 					bool hasPad = false;
 					foreach (AbstractItem near in door.GetMap().GetItemsInRange(door.X, door.Y, 0)) {
 						hasPad |= (near is Item pad) && HouseDoorstep.IsDoorstep(pad) && (pad.X == door.X) && (pad.Y == door.Y) &&

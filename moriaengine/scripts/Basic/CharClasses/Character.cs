@@ -3415,12 +3415,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#941 - Sphere's macro: the first door within 4 tiles, open ones too.</summary>
+		/// <summary>#941 - Sphere's macro: the first door within 4 tiles, open ones too, used without a touch test. #1558 - used
+		/// by a double click like any other (only the reach test skipped), so a door's denies (its key, a quest's handler) apply.
+		/// 0.99z8's macro bypassed the item's @UserDClick, but there a scripted door was another type, which the macro skipped.</summary>
 		public override void On_OpenDoorMacro() {
 			foreach (AbstractItem found in this.GetMap().GetItemsInRange(this.X, this.Y, 4)) {
-				Item item = found as Item;
-				if ((item != null) && item.IsMacroDoor) {
-					item.TryUseDoor(this);
+				Door door = found as Door;
+				if ((door != null) && door.IsMacroDoor) {
+					door.Trigger_DClick(this, true);
 					return;
 				}
 			}

@@ -131,6 +131,10 @@ move, cancellable region `@exit`/`@enter`, and `@stepTaken` after the move, not 
 | 3 | `@itemDClick` or `@charDClick` | dclicking character | implementation | regular | Character-side dclick handling by target kind | Route use action by target type |
 | 4 | `@dClick` | clicked thing | implementation | regular | Target object executes/consumes use behavior | Open/equip/activate object behavior |
 
+A door is asked the same way (#1558): a locked one wants its key in `Door.On_DenyDClick`, a quest's `@denyDClick` handler on it can
+refuse or allow and cancel (no key asked), and it swings in `Door.On_DClick`. The client's OpenDoor macro runs this chain on the
+nearest door with only the reach test skipped.
+
 ## 1.11 Chain: Skill flow
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
@@ -267,15 +271,15 @@ starts with the skill chain (1.11): `@skillStart` comes first, then Magery's man
 | - | `@disruption` | character handlers | notification | regular | Action disrupted | Abort cast/channel/action |
 | - | `@hostileAction` | character handlers | notification/calculation | regular | Hostile act happened | PvP flagging/reaction logic |
 
-## 3.4 Social / organization / door group
+## 3.4 Social / organization group
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
 | - | `@MemberAdded` / `@MemberRemoved` | social/guild/role handlers | notification | regular | Membership changed | Grant/revoke role effects |
 | - | `@DenyAddMember` / `@DenyRemoveMember` | social/guild/role handlers | deny | cancellable | Membership change gate | Permission checks |
-| - | `@open` / `@close` | doors/containers | implementation | regular | Open/close action | Animate and state update |
-| - | `@denyOpen` / `@denyOpenDoor` | doors/containers | deny | cancellable | Gate opening action | Lock/key/ownership checks |
-| - | `@denyClose` / `@denyCloseDoor` | doors/containers | deny | cancellable | Gate closing action | Prevent close in blocked states |
+
+The original engine's door triggers (`@denyOpenDoor`, `@denyOpen`, `@open` and the close ones, on a `Door` class no def used) went
+in #941/PR #942; since #1558 a door is the dclick chain (1.10), with no triggers of its own.
 
 ---
 

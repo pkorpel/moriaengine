@@ -17,22 +17,14 @@
 
 namespace SteamEngine.CompiledScripts {
 
+	//#1558 - a door swings in Door.On_DClick and wants its key in Door.On_DenyDClick; its type only names it
 	public partial class t_door : CompiledTriggerGroup {
-		public void On_DClick(Item self, Character clicker) {
-			self.TryUseDoor(clicker);
-		}
 	}
 
 	public partial class t_door_open : CompiledTriggerGroup {
-		public void On_DClick(Item self, Character clicker) {
-			self.TryUseDoor(clicker);
-		}
 	}
 
 	public partial class t_door_locked : CompiledTriggerGroup {
-		public void On_DClick(Item self, Character clicker) {
-			self.TryUseDoor(clicker);
-		}
 	}
 
 	public partial class t_portculis : CompiledTriggerGroup {

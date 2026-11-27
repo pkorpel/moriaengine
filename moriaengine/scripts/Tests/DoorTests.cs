@@ -4,7 +4,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#941 - server-side helpers for Tests/Protocol/DoorTests.cs.</summary>
 	public static class DoorTests {
-		private static Item door;
+		private static Door door;
 
 		private static Item Make(string defname, Character self) {
 			return (Item) ((ItemDef) ThingDef.GetByDefname(defname)).Create(self.X + 1, self.Y, self.Z, self.M);
@@ -15,22 +15,22 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestDoorTable(Character self) {
 			string line = "";
 			for (int offset = 0; offset < 16; offset++) {
-				Item probe = Make("i_flip_door_probe", self);
+				Door probe = (Door) Make("i_flip_door_probe", self);
 				probe.Model = probe.TypeDef.Model + offset;
 				int x = probe.X, y = probe.Y;
-				probe.UseDoor();
+				probe.Swing();
 				line += (probe.Model - probe.TypeDef.Model) + ":" + (probe.X - x) + "," + (probe.Y - y) + " ";
 				probe.Delete();
 			}
 			Console.WriteLine("DOOR_TABLE: " + line.Trim());
 		}
 
-		/// <summary>A dupe model is its master, and so a door.</summary>
+		/// <summary>A dupe model is its master, and so a door: #1558 - a Door, the converter makes the dupes of a door's def DoorDefs.</summary>
 		[SteamFunction]
 		public static void TestDoorDupe(Character self) {
 			Item second = Make("i_gate_iron", self);
 			Item dupe = (Item) ((ItemDef) ThingDef.GetByDefname("i_0x826")).Create(self.X + 1, self.Y, self.Z, self.M);
-			Console.WriteLine("DOOR_DUPE: type=" + dupe.Type.Defname + " offset=" + (dupe.Model - dupe.TypeDef.Model));
+			Console.WriteLine("DOOR_DUPE: type=" + dupe.Type.Defname + " offset=" + (dupe.Model - dupe.TypeDef.Model) + " door=" + (dupe is Door));
 			second.Delete();
 			dupe.Delete();
 		}
@@ -41,7 +41,7 @@ namespace SteamEngine.CompiledScripts {
 			if (door != null) {
 				door.Delete();
 			}
-			door = Make("i_flip_door_probe", self);
+			door = (Door) Make("i_flip_door_probe", self);
 			if (sa.Args == "locked") {
 				door.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door_locked");
 				door.LockUid = 77;
@@ -52,7 +52,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestDoorState(Character self) {
 			DoorCloseTimer timer = (DoorCloseTimer) door.GetTimer(DoorCloseTimer.Key);
-			Console.WriteLine("DOOR_STATE: open=" + door.IsDoorOpen + " model=" + door.Model + " timer=" + (timer != null));
+			Console.WriteLine("DOOR_STATE: open=" + door.IsOpen + " model=" + door.Model + " timer=" + (timer != null));
 		}
 
 		/// <summary>The door's 60 seconds, cut short.</summary>

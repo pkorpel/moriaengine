@@ -189,7 +189,7 @@ DUPEITEM = i_fence_iron
 [ItemDef 0x823]
 DUPEITEM = i_fence_iron
 
-[ItemDef 0x824]
+[DoorDef 0x824]
 CATEGORY = Buildings - Doors
 SUBSECTION = Iron Gate
 DESCRIPTION = @ (n / sw)
@@ -199,77 +199,77 @@ DupeList = 0x825,0x826,0x827,0x828,0x829,0x82a,0x82b,0x82c,0x82d,0x82e,0x82f,0x8
 RESOURCES = 25 i_ingot_iron
 DEFNAME = i_gate_iron
 
-[ItemDef 0x825]
+[DoorDef 0x825]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x826]
+[DoorDef 0x826]
 DESCRIPTION = @ (n / se)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x827]
+[DoorDef 0x827]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x828]
+[DoorDef 0x828]
 DESCRIPTION = @ (n / nw)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x829]
+[DoorDef 0x829]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x82a]
+[DoorDef 0x82a]
 DESCRIPTION = @ (n / ne)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x82b]
+[DoorDef 0x82b]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x82c]
+[DoorDef 0x82c]
 DESCRIPTION = @ (w / se)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x82d]
+[DoorDef 0x82d]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x82e]
+[DoorDef 0x82e]
 DESCRIPTION = @ (w / ne)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x82f]
+[DoorDef 0x82f]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x830]
+[DoorDef 0x830]
 DESCRIPTION = @ (w / sw)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x831]
+[DoorDef 0x831]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x832]
+[DoorDef 0x832]
 DESCRIPTION = @ (w / nw)
 
 DUPEITEM = i_gate_iron
 
-[ItemDef 0x833]
+[DoorDef 0x833]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_iron
@@ -289,7 +289,7 @@ DUPEITEM = i_fence_wood
 [ItemDef 0x838]
 DUPEITEM = i_fence_wood
 
-[ItemDef 0x839]
+[DoorDef 0x839]
 CATEGORY = Buildings - Doors
 SUBSECTION = Wooden Gate
 DESCRIPTION = @ (n / sw)
@@ -299,77 +299,77 @@ DupeList = 0x83a,0x83b,0x83c,0x83d,0x83e,0x83f,0x840,0x841,0x842,0x843,0x844,0x8
 RESOURCES = 25 i_board
 DEFNAME = i_gate_wood
 
-[ItemDef 0x83a]
+[DoorDef 0x83a]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x83b]
+[DoorDef 0x83b]
 DESCRIPTION = @ (n / se)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x83c]
+[DoorDef 0x83c]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x83d]
+[DoorDef 0x83d]
 DESCRIPTION = @ (n / nw)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x83e]
+[DoorDef 0x83e]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x83f]
+[DoorDef 0x83f]
 DESCRIPTION = @ (n / ne)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x840]
+[DoorDef 0x840]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x841]
+[DoorDef 0x841]
 DESCRIPTION = @ (w / se)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x842]
+[DoorDef 0x842]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x843]
+[DoorDef 0x843]
 DESCRIPTION = @ (w / ne)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x844]
+[DoorDef 0x844]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x845]
+[DoorDef 0x845]
 DESCRIPTION = @ (w / sw)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x846]
+[DoorDef 0x846]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x847]
+[DoorDef 0x847]
 DESCRIPTION = @ (w / nw)
 
 DUPEITEM = i_gate_wood
 
-[ItemDef 0x848]
+[DoorDef 0x848]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood
@@ -383,55 +383,55 @@ DUPEITEM = i_fence_iron
 [ItemDef 0x84b]
 DUPEITEM = i_fence_iron
 
-[ItemDef 0x84c]
+[DoorDef 0x84c]
 TYPE = T_DOOR
 DupeList = 0x84d,0x84e,0x84f,0x850,0x851,0x852,0x853,0x854,0x855,0x856,0x857,0x858,0x859,0x85a,0x85b
 RESOURCES = 25 i_ingot_iron
 DEFNAME = i_gate_iron_2
 
-[ItemDef 0x84d]
+[DoorDef 0x84d]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x84e]
+[DoorDef 0x84e]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x84f]
+[DoorDef 0x84f]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x850]
+[DoorDef 0x850]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x851]
+[DoorDef 0x851]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x852]
+[DoorDef 0x852]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x853]
+[DoorDef 0x853]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x854]
+[DoorDef 0x854]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x855]
+[DoorDef 0x855]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x856]
+[DoorDef 0x856]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x857]
+[DoorDef 0x857]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x858]
+[DoorDef 0x858]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x859]
+[DoorDef 0x859]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x85a]
+[DoorDef 0x85a]
 DUPEITEM = i_gate_iron_2
 
-[ItemDef 0x85b]
+[DoorDef 0x85b]
 DUPEITEM = i_gate_iron_2
 
 [ItemDef 0x85c]
@@ -470,7 +470,7 @@ DUPEITEM = i_gate_wood_2
 [ItemDef 0x865]
 DUPEITEM = i_gate_wood_2
 
-[ItemDef 0x866]
+[DoorDef 0x866]
 CATEGORY = Buildings - Doors
 SUBSECTION = Wooden Gate 2
 DESCRIPTION = @ (n / sw)
@@ -480,77 +480,77 @@ DupeList = 0x867,0x868,0x869,0x86a,0x86b,0x86c,0x86d,0x86e,0x86f,0x870,0x871,0x8
 RESOURCES = 25 i_board
 DEFNAME = i_gate_wood_3
 
-[ItemDef 0x867]
+[DoorDef 0x867]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x868]
+[DoorDef 0x868]
 DESCRIPTION = @ (n / se)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x869]
+[DoorDef 0x869]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x86a]
+[DoorDef 0x86a]
 DESCRIPTION = @ (n / nw)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x86b]
+[DoorDef 0x86b]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x86c]
+[DoorDef 0x86c]
 DESCRIPTION = @ (n / ne)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x86d]
+[DoorDef 0x86d]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x86e]
+[DoorDef 0x86e]
 DESCRIPTION = @ (w / se)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x86f]
+[DoorDef 0x86f]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x870]
+[DoorDef 0x870]
 DESCRIPTION = @ (w / ne)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x871]
+[DoorDef 0x871]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x872]
+[DoorDef 0x872]
 DESCRIPTION = @ (w / sw)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x873]
+[DoorDef 0x873]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x874]
+[DoorDef 0x874]
 DESCRIPTION = @ (w / nw)
 
 DUPEITEM = i_gate_wood_3
 
-[ItemDef 0x875]
+[DoorDef 0x875]
 DESCRIPTION = @
 
 DUPEITEM = i_gate_wood_3

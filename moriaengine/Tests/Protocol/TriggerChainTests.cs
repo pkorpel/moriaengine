@@ -26,6 +26,15 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1558 P7 - a door is asked like anything else, by a click and by the OpenDoor macro.</summary>
+		[Fact]
+		public void ADoorIsADoubleClickByClickAndByMacro() {
+			using (TestGameClient game = this.Login("Dverar")) {
+				this.Run(game, ".TestChainDoor", "CHAIN_DOOR_DONE");
+				this.AssertChecks("doorPlain", "doorLockedDenied", "doorMacroIsADClick", "doorKeyOpens");
+			}
+		}
+
 		[Fact]
 		public void TheStepIsADenyChainThenNotifications() {
 			using (TestGameClient game = this.Login("Krokar")) {

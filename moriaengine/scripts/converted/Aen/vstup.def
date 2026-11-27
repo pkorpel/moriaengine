@@ -20,7 +20,7 @@ Color = 0044C
 
 //[DIALOG d_Cardolanske_pohrebiste_dlazdice_spoustejicivybuch BUTTON] //(commented out by Converter) 
 
-[ItemDef i_Cardolanske_pohrebiste_dvere12]
+[DoorDef i_Cardolanske_pohrebiste_dvere12]
 CATEGORY = Dungy
 SUBSECTION = Cardolanske pohrebiste
 DESCRIPTION = zakladni dvere
@@ -29,7 +29,7 @@ Name = "dvere"
 model = i_door_metal_bar
 type = t_door //guessed from base def by Converter 
 
-[ItemDef i_Cardolanske_pohrebiste_dvere12_tajne]
+[DoorDef i_Cardolanske_pohrebiste_dvere12_tajne]
 CATEGORY = Dungy
 SUBSECTION = Cardolanske pohrebiste
 DESCRIPTION = tajne dvere

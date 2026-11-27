@@ -17,7 +17,7 @@ type = t_container //guessed from base def by Converter
 layer = 0 //Set by Converter 
 Color = 098c
 
-[ItemDef i_Crunch_magicka_brana]
+[DoorDef i_Crunch_magicka_brana]
 NAME = "Magicka brana"
 model = i_gate_iron
 type = t_door //guessed from base def by Converter 

@@ -25,7 +25,7 @@ namespace SteamEngine.Tests.Protocol {
 				//new offset and step per offset, from CItem.Use_Door
 				Assert.Contains("DOOR_TABLE: 1:-1,1 0:1,-1 3:1,1 2:-1,-1 5:-1,0 4:1,0 7:1,-1 6:-1,1 9:1,1 8:-1,-1 11:1,-1 10:-1,1 13:0,0 12:0,0 15:0,-1 14:0,1",
 					this.Ask(client, ".TestDoorTable", "DOOR_TABLE:"));
-				Assert.Contains("type=t_door offset=2", this.Ask(client, ".TestDoorDupe", "DOOR_DUPE:"));
+				Assert.Contains("type=t_door offset=2 door=True", this.Ask(client, ".TestDoorDupe", "DOOR_DUPE:")); //#1558 - a Door
 			}
 		}
 

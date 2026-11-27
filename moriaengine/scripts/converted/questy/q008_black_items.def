@@ -11,7 +11,7 @@ model = i_crate_small
 layer = 0 //Set by Converter 
 Color = 0989
 
-[ItemDef i_q008_vrata_1]
+[DoorDef i_q008_vrata_1]
 CATEGORY = Questy
 SUBSECTION = Black mustang q008
 DESCRIPTION = Dvere do ohrady
@@ -19,7 +19,7 @@ DESCRIPTION = Dvere do ohrady
 Type = t_door_locked
 model = i_gate_wood_3
 
-[ItemDef i_q008_vrata_2]
+[DoorDef i_q008_vrata_2]
 CATEGORY = Questy
 SUBSECTION = Black mustang q008
 DESCRIPTION = Dvere do ohrady 2

@@ -109,7 +109,7 @@ namespace SteamEngine.CompiledScripts {
 				return TargetResult.Done;
 			}
 			Item door = (Item) def.Create(targetted.X, targetted.Y, targetted.Z, self.M);
-			if (!door.IsDoor) {
+			if (!(door is Door)) {
 				self.SysMessage(choice.defname + " nejsou dvere.");
 				door.Delete();
 				return TargetResult.Done;

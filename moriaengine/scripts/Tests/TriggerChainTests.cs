@@ -92,6 +92,51 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CHAIN_AFAR_DONE");
 		}
 
+		/// <summary>#1558 P7 - a door's double click and the client's OpenDoor macro, the clicker and the door probed: a plain door,
+		/// a locked one without its key (by click and by macro), then with the key. Before P7 the door swung in its type's @DClick
+		/// handler (a locked door refused there, after the whole chain had run) and the macro used the door directly, raising
+		/// nothing: plain=me:denyItemDClick,it:denyDClick,me:itemDClick,it:DClick/1 locked=(the same)/0 macro=/0 key=(the same)/1.</summary>
+		[SteamFunction]
+		public static void TestChainDoor(Character self) {
+			Ready(self);
+			self.AddTriggerGroup(SingletonScript<E_ChainProbeChar>.Instance);
+			Item door = (Item) ThingDef.GetByDefname("i_flip_door_probe").Create(self.X + 1, self.Y, self.Z, self.M);
+			door.AddTriggerGroup(SingletonScript<E_ChainProbeItem>.Instance);
+			Item key = null;
+			try {
+				door.Trigger_DClick(self);
+				string plain = Logged() + "/" + DoorOpen(door);
+				door.Model = door.TypeDef.Model;
+				door.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door_locked");
+				door.LockUid = 77;
+				door.Trigger_DClick(self);
+				string locked = Logged() + "/" + DoorOpen(door);
+				self.On_OpenDoorMacro();
+				string macro = Logged() + "/" + DoorOpen(door);
+				key = (Item) ThingDef.GetByDefname("i_door_key_probe").Create(self.Backpack);
+				key.LockUid = 77;
+				door.Trigger_DClick(self);
+				string withKey = Logged() + "/" + DoorOpen(door);
+				Console.WriteLine("CHAIN_DOOR: plain=" + plain + " locked=" + locked + " macro=" + macro + " key=" + withKey + " |");
+				const string full = "me:denyItemDClick,it:denyDClick,me:itemDClick,it:DClick";
+				Check("doorPlain", plain == full + "/1");
+				Check("doorLockedDenied", locked == "me:denyItemDClick,it:denyDClick/0");
+				Check("doorMacroIsADClick", macro == "me:denyItemDClick,it:denyDClick/0");
+				Check("doorKeyOpens", withKey == full + "/1");
+			} finally {
+				self.RemoveTriggerGroup(SingletonScript<E_ChainProbeChar>.Instance);
+				door.Delete();
+				if (key != null) {
+					key.Delete();
+				}
+			}
+			Console.WriteLine("CHAIN_DOOR_DONE");
+		}
+
+		private static int DoorOpen(Item door) {
+			return (door.Model - door.TypeDef.Model) & 1;
+		}
+
 		/// <summary>A step across a region boundary onto an item, the mover, the item and both regions probed; then a cancel
 		/// by the mover's deny and by the region it enters.</summary>
 		[SteamFunction]

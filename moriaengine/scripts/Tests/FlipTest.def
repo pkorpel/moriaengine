@@ -4,7 +4,7 @@
 model = 0x260
 DupeList = 0x262,0x261
 
-[ItemDef i_flip_door_probe]
+[DoorDef i_flip_door_probe]
 model = 0x675
 type = t_door
 

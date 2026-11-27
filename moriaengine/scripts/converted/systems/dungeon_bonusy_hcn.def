@@ -433,7 +433,7 @@ Color = 0999 //ada
 
 //[function f_hcn_lavaRoom_recede] //(commented out by Converter) 
 
-[ItemDef i_hcn_firstLevel_mainDoor]
+[DoorDef i_hcn_firstLevel_mainDoor]
 name = "pevna ocel"
 type = t_door_locked
 model = i_door_metal
