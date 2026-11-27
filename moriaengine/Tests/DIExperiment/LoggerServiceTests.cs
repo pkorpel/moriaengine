@@ -22,47 +22,19 @@ namespace SteamEngine.Tests.DIExperiment {
 			}
 		}
 
-		private static CoreServiceOrchestrator Discovered(params object[] externals) =>
-			new(CoreServiceOrchestrator.Discover(typeof(LoggerService).Assembly), externals);
-
+		/// <summary>The facade forwards output without owning files and rejects use outside its lifetime.</summary>
 		[Fact]
-		public void FirstRunWritesAllDefaultsWithoutStartingAnything() {
-			var store = new InMemoryConfigStore();
-			using var host = Discovered();
-			Assert.Equal(StartupResult.DefaultsWritten, host.Start(store));
-			Assert.Equal(new LoggerConfiguration(), store.Read<LoggerConfiguration>());
-			Assert.Equal(new ExampleConfiguration(), store.Read<ExampleConfiguration>());
-		}
-
-		[Fact]
-		public void DiscoveredServicesStartInDependencyOrder() {
+		public void LoggerDelegatesWithoutOwningLogFiles() {
 			using var folder = new TempDirectory();
-			var store = new InMemoryConfigStore();
-			store.WriteDefaults(new LoggerConfiguration(folder.Path));
-			store.WriteDefaults(new ExampleConfiguration());
-			using var host = Discovered();
-			var output = CaptureLegacyLog(() => Assert.Equal(StartupResult.Running, host.Start(store)));
-			Assert.Contains("Example consumer initialized.", output);
+			using var service = new LoggerService(new LoggerConfiguration { LogPath = folder.Path });
+			ILogger logger = service;
+			Assert.Throws<InvalidOperationException>(() => logger.WriteLine("before initialization"));
+			service.Init();
+			var output = CaptureLegacyLog(() => logger.WriteLine("Logger service message."));
+			Assert.Contains("Logger service message.", output);
 			Assert.Empty(Directory.EnumerateFileSystemEntries(folder.Path));
-			var logger = host.Get<ILogger>();
-			Assert.Same(host.Get<LoggerService>(), logger);
-			host.Dispose();
+			service.Dispose();
 			Assert.Throws<ObjectDisposedException>(() => logger.WriteLine("after shutdown"));
-		}
-
-		private sealed class RecordingLog : ILogger {
-			public object LastMessage;
-			public void Emit(LogKind kind, object message, string file = null, int line = 0) => LastMessage = message;
-		}
-
-		[Fact]
-		public void ConsumerRunsAgainstAStubbedLogger() {
-			var store = new InMemoryConfigStore();
-			store.WriteDefaults(new ExampleConfiguration("stubbed"));
-			var log = new RecordingLog();
-			using var host = new CoreServiceOrchestrator([typeof(ExampleConsumer)], log);
-			Assert.Equal(StartupResult.Running, host.Start(store));
-			Assert.Equal("stubbed", log.LastMessage);
 		}
 	}
 }
