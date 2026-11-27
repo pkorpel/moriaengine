@@ -19,22 +19,22 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			internal Action<Type> BeforeRead { get; set; }
 
 			/// <summary>Records when the store is loaded relative to the service settings.</summary>
-			public void Load() {
+			public bool Load() {
 				trace.Events.Add("store.load");
-				inner.Load();
+				return inner.Load();
 			}
 
 			/// <summary>Records each requested type and lets a test probe logger readiness during the read.</summary>
-			public T Read<T>() where T : class {
-				trace.Events.Add($"store.read {typeof(T).Name}");
-				BeforeRead?.Invoke(typeof(T));
-				return inner.Read<T>();
+			public object Read(Type type) {
+				trace.Events.Add($"store.read {type.Name}");
+				BeforeRead?.Invoke(type);
+				return inner.Read(type);
 			}
 
-			/// <summary>Records default writes while retaining the ordinary in-memory store behavior.</summary>
-			public void WriteDefaults<T>(T defaults) where T : class {
-				trace.Events.Add($"store.write {typeof(T).Name}");
-				inner.WriteDefaults(defaults);
+			/// <summary>Records the single save after all settings were validated.</summary>
+			public void Save() {
+				trace.Events.Add("store.save");
+				inner.Save();
 			}
 		}
 

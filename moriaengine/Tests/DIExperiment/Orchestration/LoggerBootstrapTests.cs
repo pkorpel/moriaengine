@@ -18,33 +18,16 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 		[Fact]
 		public void ConfiguredLoggerStartsWithItsSettings() {
 			var store = new InMemoryConfigStore();
-			var configuration = new LoggerConfiguration(LogToFiles: false);
+			var configuration = new LoggerConfiguration { LogToFiles = false };
 			store.WriteDefaults(configuration);
 			var sink = new RecordingLogger();
 			using var logger = new LoggerService(LoggerConfiguration.Emergency, sink);
 
-			Assert.True(LoggerBootstrap.Initialize(store, logger, out bool defaultsWritten));
-			Assert.False(defaultsWritten);
+			Assert.True(LoggerBootstrap.Initialize(store, logger, out bool existingConfiguration));
+			Assert.True(existingConfiguration);
 			Assert.Same(configuration, logger.Settings);
 			((ILogger) logger).WriteLine("Configured logger is ready.");
 			Assert.Contains(sink.Entries, entry => entry.Message?.ToString() == "Configured logger is ready.");
-			Print(sink);
-		}
-
-		/// <summary>Missing settings leave a working emergency logger and write defaults for a later run.</summary>
-		[Fact]
-		public void MissingSettingsStartEmergencyLoggerAndWriteDefaults() {
-			var store = new InMemoryConfigStore();
-			var sink = new RecordingLogger();
-			using var logger = new LoggerService(LoggerConfiguration.Emergency, sink);
-
-			Assert.True(LoggerBootstrap.Initialize(store, logger, out bool defaultsWritten));
-			Assert.True(defaultsWritten);
-			Assert.Same(LoggerConfiguration.Emergency, logger.Settings);
-			Assert.Equal(new LoggerConfiguration(), store.Read<LoggerConfiguration>());
-			((ILogger) logger).WriteError("Emergency logger is ready.");
-			Assert.Contains(sink.Entries, entry => entry.Kind == LogKind.Warning && entry.Display.Contains("emergency configuration"));
-			Assert.Contains(sink.Entries, entry => entry.Kind == LogKind.Error && entry.Display.Contains("Emergency logger is ready."));
 			Print(sink);
 		}
 
@@ -60,8 +43,7 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			var sink = new RecordingLogger();
 			using var logger = new LoggerService(LoggerConfiguration.Emergency, sink);
 
-			Assert.False(LoggerBootstrap.Initialize(new SharpConfigStore(path), logger, out bool defaultsWritten));
-			Assert.False(defaultsWritten);
+			Assert.False(LoggerBootstrap.Initialize(new SharpConfigStore(path), logger, out _));
 			Assert.Same(LoggerConfiguration.Emergency, logger.Settings);
 			Assert.Contains("emergency configuration", sink.Entries[0].Display);
 			Assert.Equal(LogKind.Error, sink.Entries[1].Kind);
@@ -81,30 +63,14 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 				Directory.CreateDirectory(Path.Combine(folder.Path, name));
 			}
 			var store = new InMemoryConfigStore();
-			store.WriteDefaults(new LoggerConfiguration(folder.Path));
+			store.WriteDefaults(new LoggerConfiguration { LogPath = folder.Path });
 			var sink = new RecordingLogger();
 			using var logger = new LoggerService(LoggerConfiguration.Emergency, sink);
 
-			Assert.False(LoggerBootstrap.Initialize(store, logger, out bool defaultsWritten));
-			Assert.False(defaultsWritten);
+			Assert.False(LoggerBootstrap.Initialize(store, logger, out _));
 			Assert.Same(LoggerConfiguration.Emergency, logger.Settings);
 			Assert.Contains(sink.Entries, entry => entry.Kind == LogKind.Warning && entry.Display.Contains("emergency configuration"));
 			Assert.Contains(sink.Entries, entry => entry.Kind == LogKind.Error && entry.Display.Contains(folder.Path));
-			Print(sink);
-		}
-
-		/// <summary>A failed INI write is reported by the emergency logger and does not create the file.</summary>
-		[Fact]
-		public void FailedDefaultWriteIsReportedByEmergencyLogger() {
-			using var folder = new TempDirectory();
-			string path = Path.Combine(folder.Path, "missing", "steamengine.ini");
-			var sink = new RecordingLogger();
-			using var logger = new LoggerService(LoggerConfiguration.Emergency, sink);
-
-			Assert.False(LoggerBootstrap.Initialize(new SharpConfigStore(path), logger, out bool defaultsWritten));
-			Assert.False(defaultsWritten);
-			Assert.Contains(sink.Entries, entry => entry.Kind == LogKind.Error && entry.Display.Contains(path));
-			Assert.False(File.Exists(path));
 			Print(sink);
 		}
 

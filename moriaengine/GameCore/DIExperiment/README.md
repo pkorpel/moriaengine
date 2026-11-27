@@ -13,8 +13,11 @@ static singletons wired up by hand. Production startup does not use it yet.
 - **Configure everything before starting anything.** All settings are read and validated first, and every
   error is reported at once. Missing keys get their defaults and the INI is written once, only if everything
   succeeded. A missing INI is generated and startup stops so it can be reviewed.
+- **The logger comes first.** Its settings are read before anything else, so every later error is reported
+  through it. If its settings are broken, an emergency console-only logger reports that and startup stops.
 - **Then start in dependency order.** Each service is constructed with its validated settings and its
   already-started dependencies, then `Init()` runs. If one fails, what has started is disposed in reverse.
+- **Several implementations** of one interface can be injected together as `IEnumerable<T>`.
 - **No I/O in constructors**, so services and the config store are easy to replace in tests
   (`InMemoryConfigStore`, stub services).
 
@@ -63,3 +66,8 @@ StartupResult result = host.Start(store); // Running, DefaultsWritten or Failed
 ```
 
 More examples are in `Tests/DIExperiment/Examples/`.
+
+## Migrating real systems
+
+`UoData/MultiDataService` is the first slice: multi data is read by a service with typed settings and an
+injected logger, while `MultiData.GetByModel` stays as the facade the rest of the engine uses.

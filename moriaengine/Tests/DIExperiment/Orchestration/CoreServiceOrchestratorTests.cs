@@ -38,13 +38,13 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			Assert.Equal(StartupResult.Running, host.Start(store));
 			var dependency = host.Get<TrackedDependency<int>>();
 			var dependent = host.Get<TrackedDependent<int>>();
-			Assert.Same(innerStore.Read<TrackedSettings>(), dependency.Settings);
+			Assert.Same(innerStore.Read(typeof(TrackedSettings)), dependency.Settings);
 			Assert.Same(dependency.Settings, dependent.Settings);
 			Assert.Same(host.Get<ILogger>(), dependent.Logger);
 			Assert.Contains(sink.Entries, e => e.Message?.ToString() == "Logger is ready during settings loading.");
 			Assert.Contains(sink.Entries, e => e.Message?.ToString() == "Dependent initialized." && e.Indentation == "\t");
 			Assert.Equal(new[] {
-				"store.load", "store.read LoggerConfiguration", "store.read TrackedSettings", "settings.validate",
+				"store.load", "store.read LoggerConfiguration", "store.read TrackedSettings", "settings.validate", "store.save",
 				"dependency.construct", "dependency.init", "dependent.construct", "dependent.init"
 			}, trace.Events);
 
@@ -54,7 +54,7 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			host.Dispose();
 			Assert.Throws<ObjectDisposedException>(() => host.Get<ILogger>());
 			Assert.Equal(new[] {
-				"store.load", "store.read LoggerConfiguration", "store.read TrackedSettings", "settings.validate",
+				"store.load", "store.read LoggerConfiguration", "store.read TrackedSettings", "settings.validate", "store.save",
 				"dependency.construct", "dependency.init", "dependent.construct", "dependent.init",
 				"dependent.dispose", "dependency.dispose"
 			}, trace.Events);
@@ -122,7 +122,7 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			var trace = new StartupTrace();
 			var store = new InMemoryConfigStore();
 			// Fail phase zero itself, before the tracked service settings are read.
-			store.WriteDefaults(new LoggerConfiguration(LogPath: "", LogToFiles: true));
+			store.WriteDefaults(new LoggerConfiguration { LogPath = "", LogToFiles = true });
 			store.WriteDefaults(new TrackedSettings(trace));
 			var sink = new RecordingLogger();
 			using var host = CreateHost(trace, sink);
@@ -130,24 +130,6 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			Assert.Equal(StartupResult.Failed, host.Start(new TrackingStore(store, trace)));
 			Assert.Equal(new[] { "store.load", "store.read LoggerConfiguration" }, trace.Events);
 			Assert.Contains(sink.Entries, e => e.Kind == LogKind.Error);
-			Print(sink);
-		}
-
-		/// <summary>Missing logger settings still leave a working logger to report later validation errors.</summary>
-		[Fact]
-		public void EmergencyLoggerReportsInvalidServiceSettings() {
-			var trace = new StartupTrace { Failure = Failure.Validation };
-			var store = new InMemoryConfigStore();
-			store.WriteDefaults(new TrackedSettings(trace));
-			var sink = new RecordingLogger();
-			using var host = CreateHost(trace, sink);
-
-			// Phase zero writes logger defaults, but an invalid service setting still makes startup fail.
-			Assert.Equal(StartupResult.Failed, host.Start(store));
-			Assert.Equal(new LoggerConfiguration(), store.Read<LoggerConfiguration>());
-			Assert.Equal(new[] { "settings.validate" }, trace.Events);
-			Assert.Contains(sink.Entries, e => e.Kind == LogKind.Warning && e.Display.Contains("emergency configuration"));
-			Assert.Contains(sink.Entries, e => e.Kind == LogKind.Error && e.Display.Contains("invalid settings"));
 			Print(sink);
 		}
 
@@ -251,32 +233,25 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			Print(sink);
 		}
 
-		/// <summary>Illustrates a real service going through first-run defaults and then normal startup.</summary>
+		/// <summary>Illustrates a real service completing an existing INI and starting in the same run.</summary>
 		[Fact]
-		public void MultiDataStartsAfterWritingMissingDefaults() {
+		public void MultiDataStartsAndCompletesExistingConfiguration() {
 			using var folder = new TempDirectory();
 			string path = Path.Combine(folder.Path, "steamengine.ini");
 			File.WriteAllText(path, $"[files]\nLogPath={folder.Path}\nLogToFiles=false\nMulPath={folder.Path}\nUseMultiItems=false\n");
-			var firstLog = new RecordingLogger();
+			var log = new RecordingLogger();
 
-			// First run fills missing keys but must not initialize the service.
-			using (var firstHost = new CoreServiceOrchestrator([typeof(MultiDataService)], firstLog)) {
-				Assert.Equal(StartupResult.DefaultsWritten, firstHost.Start(new SharpConfigStore(path)));
-			}
+			// The missing keys are saved, and the existing file lets the service start without a restart.
+			using var host = new CoreServiceOrchestrator([typeof(MultiDataService)], log);
+			Assert.Equal(StartupResult.Running, host.Start(new SharpConfigStore(path)));
 			var ini = Configuration.LoadFromFile(path);
 			Assert.True(ini["files"].Contains("WriteMulDocsFiles"));
 			Assert.True(ini["files"].Contains("DocsPath"));
-			Assert.DoesNotContain(firstLog.Entries, entry => entry.Message?.ToString() == "Initializing MultiDataService");
-			Print(firstLog);
-
-			// The completed file can now start the same service; its own message is indented inside Init.
-			var secondLog = new RecordingLogger();
-			using var secondHost = new CoreServiceOrchestrator([typeof(MultiDataService)], secondLog);
-			Assert.Equal(StartupResult.Running, secondHost.Start(new SharpConfigStore(path)));
-			Assert.Same(secondHost.Get<MultiDataService>(), secondHost.Get<IMultiDataCatalog>());
-			var message = Assert.Single(secondLog.Entries.Where(entry => entry.Message?.ToString() == "Ignoring multi.mul"));
+			Assert.Same(host.Get<MultiDataService>(), host.Get<IMultiDataCatalog>());
+			// The service's own message is indented inside Init.
+			var message = Assert.Single(log.Entries.Where(entry => entry.Message?.ToString() == "Ignoring multi.mul"));
 			Assert.StartsWith("\t", message.Indentation);
-			Print(secondLog);
+			Print(log);
 		}
 
 		private static CoreServiceOrchestrator CreateHost(StartupTrace trace, RecordingLogger sink) =>
@@ -284,7 +259,7 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 
 		private static InMemoryConfigStore LoggerOnlyStore() {
 			var store = new InMemoryConfigStore();
-			store.WriteDefaults(new LoggerConfiguration(LogToFiles: false));
+			store.WriteDefaults(new LoggerConfiguration { LogToFiles = false });
 			return store;
 		}
 

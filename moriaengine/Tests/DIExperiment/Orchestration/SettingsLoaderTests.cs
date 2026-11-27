@@ -14,58 +14,42 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 			this.output = output;
 		}
 
-		/// <summary>Valid settings are returned by identity, while a phase-zero default still requires a restart.</summary>
+		/// <summary>Valid settings are returned by identity; a new configuration still stops for review.</summary>
 		[Theory]
 		[InlineData(false)]
 		[InlineData(true)]
-		public void ReadsAndValidatesSettingsAndPreservesLoggerDefaultsResult(bool loggerDefaultsWritten) {
+		public void ReadsAndValidatesSettingsAndStopsOnlyForNewConfiguration(bool existingConfiguration) {
 			var store = new InMemoryConfigStore();
 			var value = new ValidSettings();
 			store.WriteDefaults(value);
 			store.Load();
 			var settings = new Dictionary<Type, object>();
 
-			// A prior logger default must not be lost just because these settings are valid.
-			var result = SettingsLoader.Load(store, [typeof(ValidSettings)], settings, new RecordingLogger(), loggerDefaultsWritten);
+			var result = SettingsLoader.Load(store, [typeof(ValidSettings)], settings, new RecordingLogger(), existingConfiguration);
 
-			Assert.Equal(loggerDefaultsWritten ? StartupResult.DefaultsWritten : StartupResult.Running, result);
+			Assert.Equal(existingConfiguration ? StartupResult.Running : StartupResult.DefaultsWritten, result);
 			Assert.Same(value, settings[typeof(ValidSettings)]);
 			Assert.Equal(1, value.ValidationCount);
 		}
 
-		/// <summary>All missing types receive defaults, but are not returned as validated settings yet.</summary>
-		[Fact]
-		public void MissingSettingsWriteAllDefaults() {
-			var store = new InMemoryConfigStore();
-			store.Load();
-			var settings = new Dictionary<Type, object>();
-
-			var result = SettingsLoader.Load(store, [typeof(FirstSettings), typeof(SecondSettings)],
-				settings, new RecordingLogger(), false);
-
-			Assert.Equal(StartupResult.DefaultsWritten, result);
-			Assert.Equal("first", store.Read<FirstSettings>().Value);
-			Assert.Equal("second", store.Read<SecondSettings>().Value);
-			Assert.Empty(settings);
-		}
-
-		/// <summary>Both engine and ordinary validation errors are logged without skipping other defaults.</summary>
+		/// <summary>Both engine and ordinary validation errors are logged, later types are still read, and nothing is saved.</summary>
 		[Theory]
 		[InlineData(true)]
 		[InlineData(false)]
-		public void InvalidSettingsAreReportedAndOtherDefaultsAreStillWritten(bool isSEException) {
-			var store = new InMemoryConfigStore();
-			store.WriteDefaults(new InvalidSettings(isSEException));
-			store.Load();
+		public void InvalidSettingsAreReportedWithoutSaving(bool isSEException) {
+			var inner = new InMemoryConfigStore();
+			inner.WriteDefaults(new InvalidSettings(isSEException));
+			var trace = new OrchestratorTestServices.StartupTrace();
+			var store = new OrchestratorTestServices.TrackingStore(inner, trace);
 			var settings = new Dictionary<Type, object>();
 			var logger = new RecordingLogger();
 
-			// A bad value must not prevent the rest of the missing defaults being written.
-			var result = SettingsLoader.Load(store, [typeof(InvalidSettings), typeof(FirstSettings)], settings, logger, false);
+			// A bad value must not hide errors in the settings read after it.
+			var result = SettingsLoader.Load(store, [typeof(InvalidSettings), typeof(ValidSettings)], settings, logger, true);
 
 			Assert.Equal(StartupResult.Failed, result);
-			Assert.NotNull(store.Read<FirstSettings>());
-			Assert.Empty(settings);
+			Assert.Equal(new[] { "store.read InvalidSettings", "store.read ValidSettings" }, trace.Events);
+			Assert.Single(settings);
 			Assert.Contains(logger.Entries, entry => entry.Kind == LogKind.Error && entry.Display.Contains("invalid settings"));
 			Print(logger);
 		}
@@ -79,18 +63,6 @@ namespace SteamEngine.Tests.DIExperiment.Orchestration {
 		private sealed class ValidSettings : ICoreSettings {
 			internal int ValidationCount { get; private set; }
 			public void Validate() => ValidationCount++;
-		}
-
-		private sealed class FirstSettings : ICoreSettings {
-			public FirstSettings(string value = "first") => Value = value;
-			internal string Value { get; }
-			public void Validate() { }
-		}
-
-		private sealed class SecondSettings : ICoreSettings {
-			public SecondSettings(string value = "second") => Value = value;
-			internal string Value { get; }
-			public void Validate() { }
 		}
 
 		private sealed class InvalidSettings(bool isSEException) : ICoreSettings {

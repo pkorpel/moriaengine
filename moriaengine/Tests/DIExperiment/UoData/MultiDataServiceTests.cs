@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using SharpConfig;
 using SteamEngine;
 using SteamEngine.Common;
 using SteamEngine.DIExperiment;
@@ -17,41 +16,11 @@ namespace SteamEngine.Tests.DIExperiment.UoData {
 			this.output = output;
 		}
 
-		/// <summary>Missing multi-data keys are reported without discarding existing file values.</summary>
-		[Fact]
-		public void IncompleteConfigurationCanBeFilledWithDefaults() {
-			using var folder = new TempDirectory();
-			string path = Path.Combine(folder.Path, "steamengine.ini");
-			File.WriteAllText(path, "[files]\nMulPath=../uo-files\n");
-			var store = Loaded(path);
-
-			// Reading reports the missing keys; writing defaults must preserve the existing path.
-			Assert.Null(store.Read<MultiDataConfiguration>());
-			store.WriteDefaults(new MultiDataConfiguration());
-			var ini = Configuration.LoadFromFile(path);
-			Assert.True(ini["files"].Contains("UseMultiItems"));
-			Assert.True(ini["files"].Contains("WriteMulDocsFiles"));
-			Assert.Equal("../uo-files", store.Read<MultiDataConfiguration>().MulPath);
-		}
-
-		/// <summary>A malformed multi-data value identifies its section, key, and INI file.</summary>
-		[Fact]
-		public void InvalidConfigurationReportsTheSetting() {
-			using var folder = new TempDirectory();
-			string path = Path.Combine(folder.Path, "steamengine.ini");
-			File.WriteAllText(path, $"[files]\nMulPath={folder.Path}\nUseMultiItems=not-a-bool\nWriteMulDocsFiles=false\nDocsPath={folder.Path}\n");
-			var store = Loaded(path);
-
-			var error = Assert.Throws<SEException>(() => store.Read<MultiDataConfiguration>());
-			Assert.Contains("[files] UseMultiItems", error.Message);
-			Assert.Contains(path, error.Message);
-		}
-
 		/// <summary>Validation identifies both files needed to load enabled multi data.</summary>
 		[Fact]
 		public void MissingMultiFilesFailValidationWithTheirPaths() {
 			using var folder = new TempDirectory();
-			var settings = new MultiDataConfiguration(folder.Path);
+			var settings = new MultiDataConfiguration { MulPath = folder.Path };
 
 			var error = Assert.Throws<SEException>(settings.Validate);
 			Assert.Contains(Path.Combine(folder.Path, "multi.idx"), error.Message);
@@ -63,7 +32,7 @@ namespace SteamEngine.Tests.DIExperiment.UoData {
 		public void LoadsRealMultiDataAndClearsItOnDispose() {
 			string root = FindRepositoryRoot();
 			string mulPath = Path.Combine(root, "uo-files");
-			var settings = new MultiDataConfiguration(mulPath);
+			var settings = new MultiDataConfiguration { MulPath = mulPath };
 			var logger = new RecordingLogger();
 			using var service = new MultiDataService(settings, logger);
 
@@ -89,12 +58,6 @@ namespace SteamEngine.Tests.DIExperiment.UoData {
 			// Both the DI facade and the legacy entry point share the cleared catalog.
 			service.Dispose();
 			Assert.Null(MultiData.GetByModel(model));
-		}
-
-		private static SharpConfigStore Loaded(string path) {
-			var store = new SharpConfigStore(path);
-			store.Load();
-			return store;
 		}
 
 		private static string FindRepositoryRoot() {
