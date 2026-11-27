@@ -1,6 +1,6 @@
 # Local dev
 
-Last reviewed: 2026-11-26
+Last reviewed: 2026-11-27
 
 ## One-time setup
 
@@ -24,6 +24,11 @@ scripts/test-fast.sh "FullyQualifiedName~RaceTests"  # filter the fast tier; all
 scripts/test-full.sh                      # whole suite, class by class (one run at a time)
 scripts/test-full.sh "FullyQualifiedName~LevelingTests"
 ```
+
+All of these build through `moriaengine/build.ps1`. Before building, it deletes the `*.Generated.cs` files under
+`scripts/` and the `Generated/` folder that the old boot-time code generator left in older clones. They are
+gitignored, so a pull keeps them, and they break the build with thousands of SEGEN905/SEGEN012 errors (#1592). A
+build that bypasses `build.ps1` (an IDE, a bare `dotnet build`) doesn't clean them: run `build.ps1` once.
 
 ## Run the shard
 

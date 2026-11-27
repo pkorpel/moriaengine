@@ -12,6 +12,10 @@
   once afterwards so it writes its default ini - see Initialize-SteamEngineIni
   below. You never need to do this by hand.
 
+  Before building, it deletes the *.Generated.cs files under scripts/ and the
+  Generated/ folder that the old boot-time code generator left in older clones
+  (gitignored, so a pull keeps them); they break the build (#1592).
+
 .PARAMETER Configuration
   Debug or Release. (There is no Sane/Optimized build anymore - that was a
   pre-msbuild-conversion scheme that never carried over; the current code
@@ -107,6 +111,26 @@ function Initialize-SteamEngineIni {
 		Remove-Item $stdout, $stderr -ErrorAction SilentlyContinue
 	}
 }
+
+function Remove-StaleGeneratedCode {
+	# #1592: the boot-time code generator removed in #1563 wrote *.Generated.cs files next to
+	# the scripts and into Generated/. They are gitignored, so an older clone keeps them after
+	# a pull, and the Roslyn generators then make every member they hold a second time
+	# (SEGEN905/SEGEN012, thousands of errors). No tracked file has that name.
+	$stale = @(Get-ChildItem -Path 'scripts' -Filter '*.Generated.cs' -Recurse -File)
+	foreach ($file in $stale) {
+		Remove-Item -LiteralPath $file.FullName
+	}
+	if ($stale.Count -gt 0) {
+		Write-Host "==> Removed $($stale.Count) leftover *.Generated.cs file(s) from scripts/ (old code generator, #1592)"
+	}
+	if (Test-Path 'Generated') {
+		Remove-Item -LiteralPath 'Generated' -Recurse -Force
+		Write-Host '==> Removed the leftover Generated/ folder (old code generator, #1592)'
+	}
+}
+
+Remove-StaleGeneratedCode
 
 if ($Clean) {
 	Write-Host "==> Cleaning ($Configuration)"
