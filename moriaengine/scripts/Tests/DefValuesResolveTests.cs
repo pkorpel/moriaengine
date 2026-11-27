@@ -115,6 +115,21 @@ namespace SteamEngine.CompiledScripts {
 				+ " npcs=" + npcDefs.Count + " templates=" + templates.Count + " lootLines=" + lootLines + " failures=" + failures.Count + " others=" + others.Count + " end");
 		}
 
+		/// <summary>Counts the NPCs of the given def next to self (what ".add" just made), then deletes them.</summary>
+		[SteamFunction]
+		public static void TestCountAddedNpcs(Character self, ScriptArgs sa) {
+			string defname = sa.Args.Trim().Trim('"');
+			AbstractScript def = AbstractScript.GetByDefname(defname);
+			int count = 0;
+			foreach (AbstractCharacter ch in new List<AbstractCharacter>(self.GetMap().GetCharsInRange(self.X, self.Y, 5))) {
+				if ((ch != self) && (ch.Def == def)) {
+					count++;
+					ch.Delete();
+				}
+			}
+			Console.WriteLine("DEFVALUES_ADDED: def=" + defname + " count=" + count + " end");
+		}
+
 		private static void Empty(Item bag) {
 			foreach (AbstractItem made in new List<AbstractItem>(bag)) {
 				made.Delete();

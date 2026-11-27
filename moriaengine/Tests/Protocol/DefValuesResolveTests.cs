@@ -70,6 +70,29 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.True(unexpected.Length == 0, line + "\n" + unexpected);
 			Assert.True(expected.Count == 0, "Listed in DefValuesKnownFailures.txt but made fine now, take them out: " + string.Join(", ", expected));
 		}
+
+		/// <summary>The GM's ".add" of the NPCs whose creation failed on braces (pkorpel's report on PR #1591:
+		/// c_saur_hat_thief, DESCRIPTION = Thief {male}; it was its colour constant), through the real command and target.</summary>
+		[Fact]
+		public void AddCommandMakesTheBraceNpcs() {
+			using (TestGameClient game = this.Login("Pridavac")) {
+				this.Run(game, ".TestSetGmOn", "GM_MODE_TEST: SET");
+				this.Run(game, ".TestReportPositionXYZ", "STATIC_POSITION:");
+				string pos = this.LastLine("STATIC_POSITION:");
+				int x = Number(pos, "x"), y = Number(pos, "y"), z = Number(pos, "z");
+				foreach (string def in new[] { "c_saur_hat_thief", "c_ratman" }) {
+					int mark = this.fixture.GameOutputSnapshot().Length;
+					game.SendSpeech(".add " + def);
+					System.Threading.Thread.Sleep(500);
+					game.SendTargetGround(x + 2, y, z);
+					System.Threading.Thread.Sleep(1000);
+					this.Run(game, ".TestCountAddedNpcs \"" + def + "\"", "DEFVALUES_ADDED: def=" + def);
+					string output = this.fixture.GameOutputSnapshot();
+					Assert.True(this.LastLine("DEFVALUES_ADDED: def=" + def).Contains(" count=1 "),
+						".add " + def + " made no NPC. Game output since:\n" + output.Substring(mark));
+				}
+			}
+		}
 	}
 
 	[CollectionDefinition(Name)]
