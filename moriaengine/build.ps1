@@ -12,9 +12,9 @@
   once afterwards so it writes its default ini - see Initialize-SteamEngineIni
   below. You never need to do this by hand.
 
-  Before building, it deletes the *.Generated.cs files under scripts/ and the
-  Generated/ folder that the old boot-time code generator left in older clones
-  (gitignored, so a pull keeps them); they break the build (#1592).
+  Before building, it deletes what the old code generators left in older clones
+  (#1592): the *.Generated.cs files under scripts/, which break the build, and
+  the dead Generated/ folder.
 
 .PARAMETER Configuration
   Debug or Release. (There is no Sane/Optimized build anymore - that was a
@@ -113,10 +113,11 @@ function Initialize-SteamEngineIni {
 }
 
 function Remove-StaleGeneratedCode {
-	# #1592: the boot-time code generator removed in #1563 wrote *.Generated.cs files next to
-	# the scripts and into Generated/. They are gitignored, so an older clone keeps them after
-	# a pull, and the Roslyn generators then make every member they hold a second time
-	# (SEGEN905/SEGEN012, thousands of errors). No tracked file has that name.
+	# #1592: the .ct template generator wrote a *.Generated.cs beside each script. Its removal
+	# (11990dc3) also dropped the cleanup that deleted them here, and they are gitignored, so an
+	# older clone keeps them after a pull. The Roslyn generators then make every member they
+	# hold a second time (CS0111, SEGEN905/SEGEN012: thousands of errors). No tracked file has
+	# that name. Generated/ is the dead output of the runtime pass removed in #1563.
 	$stale = @(Get-ChildItem -Path 'scripts' -Filter '*.Generated.cs' -Recurse -File)
 	foreach ($file in $stale) {
 		Remove-Item -LiteralPath $file.FullName

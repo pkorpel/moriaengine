@@ -77,8 +77,9 @@ until #1382.)
 The generic and other generators also run inside the scripts compilation. Each scans
 attributes on script types and adds its output as generated source. Nothing is written to
 disk, and there is no separate runtime generation pass or `Generated/` project (#1563).
-Older clones can still hold that generator's gitignored output (`*.Generated.cs` under `scripts/`, the
-`Generated/` folder), which duplicates every generated member; `build.ps1` deletes it before building (#1592).
+Older clones can still hold the old generators' output: a gitignored `*.Generated.cs` beside each script, from the
+`.ct` templates, which duplicates every generated member, and this pass's dead `Generated/` folder. `build.ps1`
+deletes both before building (#1592).
 GameCore can still invoke the scripts compilation at boot.
 
 `[SteamFunction]` dispatch is now generated at scripts compile time by the Roslyn source

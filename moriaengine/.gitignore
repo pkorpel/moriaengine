@@ -5,8 +5,8 @@
 */bin/
 */obj/
 
-# Runtime-generated artifacts - produced fresh by code generators/the
-# loc system on every boot, never checked into source control
+# Old code-generator output (nothing writes it any more); build.ps1 deletes
+# leftovers from older clones (#1592)
 *.Generated.cs
 /Languages/Default/
 /steamengine.ini
