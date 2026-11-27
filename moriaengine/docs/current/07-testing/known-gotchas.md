@@ -8,7 +8,7 @@ once - read this before writing a new test in an unfamiliar area of the codebase
 
 An action refused by a rule and one refused because the character is out of reach, or hasn't
 opened the container, look the same from a client: nothing moves. `CanReach` comes after the
-deny chain (see [Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md)). So a
+deny chain (see [Deny results and the default check](../02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check)). So a
 test of a refusal also does the same action, from the same spot, as a character the rule
 allows, and asserts it works. Practical points:
 1. A fresh test character spawns at its own default position: move it next to the thing

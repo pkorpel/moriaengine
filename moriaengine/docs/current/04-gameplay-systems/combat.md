@@ -141,7 +141,7 @@ In order:
    [minimum damage](#swing-formulas-860) rules apply.
 4. `Trigger_Damage` fires `@causeDamage`/`@damage` (attacker/defender respectively) - this is
    the generic deny/observe point other systems hook (see
-   [triggers-and-deny-chains.md](../02-engine-core/triggers-and-deny-chains.md)).
+   [trigger-system-architecture.md](../02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check)).
 5. HP is reduced, and if actual damage was dealt, a hurt sound/anim plays (or nothing, if the
    `Hits` setter's own synchronous `CauseDeath` call already deleted a non-player defender -
    see the `IsDeleted` guard at line 132, same ordering gotcha as the re-entrancy guard

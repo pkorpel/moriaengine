@@ -63,83 +63,13 @@ For a thing the full order of a trigger is (`Thing.TryCancellableTrigger`, `Thin
    (`ThingDef.TryCancellableTrigger`);
 5. for an item, its `TYPE`.
 
-So a plugin on a character hears whatever the character hears without anyone calling it:
-`@skillSelect`, `@skillStart`, `@skillStroke`, `@skillSuccess` and `@skillFail` (raised on the
-character by `SkillDef`'s `Trigger_Select`, `Trigger_Start`, `Trigger_Stroke`,
-`Trigger_Success` and `Trigger_Fail` before the skill's own code, `SkillDef.cs:233-321`),
-`@swing`, `@death`, `@logout`, the deny triggers, and so on. `@damage` (`DamageManager`) carries a
-`DamageArgs` whose `damage` a handler may lower (the mana shield does, #1401) and whose `isSwing`/`isSpell` say where
-it came from. Plugins hear a trigger newest first, so where the order of two changes matters (Erebor's damage_final:
-energy shield, then mana shield) the first is called at a fixed point instead (`EnergyShieldPlugin.Absorb`). Magery
-adds its own (the chain is in `trigger-catalog.md` 1.13): the deny `@denySpellCast` (#1401, #1558: `DenySpellCastArgs`)
-after mana and reagents, whose handlers come before the casting rules in `Character.On_DenySpellCast` (the energy shield
-refuses Recall there, the shaman's voodoo curses casting or Recall, #1450), and (#1386) `@spellCast` once a player's cast
-is under way (`MagerySkillDef.On_Start`, after the deny and the spell's own `@start`; custom spell scrolls raise it
-too, NPC casts don't, they go through `NPCAiTimer.TryCastSpell`), and `@monsterSpellPower` while a player's
-spell power on a monster is worked out (`SpellDef.MonsterLevelBonus`, a `MonsterSpellPowerArgs`
-whose `LevelBonus` handlers add to). `StandcastPlugin` answers both. `@spellCastTry` (#1401) went in #1558: hunger
-is charged at the skill chain's `@skillStart`. A character's
-`@denyStep` (#1558; was `@denyMove`, #1386) asks whether it may move at all, before the step
-is worked out: a plugin returning Cancel holds it still (`CastFreezePlugin`, the paralysis
-plugin, and since #1409 `GmFreezePlugin`, `ImmobilePlugin`, `LootHoldPlugin`, `EntangledPlugin`
-and `VineHoldPlugin`, which were tags read by a hard-coded chain). It comes before #767's collision with other characters
-(a shove, its stamina). After the step, `@step` (#1558, `AbstractCharacter.Trigger_Step`, with direction, running and the
-point left; was `@stepTaken`, #1414) tells it a step was really taken. It comes before `On_Step`, only for a step
-(`@newPosition` fires for teleports too and has no `running`); it is raised for GMs too, and the handlers below skip one. A voodoo curse throws its rider there (#1450), and a
-mystic's concentration on a hypnosis breaks there (#1461). A hidden character's step
-reveals it there (#1478, `HiddenPlugin`).
-
-Experience has two (#1416, [leveling-experience.md](../04-gameplay-systems/leveling-experience.md)): `@gainExperience`,
-cancellable, in `LevelingSystem.AddExperience`, whose `GainExperienceArgs.Amount` a handler may change (`BaseAmount`
-is what bonuses take their percent of); and `@killCredit` (`KillCreditArgs`: victim, share) on every fighter credited
-with a death, player or NPC.
-
-A pick-up raises `@pickingUp` on the picker (#1426, GameCore's `PickupImpl`, args: the item, the amount), after the deny
-checks and while the item still lies where it was, beside the virtual `On_PickingUp`. `WeeklyQuestPlugin` counts a
-monster's loot there.
-
-Spells have two more (#1419, [magery-spells.md](../04-gameplay-systems/magery-spells.md)): `@spellPower` on the caster
-(`SpellPowerArgs`, a mutable `SpellPower`), before the target's defense and after the inline pre-defense modifiers;
-and `@spellSuccess` (`SpellSuccessArgs`) after a successful Magery cast. The profession plugin gives the necromancer's
-and mage's mana back there (#1440). The charge and Koncentrace stay at a fixed point because they multiply in order and
-plugins run newest first; the mystic's stolen attack talent, which came last of them anyway, answers `@spellPower` on its
-`BuffStealPlugin` (#1457).
-
-The swing's chain is in [trigger-catalog.md](trigger-catalog.md) section 1.12 (#1558). The plugins that answer it:
-
-- `@hit` on the attacker (`DamageManager.Trigger_Hit`, #1411; it absorbed #1429's `@swingLanding`) comes after the dodge
-  and the blow's own modifiers, with the damage stage (resists, shields, minimum damage, reactive armour) still to come
-  in `CauseDamage`. It is raised on a dodged blow too (`WeaponSwingArgs.Dodged`), as Erebor's `@AfterSwing` was: the
-  class plugins spend their charges on any blow (the thief's throat slit, the ranger's spree, the warrior's double
-  swing). They, the shaman's empathy elixir (`EmpathyPlugin`, #1447), the mystic's buff steal (`BuffStealPlugin`,
-  `BuffStolenPlugin`, #1457) and the magic items' slayers (`MagicWearerPlugin`) change `DamageAfterAC` there.
-- `@getHit` on the defender (`Trigger_GetHit`; it absorbed `@getSwingLanding`) follows, a landed blow only, as Erebor's
-  `@aftergetswing`: the stance and the shield block (the profession plugins), the hypnosis breaking (#1455, #1467), a
-  monster held by a catch field (`CaughtPlugin`) and the holding vine's count (`VineHoldPlugin`). Neither cancels.
-  Only for swings (a mystic's strike too, not spells nor ability blows such as backstab or split shot); SRC isn't set.
-- `@afterSwing`/`@afterGetSwing` (they absorbed #1445's `@afterHit`/`@afterGetHit`) come once the blow is over: after a
-  dodge, or once a landed blow's damage is dealt, after the monsters' after-swing reactions; also when reactive armour
-  killed the attacker or the blow the defender, each side only while it exists. `FinalDamage` is what a landed blow
-  dealt (0 when refused or fully absorbed). Handlers that need a landed blow check `!Dodged`: the profession plugin's
-  stun blow and the thief's shield strike (#1459), the magic items' freezing blow, the shaman's blood pact. Kills are
-  `@kill`'s, not these.
-
-Two spell triggers have Sphere's names (#1476): `@beforeDoEffect` on the caster, after the target's defense (or resist
-roll) with a `SpellPowerArgs` whose `SpellPower` a handler may still change (the magic items' spell slayers), and
-`@beforeGetEffect` on the target, cancellable, before the spell's effect reaches it (the items' reflex and block; a
-cancel means the spell doesn't land there). `MagicWearerPlugin` is on a character while anything magic is worn (items or
-a magic mount) and answers both, plus `@hit` (slayers) and `@afterSwing` (the freezing blow). Leech isn't on it:
-class points and items count together, for every player, as a direct call.
-
-Before a death, `@denyDeath` (#1463, `DenyDeathArgs` since #1558) is raised on a living character at the top of
-`Character.CauseDeath`; a cancel or deny keeps it alive at 1 hit point, and `@death` isn't raised then (see
-[triggers-and-deny-chains.md](triggers-and-deny-chains.md)). A possessing mystic's `PossessionPlugin` and the alter
-ego's `AlterEgoPlugin` answer it (#1467), refusing and coming home on their timer.
-
-A death raises `@kill` on the killer (#1431, Sphere's `@Kill`, args: the victim; `Character.Trigger_Kill` and
-`On_Kill` since #1558), in `Character.CauseDeath` after `@death`, unless there's no killer, it killed itself or it's
-deleted. The ranger's plugin charges its killing spree there. A monster's fighters hear `@killCredit` before that,
-inside the victim's `NPC.On_Death`.
+So a plugin on a character hears whatever the character hears without anyone calling it: the skill chain, the
+swing, the spell cast, the step, the deny triggers, `@death`, and so on. Which triggers exist, on which participant, in
+what order, with what args, and which plugins answer them, is in [trigger-catalog.md](trigger-catalog.md); the naming
+convention (`@denyX` / `@X` / `@afterX`) is in [trigger-system-architecture.md](trigger-system-architecture.md)
+section 9. Plugins hear a trigger newest first, so where the order of two changes matters (Erebor's damage_final:
+energy shield, then mana shield) the first is called at a fixed point instead (`EnergyShieldPlugin.Absorb`), or gets
+its own step (the spell slayers' `@beforeDoEffect`).
 
 A profession's behaviour lives on its profession plugin. This is the original code's own pattern: each profession .def
 names its `professionPluginDef`, and `ProfessionPlugin.InstallProfessionPlugin` puts that plugin on the player under
@@ -312,5 +242,6 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 ## Related
 
 - [scripting-pipeline.md](scripting-pipeline.md): script compilation and code generation.
-- [triggers-and-deny-chains.md](triggers-and-deny-chains.md): trigger dispatch.
+- [trigger-system-architecture.md](trigger-system-architecture.md): trigger dispatch, deny results, the naming convention.
+- [trigger-catalog.md](trigger-catalog.md): every chain and which plugins answer it.
 - [persistence-and-saving.md](persistence-and-saving.md): def values and saves.

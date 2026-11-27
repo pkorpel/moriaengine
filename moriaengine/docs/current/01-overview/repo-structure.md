@@ -34,7 +34,7 @@ subfolders:
   `AbstractCharacter.cs`, `ThingManipulationTriggers.cs`, `TagHolder.cs`,
   `CanSeeImplementation.cs`, `FieldValue.cs`, `DenyResult.cs`, ...) hold the core object
   model described in [The Thing model](../02-engine-core/thing-model.md) and
-  [Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md).
+  [Trigger system architecture](../02-engine-core/trigger-system-architecture.md).
 
 ## `Common/` and `Communication/`
 

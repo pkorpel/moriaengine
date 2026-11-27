@@ -28,7 +28,7 @@ Links point to the current docs where a page exists; otherwise to the code.
 | Subclass `CompiledScriptHolder` | The hand-written form of a named script function. | [Generators §2][gen] |
 | Subclass `CompiledTriggerGroup` | A trigger group written in C#: `on_*` methods respond to triggers. | [Generators §3][gen], [Trigger system](../current/02-engine-core/trigger-system-architecture.md) |
 | Subclass `GroundTileType` | A trigger group standing for a kind of map ground tile (`t_rock`, `t_grass`, ...). | `GameCore/Regions/Map.cs` |
-| Override `On_*` trigger methods on a thing class | Handle a trigger in the class itself; `On_Deny*` can cancel the action. | [Triggers & deny chains](../current/02-engine-core/triggers-and-deny-chains.md) |
+| Override `On_*` trigger methods on a thing class | Handle a trigger in the class itself; `On_Deny*` can cancel the action. | [Trigger system](../current/02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check) |
 | `public static void RegisterTriggerGroup(TriggerGroup)` on a `TagHolder` subclass | Lets a trigger group be attached to every instance of that class. | [Trigger system](../current/02-engine-core/trigger-system-architecture.md) |
 | Subclass `CompiledGumpDef` | A dialog (gump) written in C#. | [Dialogs framework](../current/03-admin-tooling/dialogs-framework.md) |
 | Subclass `CompiledSpeech` | NPC speech handling written in C#. | [NPC speech](../current/04-gameplay-systems/npc-speech.md) |

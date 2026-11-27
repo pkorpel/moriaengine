@@ -106,7 +106,7 @@ and there's a separate `Trigger_EnterRegion`/`On_EnterRegion` path specifically 
 the ground (not a `Cont` assignment at all - ground placement sets position fields directly).
 `MakeLimbo()` is the inverse: pulls a thing out of wherever it currently is (firing the
 matching `Trigger_Leave*`/`On_Leave*` hook) before it's moved somewhere else. See
-[triggers-and-deny-chains.md](triggers-and-deny-chains.md) for the general shape of this
+[trigger-system-architecture.md](trigger-system-architecture.md) for the general shape of this
 trigger pattern, and [item-decay.md](../04-gameplay-systems/item-decay.md) for a concrete,
 non-trivial example of code hooking `On_EnterRegion`/`On_LeaveRegion` to track "is this
 currently on the ground."

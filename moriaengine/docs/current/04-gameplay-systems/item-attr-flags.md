@@ -139,7 +139,7 @@ same-named property here would have silently shadowed both (confirmed by the rea
 `attr_nodroptrade` has **two** separate enforcement points, because they're genuinely
 different code paths: `Item.On_DenyPutOnGround` (`Item.cs:184-190`) for the ground-drop
 half, via the normal deny-trigger chain (see
-[Triggers & deny chains](../02-engine-core/triggers-and-deny-chains.md)); and an
+[Deny results and the default check](../02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check)); and an
 explicit check inside `SecureTrade.AddItem` for the trade-window half, since that path
 deliberately bypasses the whole deny-trigger chain already - `On_DenyPutOnGround` alone
 would never have caught it.

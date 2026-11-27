@@ -29,7 +29,7 @@ flag) carrying one skill attempt through 5 named phases, each firing a double tr
 
 Each phase's trigger pair can be cancelled at either the character level or the `SkillDef`
 level - cancelling at any point short-circuits the rest of that phase (see
-[triggers-and-deny-chains.md](../02-engine-core/triggers-and-deny-chains.md) for the general
+[trigger-system-architecture.md](../02-engine-core/trigger-system-architecture.md) for the general
 pattern `TryCancellableTrigger` implements).
 
 ## Delay/scheduling

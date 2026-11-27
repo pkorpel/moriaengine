@@ -50,7 +50,11 @@ buried in a log whose job was session continuity, not permanent reference.
   and the generic save/load pipeline.
 - [Tags & timers](02-engine-core/tags-and-timers.md) - `TagKey`/`TagHolder`, `Timer`/
   `BoundTimer`, why timers are "just tags" and what that buys you for persistence.
-- [Triggers & deny chains](02-engine-core/triggers-and-deny-chains.md) - the
+- [Trigger system architecture](02-engine-core/trigger-system-architecture.md) - triggers, chains, trigger groups vs
+  plugins, adding a trigger point, the `@denyX`/`@X`/`@afterX` naming convention, GMs.
+- [Trigger catalog](02-engine-core/trigger-catalog.md) - every chain with its order, args and handlers, and the old
+  and Sphere names (#1558).
+- [Deny results and the default check](02-engine-core/trigger-system-architecture.md#10-deny-results-and-the-default-check) - the
   `TryCancellableTrigger`/`On_Deny*`/`args.Result` pattern used everywhere an action can be
   blocked (pickup, drop, trade, equip), and why reach is checked after it.
 - [Plugins](02-engine-core/plugins.md) - objects attached to a thing that hear its triggers,
