@@ -118,7 +118,11 @@ namespace SteamEngine.CompiledScripts {
 		/// the older plugins still hear @logout (#1468).</remarks>
 		public void On_LogOut() {
 			if (this.Cont is Player self) {
-				MysticHypnosis.SwapBack(self, this, 0, false);
+				if (this.diedInTheBody) {
+					MysticHypnosis.DiedInTheBody(self, this, this.diedBy); //#1558 - died in the body just before: paid and penalised as on the timer
+				} else {
+					MysticHypnosis.SwapBack(self, this, 0, false);
+				}
 			}
 		}
 

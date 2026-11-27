@@ -79,9 +79,10 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HUNGER_HITS: hits=" + self.Hits);
 		}
 
-		/// <summary>A blow tried on nothing in the stomach costs 10, as the swing is drawn (Erebor's @hittry; #1558 HungerPlugin at
-		/// the stroke's @skillStroke, before @denySwing), and fails: the swing stays drawn, tried again a second later (pkorpel's
-		/// call). The landed blow costs nothing more (#1396: it cost another 10 since #995).</summary>
+		/// <summary>A blow tried on nothing in the stomach costs 10, as the swing is drawn in reach (Erebor's @hittry, before
+		/// @denySwing), and fails (#1558, pkorpel's call): the swing stays drawn, tried again a weapon delay later, so once a swing
+		/// as Erebor's. One at a target out of sight costs nothing and ends, as on main. The landed blow costs nothing more
+		/// (#1396: it cost another 10 since #995). Cooking raw food on a fire costs nothing (not a craft-menu order).</summary>
 		[SteamFunction]
 		public static void TestHungerSwing(Character self) {
 			NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);
@@ -96,15 +97,34 @@ namespace SteamEngine.CompiledScripts {
 			int drawLost = before - self.Hits;
 			bool failed = ((WeaponSkillDef.WeaponSkillPhase) Convert.ToInt64(drawn.Param1) == WeaponSkillDef.WeaponSkillPhase.Drawing) &&
 				(self.CurrentSkillArgs == drawn);
+			bool retriesAtSwing = drawn.DelaySpan == self.WeaponDelay;
+			self.AbortSkill();
+			self.Hits = self.MaxHits;
+			before = self.Hits;
+			rabbit.Flag_Insubst = true; //out of the attacker's reach for good
+			SkillSequenceArgs.Acquire(self, SkillName.Wrestling, rabbit, null, null, WeaponSkillDef.WeaponSkillPhase.Drawing, null).PhaseStroke();
+			int lostSightLost = before - self.Hits;
+			bool lostSightEnds = self.CurrentSkillArgs == null;
+			rabbit.Flag_Insubst = false;
 			self.AbortSkill();
 			self.Hits = self.MaxHits;
 			before = self.Hits;
 			DamageManager.ProcessSwing(self, rabbit);
 			int landedLost = before - self.Hits;
+			self.Hits = self.MaxHits;
+			before = self.Hits;
+			Item raw = (Item) ThingDef.GetByDefname("i_sconce_lit").Create(self.Backpack);
+			SkillSequenceArgs.Acquire(self, SkillName.Cooking, raw).PhaseSelect();
+			int cookLost = before - self.Hits;
+			self.AbortSkill();
+			if (!raw.IsDeleted) {
+				raw.Delete();
+			}
 			self.Account.PLevel = plevel;
 			rabbit.Delete();
 			PlayerHunger.SetFood(self, 10);
-			Console.WriteLine("HUNGER_SWING: lost=" + drawLost + " failed=" + failed + " landedLost=" + landedLost);
+			Console.WriteLine("HUNGER_SWING: lost=" + drawLost + " failed=" + failed + " retriesAtSwing=" + retriesAtSwing + " lostSightLost=" + lostSightLost +
+				" lostSightEnds=" + lostSightEnds + " landedLost=" + landedLost + " cookLost=" + cookLost);
 		}
 
 		/// <summary>#1396 - the hunger is a plugin on the logged-in player, its food on it, no tag; a spell cast on

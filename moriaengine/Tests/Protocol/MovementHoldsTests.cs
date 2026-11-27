@@ -50,8 +50,8 @@ namespace SteamEngine.Tests.Protocol {
 		public void AGmIsImmuneToHostileEffects() {
 			using (TestGameClient game = this.Login("Nedotknutelny")) {
 				this.Run(game, ".TestHoldsGmImmune", "HOLDS_GM_DONE");
-				this.AssertChecks("gmNotParalysed", "gmNotEntangled", "gmTakesNoDamage", "noSwingAtAGm", "gmNoHarmfulSpell",
-					"playerParalysed", "playerSwungAt");
+				this.AssertChecks("gmNotParalysed", "gmNotEntangled", "gmTakesNoDamage", "swingAtAGmEnds", "gmNoHarmfulSpell",
+					"playerParalysed", "playerSwungAt", "playerEntangled", "playerTakesDamage", "playerHarmfulSpell");
 			}
 		}
 	}

@@ -216,17 +216,18 @@ Two examples moved onto this pattern (the original developer's feedback, 2026-11
 - **Player hunger** (#1396): `HungerPlugin` (a `TimerPlugin` with a saved `food`) goes on
   every player at login. Its timer is the food tick, and it answers `@skillSuccess` (a hungry
   player's success fails), as Erebor's player event `e_allplayers` did.
-  - **#1558: Erebor's hungryhurts is one handler on the skill chain's attempt.** `@skillStart` covers a cast, taming,
-    lockpicking, mining, lumberjacking, fishing and each item of a crafting order; `@skillStroke` covers a swing being
-    drawn in reach (`WeaponSkillDef.IsSwingAttempt`), Erebor's `@hittry`. A starving player (no food) takes 10 hits with
-    "Umiras hlady..." **and the attempt fails** (pkorpel's call; on Erebor it only hurt): a cast or a skill doesn't
-    start, a crafting order stops, a swing stays drawn and is tried again a second later. Never a GM.
-  - It comes before each skill's own checks, as #1401 kept for casts: a cast the casting rules would refuse still
-    hurts. It now also comes before a cast's mana and reagents check, and before gathering's delay, dark and reach
-    checks (before #1558 the calls sat after them).
-  - Before #1558 those were `@spellCastTry` (#1401), a call in `WeaponSkillDef` before `@denySwing`, and calls in
-    `Taming`, `Lockpicking`, `CraftingProcessPlugin.StartCrafting` (once per order) and `Gathering.Begin`. Lockpicking
-    now starts through the skill chain (`SkillSequenceArgs.PhaseStart`), so a try is a skill start like the others.
+  - **#1558: a starving attempt hurts and fails.** Erebor's hungryhurts (`PlayerHunger.HurtIfStarving`) is asked where
+    Erebor asked it: a swing drawn in reach, past the stroke's own target, sight and stand-still checks
+    (`WeaponSkillDef.On_Stroke`, `@hittry`, before `@denySwing`); a cast past Sphere's own checks (sight, mana, reagents) and
+    before the casting rules (`Magery.On_Start`, where `@spellCastTry` was, #1401); mining, lumberjacking and fishing after
+    the dark (`Gathering.Begin`, miningfix); taming (f_tamingstart); a craft-menu order, once, before the light
+    (`CraftingProcessPlugin.StartCrafting`, makestring_start; cooking on a fire isn't one); a lockpick try. A starving player
+    (no food) takes 10 hits with "Umiras hlady..." **and the attempt fails** (pkorpel's call; on Erebor it only hurt): a
+    cast, taming, gathering or lockpick try doesn't start, an order doesn't start, and a swing stays drawn and is tried
+    again a weapon delay later (once a swing, as Erebor's). Never a GM.
+  - The #1558 plan put this on the skill chain's `@skillStart`/`@skillStroke`; the review moved it back to Erebor's points,
+    because the chain's attempt comes before checks Erebor ran first (a swing hurt every second at a target out of sight, a
+    cast hurt before its mana check), and fires for cooking and each item of an order. `@spellCastTry` stays removed.
   - A custom spell scroll's cast doesn't hurt (Erebor's customspellcast never ran `@spellcast`). The bard skills,
     healing, the shaman's pacts and the custom scrolls' casting rule ask `PlayerHunger` about being hungry, which reads
     the plugin.

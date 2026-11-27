@@ -136,8 +136,13 @@ namespace SteamEngine.CompiledScripts {
 						}
 					}
 
+					//#1401 - Erebor's @spellcast fired past Sphere's own checks above, its hungryhurts first, before its refusals;
+					//#1558 - a starving cast fails. Not a custom scroll: customspellcast never ran e_allplayers' @spellcast
+					if (!spell.IsCustom && PlayerHunger.HurtIfStarving(self)) {
+						return TriggerResult.Cancel;
+					}
 					//#1558 - @denySpellCast: the caster's handlers (the energy shield's Recall), then the casting rules in
-					//Character.On_DenySpellCast. Hunger came before, at @skillStart (HungerPlugin, #1401's order kept)
+					//Character.On_DenySpellCast
 					DenySpellCastArgs denyArgs = new DenySpellCastArgs(skillSeqArgs);
 					if (!self.Trigger_DenySpellCast(denyArgs).Allow) {
 						if (denyArgs.Fizzle) {

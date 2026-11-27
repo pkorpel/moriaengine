@@ -320,6 +320,11 @@ A step **denies** by setting `args.Result` to a refusing `DenyResult`, and usual
 while leaving `args.Result` allowed** lets the action through without the later steps, including the default check.
 The caller reads `args.Result` at the end.
 
+**The exception is the step chain** (`AbstractCharacter.Trigger_DenyStep`, the regions' `@denyExit`/`@denyEnter`): there
+a cancel always refuses the step, with or without a refusing `Result`, because the holds (paralysis, the vine, the GM
+freeze) answer `@denyStep` with a bare cancel. A handler can't let someone through the later steps of a step by allowing
+and cancelling.
+
 **Permission first, then reach.** The deny chain decides whether this character may do it at all (ownership, locks,
 flags, scripts). The engine's default check comes after it and decides whether they can from where they stand:
 
@@ -341,7 +346,10 @@ the picker's `@denyPickupItem`/`On_DenyPickupItem`, the item's `@denyPickup`/`On
 holder's `@denyPickupItemFrom` trigger, and each region's `@denyPickupItemFrom`/`On_DenyPickupItemFrom` (every region up
 to the world region, #1579). The container's and holder's `On_DenyPickupItemFrom` return nothing, so they can only deny.
 A double click's reach test is the clicker's `On_DenyItemDClick`, skipped when `DenyClickArgs.SkipReachChecks` is set
-(Telekinesis, the OpenDoor macro, the potion macro); every other deny still applies.
+(Telekinesis, the OpenDoor macro, the potion macro); every other deny still applies. A macro's click is a whole double
+click, so the clicker's `On_ItemDClick` runs too: like any item use it ends the clicker's current skill (a cast), as
+Sphere's item use starts its idle skill for macro clicks too (`Cmd_Use_Item`, `Skill_Start(121)`). Its disruption also
+breaks the clicker's own paralysis, which a real double click already did before #1558; the macros now do it as well.
 
 A test of a deny rule checks both sides from the same spot: refused for the character the rule refuses, allowed for
 one it allows. The allowed case proves the character is in reach, so the refusal is the rule's.
@@ -367,11 +375,19 @@ skips the terrain check, as it did in 2dbc90b, and the regions' step denies (#15
   and any source but themselves, a missing source (a trap, lava) included. It is asked where hostile effects come
   through:
   - `Character.On_DenyDamage`: every kind of damage;
-  - `Character.On_DenySwing`: no swing at a GM, so nothing a blow carries lands;
+  - the swing: `WeaponSkillDef.On_Stroke` ends a swing drawn at a GM (no retry), and `DamageManager.ProcessSwing` lands no
+    blow on one, so nothing a blow carries lands (a GM swinging at another GM included); NPC AI doesn't pick a GM as a
+    target, as Sphere's NPCs give up on an invulnerable one;
   - `Character.On_SpellEffect`: no harmful spell;
   - `ParalyzeEffectPluginDef.Paralyze`: every paralysis or stun;
   - the effects applied directly: the vine hold, warcry, voodoo curses.
 
   So the holding plugins need no GM checks of their own. `.freeze` is a GM tool, not a hostile effect, and holds
   whoever a GM freezes.
+- A GM drops things on the ground anywhere: `Character.On_DenyPutItemOnGround` allows and cancels for a GM, so no item,
+  region or reach check follows. #1579 made that reach check real for everyone; before it, a region's cancel skipped it.
+  A GM's pickups were reach-checked before and still are.
+- Core's `CanMoveEverywhere` is plevel 4 or more, scripts' `IsGM` plevel above 1: the step's GM passes
+  (`Character.On_DenyStep`, `Character.On_Step`) use the first, the immunity and the swing's work light the second, so a
+  counselor gets some passes and not others until #1582.
 - "GM" in scripts is `Character.IsGM` (account plevel above 1, toggled by `.gm`) until #1582 makes it a flag.

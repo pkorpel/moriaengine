@@ -593,6 +593,9 @@ namespace SteamEngine.CompiledScripts {
 			if (Notoriety.IsInSafeArea(candidate)) {
 				return false; //#1347 - Sphere's NPC_GetAttackMotivation: 0 for a target in a safe area
 			}
+			if (candidate.IsImmuneToHostileEffects(self)) {
+				return false; //#1558 - a GM: Sphere's NPC_GetAttackContinueMotivation gives up on an invulnerable target
+			}
 			return Point2D.GetSimpleDistance(self, candidate) <= GiveUpRange;
 		}
 
@@ -608,7 +611,8 @@ namespace SteamEngine.CompiledScripts {
 		private Character FindTarget(NPC self) {
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, AggroRange)) {
 				Character candidate = ch as Character;
-				if ((candidate != null) && CanSee(self, candidate) && !Notoriety.IsInSafeArea(candidate) && self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
+				if ((candidate != null) && CanSee(self, candidate) && !Notoriety.IsInSafeArea(candidate) && !candidate.IsImmuneToHostileEffects(self) //#1558 - never a GM
+						&& self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
 					return candidate;
 				}
 			}

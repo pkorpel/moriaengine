@@ -272,15 +272,8 @@ namespace SteamEngine.CompiledScripts {
 			return player.IsGM || ((stage == 2) && IsUnlocked(gate)) || ((stage == 3) && (HasTamed(player, gate) || !MustangThere(gate)));
 		}
 
-		/// <summary>The gate double clicked by the hero wherever they stand (the tests'): true when it swings.</summary>
-		internal static bool UseGate(Item gate, Player player) {
-			int model = gate.Model;
-			gate.Trigger_DClick(player, true);
-			return gate.Model != model;
-		}
-
 		/// <summary>i_q008_pad_closeDoor_inside's @step: it locks the gate behind a hero coming in for the mustang. Erebor's also unlocked
-		/// it once the mustang was gone; here the way out is UseGate's own rule.</summary>
+		/// it once the mustang was gone; here the way out is MayUseGate's own rule.</summary>
 		internal static void StepInside(Item pad, Player player) {
 			Item gate = GateNear(pad);
 			if (player.IsGM || player.Flag_Dead || (gate == null)) {

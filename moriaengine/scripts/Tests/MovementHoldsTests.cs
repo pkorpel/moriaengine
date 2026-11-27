@@ -147,7 +147,7 @@ namespace SteamEngine.CompiledScripts {
 			int dealt = DamageManager.CauseDamage(foe, self, DamageType.Physical, 50);
 			int dealtByNobody = DamageManager.CauseDamage(null, self, DamageType.Physical, 50); //lava, a trap
 			Check("gmTakesNoDamage", (dealt == 0) && (dealtByNobody == 0) && (self.Hits == hits));
-			Check("noSwingAtAGm", !foe.Trigger_DenySwing(self).Allow);
+			Check("swingAtAGmEnds", SwingDrawnAt(foe, self) == null);
 
 			int pluginsBefore = CountPlugins(self);
 			((SpellDef) SpellDef.GetByDefname("s_weaken")).ApplyEffectChar(foe, self, 1000, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
@@ -157,10 +157,45 @@ namespace SteamEngine.CompiledScripts {
 			ParalyzeEffectPluginDef.Paralyze(self, gmTestParalysisPK, TimeSpan.FromSeconds(30), foe, EffectFlag.FromAbility);
 			Check("playerParalysed", ParalyzeEffectPluginDef.IsParalyzed(self) && self.IsHeld(false));
 			self.DeletePlugin(gmTestParalysisPK);
-			Check("playerSwungAt", foe.Trigger_DenySwing(self).Allow);
+			Check("playerSwungAt", foe.Trigger_DenySwing(self).Allow && (SwingDrawnAt(foe, self) != null));
+			foe.AbortSkill();
+
+			NPC playerVine = (NPC) ((NPCDef) ThingDef.GetByDefname("c_sheep_woolly")).Create(self.X, self.Y, self.Z, self.M);
+			NPCAiTimer.Freeze(playerVine, 300);
+			playerVine.SetRealAbilityPoints(def, 1);
+			MonsterSpecialAttacks.TryEntangle(playerVine, self);
+			Check("playerEntangled", (self.GetPlugin(EntangledPlugin.key) != null) && (playerVine.GetPlugin(VineHoldPlugin.key) != null));
+			playerVine.Delete();
+			self.DeletePlugin(EntangledPlugin.key);
+
+			self.Hits = self.MaxHits;
+			hits = self.Hits;
+			dealt = DamageManager.CauseDamage(foe, self, DamageType.Physical, 10);
+			Check("playerTakesDamage", (dealt > 0) && (self.Hits < hits));
+			self.Hits = self.MaxHits;
+
+			System.Collections.Generic.List<Plugin> had = new System.Collections.Generic.List<Plugin>(self.GetAllPlugins());
+			int resist = self.GetSkill(SkillName.MagicResist);
+			self.SetRealSkillValue((int) SkillName.MagicResist, 0); //no resisting it
+			((SpellDef) SpellDef.GetByDefname("s_weaken")).ApplyEffectChar(foe, self, 1000, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
+			Check("playerHarmfulSpell", CountPlugins(self) > had.Count);
+			foreach (Plugin p in new System.Collections.Generic.List<Plugin>(self.GetAllPlugins())) {
+				if (!had.Contains(p)) {
+					p.Delete();
+				}
+			}
+			self.SetRealSkillValue((int) SkillName.MagicResist, resist);
 			foe.Delete();
 			self.Hits = self.MaxHits;
 			Console.WriteLine("HOLDS_GM_DONE");
+		}
+
+		/// <summary>#1558 - the attacker draws a swing at the target (the stroke WeaponSkillDef.On_Stroke takes in reach): its
+		/// skill afterwards, null when the swing ended.</summary>
+		private static SkillSequenceArgs SwingDrawnAt(NPC attacker, Character target) {
+			SkillSequenceArgs drawn = SkillSequenceArgs.Acquire(attacker, SkillName.Wrestling, target, null, null, WeaponSkillDef.WeaponSkillPhase.Drawing, null);
+			drawn.PhaseStroke();
+			return attacker.CurrentSkillArgs;
 		}
 
 		private static int CountPlugins(Character ch) {

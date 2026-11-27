@@ -16,7 +16,8 @@ where that model stands. `.flip` turns a door by the same offset, see [flip.md](
   ones too, and `t_door_open` isn't one it looks for. It is a double click with only the reach test skipped
   (`DenyClickArgs.SkipReachChecks`), so the door's denies apply to it as to a click. 0.99z8's macro bypassed the item's
   `@UserDClick`, but there a scripted door was another type, which the macro skipped; here a quest door is a door with a
-  `@denyDClick` handler, so the macro has to ask it.
+  `@denyDClick` handler, so the macro has to ask it. Being a whole double click, it also ends the presser's current skill
+  (a cast) and breaks their own paralysis, as any item use does here (#1558).
 - An open door closes by itself after 60 seconds.
 - A closed door stops walking: its tile is impassable and `IgnoreDoors` is off for players. NPCs don't open doors yet.
 - `t_door_locked` wants a `t_key` in the pack with the same `LockUid`, Sphere's MORE1 (`Door.On_DenyDClick`, open or shut, as

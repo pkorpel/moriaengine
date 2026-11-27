@@ -73,7 +73,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((vine.GetPlugin(VineHoldPlugin.key) is VineHoldPlugin holding) && holding.IsIntact()) {
 				return; //already holding someone
 			}
-			VineHoldPlugin.Hold(vine, pusher, (int) def.HitsToBreak);
+			if (!VineHoldPlugin.Hold(vine, pusher, (int) def.HitsToBreak)) {
+				return; //#1558 - a GM isn't held, so neither told so nor attacked
+			}
 			pusher.RedMessage("Byl jsi omotan a nemuzes se hnout!"); //#1412 - Erebor's e_ovinovac
 			NPCAiTimer timer = NPCAiTimer.GetFor(vine);
 			if (timer != null) {
@@ -141,9 +143,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		internal static void Hold(Character vine, Character victim, int hitsToBreak) {
+		/// <summary>False when the victim can't be held (#1558: a GM, immune to hostile effects).</summary>
+		internal static bool Hold(Character vine, Character victim, int hitsToBreak) {
 			if (victim.IsImmuneToHostileEffects(vine)) { //#1558 - a GM is never held
-				return;
+				return false;
 			}
 			VineHoldPlugin hold = (VineHoldPlugin) VineHoldPluginDef.instance.Create();
 			hold.victim = victim;
@@ -152,6 +155,7 @@ namespace SteamEngine.CompiledScripts {
 			EntangledPlugin entangled = (EntangledPlugin) EntangledPluginDef.instance.Create();
 			entangled.vine = vine;
 			victim.AddPlugin(EntangledPlugin.key, entangled);
+			return true;
 		}
 
 		internal bool IsIntact() {

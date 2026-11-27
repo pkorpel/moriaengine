@@ -218,15 +218,23 @@ cancellable `@X`). The convention is in `trigger-system-architecture.md` section
   bypassed `@UserDClick` (`Use_Item(false)`): janslav called skipping denies dangerous, and native doors behave the
   same. A locked door refuses closing as well as opening, as Sphere's native `Use_Item`; Erebor's "closing is never
   refused" came from its custom door types.
-- **Q1, hunger:** one `HungerPlugin` handler on the skill chain's attempt (`@skillStart`, and `@skillStroke` for a swing)
-  replaces `@spellCastTry` and the per-skill calls. A starving player takes Erebor's 10 hits **and the attempt
-  fails**: pkorpel's deliberate change from Erebor's `hungryhurts`, which only hurt.
+- **Q1, hunger:** a starving player takes Erebor's 10 hits **and the attempt fails**: pkorpel's deliberate change from
+  Erebor's `hungryhurts`, which only hurt. `@spellCastTry` is gone. The decision put hunger on the skill chain's attempt
+  (`@skillStart`/`@skillStroke`); the review of the implementation moved it back to Erebor's own points
+  (`PlayerHunger.HurtIfStarving` in the swing's stroke, the cast past mana and reagents, gathering after the dark, taming,
+  a craft-menu order, a lockpick try), because the chain's attempt fires before checks Erebor ran first and for cooking
+  and every item of an order. A failed swing is retried a weapon delay later, once a swing as Erebor's.
 - **Q2:** the spell slayers keep their own step (`@beforeDoEffect`) before `@causeSpellEffect`, so plugin order can't
   change the result.
 - **Q3, GMs:** a GM never receives hostile skill, spell or ability effects: one predicate,
   `Character.IsImmuneToHostileEffects`, asked where those effects come through, so holding plugins need no GM checks.
   `.freeze` is a GM tool and still holds GMs. A GM's "allow all" otherwise lives in the script `On_DenyX` overrides.
   The GM flag itself is #1582.
+- **After review:** a swing at a GM ends (no retry every second) and NPC AI doesn't pick a GM, as Sphere's NPCs give up on
+  an invulnerable target; a GM drops things on the ground anywhere (`Character.On_DenyPutItemOnGround`), which #1579's
+  reach check would otherwise have taken away. The OpenDoor and potion macros are whole double clicks, so like any item
+  use they end the presser's cast (Sphere's item use does for macro clicks too) and break their own paralysis (a real
+  click already did).
 - **`SkipReachChecks`:** Telekinesis, the OpenDoor macro and the potion macro run the whole dclick deny chain with only
   the reach test skipped (janslav asked for a name that says what it does).
 

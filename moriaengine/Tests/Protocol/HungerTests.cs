@@ -66,8 +66,12 @@ namespace SteamEngine.Tests.Protocol {
 			string swing = this.Ask(client, ".TestHungerSwing", "HUNGER_SWING:");
 			Assert.Contains("lost=10 ", swing); //drawing the blow
 			Assert.Contains("failed=True", swing); //#1558 - and the starving swing fails (pkorpel's call), tried again later
+			Assert.Contains("retriesAtSwing=True", swing); //a weapon delay later: once a swing, as Erebor's
+			Assert.Contains("lostSightLost=0 ", swing); //#1558 review - a target out of sight ends the swing, no hunger
+			Assert.Contains("lostSightEnds=True", swing);
 			Assert.Contains("landedLost=0", swing); //#1396 - not again when it lands
-			//#1396 - a plugin on the player; #1558 a starving cast hurts at @skillStart and fails
+			Assert.Contains("cookLost=0", swing); //#1558 review - cooking on a fire isn't a craft-menu order
+			//#1396 - a plugin on the player; #1558 a starving cast hurts past Sphere's own checks and fails
 			string plugin = this.Ask(client, ".TestHungerPlugin", "HUNGER_PLUGIN:");
 			Assert.Contains("onPlugin=True", plugin);
 			Assert.Contains("castLost=10", plugin);

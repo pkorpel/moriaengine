@@ -113,6 +113,10 @@ move, cancellable region `@exit`/`@enter`, and `@stepTaken` after the move, not 
 | 6 | `@newPosition`, then the items' `@itemStep`/`@step` | character, items underfoot | notification | regular | The character is on the new tile | Traps, teleport pads |
 | 7 | `@step` (direction, running, point left) | character | notification | regular | A step was taken (not a teleport); also for GMs | Step-based effects, stamina drain |
 
+In steps 1-4 a cancel always refuses the step, with or without a refusing `Result` (unlike the other deny chains, see
+the architecture page's section 10): the holds answer with a bare cancel. Step 5 runs just before the character's
+position changes, as before #1558; steps 6 and 7 after.
+
 ## 1.8 Chain: Item stack merge
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
@@ -148,8 +152,8 @@ nearest door with only the reach test skipped.
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
 | 1 | `@skillSelect` | skill handlers | calculation/implementation | regular | Skill target/selection phase | Validate selected target |
-| 2 | `@skillStart` | skill handlers | implementation/notification | regular | Skill starts | Allocate temporary skill state; `HungerPlugin`: a starving attempt hurts and fails (#1558) |
-| 3 | `@skillStroke` | skill handlers | notification/implementation | regular | Skill tick/pulse phase | Progress long-running skill; `HungerPlugin`: a starving swing being drawn hurts and fails (#1558) |
+| 2 | `@skillStart` | skill handlers | implementation/notification | cancellable | Skill starts | Allocate temporary skill state |
+| 3 | `@skillStroke` | skill handlers | notification/implementation | cancellable | Skill tick/pulse phase | Progress long-running skill |
 | 4a | `@skillSuccess` | skill handlers | notification | regular | Successful completion | Apply final rewards/effects |
 | 4b | `@skillFail` | skill handlers | notification | regular | Failed completion | Apply failure consequences |
 | 4c | `@skillAbort` | skill handlers | notification/deny | regular | Interrupted/cancelled completion | Roll back temporary state |
@@ -182,10 +186,10 @@ character while anything magic is worn and answers `@hit` (slayers), `@afterSwin
 
 ## 1.13 Chain: Spell cast (Magery)
 
-#1558 reworked the cast's start (`MagerySkillDef.On_Start`, `Character`). Old names: `@spellCastTry` is gone (hunger moved
-to the skill chain's `@skillStart`, `HungerPlugin`); the casting rules (`SpellCastRules`) became `Character.On_DenySpellCast`,
+#1558 reworked the cast's start (`MagerySkillDef.On_Start`, `Character`). Old names: `@spellCastTry` is gone (hunger is a call
+at the same point, `PlayerHunger.HurtIfStarving`, and a starving cast fails); the casting rules (`SpellCastRules`) became `Character.On_DenySpellCast`,
 after the `@denySpellCast` handlers instead of before them. Each step is `@X` on the participant, then its `On_X`. A cast
-starts with the skill chain (1.11): `@skillStart` comes first, then Magery's mana and reagents.
+starts with the skill chain (1.11): `@skillStart` comes first, then Magery's sight, mana and reagents, then hunger.
 
 | Step | Trigger key | Class | Category | Shape | Meaning | Example script usage |
 |---|---|---|---|---|---|---|
@@ -209,7 +213,7 @@ starts with the skill chain (1.11): `@skillStart` comes first, then Magery's man
 |---|---|---|---|---|---|---|
 | 1 | `@denyDeath` | dying character | deny | cancellable (`DenyDeathArgs`: argv[0] result, argv[1] killer) | Before anything of the death, only for a living character (Sphere's `@Death` RETURN 1). A refusal leaves it alive at 1 hit point, or what a handler set; the blow counts only the hits really taken | A possessing mystic and the alter ego refuse, then come home on their plugin's timer |
 | 2 | `@death` | dying character | notification | regular (argv: killer) | Partway through the death, after the murder count, `@hostileAction`, the disruption and the dismount | Cleanup of plugins and pacts |
-| 2a | `@killCredit` | each credited fighter | notification | regular (`KillCreditArgs`: victim, share) | Inside the victim's `NPC.On_Death` (the experience share), so before `@kill` | Weekly quests count kills |
+| 2a | `@killCredit` | each credited fighter | notification | regular (`KillCreditArgs`: victim, share) | The experience share: from a monster's death inside its `NPC.On_Death`, from a player's death inside `Player.On_Death` (`LevelingSystem.ApplyDeathExperienceLoss`), and from a possessing mystic's refused death on `PossessionPlugin`'s timer; a death's comes before `@kill` | Weekly quests count kills |
 | 3 | `@kill` | killer | notification | regular (argv: victim) | After `@death`; not when there's no killer, it killed itself, or it was deleted | The ranger's killing spree (Erebor's `@finalBlow`) |
 
 The killer is `Globals.SrcCharacter` for a death through the `Hits` setter (every blow, spell, poison, bleed): on a
@@ -343,7 +347,7 @@ in #941/PR #942; since #1558 a door is the dclick chain (1.10), with no triggers
 | `@denyMove`, `CheckCanMove`, `CheckCharacterObstacles` | `@denyStep` (`DenyStepArgs`) and `On_DenyStep` | Sphere checks freeze, stone and immobile before terrain and the push |
 | cancellable `@step` before the move, `@stepTaken` after it | `@step` after the move (direction, running, point left) | Sphere's `@Step`, after the move |
 | region `@enter` / `@exit`, cancellable | region `@denyEnter` / `@denyExit`, then `@enter` / `@exit` as notifications | Sphere's region `@Enter` / `@Exit` (a GM is never refused) |
-| `@spellCastTry` (hunger) | removed: hunger is `HungerPlugin` on `@skillStart` / `@skillStroke` (hurts and fails) | Erebor's `e_allplayers` `@spellcast` / `@hittry` calling `hungryhurts` (hurt only) |
+| `@spellCastTry` (hunger) | removed: hunger is `PlayerHunger.HurtIfStarving` at Erebor's points (hurts and fails) | Erebor's `e_allplayers` `@spellcast` / `@hittry` calling `hungryhurts` (hurt only) |
 | `@denySpellCast` after the hard-coded casting rules | `@denySpellCast` (`DenySpellCastArgs`) before `Character.On_DenySpellCast` (the rules) | Sphere's `@SpellCast` RETURN 1, after its own checks |
 | `@denyItemDClick` for a character target | `@denyCharDClick` | |
 | `Trigger_DClickFromAfar` (skipped every deny) | `Trigger_DClick(clicker, true)`: `DenyClickArgs.SkipReachChecks` | Sphere's `Use_Obj` without the touch test |

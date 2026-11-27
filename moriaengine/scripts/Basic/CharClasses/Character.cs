@@ -1503,6 +1503,8 @@ namespace SteamEngine.CompiledScripts {
 				//set the hits itself (the Hits setter calls this instead of writing a value below 1, so they'd otherwise stay
 				//what they were before the blow, and .kill wouldn't touch them). #1467 - a possessing mystic and its alter ego
 				//refuse this way, and come home on their plugin's timer.
+				//"A handler set the hits" is told by the hits having changed, so one that sets them to what they already were
+				//(full, say) still ends at 1.
 				int hitsBefore = this.hitpoints;
 				if (!this.Trigger_DenyDeath(new DenyDeathArgs(killedBy)).Allow) {
 					if (!this.IsDeleted && !this.Flag_Dead && (this.hitpoints == hitsBefore)) {
@@ -1617,8 +1619,9 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TriggerKey killCreditTK = TriggerKey.Acquire("killCredit");
 
 		/// <summary>#1416, #1558 - @killCredit, a notification on a fighter (player or NPC) credited with a death, from
-		/// LevelingSystem's share of it: Erebor's trigger_kill (@playerKill, @npckill). Raised inside the victim's On_Death,
-		/// so before the killer's @kill.</summary>
+		/// LevelingSystem's share of it: Erebor's trigger_kill (@playerKill, @npckill). Raised inside the victim's On_Death
+		/// (NPC.On_Death, or Player.On_Death's ApplyDeathExperienceLoss), so before the killer's @kill; and on a possessing
+		/// mystic's refused death, from PossessionPlugin's timer.</summary>
 		public void Trigger_KillCredit(Character victim, int share) {
 			if (this.IsDeleted) {
 				return;
@@ -2105,7 +2108,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1558 - Magery's deny before a cast gets under way (after the mana and reagents): the caster's @denySpellCast
 		/// (trigger groups, plugins: the energy shield's and voodoo's Recall), then On_DenySpellCast (the casting rules). Stops at the
-		/// first cancel or deny. Was @spellCastTry (hunger, now at @skillStart), the rules, then @denySpellCast (#1401).</summary>
+		/// first cancel or deny. Was @spellCastTry (hunger, now a call just before this in Magery.On_Start), the rules, then @denySpellCast (#1401).</summary>
 		public DenyResult Trigger_DenySpellCast(DenySpellCastArgs args) {
 			TriggerResult result = this.TryCancellableTrigger(denySpellCastTK, args);
 			if ((result != TriggerResult.Cancel) && args.Result.Allow) {
@@ -3261,14 +3264,19 @@ namespace SteamEngine.CompiledScripts {
 			return args.Result;
 		}
 
-		/// <summary>#1558 - the default swing check: no swing at a GM (IsImmuneToHostileEffects), so nothing a blow carries
-		/// reaches one. Player adds the work light.</summary>
+		/// <summary>#1558 - the default swing check: nothing here; Player adds the work light. A swing at one immune to hostile
+		/// effects (a GM) never gets this far: WeaponSkillDef.On_Stroke ends it, and DamageManager.ProcessSwing lands no blow.</summary>
 		public virtual TriggerResult On_DenySwing(DenySwingArgs args) {
-			if ((args.target != null) && args.target.IsImmuneToHostileEffects(this)) {
-				args.Result = DenyResultMessages.Deny_NoMessage;
+			return TriggerResult.Continue;
+		}
+
+		/// <summary>#1558 - the GM pass for a drop on the ground (allow and cancel: no item, region or reach check after it). #1579
+		/// made the reach check real for everyone; before it, a region's cancel skipped it for all.</summary>
+		public override TriggerResult On_DenyPutItemOnGround(DenyPutOnGroundArgs args) {
+			if (this.IsGM) {
 				return TriggerResult.Cancel;
 			}
-			return TriggerResult.Continue;
+			return base.On_DenyPutItemOnGround(args);
 		}
 
 		public virtual TriggerResult On_Swing(WeaponSwingArgs args) {

@@ -25,11 +25,12 @@ namespace SteamEngine.CompiledScripts {
 	/// a loss (a hypnosis paying back less than nothing). Argv is (BaseAmount, Amount): #1558 - a scripted handler changes
 	/// Amount by setting argv[1].</summary>
 	public class GainExperienceArgs : ScriptArgs {
-		private readonly int baseAmount;
+		private readonly int baseAmount, originalAmount;
 
 		public GainExperienceArgs(int baseAmount, int amount)
 			: base(baseAmount, amount) {
 			this.baseAmount = baseAmount;
+			this.originalAmount = amount;
 		}
 
 		/// <summary>The gain before any bonus: what bonuses take their percent of.</summary>
@@ -39,9 +40,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>A script that set argv[1] to something that isn't a number leaves the gain unchanged.</summary>
 		public int Amount {
 			get {
-				return Convert.ToInt32(this.Argv[1], CultureInfo.InvariantCulture);
+				try {
+					return Convert.ToInt32(this.Argv[1], CultureInfo.InvariantCulture);
+				} catch (Exception e) when ((e is FormatException) || (e is InvalidCastException) || (e is OverflowException)) {
+					return this.originalAmount;
+				}
 			}
 			set {
 				this.Argv[1] = value;

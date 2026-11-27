@@ -47,7 +47,10 @@ namespace SteamEngine.CompiledScripts {
 			if (!WorkLight.CheckWithMessage(self)) {
 				return false;
 			}
-			HidingSkillDef.Reveal(self); //#1558 - miningfix's hungryhurts is HungerPlugin's, at @skillStart
+			if (PlayerHunger.HurtIfStarving(self)) {
+				return false; //miningfix: after the dark; #1558 - a starving attempt fails
+			}
+			HidingSkillDef.Reveal(self);
 			if ((Point2D.GetSimpleDistance(self, target) > Reach) && !self.IsGM) {
 				self.SysMessage(texts.TooFar);
 				return false;

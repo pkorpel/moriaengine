@@ -49,8 +49,12 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		/// <summary>makestring_start. #1558 - its hungryhurts is HungerPlugin's, at the first item's @skillStart.</summary>
+		/// <summary>makestring_start: hungryhurts first, once for the order (#1558 - a starving order fails), then the light.
+		/// Only a craft-menu order: cooking on a fire (Targ_CookOn) never came here.</summary>
 		public static void StartCrafting(Character self, CraftingOrder crOrd) {
+			if (PlayerHunger.HurtIfStarving(self)) {
+				return;
+			}
 			if (!WorkLight.CheckWithMessage(self)) {
 				return;
 			}

@@ -139,17 +139,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#1558 - this stroke draws a swing in reach: Erebor's @hittry moment (HungerPlugin's @skillStroke asks).</summary>
-		public static bool IsSwingAttempt(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			if (!(skillSeqArgs.Target1 is Character target) || target.IsDeleted || (skillSeqArgs.Param1 == null) ||
-					((WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1) != WeaponSkillPhase.Drawing)) {
-				return false;
-			}
-			return StrikeDistance(self, target) <= self.WeaponStrikeStartRange;
-		}
-
-		/// <summary>#1558 - a swing that didn't start (refused, or failed for hunger) is tried again a second later.</summary>
+		/// <summary>#1558 - a swing @denySwing refused is tried again a second later.</summary>
 		public static void RetryStroke(SkillSequenceArgs skillSeqArgs) {
 			skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
 			skillSeqArgs.DelayStroke();
@@ -183,6 +173,13 @@ namespace SteamEngine.CompiledScripts {
 				self.AbortSkill();
 				return TriggerResult.Cancel;
 			}
+			//#1558 - no swing at one immune to hostile effects (a GM): the attack ends, as a Sphere NPC gives up on an
+			//invulnerable target, rather than being retried
+			if (target.IsImmuneToHostileEffects(self)) {
+				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
+				self.AbortSkill();
+				return TriggerResult.Cancel;
+			}
 
 			// #512 - a stand-still weapon just fails this stroke while the attacker is moving
 			// (no teleport) - falls through to the same "retry in 1s" tail this method already
@@ -198,7 +195,15 @@ namespace SteamEngine.CompiledScripts {
 			WeaponSkillPhase phase = (WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1);
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
-					//#976, #1396 - Erebor's @hittry hungryhurts came first: #1558, HungerPlugin at this stroke's @skillStroke
+					//#976, #1396 - Erebor's @hittry hungryhurts came first. #1558 - a starving swing fails: the hurt again at the
+					//next swing, a weapon delay later (Erebor's once a swing), not at the 1 s retry of a refusal
+					if (PlayerHunger.HurtIfStarving(self)) {
+						if (!self.IsDeleted && !self.Flag_Dead) {
+							skillSeqArgs.DelaySpan = self.WeaponDelay;
+							skillSeqArgs.DelayStroke();
+						}
+						return TriggerResult.Cancel;
+					}
 					if (!self.Trigger_DenySwing(target).Allow) { //#1558 - was @hitTry; a deny is a retry a second later
 						RetryStroke(skillSeqArgs);
 						return TriggerResult.Cancel;
