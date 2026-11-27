@@ -3271,11 +3271,11 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
-		public TriggerResult On_Swing(WeaponSwingArgs args) {
+		public virtual TriggerResult On_Swing(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
-		public TriggerResult On_GetSwing(WeaponSwingArgs args) {
+		public virtual TriggerResult On_GetSwing(WeaponSwingArgs args) {
 			return TriggerResult.Continue;
 		}
 
