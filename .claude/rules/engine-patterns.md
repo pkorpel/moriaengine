@@ -5,8 +5,8 @@ paths:
 
 # Engine code
 
-How the engine works is in `moriaengine/docs/current/`. This file only says which page to read first, and
-lists the rules whose breakage is silent.
+How the engine works is in `moriaengine/docs/current/`. This file points to the page to read first and
+lists the rules for C# code.
 
 ## Pattern first (#1366)
 
@@ -15,6 +15,11 @@ commit `2dbc90b` (`git show 2dbc90b:<path>`). If the page is missing or wrong, f
 fine). Build in that pattern. A bug in the pattern is fixed in the pattern, never worked around with a second
 mechanism; the reviewer blocks one. Prefer a plugin that reacts to triggers over a static class called from many
 files, and typed def fields over tags.
+
+## Comments
+
+Give public and internal methods longer than a few lines docstrings. Comment each logical chunk of a larger
+method to clarify its purpose.
 
 ## Touching X? Read this first (`moriaengine/docs/current/…`)
 

@@ -10,6 +10,9 @@ namespace SteamEngine.DIExperiment {
 		[Description("Whether to log console output to a file")]
 		public bool LogToFiles { get; init; } = true;
 
+		// Phase zero can always initialize diagnostics without needing a writable log directory.
+		internal static LoggerConfiguration Emergency { get; } = new() { LogPath = "", LogToFiles = false };
+
 		/// <summary>Checks that file logging, when enabled, has a writable destination.</summary>
 		public void Validate() {
 			if (!LogToFiles) return;
